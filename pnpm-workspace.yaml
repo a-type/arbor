@@ -1,0 +1,6 @@
+packages:
+  - 'packages/*'
+  - docs
+
+catalog:
+  unocss: ^66.5.10

@@ -1,0 +1,10 @@
+{
+	"name": "@arbor-css/core",
+	"version": "0.0.0",
+	"devDependencies": {
+		"@unocss/cli": "^66.5.10",
+		"@unocss/core": "^66.5.10",
+		"@unocss/transformer-variant-group": "^66.5.10",
+		"unocss": "catalog:"
+	}
+}
