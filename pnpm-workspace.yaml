@@ -4,3 +4,4 @@ packages:
 
 catalog:
   unocss: ^66.5.10
+  typescript: ^5.9.3

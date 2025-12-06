@@ -3,7 +3,7 @@
 		"module": "esnext",
 		"moduleResolution": "bundler",
 		"target": "es2020",
-		"lib": ["esnext"],
+		"lib": ["esnext", "dom"],
 		"declaration": true,
 		"declarationMap": true,
 		"sourceMap": true,

@@ -1,10 +1,33 @@
 {
 	"name": "@arbor-css/core",
 	"version": "0.0.0",
+	"type": "module",
+	"exports": {
+		".": {
+			"development": "./src/index.ts",
+			"import": "./dist/index.js",
+			"node": "./dist/index.js",
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"sideEffects": false,
+	"scripts": {
+		"build": "tsc"
+	},
 	"devDependencies": {
 		"@unocss/cli": "^66.5.10",
 		"@unocss/core": "^66.5.10",
+		"@unocss/preset-wind4": "^66.5.10",
 		"@unocss/transformer-variant-group": "^66.5.10",
-		"unocss": "catalog:"
+		"typescript": "catalog:",
+		"unocss": "catalog:",
+		"vitest": "^4.0.15"
+	},
+	"dependencies": {
+		"@vitest/browser-playwright": "^4.0.15"
 	}
 }

@@ -1,5 +1,5 @@
 {
-	"name": "docs",
+	"name": "@arbor-css/docs",
 	"type": "module",
 	"version": "0.0.1",
 	"scripts": {
@@ -10,9 +10,12 @@
 		"astro": "astro"
 	},
 	"dependencies": {
-		"@astrojs/starlight": "^0.37.0",
+		"@arbor-css/core": "workspace:^",
+		"@astrojs/mdx": "4.3.12",
 		"astro": "^5.6.1",
 		"sharp": "^0.34.2",
-		"unocss": "catalog:"
+		"unocss": "catalog:",
+		"vite": "^7.2.6",
+		"chokidar": "^5.0.0"
 	}
 }

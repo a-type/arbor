@@ -1,5 +1,16 @@
-import { defineConfig, presetMini } from 'unocss';
+import arbor from '@arbor-css/core';
+import { defineConfig } from 'unocss';
 
 export default defineConfig({
-	presets: [presetMini()],
+	presets: [
+		arbor({
+			primaryHue: 130,
+		}),
+	],
+	configDeps: ['../packages/core/src/**/*.ts', '../packages/core/dist/**/*.js'],
+	content: {
+		pipeline: {
+			include: ['./src/**/*.{astro,html,js,ts}'],
+		},
+	},
 });
