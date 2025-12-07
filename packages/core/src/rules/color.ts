@@ -1,5 +1,5 @@
-import { parseColor } from '@unocss/preset-wind4/utils';
-import { Rule } from 'unocss';
+import { parseColor } from '@unocss/preset-mini/utils';
+import { Rule, symbols } from 'unocss';
 import { PROPS } from '../constants/properties.js';
 import { darken, lighten } from '../logic/color.js';
 
@@ -113,7 +113,7 @@ export const colorRules: Rule[] = [
 		},
 	],
 	[
-		/^border-(.*)$/,
+		/^(border-|b-)(.*)$/,
 		(match, { theme }) => {
 			if (match[1] === 'none') {
 				return undefined;
@@ -135,11 +135,11 @@ export const colorRules: Rule[] = [
 			};
 		},
 		{
-			autocomplete: `border-$colors`,
+			autocomplete: `(border-|b-)$colors`,
 		},
 	],
 	[
-		/^border-lighten-(\d+\.?\d*)$/,
+		/^(border-|b-)lighten-(\d+\.?\d*)$/,
 		(match) => ({
 			[PROPS.BORDER_COLOR.ALL.FINAL]: lighten(
 				`var(${PROPS.BORDER_COLOR.ALL.INHERITED},currentColor)`,
@@ -147,11 +147,11 @@ export const colorRules: Rule[] = [
 			),
 		}),
 		{
-			autocomplete: 'border-lighten-<number>',
+			autocomplete: '(border-|b-)lighten-<number>',
 		},
 	],
 	[
-		/^border-darken-(\d+\.?\d*)$/,
+		/^(border-|b-)darken-(\d+\.?\d*)$/,
 		(match) => ({
 			[PROPS.BORDER_COLOR.ALL.FINAL]: darken(
 				`var(${PROPS.BORDER_COLOR.ALL.INHERITED},currentColor)`,
@@ -159,14 +159,14 @@ export const colorRules: Rule[] = [
 			),
 		}),
 		{
-			autocomplete: 'border-darken-<number>',
+			autocomplete: '(border-|b-)darken-<number>',
 		},
 	],
 	...(<const>['RIGHT', 'LEFT', 'TOP', 'BOTTOM']).flatMap((DIR) => {
 		const shorthand = DIR[0].toLowerCase();
 		return [
 			[
-				new RegExp(`^border-${shorthand}-(.*)$`),
+				new RegExp(`^(border-|b-)${shorthand}-(.*)$`),
 				(match, { theme }) => {
 					if (match[1] === 'none') {
 						return undefined;
@@ -186,11 +186,11 @@ export const colorRules: Rule[] = [
 					};
 				},
 				{
-					autocomplete: `border-${shorthand}-$colors`,
+					autocomplete: `b-${shorthand}-$colors`,
 				},
 			],
 			[
-				new RegExp(`^border-${shorthand}-lighten-(\\d+\\.?\\d*)$`),
+				new RegExp(`^(border-|b-)${shorthand}-lighten-(\\d+\\.?\\d*)$`),
 				(match) => ({
 					[`${PROPS.BORDER_COLOR[DIR].FINAL}`]: lighten(
 						`var(${PROPS.BORDER_COLOR[DIR].INHERITED},currentColor)`,
@@ -198,11 +198,11 @@ export const colorRules: Rule[] = [
 					),
 				}),
 				{
-					autocomplete: `border-${shorthand}-lighten-<number>`,
+					autocomplete: `(border-|b-)${shorthand}-lighten-<number>`,
 				},
 			],
 			[
-				new RegExp(`^border-${shorthand}-darken-(\\d+\\.?\\d*)$`),
+				new RegExp(`^(border-|b-)${shorthand}-darken-(\\d+\\.?\\d*)$`),
 				(match) => ({
 					[`${PROPS.BORDER_COLOR[DIR].FINAL}`]: darken(
 						`var(${PROPS.BORDER_COLOR[DIR].INHERITED},currentColor)`,
@@ -210,7 +210,7 @@ export const colorRules: Rule[] = [
 					),
 				}),
 				{
-					autocomplete: `border-${shorthand}-darken-<number>`,
+					autocomplete: `(border-|b-)${shorthand}-darken-<number>`,
 				},
 			],
 		] as Rule[];
@@ -256,6 +256,99 @@ export const colorRules: Rule[] = [
 		}),
 		{
 			autocomplete: 'ring-darken-<number>',
+		},
+	],
+	[
+		/^placeholder-(.*)$/,
+		function* (match, { theme }) {
+			const parsed = parseColor(match[1], theme);
+			if (!parsed?.color) {
+				return;
+			}
+			yield {
+				[symbols.selector]: (selector) => `${selector}::placeholder`,
+				color: parsed.opacity
+					? `rgb(from var(${PROPS.PLACEHOLDER_COLOR.FINAL},var(${PROPS.PLACEHOLDER_COLOR.INHERITED})) r g b / var(${PROPS.PLACEHOLDER_COLOR.OPACITY},100%))`
+					: `var(${PROPS.PLACEHOLDER_COLOR.FINAL},var(${PROPS.PLACEHOLDER_COLOR.INHERITED}))`,
+				[PROPS.PLACEHOLDER_COLOR.INHERITED]: parsed.color,
+				[PROPS.PLACEHOLDER_COLOR.OPACITY]: (parsed.opacity || 100) + '%',
+			};
+		},
+		{
+			autocomplete: `placeholder-$colors`,
+		},
+	],
+	[
+		/^placeholder-lighten-(\d+\.?\d*)$/,
+		function* (match) {
+			yield {
+				[symbols.selector]: (selector) => `${selector}::placeholder`,
+				[PROPS.PLACEHOLDER_COLOR.FINAL]: lighten(
+					`var(${PROPS.PLACEHOLDER_COLOR.INHERITED},currentColor)`,
+					match[1],
+				),
+			};
+		},
+		{
+			autocomplete: 'placeholder-lighten-<number>',
+		},
+	],
+	[
+		/^placeholder-darken-(\d+\.?\d*)$/,
+		function* (match) {
+			yield {
+				[symbols.selector]: (selector) => `${selector}::placeholder`,
+				[PROPS.PLACEHOLDER_COLOR.FINAL]: darken(
+					`var(${PROPS.PLACEHOLDER_COLOR.INHERITED},currentColor)`,
+					match[1],
+				),
+			};
+		},
+		{
+			autocomplete: 'placeholder-darken-<number>',
+		},
+	],
+	[
+		/^accent-(.*)$/,
+		(match, { theme }) => {
+			const parsed = parseColor(match[1], theme);
+			if (!parsed?.color) {
+				return undefined;
+			}
+			return {
+				'accent-color': parsed.opacity
+					? `rgb(from var(${PROPS.ACCENT_COLOR.FINAL},var(${PROPS.ACCENT_COLOR.INHERITED})) r g b / var(${PROPS.ACCENT_COLOR.OPACITY},100%))`
+					: `var(${PROPS.ACCENT_COLOR.FINAL},var(${PROPS.ACCENT_COLOR.INHERITED}))`,
+				[PROPS.ACCENT_COLOR.INHERITED]: parsed.color,
+				[PROPS.ACCENT_COLOR.OPACITY]: (parsed.opacity || 100) + '%',
+			};
+		},
+		{
+			autocomplete: `accent-$colors`,
+		},
+	],
+	[
+		/^accent-lighten-(\d+\.?\d*)$/,
+		(match) => ({
+			[PROPS.ACCENT_COLOR.FINAL]: lighten(
+				`var(${PROPS.ACCENT_COLOR.INHERITED},currentColor)`,
+				match[1],
+			),
+		}),
+		{
+			autocomplete: 'accent-lighten-<number>',
+		},
+	],
+	[
+		/^accent-darken-(\d+\.?\d*)$/,
+		(match) => ({
+			[PROPS.ACCENT_COLOR.FINAL]: darken(
+				`var(${PROPS.ACCENT_COLOR.INHERITED},currentColor)`,
+				match[1],
+			),
+		}),
+		{
+			autocomplete: 'accent-darken-<number>',
 		},
 	],
 ];

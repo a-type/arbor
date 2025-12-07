@@ -1,8 +1,9 @@
-import { Theme } from '@unocss/preset-wind4';
+import { Theme } from '@unocss/preset-mini';
 import { CALCS } from '../constants/calcs';
 import { PROPS } from '../constants/properties';
 
 export const themeSpacing: Theme['spacing'] = {
+	none: '0px',
 	xxs: `calc(${CALCS.GROUP.SCALE(1 / 2)} * var(${
 		PROPS.USER.SPACING_SCALE
 	}) * 0.125rem)`,
@@ -25,3 +26,4 @@ export const themeSpacing: Theme['spacing'] = {
 		PROPS.USER.SPACING_SCALE
 	}) * 2.5rem)`,
 };
+themeSpacing['DEFAULT'] = themeSpacing.md;

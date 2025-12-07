@@ -1,15 +1,13 @@
-import presetWind4 from '@unocss/preset-wind4';
+import presetMini from '@unocss/preset-mini';
 import { Preset } from 'unocss';
 import { AllPreflightOptions, preflights } from './preflights';
 import { rules } from './rules';
 import { makeTheme } from './theme';
 
-const modifiedWind4 = presetWind4({
+const modifiedWind4 = presetMini({
 	arbitraryVariants: true,
 	variablePrefix: 'ar-',
-	preflights: {
-		theme: false,
-	},
+	preflight: false,
 });
 
 modifiedWind4.rules = rules;

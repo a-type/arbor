@@ -75,6 +75,16 @@ export const PROPS = {
 		FINAL: '--ar-ring-c',
 		OPACITY: '--ar-ring-c-op',
 	},
+	ACCENT_COLOR: {
+		INHERITED: '--ar-accent-c-i',
+		FINAL: '--ar-accent-c',
+		OPACITY: '--ar-accent-c-op',
+	},
+	PLACEHOLDER_COLOR: {
+		INHERITED: '--ar-ph-c-i',
+		FINAL: '--ar-ph-c',
+		OPACITY: '--ar-ph-c-op',
+	},
 	// grouping system
 	GROUP: {
 		// the odd/even convention avoids circular property references

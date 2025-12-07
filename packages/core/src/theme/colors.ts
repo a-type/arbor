@@ -1,4 +1,4 @@
-import { Theme } from '@unocss/preset-wind4';
+import { Theme } from '@unocss/preset-mini';
 import { ThemeOptions } from '.';
 import { PROPS } from '../constants/properties';
 import { createColorLogicalPalette, defaultPalettes } from '../logic/palettes';

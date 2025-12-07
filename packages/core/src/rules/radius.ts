@@ -1,5 +1,5 @@
-import { Theme } from '@unocss/preset-wind4';
-import { cornerMap, h } from '@unocss/preset-wind4/utils';
+import { Theme } from '@unocss/preset-mini';
+import { cornerMap, h } from '@unocss/preset-mini/utils';
 import { CSSEntries, CSSEntry, Rule, RuleContext } from 'unocss';
 import { PROPS } from '../constants/properties';
 
@@ -8,7 +8,8 @@ function handlerRounded(
 	{ theme }: RuleContext<Theme>,
 ): CSSEntries | undefined {
 	if (a in cornerMap) {
-		const value = theme.radius?.[s] ?? h.bracket.cssvar.global.fraction.rem(s);
+		const value =
+			theme.borderRadius?.[s] ?? h.bracket.cssvar.global.fraction.rem(s);
 		if (value != null) {
 			return [
 				[PROPS.GROUP.RADIUS, value] satisfies CSSEntry,

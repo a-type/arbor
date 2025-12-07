@@ -1,5 +1,5 @@
-import { Theme } from '@unocss/preset-wind4';
-import { directionMap, h } from '@unocss/preset-wind4/utils';
+import { Theme } from '@unocss/preset-mini';
+import { directionMap, h } from '@unocss/preset-mini/utils';
 import {
 	CSSEntries,
 	CSSEntry,

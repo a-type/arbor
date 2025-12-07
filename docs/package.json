@@ -13,9 +13,12 @@
 		"@arbor-css/core": "workspace:^",
 		"@astrojs/mdx": "4.3.12",
 		"astro": "^5.6.1",
+		"chokidar": "^5.0.0",
 		"sharp": "^0.34.2",
 		"unocss": "catalog:",
-		"vite": "^7.2.6",
-		"chokidar": "^5.0.0"
+		"vite": "^7.2.6"
+	},
+	"devDependencies": {
+		"vite-plugin-watch-and-run": "^1.7.5"
 	}
 }

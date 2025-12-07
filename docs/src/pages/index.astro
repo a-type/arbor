@@ -1,4 +1,6 @@
 ---
+import { PROPS } from '@arbor-css/core';
+import ConfigSlider from '../components/ConfigSlider.astro';
 import Title from '../components/Title.astro';
 ---
 
@@ -9,6 +11,10 @@ import Title from '../components/Title.astro';
 	</p>
 </div>
 
-<div class="group b bg-primary-wash p-lg">
-	<div class="group b bg-white p-lg">Grouped</div>
+<ConfigSlider />
+<ConfigSlider param={PROPS.USER.SATURATION} min={0} max={1} />
+<ConfigSlider param={PROPS.USER.SPACING_SCALE} min={0.1} max={2} />
+
+<div class="group b bg-primary-wash p-lg rounded-lg">
+	<div class="group b bg-white p-md rounded">Grouped</div>
 </div>

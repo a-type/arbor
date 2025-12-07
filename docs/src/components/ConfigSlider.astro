@@ -1,0 +1,39 @@
+---
+import { PROPS } from '@arbor-css/core';
+const {
+	param = PROPS.USER.COLOR.PRIMARY_HUE,
+	min = 0,
+	max = 260,
+} = Astro.props;
+---
+
+<label>
+	{param}
+	<config-slider type="range" name={param} data-param={param}>
+		<input
+			type="range"
+			class="accent-primary"
+			min={min}
+			max={max}
+			value="0"
+			step={(max - min) / 100}
+		/>
+	</config-slider>
+</label>
+<script type="module">
+	class ConfigSlider extends HTMLElement {
+		constructor() {
+			super();
+			this.input = this.querySelector('input[type="range"]');
+			this.param = this.getAttribute('data-param');
+			this.input.addEventListener('input', this.onInput.bind(this));
+		}
+
+		onInput(event) {
+			const value = event.target.value;
+			document.documentElement.style.setProperty(this.param, value);
+		}
+	}
+
+	customElements.define('config-slider', ConfigSlider);
+</script>

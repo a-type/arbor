@@ -1,4 +1,4 @@
-import { Theme, theme as baseTheme } from '@unocss/preset-wind4';
+import { Theme, theme as baseTheme } from '@unocss/preset-mini';
 import { UserPreflightOptions } from '../preflights/user';
 import { makeThemeColors } from './colors';
 import { themeSpacing } from './spacing';
@@ -13,6 +13,6 @@ export function makeTheme(options: ThemeOptions): Theme {
 		...baseTheme,
 		colors: makeThemeColors(options),
 		spacing: themeSpacing,
-		radius: themeRadius,
+		borderRadius: themeRadius,
 	};
 }

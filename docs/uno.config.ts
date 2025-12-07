@@ -1,4 +1,4 @@
-import arbor from '@arbor-css/core';
+import arbor from '@arbor-css/core/preset';
 import { defineConfig } from 'unocss';
 
 export default defineConfig({

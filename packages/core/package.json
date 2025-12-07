@@ -9,6 +9,13 @@
 			"node": "./dist/index.js",
 			"types": "./dist/index.d.ts",
 			"default": "./dist/index.js"
+		},
+		"./preset": {
+			"development": "./src/preset.ts",
+			"import": "./dist/preset.js",
+			"node": "./dist/preset.js",
+			"types": "./dist/preset.d.ts",
+			"default": "./dist/preset.js"
 		}
 	},
 	"main": "./dist/index.js",
@@ -21,13 +28,13 @@
 	"devDependencies": {
 		"@unocss/cli": "^66.5.10",
 		"@unocss/core": "^66.5.10",
-		"@unocss/preset-wind4": "^66.5.10",
 		"@unocss/transformer-variant-group": "^66.5.10",
 		"typescript": "catalog:",
 		"unocss": "catalog:",
 		"vitest": "^4.0.15"
 	},
 	"dependencies": {
+		"@unocss/preset-mini": "^66.5.10",
 		"@vitest/browser-playwright": "^4.0.15"
 	}
 }
