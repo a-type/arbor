@@ -2,6 +2,7 @@
 import { PROPS } from '@arbor-css/core';
 import ConfigSlider from '../components/ConfigSlider.astro';
 import Logo from '../components/Logo.astro';
+import NestingGroup from '../components/demos/NestingGroup.astro';
 ---
 
 <section
@@ -23,12 +24,9 @@ import Logo from '../components/Logo.astro';
 <ConfigSlider param={PROPS.USER.SPACING_SCALE} min={0.1} max={2} />
 
 <div class="flex gap w-full justify-stretch">
-	<div class="group b bg-primary-wash p-md rounded-lg flex-1">
-		<div class="group b bg-white p-md rounded-nest">
-			<div class="group b bg-primary-wash p-sm rounded-nest">Grouped</div>
-		</div>
-	</div>
-	<div class="group b bg-primary-wash p-sm rounded-md flex-1">
-		<div class="group b bg-white p-md rounded-nest">Grouped</div>
-	</div>
+	<NestingGroup>
+		<NestingGroup>
+			<NestingGroup>Nested Group</NestingGroup>
+		</NestingGroup>
+	</NestingGroup>
 </div>

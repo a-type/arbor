@@ -8,6 +8,7 @@ export const groupRules: Rule[] = [
 		/^group$/,
 		function* (_, { symbols }) {
 			yield {
+				[symbols.parent]: SELECTORS.GROUP_INITIAL,
 				[PROPS.GROUP.DEPTH]: '0',
 				[PROPS.GROUP.DEPTH_EVEN]: '0',
 				[PROPS.GROUP.DEPTH_ODD]: '0',

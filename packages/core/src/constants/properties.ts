@@ -111,6 +111,7 @@ export const PROPS = {
 			ODD: '--ar-gr-rd-odd',
 			EVEN: '--ar-gr-rd-even',
 			INHERITED: '--ar-gr-rd-i',
+			NEST_FALLBACK: '--ar-gr-rd-nest-fb',
 		},
 	},
 

@@ -34,12 +34,18 @@ function* handlerRounded(
 				]),
 			),
 		};
+		// finally, if no parent group exists, fall back to normal radius
+		yield {
+			[symbols.parent]: SELECTORS.GROUP_INITIAL,
+			[PROPS.GROUP.RADIUS.FINAL]: `var(${PROPS.GROUP.RADIUS.NEST_FALLBACK})`,
+		};
 	} else {
 		const value =
 			theme.borderRadius?.[s] ?? h.bracket.cssvar.global.fraction.rem(s);
 		if (value != null) {
 			yield {
 				[PROPS.GROUP.RADIUS.FINAL]: value,
+				[PROPS.GROUP.RADIUS.NEST_FALLBACK]: value,
 				...Object.fromEntries(
 					cornerMap[a].map((i) => [
 						`border${i}-radius`,
