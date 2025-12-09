@@ -87,15 +87,31 @@ export const PROPS = {
 	},
 	// grouping system
 	GROUP: {
+		EVEN_ODD: '--ar-gr-evod',
 		// the odd/even convention avoids circular property references
 		// by alternating the 'active' variable for odd or even depths
 		DEPTH_ODD: '--ar-gr-depth-odd',
 		DEPTH_EVEN: '--ar-gr-depth-even',
 		DEPTH: '--ar-gr-depth',
 
-		PADDING: '--ar-gr-pd',
-		MARGIN: '--ar-gr-mr',
-		RADIUS: '--ar-gr-rd',
+		PADDING: {
+			FINAL: '--ar-gr-pd',
+			ODD: '--ar-gr-pd-odd',
+			EVEN: '--ar-gr-pd-even',
+			INHERITED: '--ar-gr-pd-i',
+		},
+		MARGIN: {
+			FINAL: '--ar-gr-mr',
+			ODD: '--ar-gr-mr-odd',
+			EVEN: '--ar-gr-mr-even',
+			INHERITED: '--ar-gr-mr-i',
+		},
+		RADIUS: {
+			FINAL: '--ar-gr-rd',
+			ODD: '--ar-gr-rd-odd',
+			EVEN: '--ar-gr-rd-even',
+			INHERITED: '--ar-gr-rd-i',
+		},
 	},
 
 	// built-ins from Uno

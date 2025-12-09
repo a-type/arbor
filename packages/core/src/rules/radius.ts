@@ -1,22 +1,63 @@
 import { Theme } from '@unocss/preset-mini';
 import { cornerMap, h } from '@unocss/preset-mini/utils';
-import { CSSEntries, CSSEntry, Rule, RuleContext } from 'unocss';
+import { Rule, RuleContext } from 'unocss';
+import { CALCS } from '../constants/calcs';
 import { PROPS } from '../constants/properties';
+import { SELECTORS } from '../constants/selectors';
 
-function handlerRounded(
+function* handlerRounded(
 	[, a = '', s = 'DEFAULT']: string[],
-	{ theme }: RuleContext<Theme>,
-): CSSEntries | undefined {
-	if (a in cornerMap) {
+	{ theme, symbols }: RuleContext<Theme>,
+) {
+	if (!(a in cornerMap)) {
+		return;
+	}
+
+	if (s === 'nest') {
+		// magic time...
+		yield {
+			[symbols.parent]: SELECTORS.GROUP_EVEN,
+			[PROPS.GROUP.RADIUS.INHERITED]: CALCS.GROUP.NESTED_RADIUS('EVEN'),
+		};
+		yield {
+			[symbols.parent]: SELECTORS.GROUP_ODD,
+			[PROPS.GROUP.RADIUS.INHERITED]: CALCS.GROUP.NESTED_RADIUS('ODD'),
+		};
+		yield {
+			[PROPS.GROUP.RADIUS.FINAL]: `var(${PROPS.GROUP.RADIUS.INHERITED})`,
+			...Object.fromEntries(
+				cornerMap[a].map((i) => [
+					`border${i}-radius`,
+					`var(${PROPS.GROUP.RADIUS.FINAL})`,
+				]),
+			),
+		};
+	} else {
 		const value =
 			theme.borderRadius?.[s] ?? h.bracket.cssvar.global.fraction.rem(s);
 		if (value != null) {
-			return [
-				[PROPS.GROUP.RADIUS, value] satisfies CSSEntry,
-				...cornerMap[a].map(
-					(i) => [`border${i}-radius`, value] satisfies CSSEntry,
+			yield {
+				[PROPS.GROUP.RADIUS.FINAL]: value,
+				...Object.fromEntries(
+					cornerMap[a].map((i) => [
+						`border${i}-radius`,
+						`var(${PROPS.GROUP.RADIUS.FINAL})`,
+					]),
 				),
-			];
+			};
+			yield {
+				[symbols.parent]: SELECTORS.GROUP_INITIAL,
+				[PROPS.GROUP.RADIUS.EVEN]: value,
+				[PROPS.GROUP.RADIUS.ODD]: value,
+			};
+			yield {
+				[symbols.parent]: SELECTORS.GROUP_EVEN,
+				[PROPS.GROUP.RADIUS.EVEN]: value,
+			};
+			yield {
+				[symbols.parent]: SELECTORS.GROUP_ODD,
+				[PROPS.GROUP.RADIUS.ODD]: value,
+			};
 		}
 	}
 }

@@ -1,20 +1,32 @@
 ---
 import { PROPS } from '@arbor-css/core';
 import ConfigSlider from '../components/ConfigSlider.astro';
-import Title from '../components/Title.astro';
+import Logo from '../components/Logo.astro';
 ---
 
-<div>
-	<Title>Arbor CSS</Title>
-	<p class="p-sm rounded-lg bg-primary-wash">
-		The next step in on-demand utility CSS.
-	</p>
-</div>
+<section
+	class="p-xl flex flex-col items-center justify-center gap-lg bg-main-wash color-main-ink md:min-h-50vh"
+>
+	<div class="group flex flex-col items-center gap-lg md:flex-row">
+		<Logo className="h-50vmin md:h-120px w-auto color-main" />
+		<div class="flex flex-col gap">
+			<h1 class="text-10vmin">Arbor&nbsp;CSS</h1>
+			<p class="rounded-lg bg-primary-wash">
+				The next step in on-demand utility CSS.
+			</p>
+		</div>
+	</div>
+</section>
 
 <ConfigSlider />
 <ConfigSlider param={PROPS.USER.SATURATION} min={0} max={1} />
 <ConfigSlider param={PROPS.USER.SPACING_SCALE} min={0.1} max={2} />
 
-<div class="group b bg-primary-wash p-lg rounded-lg">
-	<div class="group b bg-white p-md rounded">Grouped</div>
+<div class="flex gap w-full justify-stretch">
+	<div class="group b bg-primary-wash p-md rounded-lg flex-1">
+		<div class="group b bg-white p-md rounded-nest">Grouped</div>
+	</div>
+	<div class="group b bg-primary-wash p-sm rounded-md flex-1">
+		<div class="group b bg-white p-md rounded-nest">Grouped</div>
+	</div>
 </div>

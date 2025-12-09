@@ -4,6 +4,8 @@ import { defineConfig } from 'astro/config';
 import chokidar from 'chokidar';
 import UnoCSS from 'unocss/astro';
 
+import react from '@astrojs/react';
+
 /**
  * @returns {import('vite').Plugin}
  */
@@ -39,7 +41,7 @@ const pluginWatchElsewhere = () => {
 
 // https://astro.build/config
 export default defineConfig({
-	integrations: [UnoCSS(), mdx()],
+	integrations: [UnoCSS(), mdx(), react()],
 	vite: {
 		plugins: [pluginWatchElsewhere()],
 	},

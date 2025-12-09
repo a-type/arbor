@@ -1,8 +1,8 @@
 import { Theme, theme as baseTheme } from '@unocss/preset-mini';
 import { UserPreflightOptions } from '../preflights/user';
 import { makeThemeColors } from './colors';
+import { themeRadius } from './radius';
 import { themeSpacing } from './spacing';
-import { themeRadius } from './themeRadius';
 
 export interface ThemeOptions {
 	namedHues?: UserPreflightOptions['namedHues'];

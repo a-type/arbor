@@ -12,8 +12,13 @@
 	"dependencies": {
 		"@arbor-css/core": "workspace:^",
 		"@astrojs/mdx": "4.3.12",
+		"@astrojs/react": "4.4.2",
+		"@types/react": "19.2.7",
+		"@types/react-dom": "19.2.3",
 		"astro": "^5.6.1",
 		"chokidar": "^5.0.0",
+		"react": "19.2.1",
+		"react-dom": "19.2.1",
 		"sharp": "^0.34.2",
 		"unocss": "catalog:",
 		"vite": "^7.2.6"

@@ -7,7 +7,7 @@ export default defineConfig({
 			primaryHue: 130,
 		}),
 	],
-	configDeps: ['../packages/core/src/**/*.ts', '../packages/core/dist/**/*.js'],
+	configDeps: ['../packages/core/src', '../packages/core/dist'],
 	content: {
 		pipeline: {
 			include: ['./src/**/*.{astro,html,js,ts}'],
