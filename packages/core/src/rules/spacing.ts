@@ -55,14 +55,15 @@ function directionSize(
 		yield {
 			[symbols.parent]: SELECTORS.GROUP_INITIAL,
 			[sysProps.EVEN]: v,
+			[sysProps.ODD]: v,
 		};
 		yield {
 			[symbols.parent]: SELECTORS.GROUP_EVEN,
-			[sysProps.EVEN]: `var(${sysProps.ODD})`,
+			[sysProps.EVEN]: v,
 		};
 		yield {
 			[symbols.parent]: SELECTORS.GROUP_ODD,
-			[sysProps.ODD]: `var(${sysProps.EVEN})`,
+			[sysProps.ODD]: v,
 		};
 	};
 }
