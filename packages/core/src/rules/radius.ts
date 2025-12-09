@@ -72,7 +72,7 @@ function* handlerRounded(
 
 export const radiusRules: Rule[] = [
 	[
-		/^(?:border-|b-)?(?:rounded|rd)()(?:-(.+))?$/,
+		/^(?:rounded|rd)()(?:-(.+))?$/,
 		handlerRounded,
 		{
 			autocomplete: [
@@ -83,11 +83,8 @@ export const radiusRules: Rule[] = [
 			],
 		},
 	],
-	[/^(?:border-|b-)?(?:rounded|rd)-([rltbse])(?:-(.+))?$/, handlerRounded],
-	[/^(?:border-|b-)?(?:rounded|rd)-([rltb]{2})(?:-(.+))?$/, handlerRounded],
-	[/^(?:border-|b-)?(?:rounded|rd)-([bise][se])(?:-(.+))?$/, handlerRounded],
-	[
-		/^(?:border-|b-)?(?:rounded|rd)-([bi][se]-[bi][se])(?:-(.+))?$/,
-		handlerRounded,
-	],
+	[/^(?:rounded|rd)-([rltbse])(?:-(.+))?$/, handlerRounded],
+	[/^(?:rounded|rd)-([rltb]{2})(?:-(.+))?$/, handlerRounded],
+	[/^(?:rounded|rd)-([bise][se])(?:-(.+))?$/, handlerRounded],
+	[/^(?:rounded|rd)-([bi][se]-[bi][se])(?:-(.+))?$/, handlerRounded],
 ];

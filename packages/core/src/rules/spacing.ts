@@ -44,10 +44,7 @@ function directionSize(
 		yield {
 			[sysProps.FINAL]: v,
 			...Object.fromEntries(
-				directionMap[direction].map((i) => [
-					`${propertyPrefix}${i}`,
-					`var(${sysProps.FINAL})`,
-				]),
+				directionMap[direction].map((i) => [`${propertyPrefix}${i}`, v]),
 			),
 		};
 
@@ -80,12 +77,12 @@ export const spacingRules: Rule[] = [
 		{ autocomplete: '(m|p)-(xy)' },
 	],
 	[
-		/^p-([xy])(?:-(.+))?$/,
+		/^p-?([xy])(?:-(.+))?$/,
 		directionSize('padding', PROPS.GROUP.PADDING),
 		{ autocomplete: '(m|p)-(x|y)-<num>' },
 	],
 	[
-		/^p-([rltbse])(?:-(.+))?$/,
+		/^p-?([rltbse])(?:-(.+))?$/,
 		directionSize('padding', PROPS.GROUP.PADDING),
 		{ autocomplete: '(m|p)<directions>-<num>' },
 	],
@@ -95,15 +92,15 @@ export const spacingRules: Rule[] = [
 		{ autocomplete: '(m|p)-(block|inline)-<num>' },
 	],
 	[
-		/^p-([bi][se])(?:-(.+))?$/,
+		/^p-?([bi][se])(?:-(.+))?$/,
 		directionSize('padding', PROPS.GROUP.PADDING),
 		{ autocomplete: '(m|p)-(bs|be|is|ie)-<num>' },
 	],
 
 	[/^ma?()-(.+)$/, directionSize('margin', PROPS.GROUP.MARGIN)],
 	[/^m-xy()()$/, directionSize('margin', PROPS.GROUP.MARGIN)],
-	[/^m-([xy])(?:-(.+))?$/, directionSize('margin', PROPS.GROUP.MARGIN)],
-	[/^m-([rltbse])(?:-(.+))?$/, directionSize('margin', PROPS.GROUP.MARGIN)],
+	[/^m-?([xy])(?:-(.+))?$/, directionSize('margin', PROPS.GROUP.MARGIN)],
+	[/^m-?([rltbse])(?:-(.+))?$/, directionSize('margin', PROPS.GROUP.MARGIN)],
 	[/^m-(block|inline)(?:-(.+))?$/, directionSize('margin', PROPS.GROUP.MARGIN)],
-	[/^m-([bi][se])(?:-(.+))?$/, directionSize('margin', PROPS.GROUP.MARGIN)],
+	[/^m-?([bi][se])(?:-(.+))?$/, directionSize('margin', PROPS.GROUP.MARGIN)],
 ];

@@ -2,6 +2,8 @@
 import { PROPS } from '@arbor-css/core';
 import ConfigSlider from '../components/ConfigSlider.astro';
 import Logo from '../components/Logo.astro';
+import Button from '../components/demos/Button.astro';
+import Card from '../components/demos/Card.astro';
 import NestingGroup from '../components/demos/NestingGroup.astro';
 ---
 
@@ -25,8 +27,12 @@ import NestingGroup from '../components/demos/NestingGroup.astro';
 
 <div class="flex gap w-full justify-stretch">
 	<NestingGroup>
+		<Button>Nested</Button>
 		<NestingGroup>
-			<NestingGroup>Nested Group</NestingGroup>
+			<Button>Nested</Button>
+			<NestingGroup><Button>Nested</Button></NestingGroup>
 		</NestingGroup>
 	</NestingGroup>
 </div>
+
+<Card />

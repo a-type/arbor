@@ -4,7 +4,7 @@ import { defineConfig } from 'unocss';
 export default defineConfig({
 	presets: [
 		arbor({
-			primaryHue: 130,
+			primaryHue: 158,
 		}),
 	],
 	configDeps: ['../packages/core/src', '../packages/core/dist'],
