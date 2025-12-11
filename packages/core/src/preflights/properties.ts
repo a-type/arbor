@@ -1,14 +1,11 @@
 import { Theme } from '@unocss/preset-mini';
-import { entriesToCss, PreflightContext, toArray } from 'unocss';
+import { PreflightContext } from 'unocss';
 import { PROPS } from '../constants/properties';
 import { preflight } from './_util';
 
 export const propertiesPreflight = preflight({
 	getCSS: (ctx: PreflightContext<Theme>) => {
-		if (ctx.theme.preflightBase) {
-			let css = entriesToCss(Object.entries(ctx.theme.preflightBase));
-
-			css += `
+		return `
 @property ${PROPS.GROUP.MARGIN.FINAL} {
 	syntax: "*";
 	inherits: true;
@@ -75,12 +72,5 @@ export const propertiesPreflight = preflight({
 	initial-value: -1;
 }
 `;
-			const roots = toArray(
-				ctx.theme.preflightRoot ?? ['*,::before,::after', '::backdrop'],
-			);
-			return roots
-				.map((root) => `@layer preflightBase{${root}{${css}}}`)
-				.join('');
-		}
 	},
 });

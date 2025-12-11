@@ -14,5 +14,17 @@ export function makeTheme(options: ThemeOptions): Theme {
 		colors: makeThemeColors(options),
 		spacing: themeSpacing,
 		borderRadius: themeRadius,
+
+		preflightBase: {
+			...baseTheme.preflightBase,
+			'--ar-ring-inset': '0',
+			'--ar-ring-width': '1px',
+			'--ar-shadow': '0 0 #0000',
+			'--ar-inset-shadow': '0 0 #0000',
+			'--ar-inset-ring-shadow': '0 0 #0000',
+			'--ar-ring-offset-shadow': '0 0 #0000',
+			'--ar-ring-offset-color': '#fff',
+			'--ar-ring-offset-width': '0',
+		},
 	};
 }

@@ -1,7 +1,6 @@
 import { Theme } from '@unocss/preset-mini';
 import { ThemeOptions } from '.';
 import { PROPS } from '../constants/properties';
-import { createColorLogicalPalette, defaultPalettes } from '../logic/palettes';
 
 const contrastClamp = 'clamp(0, (0.36 / y - 1) * infinity, 1)';
 
@@ -11,9 +10,9 @@ export function makeThemeColors(options: ThemeOptions): Theme['colors'] {
 		transparent: 'transparent',
 		current: 'currentColor',
 
-		black: defaultPalettes['high-contrast'].styles.ink,
-		white: defaultPalettes['high-contrast'].styles.wash,
-		wash: defaultPalettes.gray.styles.wash,
+		black: PROPS.PALETTE.NAMED_SHADES('high-contrast').INK,
+		white: PROPS.PALETTE.NAMED_SHADES('high-contrast').WASH,
+		wash: PROPS.PALETTE.GRAY_SHADES.WASH,
 
 		// magic token that provides a high-contrast color based on background
 		contrast: `color(from var(${PROPS.BACKGROUND_COLOR.CONTRAST},var(${PROPS.BACKGROUND_COLOR.FINAL},var(${PROPS.BACKGROUND_COLOR.INHERITED},var(${PROPS.MODE.WHITE})))) xyz-d65 ${contrastClamp} ${contrastClamp} ${contrastClamp})`,
@@ -23,23 +22,30 @@ export function makeThemeColors(options: ThemeOptions): Theme['colors'] {
 		color: `var(${PROPS.COLOR.FINAL}, var(${PROPS.COLOR.INHERITED}, var(${PROPS.MODE.BLACK})))`,
 		border: `var(${PROPS.BORDER_COLOR.ALL.FINAL}, var(${PROPS.BORDER_COLOR.ALL.INHERITED}, transparent))`,
 
-		primary: defaultPalettes.primary.styles,
-		main: defaultPalettes.main.styles,
-		gray: defaultPalettes.gray.styles,
+		// the current palette color shades
+		main: shadesOf(PROPS.PALETTE.SHADES),
+
+		primary: shadesOf(PROPS.PALETTE.NAMED_SHADES('primary')),
+		gray: shadesOf(PROPS.PALETTE.GRAY_SHADES),
 
 		// user-defined colors
 		...(options.namedHues
 			? Object.fromEntries(
-					Object.entries(options.namedHues).map(([name, config]) => [
+					Object.entries(options.namedHues).map(([name]) => [
 						name,
-						createColorLogicalPalette({
-							sourceHue: PROPS.USER.COLOR.NAMED_HUE(name),
-							saturation: config.saturation
-								? `${config.saturation / 100}`
-								: undefined,
-						}),
+						shadesOf(PROPS.PALETTE.NAMED_SHADES(name)),
 					]),
 			  )
 			: {}),
+	};
+}
+
+function shadesOf(entries: typeof PROPS.PALETTE.SHADES) {
+	return {
+		wash: `var(${entries.WASH})`,
+		light: `var(${entries.LIGHT})`,
+		DEFAULT: `var(${entries.MID})`,
+		dark: `var(${entries.DARK})`,
+		ink: `var(${entries.INK})`,
 	};
 }

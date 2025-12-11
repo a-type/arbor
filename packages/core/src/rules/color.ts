@@ -30,7 +30,7 @@ export const colorRules: Rule[] = [
 		},
 	],
 	[
-		/^color-lighten-(\d+\.?\d*)$/,
+		/^color-l(?:ighten)?-(\d+\.?\d*)$/,
 		(match) => ({
 			[PROPS.COLOR.FINAL]: lighten(
 				`var(${PROPS.COLOR.INHERITED},currentColor)`,
@@ -38,11 +38,11 @@ export const colorRules: Rule[] = [
 			),
 		}),
 		{
-			autocomplete: 'color-lighten-<number>',
+			autocomplete: 'color-(l|lighten)-<number>',
 		},
 	],
 	[
-		/^color-darken-(\d+\.?\d*)$/,
+		/^color-d(?:arken)?-(\d+\.?\d*)$/,
 		(match) => ({
 			[PROPS.COLOR.FINAL]: darken(
 				`var(${PROPS.COLOR.INHERITED},currentColor)`,
@@ -50,7 +50,7 @@ export const colorRules: Rule[] = [
 			),
 		}),
 		{
-			autocomplete: 'color-darken-<number>',
+			autocomplete: 'color-(d|darken)-<number>',
 		},
 	],
 	[
@@ -89,7 +89,7 @@ export const colorRules: Rule[] = [
 		},
 	],
 	[
-		/^bg-lighten-(\d+\.?\d*)$/,
+		/^bg-l(?:ighten)?-(\d+\.?\d*)$/,
 		(match) => ({
 			[PROPS.BACKGROUND_COLOR.FINAL]: lighten(
 				`var(${PROPS.BACKGROUND_COLOR.INHERITED},var(${PROPS.MODE.WHITE}))`,
@@ -97,11 +97,11 @@ export const colorRules: Rule[] = [
 			),
 		}),
 		{
-			autocomplete: 'bg-lighten-<number>',
+			autocomplete: 'bg-(l|lighten)-<number>',
 		},
 	],
 	[
-		/^bg-darken-(\d+\.?\d*)$/,
+		/^bg-d(?:arken)?-(\d+\.?\d*)$/,
 		(match) => ({
 			[PROPS.BACKGROUND_COLOR.FINAL]: darken(
 				`var(${PROPS.BACKGROUND_COLOR.INHERITED},var(${PROPS.MODE.WHITE}))`,
@@ -109,11 +109,11 @@ export const colorRules: Rule[] = [
 			),
 		}),
 		{
-			autocomplete: 'bg-darken-<number>',
+			autocomplete: 'bg-(d|darken)-<number>',
 		},
 	],
 	[
-		/^(border-|b-)(.*)$/,
+		/^(border|b)-(.*)$/,
 		(match, { theme }) => {
 			if (match[1] === 'none') {
 				return undefined;
@@ -135,31 +135,31 @@ export const colorRules: Rule[] = [
 			};
 		},
 		{
-			autocomplete: `(border-|b-)$colors`,
+			autocomplete: `(border|b)-$colors`,
 		},
 	],
 	[
-		/^(border-|b-)lighten-(\d+\.?\d*)$/,
+		/^(?:border|b)-l(?:ighten)?-(\d+\.?\d*)$/,
 		(match) => ({
 			[PROPS.BORDER_COLOR.ALL.FINAL]: lighten(
 				`var(${PROPS.BORDER_COLOR.ALL.INHERITED},currentColor)`,
-				match[1],
+				match[0],
 			),
 		}),
 		{
-			autocomplete: '(border-|b-)lighten-<number>',
+			autocomplete: '(border|b)-l(?:ighten)?-<number>',
 		},
 	],
 	[
-		/^(border-|b-)darken-(\d+\.?\d*)$/,
+		/^(?:border|b)-d(?:arken)?-(\d+\.?\d*)$/,
 		(match) => ({
 			[PROPS.BORDER_COLOR.ALL.FINAL]: darken(
 				`var(${PROPS.BORDER_COLOR.ALL.INHERITED},currentColor)`,
-				match[1],
+				match[0],
 			),
 		}),
 		{
-			autocomplete: '(border-|b-)darken-<number>',
+			autocomplete: '(border|b)-(d|darken)-<number>',
 		},
 	],
 	...(<const>['RIGHT', 'LEFT', 'TOP', 'BOTTOM']).flatMap((DIR) => {
@@ -190,7 +190,7 @@ export const colorRules: Rule[] = [
 				},
 			],
 			[
-				new RegExp(`^(border-|b-)${shorthand}-lighten-(\\d+\\.?\\d*)$`),
+				new RegExp(`^(border|b)-${shorthand}-l(?:ighten)?-(\\d+\\.?\\d*)$`),
 				(match) => ({
 					[`${PROPS.BORDER_COLOR[DIR].FINAL}`]: lighten(
 						`var(${PROPS.BORDER_COLOR[DIR].INHERITED},currentColor)`,
@@ -198,11 +198,11 @@ export const colorRules: Rule[] = [
 					),
 				}),
 				{
-					autocomplete: `(border-|b-)${shorthand}-lighten-<number>`,
+					autocomplete: `(border|b)-${shorthand}-(l|lighten)-<number>`,
 				},
 			],
 			[
-				new RegExp(`^(border-|b-)${shorthand}-darken-(\\d+\\.?\\d*)$`),
+				new RegExp(`^(border|b)-${shorthand}-d(?:arken)?-(\\d+\\.?\\d*)$`),
 				(match) => ({
 					[`${PROPS.BORDER_COLOR[DIR].FINAL}`]: darken(
 						`var(${PROPS.BORDER_COLOR[DIR].INHERITED},currentColor)`,
@@ -210,7 +210,7 @@ export const colorRules: Rule[] = [
 					),
 				}),
 				{
-					autocomplete: `(border-|b-)${shorthand}-darken-<number>`,
+					autocomplete: `(border|b)${shorthand}-(d|darken)-<number>`,
 				},
 			],
 		] as Rule[];
@@ -235,7 +235,7 @@ export const colorRules: Rule[] = [
 		},
 	],
 	[
-		/^ring-lighten-(\d+\.?\d*)$/,
+		/^ring-l(:?ighten)?-(\d+\.?\d*)$/,
 		(match) => ({
 			[PROPS.RING_COLOR.FINAL]: lighten(
 				`var(${PROPS.RING_COLOR.INHERITED},currentColor)`,
@@ -243,11 +243,11 @@ export const colorRules: Rule[] = [
 			),
 		}),
 		{
-			autocomplete: 'ring-lighten-<number>',
+			autocomplete: 'ring-(l|lighten)-<number>',
 		},
 	],
 	[
-		/^ring-darken-(\d+\.?\d*)$/,
+		/^ring-d(?:arken)?-(\d+\.?\d*)$/,
 		(match) => ({
 			[PROPS.RING_COLOR.FINAL]: darken(
 				`var(${PROPS.RING_COLOR.INHERITED},currentColor)`,
@@ -255,7 +255,7 @@ export const colorRules: Rule[] = [
 			),
 		}),
 		{
-			autocomplete: 'ring-darken-<number>',
+			autocomplete: 'ring-(d|darken)-<number>',
 		},
 	],
 	[
@@ -279,7 +279,7 @@ export const colorRules: Rule[] = [
 		},
 	],
 	[
-		/^placeholder-lighten-(\d+\.?\d*)$/,
+		/^placeholder-l(?:ighten)?-(\d+\.?\d*)$/,
 		function* (match) {
 			yield {
 				[symbols.selector]: (selector) => `${selector}::placeholder`,
@@ -290,11 +290,11 @@ export const colorRules: Rule[] = [
 			};
 		},
 		{
-			autocomplete: 'placeholder-lighten-<number>',
+			autocomplete: 'placeholder-(l|lighten)-<number>',
 		},
 	],
 	[
-		/^placeholder-darken-(\d+\.?\d*)$/,
+		/^placeholder-d(?:arken)?-(\d+\.?\d*)$/,
 		function* (match) {
 			yield {
 				[symbols.selector]: (selector) => `${selector}::placeholder`,
@@ -305,7 +305,7 @@ export const colorRules: Rule[] = [
 			};
 		},
 		{
-			autocomplete: 'placeholder-darken-<number>',
+			autocomplete: 'placeholder-(d|darken)-<number>',
 		},
 	],
 	[
@@ -328,7 +328,7 @@ export const colorRules: Rule[] = [
 		},
 	],
 	[
-		/^accent-lighten-(\d+\.?\d*)$/,
+		/^accent-l(?:ighten)?-(\d+\.?\d*)$/,
 		(match) => ({
 			[PROPS.ACCENT_COLOR.FINAL]: lighten(
 				`var(${PROPS.ACCENT_COLOR.INHERITED},currentColor)`,
@@ -336,11 +336,11 @@ export const colorRules: Rule[] = [
 			),
 		}),
 		{
-			autocomplete: 'accent-lighten-<number>',
+			autocomplete: 'accent-(l|lighten)-<number>',
 		},
 	],
 	[
-		/^accent-darken-(\d+\.?\d*)$/,
+		/^accent-d(?:arken)?-(\d+\.?\d*)$/,
 		(match) => ({
 			[PROPS.ACCENT_COLOR.FINAL]: darken(
 				`var(${PROPS.ACCENT_COLOR.INHERITED},currentColor)`,
@@ -348,7 +348,7 @@ export const colorRules: Rule[] = [
 			),
 		}),
 		{
-			autocomplete: 'accent-darken-<number>',
+			autocomplete: 'accent-(d|darken)-<number>',
 		},
 	],
 ];

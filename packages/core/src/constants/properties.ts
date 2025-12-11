@@ -17,6 +17,31 @@ export const PROPS = {
 		SATURATION: '--p-saturation',
 		LIGHTNESS_SPREAD: '--l-lightness-spread',
 		NAMED_HUE: (name: string) => `--p-${name}-hue`,
+
+		// the active palette's color shade props
+		SHADES: {
+			WASH: '--p-shade-wash',
+			LIGHT: '--p-shade-light',
+			MID: '--p-shade-mid',
+			DARK: '--p-shade-dark',
+			INK: '--p-shade-ink',
+		},
+		// the active palette's gray shade props
+		GRAY_SHADES: {
+			WASH: '--p-gray-shade-wash',
+			LIGHT: '--p-gray-shade-light',
+			MID: '--p-gray-shade-mid',
+			DARK: '--p-gray-shade-dark',
+			INK: '--p-gray-shade-ink',
+		},
+		// generate named shade prop names for a particular palette
+		NAMED_SHADES: (name: string) => ({
+			WASH: `--p-${name}-shade-wash`,
+			LIGHT: `--p-${name}-shade-light`,
+			MID: `--p-${name}-shade-mid`,
+			DARK: `--p-${name}-shade-dark`,
+			INK: `--p-${name}-shade-ink`,
+		}),
 	},
 	// light/dark
 	MODE: {
@@ -112,6 +137,12 @@ export const PROPS = {
 			EVEN: '--ar-gr-rd-even',
 			INHERITED: '--ar-gr-rd-i',
 			NEST_FALLBACK: '--ar-gr-rd-nest-fb',
+		},
+		GAP: {
+			FINAL: '--ar-gr-gp',
+			ODD: '--ar-gr-gp-odd',
+			EVEN: '--ar-gr-gp-even',
+			INHERITED: '--ar-gr-gp-i',
 		},
 	},
 

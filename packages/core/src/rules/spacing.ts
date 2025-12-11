@@ -30,14 +30,12 @@ function directionSize(
 		let v =
 			theme.spacing?.[size || 'DEFAULT'] ??
 			h.bracket.cssvar.global.auto.fraction.rem(size);
-		let negative = false;
 
 		if (size?.startsWith('-')) {
 			if (v === null) {
 				v = theme.spacing?.[size.slice(1)];
 			}
 			v = `calc(${v} * -1)`;
-			negative = true;
 		}
 
 		// local value
@@ -66,6 +64,7 @@ function directionSize(
 }
 
 export const spacingRules: Rule[] = [
+	[/^p$/, directionSize('padding', PROPS.GROUP.PADDING), { autocomplete: 'p' }],
 	[
 		/^pa?()-(.+)$/,
 		directionSize('padding', PROPS.GROUP.PADDING),
@@ -97,10 +96,18 @@ export const spacingRules: Rule[] = [
 		{ autocomplete: '(m|p)-(bs|be|is|ie)-<num>' },
 	],
 
+	[/^m$/, directionSize('margin', PROPS.GROUP.MARGIN)],
 	[/^ma?()-(.+)$/, directionSize('margin', PROPS.GROUP.MARGIN)],
 	[/^m-xy()()$/, directionSize('margin', PROPS.GROUP.MARGIN)],
 	[/^m-?([xy])(?:-(.+))?$/, directionSize('margin', PROPS.GROUP.MARGIN)],
 	[/^m-?([rltbse])(?:-(.+))?$/, directionSize('margin', PROPS.GROUP.MARGIN)],
 	[/^m-(block|inline)(?:-(.+))?$/, directionSize('margin', PROPS.GROUP.MARGIN)],
 	[/^m-?([bi][se])(?:-(.+))?$/, directionSize('margin', PROPS.GROUP.MARGIN)],
+
+	[/^gap$/, directionSize('gap', PROPS.GROUP.GAP)],
+	[
+		/^gap-(.+)$/,
+		directionSize('gap', PROPS.GROUP.GAP),
+		{ autocomplete: 'gap' },
+	],
 ];

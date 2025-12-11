@@ -1,7 +1,8 @@
 import { PROPS } from '../constants/properties.js';
 import { preflight } from './_util.js';
+import { ColorPreflightOptions, palettePropertyReset } from './colors.js';
 
-const lightModeCSS = `
+const lightModeCSS = (options: ColorPreflightOptions) => `
 ${PROPS.MODE.MULT}: 1;
 ${PROPS.MODE.L_NEUTRAL}: 90%;
 ${PROPS.MODE.L_RANGE_UP}: 10%;
@@ -11,9 +12,11 @@ ${PROPS.MODE.S_RANGE_UP}: -55%;
 ${PROPS.MODE.S_RANGE_DOWN}: 20%;
 ${PROPS.MODE.WHITE}: #ffffff;
 ${PROPS.MODE.BLACK}: #000000;
+
+${palettePropertyReset(options)}
 `;
 
-const darkModeCSS = `
+const darkModeCSS = (options: ColorPreflightOptions) => `
 ${PROPS.MODE.MULT}: -1;
 ${PROPS.MODE.L_NEUTRAL}: 60%;
 ${PROPS.MODE.L_RANGE_UP}: 38%;
@@ -23,28 +26,31 @@ ${PROPS.MODE.S_RANGE_UP}: 40%;
 ${PROPS.MODE.S_RANGE_DOWN}: -30%;
 ${PROPS.MODE.WHITE}: #000000;
 ${PROPS.MODE.BLACK}: #ffffff;
+
+${palettePropertyReset(options)}
 `;
 
-export const modePreflight = preflight({
-	getCSS: () => `
+export const modePreflight = (options: ColorPreflightOptions) =>
+	preflight({
+		getCSS: () => `
 @layer preflightBase {
 	html {
-		${lightModeCSS}
+		${lightModeCSS(options)}
 	}
 
 	@media (prefers-color-scheme: dark) {
 		html {
-			${darkModeCSS}
+			${darkModeCSS(options)}
 		}
 	}
 }
 
 @layer preflightVariants {
 	.override-light {
-		${lightModeCSS}
+		${lightModeCSS(options)}
 	}
 	.override-dark {
-		${darkModeCSS}
+		${darkModeCSS(options)}
 	}
 }`,
-});
+	});

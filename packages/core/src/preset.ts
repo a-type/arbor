@@ -7,7 +7,6 @@ import { makeTheme } from './theme';
 const modifiedWind4 = presetMini({
 	arbitraryVariants: true,
 	variablePrefix: 'ar-',
-	preflight: false,
 });
 
 modifiedWind4.rules = rules;

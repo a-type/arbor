@@ -12,5 +12,15 @@ export const CALCS = {
 						+ var(${PROPS.GROUP.MARGIN[mode]}, 0px)
 					) / 1.5)
 				)`,
+		EVEN_ODD: (even: string, odd: string, none?: string) => {
+			if (none !== undefined) {
+				return `if (
+					style(${PROPS.GROUP.EVEN_ODD}: -1): ${none};
+					style(${PROPS.GROUP.EVEN_ODD}: 0): ${even};
+					else: ${odd}
+				)`;
+			}
+			return `if (style(${PROPS.GROUP.EVEN_ODD}: 0): ${even}; else: ${odd})`;
+		},
 	},
 };

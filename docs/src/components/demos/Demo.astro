@@ -1,0 +1,14 @@
+<demo-frame class="flex flex-col-reverse md:flex-row gap p b rd rd-nest">
+	<div
+		data-id="demo-src"
+		class="[tab-size:2ch] rd-nest overflow-hidden flex-2 [&>*]:p"
+	>
+		<slot name="source" />
+	</div>
+	<div
+		data-id="demo-live"
+		class="bg-main-wash p rd-nest flex items-center justify-center flex-1"
+	>
+		<slot name="live" />
+	</div>
+</demo-frame>

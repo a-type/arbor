@@ -1,0 +1,11 @@
+---
+import { Code } from 'astro:components';
+import Demo from '../Demo.astro';
+import Button from './Button.html';
+import ButtonSrc from './Button.html?raw';
+---
+
+<Demo>
+	<Button slot="live" />
+	<Code code={ButtonSrc} lang="html" slot="source" />
+</Demo>
