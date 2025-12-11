@@ -69,6 +69,10 @@ export function palettePropertyReset(options: ColorPreflightOptions) {
 			defaultPalettes.primary,
 		),
 		paletteColors(PROPS.PALETTE.GRAY_SHADES, defaultPalettes.gray),
+		paletteColors(
+			PROPS.PALETTE.NAMED_SHADES('high-contrast'),
+			defaultPalettes['high-contrast'],
+		),
 		...Object.entries(toNamedPalettes(options.namedHues)).map(
 			([name, palette]) =>
 				paletteColors(PROPS.PALETTE.NAMED_SHADES(name), palette),

@@ -10,9 +10,9 @@ export function makeThemeColors(options: ThemeOptions): Theme['colors'] {
 		transparent: 'transparent',
 		current: 'currentColor',
 
-		black: PROPS.PALETTE.NAMED_SHADES('high-contrast').INK,
-		white: PROPS.PALETTE.NAMED_SHADES('high-contrast').WASH,
-		wash: PROPS.PALETTE.GRAY_SHADES.WASH,
+		black: `var(${PROPS.PALETTE.NAMED_SHADES('high-contrast').INK})`,
+		white: `var(${PROPS.PALETTE.NAMED_SHADES('high-contrast').WASH})`,
+		wash: `var(${PROPS.PALETTE.GRAY_SHADES.WASH})`,
 
 		// magic token that provides a high-contrast color based on background
 		contrast: `color(from var(${PROPS.BACKGROUND_COLOR.CONTRAST},var(${PROPS.BACKGROUND_COLOR.FINAL},var(${PROPS.BACKGROUND_COLOR.INHERITED},var(${PROPS.MODE.WHITE})))) xyz-d65 ${contrastClamp} ${contrastClamp} ${contrastClamp})`,

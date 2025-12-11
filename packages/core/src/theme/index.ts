@@ -17,14 +17,14 @@ export function makeTheme(options: ThemeOptions): Theme {
 
 		preflightBase: {
 			...baseTheme.preflightBase,
-			'--ar-ring-inset': '0',
+			'--ar-ring-inset': '',
 			'--ar-ring-width': '1px',
 			'--ar-shadow': '0 0 #0000',
 			'--ar-inset-shadow': '0 0 #0000',
 			'--ar-inset-ring-shadow': '0 0 #0000',
 			'--ar-ring-offset-shadow': '0 0 #0000',
 			'--ar-ring-offset-color': '#fff',
-			'--ar-ring-offset-width': '0',
+			'--ar-ring-offset-width': '0px',
 		},
 	};
 }
