@@ -1,0 +1,52 @@
+<palette-switcher></palette-switcher>
+<script type="module">
+	class PaletteSwitcher extends HTMLElement {
+		constructor() {
+			super();
+			this.select = document.createElement('select');
+			this.select.addEventListener('change', this.onChange.bind(this));
+			this.appendChild(this.select);
+			this.populateOptions();
+
+			// detect from date
+			const month = new Date().getMonth();
+			let defaultPalette = 'winter';
+			if (month >= 2 && month <= 4) {
+				defaultPalette = 'spring';
+			} else if (month >= 5 && month <= 7) {
+				defaultPalette = 'summer';
+			} else if (month >= 8 && month <= 10) {
+				defaultPalette = 'fall';
+			}
+			this.select.value = defaultPalette;
+			this.apply(defaultPalette);
+		}
+
+		populateOptions() {
+			const palettes = ['winter', 'spring', 'summer', 'fall'];
+			palettes.forEach((palette) => {
+				const option = document.createElement('option');
+				option.value = palette;
+				option.textContent = palette;
+				this.select.appendChild(option);
+			});
+		}
+
+		onChange(event) {
+			const selectedPalette = event.target.value;
+			this.apply(selectedPalette);
+		}
+
+		apply(selectedPalette) {
+			document.body.classList.remove(
+				'palette-winter',
+				'palette-spring',
+				'palette-summer',
+				'palette-fall',
+			);
+			document.body.classList.add(`palette-${selectedPalette}`);
+		}
+	}
+
+	customElements.define('palette-switcher', PaletteSwitcher);
+</script>

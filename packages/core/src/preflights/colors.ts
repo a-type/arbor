@@ -40,6 +40,7 @@ function paletteClass(
 	} = {},
 ) {
 	return `.palette-${name} {
+${PROPS.PALETTE.NAME}: ${name};
 ${PROPS.PALETTE.MAIN_HUE}: var(${mainHue || PROPS.USER.COLOR.NAMED_HUE(name)});
 ${PROPS.PALETTE.SATURATION}: ${saturation};
 ${PROPS.PALETTE.LIGHTNESS_SPREAD}: ${lightnessSpread};
@@ -111,6 +112,7 @@ ${paletteClass('high-contrast', defaultPalettes['high-contrast'], {
 })}
 
 body {
+	${PROPS.PALETTE.NAME}: 'primary';
 	${PROPS.COLOR.INHERITED}: ${defaultPalettes['high-contrast'].styles.ink};
 	color: var(${PROPS.COLOR.INHERITED});
 	${PROPS.BACKGROUND_COLOR.INHERITED}: ${defaultPalettes['gray'].styles.wash};

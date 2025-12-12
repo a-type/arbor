@@ -13,6 +13,7 @@ export const PROPS = {
 	},
 	// palettes
 	PALETTE: {
+		NAME: '--p-name',
 		MAIN_HUE: '--p-main-hue',
 		SATURATION: '--p-saturation',
 		LIGHTNESS_SPREAD: '--l-lightness-spread',

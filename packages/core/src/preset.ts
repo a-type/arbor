@@ -3,6 +3,7 @@ import { Preset } from 'unocss';
 import { AllPreflightOptions, preflights } from './preflights';
 import { rules } from './rules';
 import { makeTheme } from './theme';
+import { variants } from './variants';
 
 const modifiedWind4 = presetMini({
 	arbitraryVariants: true,
@@ -19,6 +20,7 @@ export default function presetArbor(config: ArborConfig): Preset {
 	return {
 		name: 'arbor',
 		enforce: 'post',
+		variants,
 		presets: [modifiedWind4],
 		preflights: preflights(config),
 	};

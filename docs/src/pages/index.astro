@@ -3,21 +3,25 @@ import { PROPS } from '@arbor-css/core';
 import ConfigSlider from '../components/ConfigSlider.astro';
 import ButtonDemo from '../components/demos/button/ButtonDemo.astro';
 import Logo from '../components/Logo.astro';
+import PaletteSwitcher from '../components/PaletteSwitcher.astro';
 ---
 
 <section
-	class="p-xl flex flex-col items-center justify-center gap-lg bg-main-wash color-main-ink md:min-h-50vh"
+	class:list={[
+		'p-xl flex flex-col items-center justify-center',
+		'gap-lg bg-main-wash color-main-ink md:min-h-50vh',
+	]}
 >
 	<div class="group flex flex-col items-center gap-lg md:flex-row">
-		<Logo className="h-50vmin md:h-120px w-auto color-main" />
+		<Logo className="h-50vmin md:h-120px w-auto" />
 		<div class="flex flex-col gap">
 			<h1 class="text-10vmin">Arbor&nbsp;CSS</h1>
-			<p class="rounded-lg bg-primary-wash">
-				The next step in on-demand utility CSS.
-			</p>
+			<p class="rounded-lg">The next step in on-demand utility CSS.</p>
 		</div>
 	</div>
 </section>
+
+<PaletteSwitcher />
 
 <ConfigSlider />
 <ConfigSlider param={PROPS.USER.SATURATION} min={0} max={1} />
