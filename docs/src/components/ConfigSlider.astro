@@ -1,15 +1,24 @@
 ---
 import { PROPS } from '@arbor-css/core';
 const {
+	class: cs,
 	param = PROPS.USER.COLOR.PRIMARY_HUE,
 	min = 0,
 	max = 260,
+	startEmoji = '🔵',
+	endEmoji = '🔴',
+	name = '',
 } = Astro.props;
 ---
 
-<label>
-	{param}
-	<config-slider type="range" name={param} data-param={param}>
+<div class:list={['flex items-center gap-sm', cs]}>
+	{startEmoji}
+	<config-slider
+		type="range"
+		name={param}
+		data-param={param}
+		class="flex items-center justify-center flex-1"
+	>
 		<input
 			type="range"
 			class="accent-primary"
@@ -17,21 +26,40 @@ const {
 			max={max}
 			value="0"
 			step={(max - min) / 100}
+			aria-label={`Adjust ${name || param}`}
 		/>
 	</config-slider>
-</label>
+	{endEmoji}
+</div>
 <script type="module">
 	class ConfigSlider extends HTMLElement {
 		constructor() {
 			super();
 			this.input = this.querySelector('input[type="range"]');
+			this.input.classList.add('w-full');
 			this.param = this.getAttribute('data-param');
 			this.input.addEventListener('input', this.onInput.bind(this));
+
+			const current = getComputedStyle(
+				document.documentElement,
+			).getPropertyValue(this.param);
+			if (current) {
+				this.input.value = current.trim();
+			}
 		}
 
 		onInput(event) {
 			const value = event.target.value;
-			document.documentElement.style.setProperty(this.param, value);
+			this.apply(value);
+		}
+
+		timeout;
+		apply(value) {
+			this.timeout && clearTimeout(this.timeout);
+			this.timeout = setTimeout(() => {
+				this.timeout = null;
+				document.documentElement.style.setProperty(this.param, value);
+			}, 100);
 		}
 	}
 

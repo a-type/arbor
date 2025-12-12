@@ -1,8 +1,14 @@
 import arbor from '@arbor-css/core/preset';
-import { defineConfig } from 'unocss';
+import { defineConfig, presetIcons } from 'unocss';
 
 export default defineConfig({
 	presets: [
+		presetIcons({
+			collections: {
+				md: () =>
+					import('@iconify-json/material-symbols-light').then((m) => m.icons),
+			},
+		}),
 		arbor({
 			primaryHue: 158,
 			namedHues: {
@@ -25,12 +31,7 @@ export default defineConfig({
 			},
 		}),
 	],
-	configDeps: ['../packages/core/src', '../packages/core/dist'],
-	content: {
-		pipeline: {
-			include: ['./src/**/*.{astro,html,js,ts}'],
-		},
-	},
+	configDeps: ['../packages/core/dist'],
 	preflights: [
 		{
 			getCSS() {

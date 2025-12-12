@@ -1,5 +1,6 @@
 import presetMini from '@unocss/preset-mini';
-import { Preset } from 'unocss';
+import { Preset, transformerVariantGroup } from 'unocss';
+import { presetFunctionCompletion } from 'unocss-preset-completion';
 import { AllPreflightOptions, preflights } from './preflights';
 import { rules } from './rules';
 import { makeTheme } from './theme';
@@ -21,7 +22,13 @@ export default function presetArbor(config: ArborConfig): Preset {
 		name: 'arbor',
 		enforce: 'post',
 		variants,
-		presets: [modifiedWind4],
+		presets: [
+			modifiedWind4,
+			presetFunctionCompletion({
+				autocompleteFunctions: ['css', 'clsx', 'classNames', 'cx'],
+			}),
+		],
+		transformers: [transformerVariantGroup()],
 		preflights: preflights(config),
 	};
 }

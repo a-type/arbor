@@ -41,7 +41,13 @@ const pluginWatchElsewhere = () => {
 
 // https://astro.build/config
 export default defineConfig({
-	integrations: [UnoCSS(), mdx(), react()],
+	integrations: [
+		UnoCSS({
+			configDeps: ['../packages/core/dist/**/*'],
+		}),
+		mdx(),
+		react(),
+	],
 	vite: {
 		plugins: [pluginWatchElsewhere()],
 	},

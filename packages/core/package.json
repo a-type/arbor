@@ -4,14 +4,12 @@
 	"type": "module",
 	"exports": {
 		".": {
-			"development": "./src/index.ts",
 			"import": "./dist/index.js",
 			"node": "./dist/index.js",
 			"types": "./dist/index.d.ts",
 			"default": "./dist/index.js"
 		},
 		"./preset": {
-			"development": "./src/preset.ts",
 			"import": "./dist/preset.js",
 			"node": "./dist/preset.js",
 			"types": "./dist/preset.d.ts",
@@ -23,7 +21,8 @@
 	"types": "./dist/index.d.ts",
 	"sideEffects": false,
 	"scripts": {
-		"build": "tsc"
+		"build": "tsc",
+		"dev": "tsc -w"
 	},
 	"devDependencies": {
 		"@unocss/cli": "^66.5.10",
@@ -35,6 +34,7 @@
 	},
 	"dependencies": {
 		"@unocss/preset-mini": "^66.5.10",
-		"@vitest/browser-playwright": "^4.0.15"
+		"@vitest/browser-playwright": "^4.0.15",
+		"unocss-preset-completion": "^0.3.0"
 	}
 }

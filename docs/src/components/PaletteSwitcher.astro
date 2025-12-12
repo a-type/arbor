@@ -1,11 +1,16 @@
-<palette-switcher></palette-switcher>
+---
+const { class: cs } = Astro.props;
+---
+
+<palette-switcher class:list={['block text-size-md', cs]}></palette-switcher>
 <script type="module">
 	class PaletteSwitcher extends HTMLElement {
 		constructor() {
 			super();
-			this.select = document.createElement('select');
-			this.select.addEventListener('change', this.onChange.bind(this));
-			this.appendChild(this.select);
+			this.group = document.createElement('div');
+			this.group.className = 'flex gap-lg justify-center p-xs group';
+			this.group.addEventListener('change', this.onChange.bind(this));
+			this.appendChild(this.group);
 			this.populateOptions();
 
 			// detect from date
@@ -24,11 +29,42 @@
 
 		populateOptions() {
 			const palettes = ['winter', 'spring', 'summer', 'fall'];
+			const icons = {
+				winter: '❄️',
+				spring: '🌸',
+				summer: '☀️',
+				fall: '🍂',
+			};
 			palettes.forEach((palette) => {
-				const option = document.createElement('option');
-				option.value = palette;
-				option.textContent = palette;
-				this.select.appendChild(option);
+				const input = document.createElement('input');
+				input.type = 'radio';
+				input.name = 'palette';
+				input.value = palette;
+				input.className = 'appearance-none m-0 absolute -inset-9999';
+				input.textContent = palette;
+				const option = document.createElement('label');
+				option.classList.add(
+					'flex',
+					'items-center',
+					'justify-center',
+					'gap-sm',
+					'overflow-clip',
+					'relative',
+					'p-sm',
+					'rd',
+					'cursor-pointer',
+					'bg-main-wash',
+					'hover:bg-darken-1',
+					'active:bg-darken-2',
+					`palette-${palette}`,
+				);
+				option.appendChild(input);
+				const label = document.createElement('span');
+				label.classList.add('aspect-1', 'text-size-inherit');
+				label.innerHTML = icons[palette];
+				label.attributes['aria-label'] = `Select ${palette} palette`;
+				option.appendChild(label);
+				this.group.appendChild(option);
 			});
 		}
 

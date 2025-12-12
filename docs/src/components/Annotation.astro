@@ -1,0 +1,14 @@
+---
+const id =
+	Astro.props.id || 'annotation-' + Math.random().toString(36).substr(2, 9);
+---
+
+<div class="@anchor" data-anchor={`--${id}`} id={id}>
+	<slot name="wrapped" />
+</div>
+<div
+	class="anchor-to absolute left-anchor-right top-anchor-bottom"
+	data-anchor-to={`--${id}`}
+>
+	<slot name="annotation" />
+</div>

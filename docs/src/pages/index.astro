@@ -1,30 +1,113 @@
 ---
 import { PROPS } from '@arbor-css/core';
+import Annotation from '../components/Annotation.astro';
 import ConfigSlider from '../components/ConfigSlider.astro';
 import ButtonDemo from '../components/demos/button/ButtonDemo.astro';
 import Logo from '../components/Logo.astro';
 import PaletteSwitcher from '../components/PaletteSwitcher.astro';
+import Layout from '../layouts/Homepage.astro';
 ---
 
-<section
-	class:list={[
-		'p-xl flex flex-col items-center justify-center',
-		'gap-lg bg-main-wash color-main-ink md:min-h-50vh',
-	]}
->
-	<div class="group flex flex-col items-center gap-lg md:flex-row">
-		<Logo className="h-50vmin md:h-120px w-auto" />
-		<div class="flex flex-col gap">
-			<h1 class="text-10vmin">Arbor&nbsp;CSS</h1>
-			<p class="rounded-lg">The next step in on-demand utility CSS.</p>
+<Layout>
+	<section
+		class:list={[
+			'p-xl flex flex-col items-center justify-center',
+			'gap-lg bg-main-wash color-main-ink md:min-h-50vh',
+		]}
+	>
+		<div class="group flex flex-col items-center gap-lg md:flex-row">
+			<Logo className="h-50vmin md:h-120px w-auto" />
+			<div class="flex flex-col gap">
+				<h1 class="text-10vmin">Arbor&nbsp;CSS</h1>
+				<p class="rounded-lg">The next step in on-demand utility CSS.</p>
+			</div>
 		</div>
+	</section>
+
+	<div
+		class:list={[
+			'sticky top-0 flex items-center justify-center',
+			'@container/scroll-state',
+		]}
+	>
+		<PaletteSwitcher class="stuck-start:(bg-white b rd text-sm)" />
 	</div>
-</section>
 
-<PaletteSwitcher />
+	<div class:list={['flex flex-col items-stretch gap p group bg-wash b rd']}>
+		<ConfigSlider
+			param={PROPS.USER.SATURATION}
+			min={0}
+			max={1}
+			name="saturation"
+			startEmoji="⬜"
+			endEmoji="🟩"
+			class="w-full"
+		/>
+		<ConfigSlider
+			param={PROPS.USER.SPACING_SCALE}
+			min={0.1}
+			max={2}
+			name="scale"
+			startEmoji="▪️"
+			endEmoji="⬛"
+			class="w-full"
+		/>
+	</div>
+	<ButtonDemo />
 
-<ConfigSlider />
-<ConfigSlider param={PROPS.USER.SATURATION} min={0} max={1} />
-<ConfigSlider param={PROPS.USER.SPACING_SCALE} min={0.1} max={2} />
+	<div class="p-lg">
+		<Annotation>
+			<div slot="wrapped">Test</div>
+			<div slot="annotation">Annotation</div>
+		</Annotation>
+	</div>
 
-<ButtonDemo />
+	<p>
+		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
+		tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+		quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+		consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+		cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
+		non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+	</p>
+	<p>
+		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
+		tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+		quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+		consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+		cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
+		non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+	</p>
+	<p>
+		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
+		tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+		quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+		consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+		cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
+		non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+	</p>
+	<p>
+		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
+		tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+		quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+		consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+		cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
+		non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+	</p>
+	<p>
+		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
+		tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+		quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+		consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+		cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
+		non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+	</p>
+	<p>
+		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
+		tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+		quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+		consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+		cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
+		non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+	</p>
+</Layout>

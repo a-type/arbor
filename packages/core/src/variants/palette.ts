@@ -11,7 +11,6 @@ export const paletteVariant: Variant<Theme> = {
 			input,
 			ctx.generator.config.separators,
 		);
-		console.log('palette variant match', input, variant);
 		if (variant) {
 			const [match, rest] = variant;
 			return {
