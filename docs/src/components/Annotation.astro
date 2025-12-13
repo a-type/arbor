@@ -3,12 +3,21 @@ const id =
 	Astro.props.id || 'annotation-' + Math.random().toString(36).substr(2, 9);
 ---
 
-<div class="@anchor" data-anchor={`--${id}`} id={id}>
+<div class="@anchor w-auto h-auto" data-anchor={`--${id}`} id={id}>
 	<slot name="wrapped" />
 </div>
 <div
-	class="anchor-to absolute left-anchor-right top-anchor-bottom"
+	class:list={[
+		'anchor-to absolute left-[calc(anchor(right)+1rem)] bottom-[calc(anchor(top)+1rem)]',
+		'bg-white p-xs border shadow rd-sm w-fit group-reset group',
+	]}
 	data-anchor-to={`--${id}`}
 >
 	<slot name="annotation" />
+	<div
+		class:list={[
+			'w-1px h-1rem absolute right-full top-full bg-black rotate-45 transform-origin-top-left',
+		]}
+	>
+	</div>
 </div>

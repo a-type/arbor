@@ -1,8 +1,9 @@
 ---
 import { PROPS } from '@arbor-css/core';
-import Annotation from '../components/Annotation.astro';
+import { Code } from 'astro:components';
 import ConfigSlider from '../components/ConfigSlider.astro';
-import ButtonDemo from '../components/demos/button/ButtonDemo.astro';
+import Button from '../components/demos/Button.astro';
+import Demo from '../components/demos/Demo.astro';
 import Logo from '../components/Logo.astro';
 import PaletteSwitcher from '../components/PaletteSwitcher.astro';
 import Layout from '../layouts/Homepage.astro';
@@ -53,14 +54,59 @@ import Layout from '../layouts/Homepage.astro';
 			class="w-full"
 		/>
 	</div>
-	<ButtonDemo />
 
-	<div class="p-lg">
-		<Annotation>
-			<div slot="wrapped">Test</div>
-			<div slot="annotation">Annotation</div>
-		</Annotation>
-	</div>
+	<Demo>
+		<div slot="doc" class="flex flex-col gap">
+			<h2>Best in class color tooling</h2>
+			<p>Adapt your colors to context with palettes.</p>
+			<p>Tweak shades with relative color utilities.</p>
+		</div>
+		<Code
+			slot="source"
+			lang="html"
+			code={`<button
+	class="
+		bg-main color-contrast p rd
+		hover:bg-darken-1
+		active:bg-darken-2
+	"
+>`}
+		/>
+		<Button slot="live">Test</Button>
+	</Demo>
+
+	<Demo>
+		<div slot="doc" class="flex flex-col gap">
+			<h2>Magically adaptive grouping</h2>
+			<p>
+				Use default spacing and radius utilities, and we handle the size for
+				you.
+			</p>
+			<p>
+				Nested group spacing is tighter, radius reduces based on parent padding,
+				and most designs work with no thought required.
+			</p>
+		</div>
+		<Code
+			slot="source"
+			lang="html"
+			code={`<div class="group b p rd">
+	...
+	<div class="group b p rd">
+		...
+		<div class="group b p rd">
+`}
+		/>
+		<div slot="live" class="group-reset">
+			<div class="group b p rd" slot="wrapped">
+				<div class="group b p rd">
+					<div class="group b p rd">
+						<div>All these boxes use the same classes</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</Demo>
 
 	<p>
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod

@@ -26,7 +26,11 @@ function* handlerRounded(
 			[PROPS.GROUP.RADIUS.ODD]: `var(${PROPS.GROUP.RADIUS.INHERITED})`,
 		};
 		yield {
-			[PROPS.GROUP.RADIUS.FINAL]: `var(${PROPS.GROUP.RADIUS.INHERITED})`,
+			[PROPS.GROUP.RADIUS.FINAL]: `if (style(var(${
+				PROPS.GROUP.RADIUS.INHERITED
+			}): 0): ${theme.borderRadius!.DEFAULT}; else: ${
+				PROPS.GROUP.RADIUS.INHERITED
+			})`,
 			...Object.fromEntries(
 				cornerMap[a].map((i) => [
 					`border${i}-radius`,

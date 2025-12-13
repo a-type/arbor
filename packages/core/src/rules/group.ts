@@ -34,20 +34,25 @@ export const groupRules: Rule[] = [
 	],
 	[
 		/^group-reset$/,
-		() => ({
-			[PROPS.GROUP.DEPTH]: '0',
-			[PROPS.GROUP.DEPTH_EVEN]: '0',
-			[PROPS.GROUP.DEPTH_ODD]: '0',
-			[PROPS.GROUP.EVEN_ODD]: '0',
-			[PROPS.GROUP.MARGIN.FINAL]: '0px',
-			[PROPS.GROUP.PADDING.FINAL]: '0px',
-			[PROPS.GROUP.RADIUS.FINAL]: '0px',
-			[PROPS.GROUP.MARGIN.EVEN]: '0px',
-			[PROPS.GROUP.MARGIN.ODD]: '0px',
-			[PROPS.GROUP.PADDING.EVEN]: '0px',
-			[PROPS.GROUP.PADDING.ODD]: '0px',
-			[PROPS.GROUP.RADIUS.EVEN]: '0px',
-			[PROPS.GROUP.RADIUS.ODD]: '0px',
-		}),
+		function* (_, { symbols }) {
+			yield {
+				[PROPS.GROUP.DEPTH]: '-1',
+				[PROPS.GROUP.DEPTH_EVEN]: '-1',
+				[PROPS.GROUP.DEPTH_ODD]: '-1',
+				[PROPS.GROUP.EVEN_ODD]: '-1',
+				[PROPS.GROUP.MARGIN.FINAL]: '0px',
+				[PROPS.GROUP.PADDING.FINAL]: '0px',
+				[PROPS.GROUP.MARGIN.EVEN]: '0px',
+				[PROPS.GROUP.MARGIN.ODD]: '0px',
+				[PROPS.GROUP.PADDING.EVEN]: '0px',
+			};
+			yield {
+				[symbols.selector]: (selector) => `${selector}>*`,
+				[PROPS.GROUP.PADDING.ODD]: '0px',
+				[PROPS.GROUP.RADIUS.FINAL]: '0px',
+				[PROPS.GROUP.RADIUS.EVEN]: '0px',
+				[PROPS.GROUP.RADIUS.ODD]: '0px',
+			};
+		},
 	],
 ];
