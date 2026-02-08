@@ -3,6 +3,7 @@ import { Preset, transformerVariantGroup } from 'unocss';
 import { presetFunctionCompletion } from 'unocss-preset-completion';
 import { AllPreflightOptions, preflights } from './preflights';
 import { rules } from './rules';
+import { shortcuts } from './shortcuts';
 import { makeTheme } from './theme';
 import { variants } from './variants';
 
@@ -22,6 +23,7 @@ export default function presetArbor(config: ArborConfig): Preset {
 		name: 'arbor',
 		enforce: 'post',
 		variants,
+		shortcuts,
 		presets: [
 			modifiedWind4,
 			presetFunctionCompletion({

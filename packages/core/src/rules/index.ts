@@ -10,6 +10,7 @@ import { anchorRules } from './anchor';
 import { colorRules } from './color';
 import { containerRules } from './container';
 import { groupRules } from './group';
+import { nestRules } from './nest';
 import { radiusRules } from './radius';
 import { spacingRules } from './spacing';
 
@@ -33,4 +34,5 @@ export const rules: Rule[] = [
 	...radiusRules,
 	...containerRules,
 	...anchorRules,
+	...nestRules,
 ];

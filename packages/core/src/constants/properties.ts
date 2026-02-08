@@ -113,38 +113,51 @@ export const PROPS = {
 	},
 	// grouping system
 	GROUP: {
-		EVEN_ODD: '--ar-gr-evod',
 		// the odd/even convention avoids circular property references
 		// by alternating the 'active' variable for odd or even depths
-		DEPTH_ODD: '--ar-gr-depth-odd',
-		DEPTH_EVEN: '--ar-gr-depth-even',
+		EVEN: {
+			DEPTH: '--ar-ge-depth',
+			PADDING: {
+				FINAL: '--ar-ge-p',
+				LOCAL: '--ar-ge-p-l',
+			},
+			MARGIN: {
+				FINAL: '--ar-ge-m',
+				LOCAL: '--ar-ge-m-l',
+			},
+			RADIUS: {
+				FINAL: '--ar-ge-rd',
+				LOCAL: '--ar-ge-rd-l',
+				PARENT: '--ar-ge-rd-p',
+			},
+			GAP: {
+				FINAL: '--ar-ge-gp',
+				LOCAL: '--ar-ge-gp-l',
+			},
+		},
+		ODD: {
+			DEPTH: '--ar-go-depth',
+			PADDING: {
+				FINAL: '--ar-go-p',
+				LOCAL: '--ar-go-p-l',
+			},
+			MARGIN: {
+				FINAL: '--ar-go-m',
+				LOCAL: '--ar-go-m-l',
+			},
+			RADIUS: {
+				FINAL: '--ar-go-rd',
+				LOCAL: '--ar-go-rd-l',
+				PARENT: '--ar-go-rd-p',
+			},
+			GAP: {
+				FINAL: '--ar-go-gp',
+				LOCAL: '--ar-go-gp-l',
+			},
+		},
+		EVEN_ODD: '--ar-gr-eo',
 		DEPTH: '--ar-gr-depth',
-
-		PADDING: {
-			FINAL: '--ar-gr-pd',
-			ODD: '--ar-gr-pd-odd',
-			EVEN: '--ar-gr-pd-even',
-			INHERITED: '--ar-gr-pd-i',
-		},
-		MARGIN: {
-			FINAL: '--ar-gr-mr',
-			ODD: '--ar-gr-mr-odd',
-			EVEN: '--ar-gr-mr-even',
-			INHERITED: '--ar-gr-mr-i',
-		},
-		RADIUS: {
-			FINAL: '--ar-gr-rd',
-			ODD: '--ar-gr-rd-odd',
-			EVEN: '--ar-gr-rd-even',
-			INHERITED: '--ar-gr-rd-i',
-			NEST_FALLBACK: '--ar-gr-rd-nest-fb',
-		},
-		GAP: {
-			FINAL: '--ar-gr-gp',
-			ODD: '--ar-gr-gp-odd',
-			EVEN: '--ar-gr-gp-even',
-			INHERITED: '--ar-gr-gp-i',
-		},
+		RADIUS_FALLBACK: '--ar-gr-rd-fb',
 	},
 
 	// built-ins from Uno

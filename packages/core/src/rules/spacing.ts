@@ -1,113 +1,86 @@
 import { Theme } from '@unocss/preset-mini';
 import { directionMap, h } from '@unocss/preset-mini/utils';
-import { DynamicMatcher, Rule, RuleContext } from 'unocss';
-import { PROPS } from '../constants/properties';
-import { SELECTORS } from '../constants/selectors';
+import { Rule, RuleContext } from 'unocss';
+import { groupRule } from './_util';
 
 function directionSize(
 	propertyPrefix: string,
-	sysProps = PROPS.GROUP.PADDING,
-): DynamicMatcher {
-	if (
-		!sysProps.FINAL ||
-		!sysProps.ODD ||
-		!sysProps.EVEN ||
-		!sysProps.INHERITED
-	) {
-		throw new Error(
-			`Invalid system properties for spacing rule: ${JSON.stringify(sysProps)}`,
-		);
-	}
+	sysProps: 'PADDING' | 'MARGIN' | 'GAP',
+) {
 	return function* (
 		[_, directionOrSize, maybeSize]: string[],
-		{ theme, symbols }: RuleContext<Theme>,
+		ctx: RuleContext<Theme>,
 	) {
 		let direction: string = '';
 		let size = maybeSize ? maybeSize : directionOrSize;
 		if (maybeSize) {
 			direction = directionOrSize;
 		}
-		let v =
-			theme.spacing?.[size || 'DEFAULT'] ??
+
+		let baseValue =
+			ctx.theme.spacing?.[size || 'DEFAULT'] ??
 			h.bracket.cssvar.global.auto.fraction.rem(size);
 
 		if (size?.startsWith('-')) {
-			if (v === null) {
-				v = theme.spacing?.[size.slice(1)];
+			if (baseValue === null) {
+				baseValue = ctx.theme.spacing?.[size.slice(1)];
 			}
-			v = `calc(${v} * -1)`;
+			baseValue = `calc(${baseValue} * -1)`;
 		}
 
-		// local value
-		yield {
-			[sysProps.FINAL]: v,
-			...Object.fromEntries(
-				directionMap[direction].map((i) => [`${propertyPrefix}${i}`, v]),
-			),
-		};
-
-		// provide group nesting values
-		yield {
-			[symbols.parent]: SELECTORS.GROUP_INITIAL,
-			[sysProps.EVEN]: v,
-			[sysProps.ODD]: v,
-		};
-		yield {
-			[symbols.parent]: SELECTORS.GROUP_EVEN,
-			[sysProps.EVEN]: v,
-		};
-		yield {
-			[symbols.parent]: SELECTORS.GROUP_ODD,
-			[sysProps.ODD]: v,
-		};
+		if (baseValue) {
+			yield* groupRule(
+				sysProps,
+				directionMap[direction].map((i) => `${propertyPrefix}${i}`),
+				baseValue,
+				ctx,
+				true,
+			);
+		}
 	};
 }
 
 export const spacingRules: Rule[] = [
-	[/^p$/, directionSize('padding', PROPS.GROUP.PADDING), { autocomplete: 'p' }],
+	[/^p$/, directionSize('padding', 'PADDING'), { autocomplete: 'p' }],
 	[
 		/^pa?()-(.+)$/,
-		directionSize('padding', PROPS.GROUP.PADDING),
+		directionSize('padding', 'PADDING'),
 		{ autocomplete: '(m|p)' },
 	],
 	[
 		/^p-xy()()$/,
-		directionSize('padding', PROPS.GROUP.PADDING),
+		directionSize('padding', 'PADDING'),
 		{ autocomplete: '(m|p)-(xy)' },
 	],
 	[
 		/^p-?([xy])(?:-(.+))?$/,
-		directionSize('padding', PROPS.GROUP.PADDING),
+		directionSize('padding', 'PADDING'),
 		{ autocomplete: '(m|p)-(x|y)-<num>' },
 	],
 	[
 		/^p-?([rltbse])(?:-(.+))?$/,
-		directionSize('padding', PROPS.GROUP.PADDING),
+		directionSize('padding', 'PADDING'),
 		{ autocomplete: '(m|p)<directions>-<num>' },
 	],
 	[
 		/^p-(block|inline)(?:-(.+))?$/,
-		directionSize('padding', PROPS.GROUP.PADDING),
+		directionSize('padding', 'PADDING'),
 		{ autocomplete: '(m|p)-(block|inline)-<num>' },
 	],
 	[
 		/^p-?([bi][se])(?:-(.+))?$/,
-		directionSize('padding', PROPS.GROUP.PADDING),
+		directionSize('padding', 'PADDING'),
 		{ autocomplete: '(m|p)-(bs|be|is|ie)-<num>' },
 	],
 
-	[/^m$/, directionSize('margin', PROPS.GROUP.MARGIN)],
-	[/^ma?()-(.+)$/, directionSize('margin', PROPS.GROUP.MARGIN)],
-	[/^m-xy()()$/, directionSize('margin', PROPS.GROUP.MARGIN)],
-	[/^m-?([xy])(?:-(.+))?$/, directionSize('margin', PROPS.GROUP.MARGIN)],
-	[/^m-?([rltbse])(?:-(.+))?$/, directionSize('margin', PROPS.GROUP.MARGIN)],
-	[/^m-(block|inline)(?:-(.+))?$/, directionSize('margin', PROPS.GROUP.MARGIN)],
-	[/^m-?([bi][se])(?:-(.+))?$/, directionSize('margin', PROPS.GROUP.MARGIN)],
+	[/^m$/, directionSize('margin', 'MARGIN')],
+	[/^ma?()-(.+)$/, directionSize('margin', 'MARGIN')],
+	[/^m-xy()()$/, directionSize('margin', 'MARGIN')],
+	[/^m-?([xy])(?:-(.+))?$/, directionSize('margin', 'MARGIN')],
+	[/^m-?([rltbse])(?:-(.+))?$/, directionSize('margin', 'MARGIN')],
+	[/^m-(block|inline)(?:-(.+))?$/, directionSize('margin', 'MARGIN')],
+	[/^m-?([bi][se])(?:-(.+))?$/, directionSize('margin', 'MARGIN')],
 
-	[/^gap$/, directionSize('gap', PROPS.GROUP.GAP)],
-	[
-		/^gap-(.+)$/,
-		directionSize('gap', PROPS.GROUP.GAP),
-		{ autocomplete: 'gap' },
-	],
+	[/^gap$/, directionSize('gap', 'GAP')],
+	[/^gap-(.+)$/, directionSize('gap', 'GAP'), { autocomplete: 'gap-$spacing' }],
 ];

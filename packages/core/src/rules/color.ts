@@ -18,9 +18,10 @@ export const colorRules: Rule[] = [
 				return undefined;
 			}
 			return {
-				color: parsed.opacity
-					? `rgb(from var(${PROPS.COLOR.FINAL},var(${PROPS.COLOR.INHERITED})) r g b / var(${PROPS.COLOR.OPACITY},100%))`
-					: `var(${PROPS.COLOR.FINAL},var(${PROPS.COLOR.INHERITED}))`,
+				color:
+					parsed.opacity ?
+						`rgb(from var(${PROPS.COLOR.FINAL},var(${PROPS.COLOR.INHERITED})) r g b / var(${PROPS.COLOR.OPACITY},100%))`
+					:	`var(${PROPS.COLOR.FINAL},var(${PROPS.COLOR.INHERITED}))`,
 				[PROPS.COLOR.INHERITED]: parsed.color,
 				[PROPS.COLOR.OPACITY]: (parsed.opacity || 100) + '%',
 			};
@@ -75,9 +76,10 @@ export const colorRules: Rule[] = [
 			}
 
 			const base = {
-				'background-color': parsed.opacity
-					? `rgb(from var(${PROPS.BACKGROUND_COLOR.FINAL},var(${PROPS.BACKGROUND_COLOR.INHERITED})) r g b / var(${PROPS.BACKGROUND_COLOR.OPACITY},100%))`
-					: `var(${PROPS.BACKGROUND_COLOR.FINAL},var(${PROPS.BACKGROUND_COLOR.INHERITED}))`,
+				'background-color':
+					parsed.opacity ?
+						`rgb(from var(${PROPS.BACKGROUND_COLOR.FINAL},var(${PROPS.BACKGROUND_COLOR.INHERITED})) r g b / var(${PROPS.BACKGROUND_COLOR.OPACITY},100%))`
+					:	`var(${PROPS.BACKGROUND_COLOR.FINAL},var(${PROPS.BACKGROUND_COLOR.INHERITED}))`,
 				[PROPS.BACKGROUND_COLOR.INHERITED]: parsed.color,
 				[PROPS.BACKGROUND_COLOR.OPACITY]: (parsed.opacity || 100) + '%',
 			};
@@ -113,7 +115,7 @@ export const colorRules: Rule[] = [
 		},
 	],
 	[
-		/^(border|b)-(.*)$/,
+		/^(?:border|b)-(.*)$/,
 		(match, { theme }) => {
 			if (match[1] === 'none') {
 				return undefined;
@@ -122,9 +124,10 @@ export const colorRules: Rule[] = [
 			if (!parsed?.color) {
 				return undefined;
 			}
-			const thisColor = parsed.opacity
-				? `rgb(from var(${PROPS.BORDER_COLOR.ALL.FINAL},var(${PROPS.BORDER_COLOR.ALL.INHERITED})) r g b / var(${PROPS.BORDER_COLOR.ALL.OPACITY},100%))`
-				: `var(${PROPS.BORDER_COLOR.ALL.FINAL},var(${PROPS.BORDER_COLOR.ALL.INHERITED}))`;
+			const thisColor =
+				parsed.opacity ?
+					`rgb(from var(${PROPS.BORDER_COLOR.ALL.FINAL},var(${PROPS.BORDER_COLOR.ALL.INHERITED})) r g b / var(${PROPS.BORDER_COLOR.ALL.OPACITY},100%))`
+				:	`var(${PROPS.BORDER_COLOR.ALL.FINAL},var(${PROPS.BORDER_COLOR.ALL.INHERITED}))`;
 			return {
 				'border-right-color': `var(${PROPS.BORDER_COLOR.RIGHT.FINAL},var(${PROPS.BORDER_COLOR.RIGHT.INHERITED},${thisColor}))`,
 				'border-bottom-color': `var(${PROPS.BORDER_COLOR.BOTTOM.FINAL},var(${PROPS.BORDER_COLOR.BOTTOM.INHERITED},${thisColor}))`,
@@ -143,7 +146,7 @@ export const colorRules: Rule[] = [
 		(match) => ({
 			[PROPS.BORDER_COLOR.ALL.FINAL]: lighten(
 				`var(${PROPS.BORDER_COLOR.ALL.INHERITED},currentColor)`,
-				match[0],
+				match[1],
 			),
 		}),
 		{
@@ -155,7 +158,7 @@ export const colorRules: Rule[] = [
 		(match) => ({
 			[PROPS.BORDER_COLOR.ALL.FINAL]: darken(
 				`var(${PROPS.BORDER_COLOR.ALL.INHERITED},currentColor)`,
-				match[0],
+				match[1],
 			),
 		}),
 		{
@@ -166,7 +169,7 @@ export const colorRules: Rule[] = [
 		const shorthand = DIR[0].toLowerCase();
 		return [
 			[
-				new RegExp(`^(border-|b-)${shorthand}-(.*)$`),
+				new RegExp(`^(?:border-|b-)${shorthand}-(.*)$`),
 				(match, { theme }) => {
 					if (match[1] === 'none') {
 						return undefined;
@@ -175,9 +178,10 @@ export const colorRules: Rule[] = [
 					if (!parsed?.color) {
 						return undefined;
 					}
-					const thisColor = parsed.opacity
-						? `rgb(from var(${PROPS.BORDER_COLOR[DIR].FINAL},var(${PROPS.BORDER_COLOR[DIR].INHERITED})) r g b / var(${PROPS.BORDER_COLOR[DIR].OPACITY},100%))`
-						: `var(${PROPS.BORDER_COLOR[DIR].FINAL},var(${PROPS.BORDER_COLOR[DIR].INHERITED}))`;
+					const thisColor =
+						parsed.opacity ?
+							`rgb(from var(${PROPS.BORDER_COLOR[DIR].FINAL},var(${PROPS.BORDER_COLOR[DIR].INHERITED})) r g b / var(${PROPS.BORDER_COLOR[DIR].OPACITY},100%))`
+						:	`var(${PROPS.BORDER_COLOR[DIR].FINAL},var(${PROPS.BORDER_COLOR[DIR].INHERITED}))`;
 					return {
 						[`border-${dirnames[DIR]}-color`]: thisColor,
 						[`${PROPS.BORDER_COLOR[DIR].INHERITED}`]: parsed.color,
@@ -190,7 +194,7 @@ export const colorRules: Rule[] = [
 				},
 			],
 			[
-				new RegExp(`^(border|b)-${shorthand}-l(?:ighten)?-(\\d+\\.?\\d*)$`),
+				new RegExp(`^(?:border|b)-${shorthand}-l(?:ighten)?-(\\d+\\.?\\d*)$`),
 				(match) => ({
 					[`${PROPS.BORDER_COLOR[DIR].FINAL}`]: lighten(
 						`var(${PROPS.BORDER_COLOR[DIR].INHERITED},currentColor)`,
@@ -202,7 +206,7 @@ export const colorRules: Rule[] = [
 				},
 			],
 			[
-				new RegExp(`^(border|b)-${shorthand}-d(?:arken)?-(\\d+\\.?\\d*)$`),
+				new RegExp(`^(?:border|b)-${shorthand}-d(?:arken)?-(\\d+\\.?\\d*)$`),
 				(match) => ({
 					[`${PROPS.BORDER_COLOR[DIR].FINAL}`]: darken(
 						`var(${PROPS.BORDER_COLOR[DIR].INHERITED},currentColor)`,
@@ -223,9 +227,10 @@ export const colorRules: Rule[] = [
 				return undefined;
 			}
 			return {
-				[PROPS.BUILT_IN.RING_COLOR]: parsed.opacity
-					? `rgb(from var(${PROPS.RING_COLOR.FINAL},var(${PROPS.RING_COLOR.INHERITED})) r g b / var(${PROPS.RING_COLOR.OPACITY},100%))`
-					: `var(${PROPS.RING_COLOR.FINAL},var(${PROPS.RING_COLOR.INHERITED}))`,
+				[PROPS.BUILT_IN.RING_COLOR]:
+					parsed.opacity ?
+						`rgb(from var(${PROPS.RING_COLOR.FINAL},var(${PROPS.RING_COLOR.INHERITED})) r g b / var(${PROPS.RING_COLOR.OPACITY},100%))`
+					:	`var(${PROPS.RING_COLOR.FINAL},var(${PROPS.RING_COLOR.INHERITED}))`,
 				[PROPS.RING_COLOR.INHERITED]: parsed.color,
 				[PROPS.RING_COLOR.OPACITY]: (parsed.opacity || 100) + '%',
 			};
@@ -267,9 +272,10 @@ export const colorRules: Rule[] = [
 			}
 			yield {
 				[symbols.selector]: (selector) => `${selector}::placeholder`,
-				color: parsed.opacity
-					? `rgb(from var(${PROPS.PLACEHOLDER_COLOR.FINAL},var(${PROPS.PLACEHOLDER_COLOR.INHERITED})) r g b / var(${PROPS.PLACEHOLDER_COLOR.OPACITY},100%))`
-					: `var(${PROPS.PLACEHOLDER_COLOR.FINAL},var(${PROPS.PLACEHOLDER_COLOR.INHERITED}))`,
+				color:
+					parsed.opacity ?
+						`rgb(from var(${PROPS.PLACEHOLDER_COLOR.FINAL},var(${PROPS.PLACEHOLDER_COLOR.INHERITED})) r g b / var(${PROPS.PLACEHOLDER_COLOR.OPACITY},100%))`
+					:	`var(${PROPS.PLACEHOLDER_COLOR.FINAL},var(${PROPS.PLACEHOLDER_COLOR.INHERITED}))`,
 				[PROPS.PLACEHOLDER_COLOR.INHERITED]: parsed.color,
 				[PROPS.PLACEHOLDER_COLOR.OPACITY]: (parsed.opacity || 100) + '%',
 			};
@@ -316,9 +322,10 @@ export const colorRules: Rule[] = [
 				return undefined;
 			}
 			return {
-				'accent-color': parsed.opacity
-					? `rgb(from var(${PROPS.ACCENT_COLOR.FINAL},var(${PROPS.ACCENT_COLOR.INHERITED})) r g b / var(${PROPS.ACCENT_COLOR.OPACITY},100%))`
-					: `var(${PROPS.ACCENT_COLOR.FINAL},var(${PROPS.ACCENT_COLOR.INHERITED}))`,
+				'accent-color':
+					parsed.opacity ?
+						`rgb(from var(${PROPS.ACCENT_COLOR.FINAL},var(${PROPS.ACCENT_COLOR.INHERITED})) r g b / var(${PROPS.ACCENT_COLOR.OPACITY},100%))`
+					:	`var(${PROPS.ACCENT_COLOR.FINAL},var(${PROPS.ACCENT_COLOR.INHERITED}))`,
 				[PROPS.ACCENT_COLOR.INHERITED]: parsed.color,
 				[PROPS.ACCENT_COLOR.OPACITY]: (parsed.opacity || 100) + '%',
 			};

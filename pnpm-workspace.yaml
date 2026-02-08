@@ -1,6 +1,7 @@
 packages:
   - 'packages/*'
   - docs
+  - scratchpad
 
 catalog:
   unocss: ^66.5.10

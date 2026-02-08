@@ -8,7 +8,7 @@ const { class: cs } = Astro.props;
 		constructor() {
 			super();
 			this.group = document.createElement('div');
-			this.group.className = 'flex gap-lg justify-center p-xs group';
+			this.group.className = '@group flex gap-lg justify-center p-xs';
 			this.group.addEventListener('change', this.onChange.bind(this));
 			this.appendChild(this.group);
 			this.populateOptions();

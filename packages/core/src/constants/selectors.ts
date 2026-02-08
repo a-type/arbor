@@ -1,8 +1,10 @@
+import { CONTAINERS } from './containers';
 import { PROPS } from './properties';
+import { VALUES } from './values';
 
 export const SELECTORS = {
-	GROUP_EVEN: `@container style(${PROPS.GROUP.EVEN_ODD}: 1)`,
-	GROUP_ODD: `@container style(${PROPS.GROUP.EVEN_ODD}: 0)`,
-	GROUP_INITIAL: `@container not style(${PROPS.GROUP.EVEN_ODD})`,
+	GROUP_EVEN: `@container ${CONTAINERS.GROUP} style(${PROPS.GROUP.EVEN_ODD}: ${VALUES.GROUP.ODD})`,
+	GROUP_ODD: `@container ${CONTAINERS.GROUP} style(${PROPS.GROUP.EVEN_ODD}: ${VALUES.GROUP.EVEN})`,
+	GROUP_INITIAL: `@container style(${PROPS.GROUP.EVEN_ODD}: ${VALUES.GROUP.INITIAL})`,
 	WHERE: (selector: string) => `:where(${selector})`,
 };
