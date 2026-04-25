@@ -1,0 +1,24 @@
+@mixin --depth() {
+	@result {
+		--d: 0;
+		--d: calc(inherit(--d, -1) + 1);
+	}
+}
+
+@function --depth-spacing(--base, --d: 1rem) {
+	result: calc(var(--base) * pow(0.5, var(--d)));
+}
+
+@mixin --depth-p(--value: 1em) {
+	--p: --depth-spacing(var(--value));
+	@result {
+		padding: calc(var(--value) * pow(0.5, var(--d, 0)));
+	}
+}
+
+@function --depth-radius(--fallback, --d) {
+	result: if(
+		var(--d) > 0: calc(inherit(border-radius) - inherit(padding)) ;
+			else: var(--fallback, 0) ;
+	);
+}
