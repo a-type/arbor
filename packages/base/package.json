@@ -1,0 +1,31 @@
+{
+	"name": "@arbor-css/base",
+	"version": "0.0.0",
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"node": "./dist/index.js",
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"sideEffects": false,
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsc -w",
+		"dev:demo": "vite ./demo",
+		"test": "vitest",
+		"test:ci": "vitest --run"
+	},
+	"devDependencies": {
+		"@vitest/browser-playwright": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:",
+		"vite": "catalog:"
+	},
+	"dependencies": {}
+}
