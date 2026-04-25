@@ -5,7 +5,7 @@ import {
 	oklchBuilder,
 	OklchColorEquation,
 } from './color.js';
-import { PROPS } from './properties.js';
+import { PropertyDefinition, PROPS } from './properties.js';
 
 export interface ColorRangeConfig {
 	/** 0-360ish, OKLCH "H" hue */
@@ -175,4 +175,47 @@ export function createColorRangeCustom(
 		size: defaultRangeItemNames.length,
 		name: (step) => defaultRangeItemNames[step] ?? `step-${step}`,
 	});
+}
+
+export function createNeutralDerivedRange(
+	sourceColors: PropertyDefinition[],
+	context: ColorEvaluationContext,
+) {
+	// converts to [-1...1] depending on where we sit in the light/dark
+	// spectrum [0, 0.4]
+	function lightness($: ColorEquationTools) {
+		const fromL = $.add(
+			$.literal('l'),
+			$.multiply(
+				$.divide(
+					$.subtract($.literal('l'), $.literal('0.2')),
+					$.literal('0.2'),
+				),
+				$.literal('-0.001'),
+			),
+		);
+		return $.subtract(fromL, $.fn('pow', $.literal('c'), $.literal(1.6)));
+	}
+	function chroma($: ColorEquationTools) {
+		return $.multiply(
+			$.literal('c'),
+			$.literal(PROPS.USER.SATURATION.VAR),
+			$.literal(PROPS.LOCAL.SATURATION.VAR),
+			$.literal('0.15'),
+		);
+	}
+
+	return Object.fromEntries(
+		sourceColors.map((prop) => {
+			return [
+				prop.SUFFIXED('neutral').NAME,
+				oklchBuilder(($) => ({
+					from: $.literal(prop.NAME),
+					l: lightness($),
+					c: chroma($),
+					h: $.literal('h'),
+				})).printComputed(context),
+			];
+		}),
+	);
 }

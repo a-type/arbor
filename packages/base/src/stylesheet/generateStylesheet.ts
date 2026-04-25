@@ -1,14 +1,11 @@
 import { ArborBaseConfig } from '../config.js';
-import {
-	ColorEquationTools,
-	ColorEvaluationContext,
-	oklchBuilder,
-} from '../core/color.js';
+import { ColorEvaluationContext } from '../core/color.js';
 import { createProp, prefixProp, PROPS } from '../core/properties.js';
 import {
 	ColorRangeItem,
 	createColorDarkModeRange,
 	createColorLightModeRange,
+	createNeutralDerivedRange,
 } from '../core/ranges.js';
 import {
 	flattenToPropsList,
@@ -48,9 +45,7 @@ export function generateStylesheet<ModeShape extends ModeSchemaLevel>(
 		...config.customSchemes,
 	};
 
-	const grays = grayRange(evalContext);
-
-	function getSchemeColorRanges(schemeName: string) {
+	function getSchemeColorRanges(schemeName: string, prefix?: string) {
 		const scheme = schemes[schemeName]!;
 		return [
 			...Object.entries(config.namedHues).map(([name, hue]) =>
@@ -60,6 +55,8 @@ export function generateStylesheet<ModeShape extends ModeSchemaLevel>(
 						sourceHue: hue,
 						context: evalContext,
 					}),
+					evalContext,
+					prefix,
 				),
 			),
 		];
@@ -73,13 +70,10 @@ export function generateStylesheet<ModeShape extends ModeSchemaLevel>(
 	 */
 	function getSchemeRootPropertiesCss(schemeName: string) {
 		const scheme = schemes[schemeName]!;
-		const hueRanges = getSchemeColorRanges(schemeName);
+		const hueRanges = getSchemeColorRanges(schemeName, scheme.tag);
 
 		return `
-		${hueRanges
-			.map((range) => prefixKeys(range, scheme.tag))
-			.map(formatPropertiesToCss)
-			.join('\n')}
+		${hueRanges.map(formatPropertiesToCss).join('\n')}
 		`;
 	}
 
@@ -90,7 +84,6 @@ export function generateStylesheet<ModeShape extends ModeSchemaLevel>(
 			ranges.reduce((acc, range) => ({ ...acc, ...range }), {}),
 		);
 		return `${PROPS.SCHEME.NAME.ASSIGN(schemeName)}
-	${formatPropertiesToCss(grays)}
 	${rangeProperties
 		.map((prop) => `${prop}: var(${prefixProp(prop, scheme.tag)});`)
 		.join('\n')}
@@ -176,110 +169,31 @@ ${allModeProps.map((PROP) => PROP.DEFINITION).join('\n\n')}
 function colorRangeToCss(
 	name: string,
 	range: ColorRangeItem[],
+	context: ColorEvaluationContext,
+	prefix?: string,
 ): Record<string, string> {
-	return range.reduce(
-		(acc, item) => {
-			const prop = createProp(`${name}-${item.name}`, { type: 'color' });
+	const colorProps = range.map((item) =>
+		createProp(`${prefix ? `${prefix}-` : ''}${name}-${item.name}`, {
+			type: 'color',
+		}),
+	);
+	const colors = range.reduce(
+		(acc, item, i) => {
+			const prop = colorProps[i];
 			acc[prop.NAME] = item.css;
 			return acc;
 		},
 		{} as Record<string, string>,
 	);
-}
 
-function prefixKeys(
-	obj: Record<string, string>,
-	prefix: string,
-): Record<string, string> {
-	const result: Record<string, string> = {};
-	for (const key in obj) {
-		result[prefixProp(key, prefix)] = obj[key];
-	}
-	return result;
+	return {
+		...colors,
+		...createNeutralDerivedRange(colorProps, context),
+	};
 }
 
 function formatPropertiesToCss(properties: Record<string, string>): string {
 	return Object.entries(properties)
 		.map(([key, value]) => `${key}: ${value};`)
 		.join('\n');
-}
-
-function grayRange(context: ColorEvaluationContext) {
-	// TODO: standard
-	const sourceColorFamily = PROPS.COLOR('primary');
-
-	// converts to [-1...1] depending on where we sit in the light/dark
-	// spectrum [0, 0.4]
-	function lightness($: ColorEquationTools) {
-		const fromL = $.add(
-			$.literal('l'),
-			$.multiply(
-				$.divide(
-					$.subtract($.literal('l'), $.literal('0.2')),
-					$.literal('0.2'),
-				),
-				$.literal('-0.001'),
-			),
-		);
-		return $.subtract(fromL, $.fn('pow', $.literal('c'), $.literal(1.6)));
-	}
-	function chroma($: ColorEquationTools) {
-		return $.multiply(
-			$.literal('c'),
-			$.literal(PROPS.USER.SATURATION.VAR),
-			$.literal(PROPS.LOCAL.SATURATION.VAR),
-			$.literal('0.15'),
-		);
-	}
-
-	return {
-		[PROPS.COLOR('neutral').PAPER.NAME]: oklchBuilder(($) => ({
-			from: $.literal(sourceColorFamily.PAPER.NAME),
-			l: lightness($),
-			c: chroma($),
-			h: $.literal('h'),
-		})).printComputed(context),
-		[PROPS.COLOR('neutral').WASH.NAME]: oklchBuilder(($) => ({
-			from: $.literal(sourceColorFamily.WASH.NAME),
-			l: lightness($),
-			c: chroma($),
-			h: $.literal('h'),
-		})).printComputed(context),
-		[PROPS.COLOR('neutral').LIGHTER.NAME]: oklchBuilder(($) => ({
-			from: $.literal(sourceColorFamily.LIGHTER.NAME),
-			l: lightness($),
-			c: chroma($),
-			h: $.literal('h'),
-		})).printComputed(context),
-		[PROPS.COLOR('neutral').LIGHT.NAME]: oklchBuilder(($) => ({
-			from: $.literal(sourceColorFamily.LIGHT.NAME),
-			l: lightness($),
-			c: chroma($),
-			h: $.literal('h'),
-		})).printComputed(context),
-		[PROPS.COLOR('neutral').DEFAULT.NAME]: oklchBuilder(($) => ({
-			from: $.literal(sourceColorFamily.DEFAULT.NAME),
-			l: lightness($),
-			c: chroma($),
-			h: $.literal('h'),
-		})).printComputed(context),
-		[PROPS.COLOR('neutral').DARK.NAME]: oklchBuilder(($) => ({
-			from: $.literal(sourceColorFamily.DARK.NAME),
-			l: lightness($),
-			c: chroma($),
-			h: $.literal('h'),
-		})).printComputed(context),
-		[PROPS.COLOR('neutral').DARKER.NAME]: oklchBuilder(($) => ({
-			from: $.literal(sourceColorFamily.DARKER.NAME),
-			l: lightness($),
-			c: chroma($),
-			h: $.literal('h'),
-		})).printComputed(context),
-		[PROPS.COLOR('neutral').INK.NAME]: oklchBuilder(($) => ({
-			from: $.literal(sourceColorFamily.INK.NAME),
-			l: lightness($),
-			c: chroma($),
-			h: $.literal('h'),
-		})).printComputed(context),
-	};
 }

@@ -34,12 +34,12 @@ export function createProp(
 		type,
 		fallback,
 		inherits = true,
-		noPrefix,
+		noNamespace: noPrefix,
 	}: {
 		type: PropertyType;
 		fallback?: string;
 		inherits?: boolean;
-		noPrefix?: boolean;
+		noNamespace?: boolean;
 	},
 ) {
 	const resolvedName = noPrefix ? `--${name}` : `${PROP_PREFIX}-${name}`;
@@ -57,6 +57,20 @@ export function createProp(
 	inherits: ${inherits};
 	initial-value: ${fallback ?? 'initial'};
 }`,
+		SUFFIXED: (suffix: string) =>
+			createProp(`${name}-${suffix}`, {
+				type,
+				fallback,
+				inherits,
+				noNamespace: noPrefix,
+			}),
+		PREFIXED: (prefix: string) =>
+			createProp(`${prefix}-${name}`, {
+				type,
+				fallback,
+				inherits,
+				noNamespace: noPrefix,
+			}),
 	};
 }
 
@@ -75,7 +89,7 @@ export function isProp(value: any): value is ReturnType<typeof createProp> {
 export function prefixProp(name: string, prefix: string) {
 	const cleanName =
 		name.startsWith(PROP_PREFIX) ? name.slice(PROP_PREFIX.length) : name;
-	return `${PROP_PREFIX}-${prefix}-${cleanName}`;
+	return `${PROP_PREFIX}-${prefix}${cleanName}`;
 }
 
 export const PROPS = {

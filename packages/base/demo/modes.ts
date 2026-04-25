@@ -11,6 +11,16 @@ export const modeSchema = createModeSchema({
 		DARKER: 'color',
 		INK: 'color',
 	},
+	NEUTRAL_COLOR: {
+		PAPER: 'color',
+		WASH: 'color',
+		LIGHTER: 'color',
+		LIGHT: 'color',
+		DEFAULT: 'color',
+		DARK: 'color',
+		DARKER: 'color',
+		INK: 'color',
+	},
 	ACTION: {
 		PRIMARY: {
 			BG: 'color',
@@ -81,6 +91,16 @@ export const rootMode = modeSchema.createBase({
 		DARKER: PROPS.COLOR('primary').DARKER.VAR,
 		INK: PROPS.COLOR('primary').INK.VAR,
 	},
+	NEUTRAL_COLOR: {
+		PAPER: PROPS.COLOR('primary').PAPER.SUFFIXED('neutral').VAR,
+		WASH: PROPS.COLOR('primary').WASH.SUFFIXED('neutral').VAR,
+		LIGHTER: PROPS.COLOR('primary').LIGHTER.SUFFIXED('neutral').VAR,
+		LIGHT: PROPS.COLOR('primary').LIGHT.SUFFIXED('neutral').VAR,
+		DEFAULT: PROPS.COLOR('primary').DEFAULT.SUFFIXED('neutral').VAR,
+		DARK: PROPS.COLOR('primary').DARK.SUFFIXED('neutral').VAR,
+		DARKER: PROPS.COLOR('primary').DARKER.SUFFIXED('neutral').VAR,
+		INK: PROPS.COLOR('primary').INK.SUFFIXED('neutral').VAR,
+	},
 	SURFACE: {
 		PRIMARY: {
 			BG: PROPS.COLOR('primary').WASH.VAR,
@@ -88,20 +108,20 @@ export const rootMode = modeSchema.createBase({
 			BORDER: PROPS.COLOR('primary').DARK.VAR,
 		},
 		SECONDARY: {
-			BG: PROPS.COLOR('neutral').LIGHTER.VAR,
-			FG: PROPS.COLOR('neutral').DARKER.VAR,
-			BORDER: PROPS.COLOR('neutral').DARK.VAR,
+			BG: PROPS.COLOR('primary').LIGHTER.SUFFIXED('neutral').VAR,
+			FG: PROPS.COLOR('primary').DARKER.SUFFIXED('neutral').VAR,
+			BORDER: PROPS.COLOR('primary').DARK.SUFFIXED('neutral').VAR,
 		},
 		ANCILLARY: {
-			BG: PROPS.COLOR('neutral').WASH.VAR,
-			FG: PROPS.COLOR('neutral').INK.VAR,
-			BORDER: PROPS.COLOR('neutral').DARK.VAR,
+			BG: PROPS.COLOR('primary').WASH.SUFFIXED('neutral').VAR,
+			FG: PROPS.COLOR('primary').INK.SUFFIXED('neutral').VAR,
+			BORDER: PROPS.COLOR('primary').DARK.SUFFIXED('neutral').VAR,
 		},
 	},
 	CONTROL: {
-		BG: PROPS.COLOR('neutral').PAPER.VAR,
-		FG: PROPS.COLOR('neutral').INK.VAR,
-		BORDER: PROPS.COLOR('neutral').DARK.VAR,
+		BG: PROPS.COLOR('primary').PAPER.SUFFIXED('neutral').VAR,
+		FG: PROPS.COLOR('primary').INK.SUFFIXED('neutral').VAR,
+		BORDER: PROPS.COLOR('primary').DARK.SUFFIXED('neutral').VAR,
 	},
 	ACTION: {
 		PRIMARY: {
@@ -110,14 +130,14 @@ export const rootMode = modeSchema.createBase({
 			BORDER: PROPS.COLOR('primary').DARK.VAR,
 		},
 		SECONDARY: {
-			BG: PROPS.COLOR('neutral').LIGHTER.VAR,
-			FG: PROPS.COLOR('neutral').DARKER.VAR,
-			BORDER: PROPS.COLOR('neutral').DARK.VAR,
+			BG: PROPS.COLOR('primary').LIGHTER.SUFFIXED('neutral').VAR,
+			FG: PROPS.COLOR('primary').DARKER.SUFFIXED('neutral').VAR,
+			BORDER: PROPS.COLOR('primary').DARK.SUFFIXED('neutral').VAR,
 		},
 		ANCILLARY: {
-			BG: PROPS.COLOR('neutral').WASH.VAR,
-			FG: PROPS.COLOR('neutral').INK.VAR,
-			BORDER: PROPS.COLOR('neutral').DARK.VAR,
+			BG: PROPS.COLOR('primary').WASH.SUFFIXED('neutral').VAR,
+			FG: PROPS.COLOR('primary').INK.SUFFIXED('neutral').VAR,
+			BORDER: PROPS.COLOR('primary').DARK.SUFFIXED('neutral').VAR,
 		},
 	},
 	TEXT: {
@@ -151,6 +171,16 @@ export const altMode = modeSchema.createPartial({
 		DARKER: PROPS.COLOR('alt').DARKER.VAR,
 		INK: PROPS.COLOR('alt').INK.VAR,
 	},
+	NEUTRAL_COLOR: {
+		PAPER: PROPS.COLOR('alt').PAPER.SUFFIXED('neutral').VAR,
+		WASH: PROPS.COLOR('alt').WASH.SUFFIXED('neutral').VAR,
+		LIGHTER: PROPS.COLOR('alt').LIGHTER.SUFFIXED('neutral').VAR,
+		LIGHT: PROPS.COLOR('alt').LIGHT.SUFFIXED('neutral').VAR,
+		DEFAULT: PROPS.COLOR('alt').DEFAULT.SUFFIXED('neutral').VAR,
+		DARK: PROPS.COLOR('alt').DARK.SUFFIXED('neutral').VAR,
+		DARKER: PROPS.COLOR('alt').DARKER.SUFFIXED('neutral').VAR,
+		INK: PROPS.COLOR('alt').INK.SUFFIXED('neutral').VAR,
+	},
 	ACTION: {
 		PRIMARY: {
 			BG: PROPS.COLOR('alt').DEFAULT.VAR,
@@ -161,6 +191,28 @@ export const altMode = modeSchema.createPartial({
 			BG: PROPS.COLOR('alt').LIGHTER.VAR,
 			FG: PROPS.COLOR('alt').DARKER.VAR,
 			BORDER: PROPS.COLOR('alt').DARK.VAR,
+		},
+		ANCILLARY: {
+			BG: PROPS.COLOR('alt').WASH.VAR,
+			FG: PROPS.COLOR('alt').INK.VAR,
+			BORDER: PROPS.COLOR('alt').DARK.VAR,
+		},
+	},
+	SURFACE: {
+		PRIMARY: {
+			BG: PROPS.COLOR('alt').WASH.VAR,
+			FG: PROPS.COLOR('alt').INK.VAR,
+			BORDER: PROPS.COLOR('alt').DARK.VAR,
+		},
+		SECONDARY: {
+			BG: PROPS.COLOR('alt').LIGHTER.SUFFIXED('neutral').VAR,
+			FG: PROPS.COLOR('alt').DARKER.SUFFIXED('neutral').VAR,
+			BORDER: PROPS.COLOR('alt').DARK.SUFFIXED('neutral').VAR,
+		},
+		ANCILLARY: {
+			BG: PROPS.COLOR('alt').WASH.SUFFIXED('neutral').VAR,
+			FG: PROPS.COLOR('alt').INK.SUFFIXED('neutral').VAR,
+			BORDER: PROPS.COLOR('alt').DARK.SUFFIXED('neutral').VAR,
 		},
 	},
 	CONTROL: {

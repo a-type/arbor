@@ -78,14 +78,24 @@ class ColorRange extends HTMLElement {
 		super();
 		this.attachShadow({ mode: 'closed' }).innerHTML = `
 			<div class="range">
-				<div class="color" style="background-color: ${modeSchema.PROPS.MAIN_COLOR.PAPER.VAR}">Paper</div>
-				<div class="color" style="background-color: ${modeSchema.PROPS.MAIN_COLOR.WASH.VAR}">Wash</div>
-				<div class="color" style="background-color: ${modeSchema.PROPS.MAIN_COLOR.LIGHTER.VAR}">Lighter</div>
-				<div class="color" style="background-color: ${modeSchema.PROPS.MAIN_COLOR.LIGHT.VAR}">Light</div>
-				<div class="color" style="background-color: ${modeSchema.PROPS.MAIN_COLOR.DEFAULT.VAR}">Default</div>
-				<div class="color" style="background-color: ${modeSchema.PROPS.MAIN_COLOR.DARK.VAR}">Dark</div>
-				<div class="color" style="background-color: ${modeSchema.PROPS.MAIN_COLOR.DARKER.VAR}">Darker</div>
-				<div class="color" style="background-color: ${modeSchema.PROPS.MAIN_COLOR.INK.VAR}">Ink</div>
+				<div class="color" style="background-color: ${modeSchema.PROPS.MAIN_COLOR.PAPER.VAR}; color: ${modeSchema.PROPS.MAIN_COLOR.INK.VAR}">Paper</div>
+				<div class="color" style="background-color: ${modeSchema.PROPS.MAIN_COLOR.WASH.VAR}; color: ${modeSchema.PROPS.MAIN_COLOR.INK.VAR}">Wash</div>
+				<div class="color" style="background-color: ${modeSchema.PROPS.MAIN_COLOR.LIGHTER.VAR}; color: ${modeSchema.PROPS.MAIN_COLOR.INK.VAR}">Lighter</div>
+				<div class="color" style="background-color: ${modeSchema.PROPS.MAIN_COLOR.LIGHT.VAR}; color: ${modeSchema.PROPS.MAIN_COLOR.INK.VAR}">Light</div>
+				<div class="color" style="background-color: ${modeSchema.PROPS.MAIN_COLOR.DEFAULT.VAR}; color: ${modeSchema.PROPS.MAIN_COLOR.INK.VAR}">Default</div>
+				<div class="color" style="background-color: ${modeSchema.PROPS.MAIN_COLOR.DARK.VAR}; color: ${modeSchema.PROPS.MAIN_COLOR.PAPER.VAR}">Dark</div>
+				<div class="color" style="background-color: ${modeSchema.PROPS.MAIN_COLOR.DARKER.VAR}; color: ${modeSchema.PROPS.MAIN_COLOR.PAPER.VAR}">Darker</div>
+				<div class="color" style="background-color: ${modeSchema.PROPS.MAIN_COLOR.INK.VAR}; color: ${modeSchema.PROPS.MAIN_COLOR.PAPER.VAR}">Ink</div>
+			</div>
+			<div class="range">
+				<div class="color" style="background-color: ${modeSchema.PROPS.NEUTRAL_COLOR.PAPER.VAR}; color: ${modeSchema.PROPS.NEUTRAL_COLOR.INK.VAR}">Paper</div>
+				<div class="color" style="background-color: ${modeSchema.PROPS.NEUTRAL_COLOR.WASH.VAR}; color: ${modeSchema.PROPS.NEUTRAL_COLOR.INK.VAR}">Wash</div>
+				<div class="color" style="background-color: ${modeSchema.PROPS.NEUTRAL_COLOR.LIGHTER.VAR}; color: ${modeSchema.PROPS.NEUTRAL_COLOR.INK.VAR}">Lighter</div>
+				<div class="color" style="background-color: ${modeSchema.PROPS.NEUTRAL_COLOR.LIGHT.VAR}; color: ${modeSchema.PROPS.NEUTRAL_COLOR.INK.VAR}">Light</div>
+				<div class="color" style="background-color: ${modeSchema.PROPS.NEUTRAL_COLOR.DEFAULT.VAR}; color: ${modeSchema.PROPS.NEUTRAL_COLOR.INK.VAR}">Default</div>
+				<div class="color" style="background-color: ${modeSchema.PROPS.NEUTRAL_COLOR.DARK.VAR}; color: ${modeSchema.PROPS.NEUTRAL_COLOR.PAPER.VAR}">Dark</div>
+				<div class="color" style="background-color: ${modeSchema.PROPS.NEUTRAL_COLOR.DARKER.VAR}; color: ${modeSchema.PROPS.NEUTRAL_COLOR.PAPER.VAR}">Darker</div>
+				<div class="color" style="background-color: ${modeSchema.PROPS.NEUTRAL_COLOR.INK.VAR}; color: ${modeSchema.PROPS.NEUTRAL_COLOR.PAPER.VAR}">Ink</div>
 			</div>
 			<style>
 				.range {
@@ -94,7 +104,7 @@ class ColorRange extends HTMLElement {
 				}
 				.color {
 					flex: 1;
-					padding: 1rem;
+					padding: calc(${modeSchema.PROPS.DENSITY.VAR} * 1rem);
 					border-radius: 0.25rem;
 					color: ${modeSchema.PROPS.SURFACE.ANCILLARY.FG.VAR};
 					border: 1px solid ${modeSchema.PROPS.SURFACE.ANCILLARY.BORDER.VAR};
