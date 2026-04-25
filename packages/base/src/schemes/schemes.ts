@@ -2,7 +2,7 @@ import { ColorRangeConfig, ColorRangeItem } from '../core/ranges.js';
 
 export interface SchemeDefinition {
 	getColorRange: (
-		config: Pick<ColorRangeConfig, 'sourceHue' | 'context'>,
+		config: Pick<ColorRangeConfig, 'sourceHue' | 'context' | 'rangeNames'>,
 	) => ColorRangeItem[];
 	tag: string;
 }

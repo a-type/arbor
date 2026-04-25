@@ -1,241 +1,244 @@
-import { PROPS, createModeSchema } from '../src/index.js';
+import { createModeSchema } from '../src/index.js';
+import { primitives } from './primitives.js';
+
+const PROPS = primitives.$props;
 
 export const modeSchema = createModeSchema({
-	MAIN_COLOR: {
-		PAPER: 'color',
-		WASH: 'color',
-		LIGHTER: 'color',
-		LIGHT: 'color',
-		DEFAULT: 'color',
-		DARK: 'color',
-		DARKER: 'color',
-		INK: 'color',
+	mainColor: {
+		paper: 'color',
+		wash: 'color',
+		lighter: 'color',
+		light: 'color',
+		mid: 'color',
+		heavy: 'color',
+		heavier: 'color',
+		ink: 'color',
 	},
-	NEUTRAL_COLOR: {
-		PAPER: 'color',
-		WASH: 'color',
-		LIGHTER: 'color',
-		LIGHT: 'color',
-		DEFAULT: 'color',
-		DARK: 'color',
-		DARKER: 'color',
-		INK: 'color',
+	neutralColor: {
+		paper: 'color',
+		wash: 'color',
+		lighter: 'color',
+		light: 'color',
+		mid: 'color',
+		heavy: 'color',
+		heavier: 'color',
+		ink: 'color',
 	},
-	ACTION: {
-		PRIMARY: {
-			BG: 'color',
-			FG: 'color',
-			BORDER: 'color',
+	action: {
+		primary: {
+			bg: 'color',
+			fg: 'color',
+			border: 'color',
 		},
-		SECONDARY: {
-			BG: 'color',
-			FG: 'color',
-			BORDER: 'color',
+		secondary: {
+			bg: 'color',
+			fg: 'color',
+			border: 'color',
 		},
-		ANCILLARY: {
-			BG: 'color',
-			FG: 'color',
-			BORDER: 'color',
-		},
-	},
-	SURFACE: {
-		PRIMARY: {
-			BG: 'color',
-			FG: 'color',
-			BORDER: 'color',
-		},
-		SECONDARY: {
-			BG: 'color',
-			FG: 'color',
-			BORDER: 'color',
-		},
-		ANCILLARY: {
-			BG: 'color',
-			FG: 'color',
-			BORDER: 'color',
+		auxiliary: {
+			bg: 'color',
+			fg: 'color',
+			border: 'color',
 		},
 	},
-	CONTROL: {
-		BG: 'color',
-		FG: 'color',
-		BORDER: 'color',
-	},
-	TEXT: {
-		PRIMARY: {
-			SIZE: 'length',
-			WEIGHT: '*',
-			LINE_HEIGHT: '*',
+	surface: {
+		primary: {
+			bg: 'color',
+			fg: 'color',
+			border: 'color',
 		},
-		SECONDARY: {
-			SIZE: 'length',
-			WEIGHT: '*',
-			LINE_HEIGHT: '*',
+		secondary: {
+			bg: 'color',
+			fg: 'color',
+			border: 'color',
 		},
-		ANCILLARY: {
-			SIZE: 'length',
-			WEIGHT: '*',
-			LINE_HEIGHT: '*',
+		auxiliary: {
+			bg: 'color',
+			fg: 'color',
+			border: 'color',
 		},
 	},
-	DENSITY: 'number',
+	control: {
+		bg: 'color',
+		fg: 'color',
+		border: 'color',
+	},
+	text: {
+		primary: {
+			size: 'length',
+			weight: '*',
+			lineHeight: '*',
+		},
+		secondary: {
+			size: 'length',
+			weight: '*',
+			lineHeight: '*',
+		},
+		auxiliary: {
+			size: 'length',
+			weight: '*',
+			lineHeight: '*',
+		},
+	},
+	density: 'number',
 });
 
 export const rootMode = modeSchema.createBase({
-	MAIN_COLOR: {
-		PAPER: PROPS.COLOR('primary').PAPER.VAR,
-		WASH: PROPS.COLOR('primary').WASH.VAR,
-		LIGHTER: PROPS.COLOR('primary').LIGHTER.VAR,
-		LIGHT: PROPS.COLOR('primary').LIGHT.VAR,
-		DEFAULT: PROPS.COLOR('primary').DEFAULT.VAR,
-		DARK: PROPS.COLOR('primary').DARK.VAR,
-		DARKER: PROPS.COLOR('primary').DARKER.VAR,
-		INK: PROPS.COLOR('primary').INK.VAR,
+	mainColor: {
+		paper: PROPS.colors.primary.paper.var,
+		wash: PROPS.colors.primary.wash.var,
+		lighter: PROPS.colors.primary.lighter.var,
+		light: PROPS.colors.primary.light.var,
+		mid: PROPS.colors.primary.mid.var,
+		heavy: PROPS.colors.primary.heavy.var,
+		heavier: PROPS.colors.primary.heavier.var,
+		ink: PROPS.colors.primary.ink.var,
 	},
-	NEUTRAL_COLOR: {
-		PAPER: PROPS.COLOR('primary').PAPER.SUFFIXED('neutral').VAR,
-		WASH: PROPS.COLOR('primary').WASH.SUFFIXED('neutral').VAR,
-		LIGHTER: PROPS.COLOR('primary').LIGHTER.SUFFIXED('neutral').VAR,
-		LIGHT: PROPS.COLOR('primary').LIGHT.SUFFIXED('neutral').VAR,
-		DEFAULT: PROPS.COLOR('primary').DEFAULT.SUFFIXED('neutral').VAR,
-		DARK: PROPS.COLOR('primary').DARK.SUFFIXED('neutral').VAR,
-		DARKER: PROPS.COLOR('primary').DARKER.SUFFIXED('neutral').VAR,
-		INK: PROPS.COLOR('primary').INK.SUFFIXED('neutral').VAR,
+	neutralColor: {
+		paper: PROPS.colors.primary.paper.suffixed('neutral').var,
+		wash: PROPS.colors.primary.wash.suffixed('neutral').var,
+		lighter: PROPS.colors.primary.lighter.suffixed('neutral').var,
+		light: PROPS.colors.primary.light.suffixed('neutral').var,
+		mid: PROPS.colors.primary.mid.suffixed('neutral').var,
+		heavy: PROPS.colors.primary.heavy.suffixed('neutral').var,
+		heavier: PROPS.colors.primary.heavier.suffixed('neutral').var,
+		ink: PROPS.colors.primary.ink.suffixed('neutral').var,
 	},
-	SURFACE: {
-		PRIMARY: {
-			BG: PROPS.COLOR('primary').WASH.VAR,
-			FG: PROPS.COLOR('primary').INK.VAR,
-			BORDER: PROPS.COLOR('primary').DARK.VAR,
+	surface: {
+		primary: {
+			bg: PROPS.colors.primary.wash.var,
+			fg: PROPS.colors.primary.ink.var,
+			border: PROPS.colors.primary.heavy.var,
 		},
-		SECONDARY: {
-			BG: PROPS.COLOR('primary').LIGHTER.SUFFIXED('neutral').VAR,
-			FG: PROPS.COLOR('primary').DARKER.SUFFIXED('neutral').VAR,
-			BORDER: PROPS.COLOR('primary').DARK.SUFFIXED('neutral').VAR,
+		secondary: {
+			bg: PROPS.colors.primary.lighter.suffixed('neutral').var,
+			fg: PROPS.colors.primary.heavier.suffixed('neutral').var,
+			border: PROPS.colors.primary.heavy.suffixed('neutral').var,
 		},
-		ANCILLARY: {
-			BG: PROPS.COLOR('primary').WASH.SUFFIXED('neutral').VAR,
-			FG: PROPS.COLOR('primary').INK.SUFFIXED('neutral').VAR,
-			BORDER: PROPS.COLOR('primary').DARK.SUFFIXED('neutral').VAR,
-		},
-	},
-	CONTROL: {
-		BG: PROPS.COLOR('primary').PAPER.SUFFIXED('neutral').VAR,
-		FG: PROPS.COLOR('primary').INK.SUFFIXED('neutral').VAR,
-		BORDER: PROPS.COLOR('primary').DARK.SUFFIXED('neutral').VAR,
-	},
-	ACTION: {
-		PRIMARY: {
-			BG: PROPS.COLOR('primary').DEFAULT.VAR,
-			FG: PROPS.COLOR('primary').INK.VAR,
-			BORDER: PROPS.COLOR('primary').DARK.VAR,
-		},
-		SECONDARY: {
-			BG: PROPS.COLOR('primary').LIGHTER.SUFFIXED('neutral').VAR,
-			FG: PROPS.COLOR('primary').DARKER.SUFFIXED('neutral').VAR,
-			BORDER: PROPS.COLOR('primary').DARK.SUFFIXED('neutral').VAR,
-		},
-		ANCILLARY: {
-			BG: PROPS.COLOR('primary').WASH.SUFFIXED('neutral').VAR,
-			FG: PROPS.COLOR('primary').INK.SUFFIXED('neutral').VAR,
-			BORDER: PROPS.COLOR('primary').DARK.SUFFIXED('neutral').VAR,
+		auxiliary: {
+			bg: PROPS.colors.primary.wash.suffixed('neutral').var,
+			fg: PROPS.colors.primary.ink.suffixed('neutral').var,
+			border: PROPS.colors.primary.heavy.suffixed('neutral').var,
 		},
 	},
-	TEXT: {
-		PRIMARY: {
-			SIZE: '5rem',
-			WEIGHT: 'bold',
-			LINE_HEIGHT: '1.5',
+	control: {
+		bg: PROPS.colors.primary.paper.suffixed('neutral').var,
+		fg: PROPS.colors.primary.ink.suffixed('neutral').var,
+		border: PROPS.colors.primary.heavy.suffixed('neutral').var,
+	},
+	action: {
+		primary: {
+			bg: PROPS.colors.primary.mid.var,
+			fg: PROPS.colors.primary.ink.var,
+			border: PROPS.colors.primary.heavy.var,
 		},
-		SECONDARY: {
-			SIZE: '1rem',
-			WEIGHT: 'normal',
-			LINE_HEIGHT: '1.5',
+		secondary: {
+			bg: PROPS.colors.primary.lighter.suffixed('neutral').var,
+			fg: PROPS.colors.primary.heavier.suffixed('neutral').var,
+			border: PROPS.colors.primary.heavy.suffixed('neutral').var,
 		},
-		ANCILLARY: {
-			SIZE: '0.875rem',
-			WEIGHT: 'normal',
-			LINE_HEIGHT: '1.5',
+		auxiliary: {
+			bg: PROPS.colors.primary.wash.suffixed('neutral').var,
+			fg: PROPS.colors.primary.ink.suffixed('neutral').var,
+			border: PROPS.colors.primary.heavy.suffixed('neutral').var,
 		},
 	},
-	DENSITY: 1,
+	text: {
+		primary: {
+			size: '5rem',
+			weight: 'bold',
+			lineHeight: '1.5',
+		},
+		secondary: {
+			size: '1rem',
+			weight: 'normal',
+			lineHeight: '1.5',
+		},
+		auxiliary: {
+			size: '0.875rem',
+			weight: 'normal',
+			lineHeight: '1.5',
+		},
+	},
+	density: 1,
 });
 
 export const altMode = modeSchema.createPartial({
-	MAIN_COLOR: {
-		PAPER: PROPS.COLOR('alt').PAPER.VAR,
-		WASH: PROPS.COLOR('alt').WASH.VAR,
-		LIGHTER: PROPS.COLOR('alt').LIGHTER.VAR,
-		LIGHT: PROPS.COLOR('alt').LIGHT.VAR,
-		DEFAULT: PROPS.COLOR('alt').DEFAULT.VAR,
-		DARK: PROPS.COLOR('alt').DARK.VAR,
-		DARKER: PROPS.COLOR('alt').DARKER.VAR,
-		INK: PROPS.COLOR('alt').INK.VAR,
+	mainColor: {
+		paper: PROPS.colors.alt.paper.var,
+		wash: PROPS.colors.alt.wash.var,
+		lighter: PROPS.colors.alt.lighter.var,
+		light: PROPS.colors.alt.light.var,
+		mid: PROPS.colors.alt.mid.var,
+		heavy: PROPS.colors.alt.heavy.var,
+		heavier: PROPS.colors.alt.heavier.var,
+		ink: PROPS.colors.alt.ink.var,
 	},
-	NEUTRAL_COLOR: {
-		PAPER: PROPS.COLOR('alt').PAPER.SUFFIXED('neutral').VAR,
-		WASH: PROPS.COLOR('alt').WASH.SUFFIXED('neutral').VAR,
-		LIGHTER: PROPS.COLOR('alt').LIGHTER.SUFFIXED('neutral').VAR,
-		LIGHT: PROPS.COLOR('alt').LIGHT.SUFFIXED('neutral').VAR,
-		DEFAULT: PROPS.COLOR('alt').DEFAULT.SUFFIXED('neutral').VAR,
-		DARK: PROPS.COLOR('alt').DARK.SUFFIXED('neutral').VAR,
-		DARKER: PROPS.COLOR('alt').DARKER.SUFFIXED('neutral').VAR,
-		INK: PROPS.COLOR('alt').INK.SUFFIXED('neutral').VAR,
+	neutralColor: {
+		paper: PROPS.colors.alt.paper.suffixed('neutral').var,
+		wash: PROPS.colors.alt.wash.suffixed('neutral').var,
+		lighter: PROPS.colors.alt.lighter.suffixed('neutral').var,
+		light: PROPS.colors.alt.light.suffixed('neutral').var,
+		mid: PROPS.colors.alt.mid.suffixed('neutral').var,
+		heavy: PROPS.colors.alt.heavy.suffixed('neutral').var,
+		heavier: PROPS.colors.alt.heavier.suffixed('neutral').var,
+		ink: PROPS.colors.alt.ink.suffixed('neutral').var,
 	},
-	ACTION: {
-		PRIMARY: {
-			BG: PROPS.COLOR('alt').DEFAULT.VAR,
-			FG: PROPS.COLOR('alt').INK.VAR,
-			BORDER: PROPS.COLOR('alt').DARK.VAR,
+	action: {
+		primary: {
+			bg: PROPS.colors.alt.mid.var,
+			fg: PROPS.colors.alt.ink.var,
+			border: PROPS.colors.alt.heavy.var,
 		},
-		SECONDARY: {
-			BG: PROPS.COLOR('alt').LIGHTER.VAR,
-			FG: PROPS.COLOR('alt').DARKER.VAR,
-			BORDER: PROPS.COLOR('alt').DARK.VAR,
+		secondary: {
+			bg: PROPS.colors.alt.lighter.var,
+			fg: PROPS.colors.alt.heavier.var,
+			border: PROPS.colors.alt.heavy.var,
 		},
-		ANCILLARY: {
-			BG: PROPS.COLOR('alt').WASH.VAR,
-			FG: PROPS.COLOR('alt').INK.VAR,
-			BORDER: PROPS.COLOR('alt').DARK.VAR,
-		},
-	},
-	SURFACE: {
-		PRIMARY: {
-			BG: PROPS.COLOR('alt').WASH.VAR,
-			FG: PROPS.COLOR('alt').INK.VAR,
-			BORDER: PROPS.COLOR('alt').DARK.VAR,
-		},
-		SECONDARY: {
-			BG: PROPS.COLOR('alt').LIGHTER.SUFFIXED('neutral').VAR,
-			FG: PROPS.COLOR('alt').DARKER.SUFFIXED('neutral').VAR,
-			BORDER: PROPS.COLOR('alt').DARK.SUFFIXED('neutral').VAR,
-		},
-		ANCILLARY: {
-			BG: PROPS.COLOR('alt').WASH.SUFFIXED('neutral').VAR,
-			FG: PROPS.COLOR('alt').INK.SUFFIXED('neutral').VAR,
-			BORDER: PROPS.COLOR('alt').DARK.SUFFIXED('neutral').VAR,
+		auxiliary: {
+			bg: PROPS.colors.alt.wash.var,
+			fg: PROPS.colors.alt.ink.var,
+			border: PROPS.colors.alt.heavy.var,
 		},
 	},
-	CONTROL: {
-		BORDER: PROPS.COLOR('alt').DEFAULT.VAR,
-		BG: PROPS.COLOR('alt').WASH.VAR,
+	surface: {
+		primary: {
+			bg: PROPS.colors.alt.wash.var,
+			fg: PROPS.colors.alt.ink.var,
+			border: PROPS.colors.alt.heavy.var,
+		},
+		secondary: {
+			bg: PROPS.colors.alt.lighter.suffixed('neutral').var,
+			fg: PROPS.colors.alt.heavier.suffixed('neutral').var,
+			border: PROPS.colors.alt.heavy.suffixed('neutral').var,
+		},
+		auxiliary: {
+			bg: PROPS.colors.alt.wash.suffixed('neutral').var,
+			fg: PROPS.colors.alt.ink.suffixed('neutral').var,
+			border: PROPS.colors.alt.heavy.suffixed('neutral').var,
+		},
+	},
+	control: {
+		border: PROPS.colors.alt.heavy.var,
+		bg: PROPS.colors.alt.wash.var,
 	},
 });
 
 export const greenButtonsMode = modeSchema.createPartial({
-	ACTION: {
-		PRIMARY: {
-			BG: PROPS.COLOR('green').DEFAULT.VAR,
-			FG: PROPS.COLOR('green').INK.VAR,
-			BORDER: PROPS.COLOR('green').DARK.VAR,
+	action: {
+		primary: {
+			bg: PROPS.colors.green.mid.var,
+			fg: PROPS.colors.green.ink.var,
+			border: PROPS.colors.green.heavy.var,
 		},
-		SECONDARY: {
-			BG: PROPS.COLOR('green').LIGHTER.VAR,
-			FG: PROPS.COLOR('green').DARKER.VAR,
-			BORDER: PROPS.COLOR('green').DARK.VAR,
+		secondary: {
+			bg: PROPS.colors.green.lighter.var,
+			fg: PROPS.colors.green.heavier.var,
+			border: PROPS.colors.green.heavy.var,
 		},
 	},
 });
 
 export const denseMode = modeSchema.createPartial({
-	DENSITY: 0.5,
+	density: 0.5,
 });

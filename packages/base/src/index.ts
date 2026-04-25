@@ -1,9 +1,8 @@
 export * from './config.js';
-export { PROPS } from './core/properties.js';
 export {
 	createColorDarkModeRange,
 	createColorLightModeRange,
-	createColorRangeCustom,
+	createColorRange,
 } from './core/ranges.js';
 export { createModeSchema } from './modes/modeSchema.js';
 export type {

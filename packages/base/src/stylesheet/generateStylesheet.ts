@@ -1,59 +1,39 @@
-import { ArborBaseConfig } from '../config.js';
+import { ArborConfig } from '../config.js';
 import { ColorEvaluationContext } from '../core/color.js';
-import { createProp, prefixProp, PROPS } from '../core/properties.js';
-import {
-	ColorRangeItem,
-	createColorDarkModeRange,
-	createColorLightModeRange,
-	createNeutralDerivedRange,
-} from '../core/ranges.js';
+import { createProp, prefixProp } from '../core/properties.js';
+import { ColorRangeItem, createNeutralDerivedRange } from '../core/ranges.js';
 import {
 	flattenToPropsList,
 	getPropShapeFromMode,
 	ModeSchemaLevel,
 	modeToCss,
 } from '../modes/modeSchema.js';
-import { SchemeDefinition } from '../schemes/schemes.js';
-
-const builtinSchemes: Record<string, SchemeDefinition> = {
-	light: {
-		getColorRange: createColorLightModeRange,
-		tag: '☀️',
-	},
-	dark: {
-		getColorRange: createColorDarkModeRange,
-		tag: '🌑',
-	},
-};
 
 const noPreference = `, (prefers-color-scheme: no-preference)`;
 
 export function generateStylesheet<ModeShape extends ModeSchemaLevel>(
-	config: ArborBaseConfig<ModeShape>,
+	config: ArborConfig<ModeShape>,
 ) {
-	const defaultMode = config.defaultScheme ?? 'light';
+	const defaultMode = config.primitives.defaultScheme ?? 'light';
 
 	const evalContext: ColorEvaluationContext = {
-		propSchema: config.props,
+		propSchema: config.primitives.$props,
 		appliedProperties: {
-			[PROPS.USER.SATURATION.NAME]: config.saturation.toString(),
+			[config.primitives.$props.user.saturation.name]:
+				config.primitives.globals.saturation.toString(),
 		},
 	};
 
-	const schemes = {
-		...builtinSchemes,
-		...config.customSchemes,
-	};
-
 	function getSchemeColorRanges(schemeName: string, prefix?: string) {
-		const scheme = schemes[schemeName]!;
+		const scheme = config.primitives.schemes[schemeName]!;
 		return [
-			...Object.entries(config.namedHues).map(([name, hue]) =>
+			...Object.entries(config.primitives.namedHues).map(([name, hue]) =>
 				colorRangeToCss(
 					name,
 					scheme.getColorRange({
 						sourceHue: hue,
 						context: evalContext,
+						rangeNames: config.primitives.rangeSteps,
 					}),
 					evalContext,
 					prefix,
@@ -69,21 +49,19 @@ export function generateStylesheet<ModeShape extends ModeSchemaLevel>(
 	 * tagged one when it is applied.
 	 */
 	function getSchemeRootPropertiesCss(schemeName: string) {
-		const scheme = schemes[schemeName]!;
+		const scheme = config.primitives.schemes[schemeName]!;
 		const hueRanges = getSchemeColorRanges(schemeName, scheme.tag);
 
-		return `
-		${hueRanges.map(formatPropertiesToCss).join('\n')}
-		`;
+		return hueRanges.map(formatPropertiesToCss).join(' ');
 	}
 
 	function schemeApplicationCss(schemeName: string) {
-		const scheme = schemes[schemeName]!;
+		const scheme = config.primitives.schemes[schemeName]!;
 		const ranges = getSchemeColorRanges(schemeName);
 		const rangeProperties = Object.keys(
 			ranges.reduce((acc, range) => ({ ...acc, ...range }), {}),
 		);
-		return `${PROPS.SCHEME.NAME.ASSIGN(schemeName)}
+		return `${config.primitives.$props.labels.scheme.assign(schemeName)}
 	${rangeProperties
 		.map((prop) => `${prop}: var(${prefixProp(prop, scheme.tag)});`)
 		.join('\n')}
@@ -92,12 +70,13 @@ export function generateStylesheet<ModeShape extends ModeSchemaLevel>(
 
 	const allColorPropertyNamesWithSchemeTags = Array.from(
 		new Set(
-			Object.keys(schemes).flatMap((schemeName) => {
-				const scheme = schemes[schemeName]!;
-				return getSchemeColorRanges(schemeName)
-					.flatMap((item) => Object.keys(item))
-					.flatMap((name) => [name, prefixProp(name, scheme.tag)]);
-			}),
+			Object.entries(config.primitives.schemes).flatMap(
+				([schemeName, scheme]) => {
+					return getSchemeColorRanges(schemeName)
+						.flatMap((item) => Object.keys(item))
+						.flatMap((name) => [name, prefixProp(name, scheme.tag)]);
+				},
+			),
 		),
 	);
 
@@ -111,13 +90,16 @@ export function generateStylesheet<ModeShape extends ModeSchemaLevel>(
 	);
 
 	return `/* Auto-generated CSS - do not edit directly */
-	:root, body {
-		${PROPS.USER.SATURATION.ASSIGN(config.saturation)}
+:root, body {
+	/* Assign user globals */
+	${Object.entries(config.primitives.$props.user)
+		.map(([key, prop]) => prop.assign())
+		.join('\n')}
 
 	/* Raw scheme ranges */
-	${Object.keys(schemes)
+	${Object.keys(config.primitives.schemes)
 		.map((schemeName) => getSchemeRootPropertiesCss(schemeName))
-		.join('\n\n')}
+		.join('\n')}
 
 	/* Dark/Light schemes are assigned to built-in device preferences */
 	@media (prefers-color-scheme: light)${
@@ -134,7 +116,7 @@ export function generateStylesheet<ModeShape extends ModeSchemaLevel>(
 }
 
 /* Scheme class names */
-${Object.keys(schemes)
+${Object.keys(config.primitives.schemes)
 	.map(
 		(schemeName) => `.\\@scheme-${schemeName} {
 	${schemeApplicationCss(schemeName)}
@@ -145,12 +127,12 @@ ${Object.keys(schemes)
 ${Object.entries(config.modes)
 	.map(([modeName, modeValue]) => {
 		return `/* Mode: ${modeName} */
-.\\@mode-${modeName}, ${Object.keys(schemes)
+.\\@mode-${modeName}, ${Object.keys(config.primitives.schemes)
 			.map(
 				(schemeName) => `:where(.\\@mode-${modeName}) .\\@scheme-${schemeName}`,
 			)
 			.join(', ')} {
-	${PROPS.MODE.NAME.ASSIGN(modeName)}
+	${config.primitives.$props.labels.mode.assign(modeName)}
 	${formatPropertiesToCss(modeToCss(modeValue, getPropShapeFromMode(modeValue)))}
 }
 `;
@@ -159,10 +141,10 @@ ${Object.entries(config.modes)
 
 ${/* Custom properties for each color step */ ''}
 ${allColorPropertyNamesWithSchemeTags
-	.map((name) => createProp(name, { type: 'color' }).DEFINITION)
+	.map((name) => createProp(name, { type: 'color' }).definition)
 	.join('\n\n')}
 
-${allModeProps.map((PROP) => PROP.DEFINITION).join('\n\n')}
+${allModeProps.map((PROP) => PROP.definition).join('\n\n')}
 `;
 }
 
@@ -180,7 +162,7 @@ function colorRangeToCss(
 	const colors = range.reduce(
 		(acc, item, i) => {
 			const prop = colorProps[i];
-			acc[prop.NAME] = item.css;
+			acc[prop.name] = item.css;
 			return acc;
 		},
 		{} as Record<string, string>,
@@ -195,5 +177,5 @@ function colorRangeToCss(
 function formatPropertiesToCss(properties: Record<string, string>): string {
 	return Object.entries(properties)
 		.map(([key, value]) => `${key}: ${value};`)
-		.join('\n');
+		.join(' ');
 }

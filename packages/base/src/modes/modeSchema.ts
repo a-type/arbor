@@ -19,7 +19,7 @@ export type ModeSchemaLevel = {
 export type ModeSchema<TSchema extends ModeSchemaLevel = ModeSchemaLevel> = {
 	definition: TSchema;
 	tag: string;
-	PROPS: AsPropertyDefinitions<TSchema>;
+	$props: AsPropertyDefinitions<TSchema>;
 	createBase: (def: ModeOf<TSchema>) => ModeOf<TSchema>;
 	createPartial: (
 		def: DeepPartial<ModeOf<TSchema>>,
@@ -67,7 +67,7 @@ export function createModeSchema<T extends ModeSchemaLevel>(
 	return {
 		definition: schema,
 		tag,
-		PROPS,
+		$props: PROPS,
 		createBase: (def: ModeOf<T>) => {
 			attachSchemaToMode(def, PROPS);
 			return def;
@@ -155,7 +155,7 @@ function modeToCssDeep(
 		if (!isProp(currentProp)) {
 			modeToCssDeep(value, currentProp, cssVars);
 		} else if (isProp(currentProp)) {
-			cssVars[currentProp.NAME] = value as string;
+			cssVars[currentProp.name] = value as string;
 		} else {
 			throw new Error(`Invalid mode schema structure at key: ${key}`);
 		}

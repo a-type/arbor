@@ -1,3 +1,4 @@
+import { createGlobalProps } from '../primitives/globalsConfig.js';
 import {
 	ColorEquation,
 	ColorEquationTools,
@@ -5,7 +6,10 @@ import {
 	oklchBuilder,
 	OklchColorEquation,
 } from './color.js';
-import { PropertyDefinition, PROPS } from './properties.js';
+import { PropertyDefinition } from './properties.js';
+
+// values not important, just need the names.
+const $globalProps = createGlobalProps({});
 
 export interface ColorRangeConfig {
 	/** 0-360ish, OKLCH "H" hue */
@@ -20,9 +24,7 @@ export interface ColorRangeConfig {
 		tools: ColorEquationTools,
 		details: { step: number; rangeSize: number },
 	) => ColorEquation;
-	/** Number of steps */
-	size?: number;
-	name: (step: number) => string;
+	rangeNames: readonly string[];
 	/** Pre-compute steps based on defined properties. */
 	context: ColorEvaluationContext;
 }
@@ -34,27 +36,22 @@ export interface ColorRangeItem {
 }
 
 export function createColorRange(config: ColorRangeConfig): ColorRangeItem[] {
-	const { sourceHue, lightness, chroma, size = 7, name, context } = config;
-	const rangeSize = size - 1;
+	const { sourceHue, lightness, chroma, rangeNames, context } = config;
+	const size = rangeNames.length;
 	return new Array(size)
 		.fill(0)
 		.map((_, i) => {
 			return oklchBuilder(($) => ({
 				l: $.clamp(
-					$.castPercentage(lightness($, { step: i, rangeSize })),
+					$.castPercentage(lightness($, { step: i, rangeSize: size })),
 					$.literal('0%'),
 					$.literal('100%'),
 				),
 				c: $.clamp(
 					$.multiply(
 						$.literal('0.4'),
-						chroma($, { step: i, rangeSize }),
-						$.literal(
-							(ctx) => ctx.appliedProperties[PROPS.LOCAL.SATURATION.NAME],
-						),
-						$.literal(
-							(ctx) => ctx.appliedProperties[PROPS.USER.SATURATION.NAME],
-						),
+						chroma($, { step: i, rangeSize: size }),
+						$.literal($globalProps.saturation.var),
 					),
 					$.literal('0'),
 					$.literal('0.4'),
@@ -65,20 +62,9 @@ export function createColorRange(config: ColorRangeConfig): ColorRangeItem[] {
 		.map((value, i) => ({
 			equation: value,
 			css: value.printComputed(context),
-			name: name(i),
+			name: rangeNames[i],
 		}));
 }
-
-export const defaultRangeItemNames = [
-	'ink',
-	'darker',
-	'dark',
-	'DEFAULT',
-	'light',
-	'lighter',
-	'wash',
-	'paper',
-];
 
 function presetLightnessRange({ dir = 1, base = 0.1, scale = 1.2 } = {}) {
 	return function ($: ColorEquationTools, step: number, rangeSize: number) {
@@ -131,7 +117,7 @@ function presetChromaRange(
 }
 
 export function createColorLightModeRange(
-	config: Omit<ColorRangeConfig, 'lightness' | 'chroma' | 'size' | 'name'> & {
+	config: Omit<ColorRangeConfig, 'lightness' | 'chroma'> & {
 		base?: number;
 		scale?: number;
 	},
@@ -139,9 +125,9 @@ export function createColorLightModeRange(
 	const lightness = presetLightnessRange({
 		dir: 1,
 		base: config.base ?? 0.4,
-		scale: config.scale ?? 1.2,
+		scale: config.scale ?? 1.3,
 	});
-	return createColorRangeCustom({
+	return createColorRange({
 		...config,
 		lightness: ($, { step, rangeSize }) => lightness($, step, rangeSize),
 		chroma: ($, { step, rangeSize }) => presetChromaRange($, step, rangeSize),
@@ -149,31 +135,21 @@ export function createColorLightModeRange(
 }
 
 export function createColorDarkModeRange(
-	config: Omit<ColorRangeConfig, 'lightness' | 'chroma' | 'size' | 'name'> & {
+	config: Omit<ColorRangeConfig, 'lightness' | 'chroma'> & {
 		base?: number;
 		scale?: number;
 	},
 ) {
 	const lightness = presetLightnessRange({
 		dir: -1,
-		base: config.base ?? 0.3,
-		scale: config.scale ?? 0.8,
+		base: config.base ?? 0.2,
+		scale: config.scale ?? 0.7,
 	});
-	return createColorRangeCustom({
+	return createColorRange({
 		...config,
 		lightness: ($, { step, rangeSize }) => lightness($, step, rangeSize),
 		chroma: ($, { step, rangeSize }) =>
 			presetChromaRange($, step, rangeSize, 0.05),
-	});
-}
-
-export function createColorRangeCustom(
-	config: Omit<ColorRangeConfig, 'size' | 'name'>,
-) {
-	return createColorRange({
-		...config,
-		size: defaultRangeItemNames.length,
-		name: (step) => defaultRangeItemNames[step] ?? `step-${step}`,
 	});
 }
 
@@ -199,8 +175,7 @@ export function createNeutralDerivedRange(
 	function chroma($: ColorEquationTools) {
 		return $.multiply(
 			$.literal('c'),
-			$.literal(PROPS.USER.SATURATION.VAR),
-			$.literal(PROPS.LOCAL.SATURATION.VAR),
+			$.literal($globalProps.saturation.var),
 			$.literal('0.15'),
 		);
 	}
@@ -208,9 +183,9 @@ export function createNeutralDerivedRange(
 	return Object.fromEntries(
 		sourceColors.map((prop) => {
 			return [
-				prop.SUFFIXED('neutral').NAME,
+				prop.suffixed('neutral').name,
 				oklchBuilder(($) => ({
-					from: $.literal(prop.NAME),
+					from: $.literal(prop.name),
 					l: lightness($),
 					c: chroma($),
 					h: $.literal('h'),

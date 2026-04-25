@@ -28,6 +28,8 @@ export type PropertyType =
 	| 'url'
 	| '*';
 
+const PROP_BRAND = '@@PROP@@';
+
 export function createProp(
 	name: string,
 	{
@@ -37,34 +39,33 @@ export function createProp(
 		noNamespace: noPrefix,
 	}: {
 		type: PropertyType;
-		fallback?: string;
+		fallback?: string | number;
 		inherits?: boolean;
 		noNamespace?: boolean;
 	},
 ) {
 	const resolvedName = noPrefix ? `--${name}` : `${PROP_PREFIX}-${name}`;
 	return {
-		NAME: resolvedName,
-		TYPE: type,
-		FALLBACK: fallback,
-		VAR: `var(${resolvedName}${fallback ? `, ${fallback}` : ''})`,
-		ASSIGN: (value?: string | number) =>
+		[PROP_BRAND]: true,
+		name: resolvedName,
+		type: type,
+		fallback: fallback,
+		var: `var(${resolvedName}${fallback ? `, ${fallback}` : ''})`,
+		assign: (value?: string | number) =>
 			`${resolvedName}: ${value ?? fallback};`,
-		NAMESPACED_NAME: (namespace: string) =>
-			`${PROP_PREFIX}-${namespace}-${name}`,
-		DEFINITION: `@property ${resolvedName} {
+		definition: `@property ${resolvedName} {
 	syntax: '${type === '*' ? '*' : `<${type}>`}';
 	inherits: ${inherits};
 	initial-value: ${fallback ?? 'initial'};
 }`,
-		SUFFIXED: (suffix: string) =>
+		suffixed: (suffix: string) =>
 			createProp(`${name}-${suffix}`, {
 				type,
 				fallback,
 				inherits,
 				noNamespace: noPrefix,
 			}),
-		PREFIXED: (prefix: string) =>
+		prefixed: (prefix: string) =>
 			createProp(`${prefix}-${name}`, {
 				type,
 				fallback,
@@ -83,7 +84,7 @@ export type PropertySchema = {
 };
 
 export function isProp(value: any): value is ReturnType<typeof createProp> {
-	return typeof value === 'object' && value !== null && 'NAME' in value;
+	return typeof value === 'object' && value !== null && PROP_BRAND in value;
 }
 
 export function prefixProp(name: string, prefix: string) {
@@ -91,33 +92,6 @@ export function prefixProp(name: string, prefix: string) {
 		name.startsWith(PROP_PREFIX) ? name.slice(PROP_PREFIX.length) : name;
 	return `${PROP_PREFIX}-${prefix}${cleanName}`;
 }
-
-export const PROPS = {
-	SCHEME: {
-		NAME: createProp('🌗-name', { type: '*', fallback: 'light' }),
-		BLACK: createProp('🌗-black', { type: 'color', fallback: '#000000' }),
-		WHITE: createProp('🌗-white', { type: 'color', fallback: '#ffffff' }),
-	},
-	MODE: {
-		NAME: createProp('Ⓜ️-name', { type: '*' }),
-	},
-	USER: {
-		SATURATION: createProp('🧑-sat', { type: 'number', fallback: '0.6' }),
-	},
-	LOCAL: {
-		SATURATION: createProp('🏠-sat', { type: 'number', fallback: '1' }),
-	},
-	COLOR: (name: string) => ({
-		PAPER: createProp(`${name}-paper`, { type: 'color' }),
-		WASH: createProp(`${name}-wash`, { type: 'color' }),
-		LIGHTER: createProp(`${name}-lighter`, { type: 'color' }),
-		LIGHT: createProp(`${name}-light`, { type: 'color' }),
-		DEFAULT: createProp(`${name}-DEFAULT`, { type: 'color' }),
-		DARK: createProp(`${name}-dark`, { type: 'color' }),
-		DARKER: createProp(`${name}-darker`, { type: 'color' }),
-		INK: createProp(`${name}-ink`, { type: 'color' }),
-	}),
-} satisfies PropertySchema;
 
 /**
  * Maps all PROP values to themselves - i.e.
@@ -134,7 +108,7 @@ export function selfReferencedProps(
 		for (const key in node) {
 			const value = node[key];
 			if (isProp(value)) {
-				result[value.NAME] = value.VAR;
+				result[value.name] = value.var;
 			} else if (typeof value === 'object') {
 				walk(value);
 			}
