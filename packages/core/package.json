@@ -28,7 +28,7 @@
 	"dependencies": {
 		"@arbor-css/tokens": "workspace:*",
 		"@arbor-css/globals": "workspace:*",
-		"@arbor-css/color-scheme": "workspace:*",
+		"@arbor-css/schemes": "workspace:*",
 		"@arbor-css/modes": "workspace:*"
 	}
 }
