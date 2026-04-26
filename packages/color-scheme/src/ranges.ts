@@ -133,10 +133,16 @@ function presetLightnessRange({
 	};
 }
 // chroma: reduced at either end of the range
-function presetChromaRange({ base = 0.1, scale = 1.2 }) {
+function presetChromaRange({ base = 0.1, scale = 1.2, grade = 1 }) {
 	return function ($: ColorEquationTools, step: number, rangeSize: number) {
-		return $.add(
+		const baseSlope = $.multiply(
 			$.literal(base),
+			$.literal(grade),
+			$.literal(step / rangeSize),
+		);
+
+		return $.add(
+			baseSlope,
 			$.multiply(
 				$.fn(
 					'pow',
@@ -189,14 +195,16 @@ export function createColorDarkModeRange(
 ) {
 	const lightness = presetLightnessRange({
 		dir: -1,
-		base: config.base ?? 0.2,
+		base: config.base ?? 0.1,
 		// larger = upper range is brighter
-		scale: config.scale ?? 0.8,
+		scale: config.scale ?? 0.9,
+		grade: 0.8,
 	});
 	const chroma = presetChromaRange({
-		base: 0.05,
+		base: 0.5,
 		// larger = lower range is desaturated
-		scale: 1.2,
+		scale: 1.1,
+		grade: 1.3,
 	});
 	return createColorRange(config, {
 		lightness: ($, { step, rangeSize }) => lightness($, step, rangeSize),
