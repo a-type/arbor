@@ -1,17 +1,17 @@
 import { CompiledColors } from '@arbor-css/color-scheme';
 import {
+	flattenToPropsList,
+	getPropShapeFromMode,
+	ModeSchemaLevel,
+	modeToCss,
+} from '@arbor-css/modes';
+import {
 	isToken,
 	selfReferencedProps,
 	TokenSchema,
 	tokenSchemaToList,
 } from '@arbor-css/tokens';
 import { ArborConfig } from '../config.js';
-import {
-	flattenToPropsList,
-	getPropShapeFromMode,
-	ModeSchemaLevel,
-	modeToCss,
-} from '../modes/modeSchema.js';
 import { tokenifyColors } from '../util/tokenifyColors.js';
 
 const noPreference = `, (prefers-color-scheme: no-preference)`;

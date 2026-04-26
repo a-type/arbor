@@ -4,15 +4,13 @@
 	"type": "module",
 	"exports": {
 		".": {
+			"development": "./src/index.ts",
 			"import": "./dist/index.js",
 			"node": "./dist/index.js",
 			"types": "./dist/index.d.ts",
 			"default": "./dist/index.js"
 		}
 	},
-	"main": "./dist/index.js",
-	"module": "./dist/index.js",
-	"types": "./dist/index.d.ts",
 	"sideEffects": false,
 	"scripts": {
 		"build": "tsc",
@@ -30,6 +28,7 @@
 	"dependencies": {
 		"@arbor-css/tokens": "workspace:*",
 		"@arbor-css/globals": "workspace:*",
-		"@arbor-css/color-scheme": "workspace:*"
+		"@arbor-css/color-scheme": "workspace:*",
+		"@arbor-css/modes": "workspace:*"
 	}
 }

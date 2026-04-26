@@ -1,5 +1,5 @@
 import { CompiledColors } from '@arbor-css/color-scheme';
-import { DeepPartial, ModeOf, ModeSchemaLevel } from './modes/modeSchema';
+import { DeepPartial, ModeOf, ModeSchemaLevel } from '@arbor-css/modes';
 import { Primitives } from './primitives/primitives';
 
 export interface ArborConfig<
