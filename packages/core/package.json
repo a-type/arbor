@@ -1,5 +1,5 @@
 {
-	"name": "@arbor-css/base",
+	"name": "@arbor-css/core",
 	"version": "0.0.0",
 	"type": "module",
 	"exports": {
