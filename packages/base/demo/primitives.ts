@@ -1,12 +1,17 @@
-import { createPrimitives } from '../src/primitives/primitives';
-import { contrastScheme } from './schemes';
+import { createPrimitives } from '../src/index.js';
+import { colors } from './colors.js';
+import { contrastScheme } from './schemes.js';
 
 export const primitives = createPrimitives({
-	namedHues: { primary: 90, alt: 210, green: 150 },
+	colors,
 	globals: {
 		saturation: 0.5,
 	},
-	schemes: {
-		contrast: contrastScheme,
+	defaultScheme: 'light',
+	schemeTags: {
+		contrast: contrastScheme.tag,
 	},
 });
+
+primitives.colors.contrast.primary.heavier;
+primitives.$props.colors.primary.heavier;

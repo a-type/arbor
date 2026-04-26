@@ -2,6 +2,8 @@ import { createModeSchema } from '../src/index.js';
 import { primitives } from './primitives.js';
 
 const PROPS = primitives.$props;
+// @ts-expect-error
+PROPS.colors.arbitrary;
 
 export const modeSchema = createModeSchema({
 	mainColor: {
@@ -95,14 +97,14 @@ export const rootMode = modeSchema.createBase({
 		ink: PROPS.colors.primary.ink.var,
 	},
 	neutralColor: {
-		paper: PROPS.colors.primary.paper.suffixed('neutral').var,
-		wash: PROPS.colors.primary.wash.suffixed('neutral').var,
-		lighter: PROPS.colors.primary.lighter.suffixed('neutral').var,
-		light: PROPS.colors.primary.light.suffixed('neutral').var,
-		mid: PROPS.colors.primary.mid.suffixed('neutral').var,
-		heavy: PROPS.colors.primary.heavy.suffixed('neutral').var,
-		heavier: PROPS.colors.primary.heavier.suffixed('neutral').var,
-		ink: PROPS.colors.primary.ink.suffixed('neutral').var,
+		paper: PROPS.colors.primary.neutral.paper.var,
+		wash: PROPS.colors.primary.neutral.wash.var,
+		lighter: PROPS.colors.primary.neutral.lighter.var,
+		light: PROPS.colors.primary.neutral.light.var,
+		mid: PROPS.colors.primary.neutral.mid.var,
+		heavy: PROPS.colors.primary.neutral.heavy.var,
+		heavier: PROPS.colors.primary.neutral.heavier.var,
+		ink: PROPS.colors.primary.neutral.ink.var,
 	},
 	surface: {
 		primary: {
@@ -111,20 +113,20 @@ export const rootMode = modeSchema.createBase({
 			border: PROPS.colors.primary.heavy.var,
 		},
 		secondary: {
-			bg: PROPS.colors.primary.lighter.suffixed('neutral').var,
-			fg: PROPS.colors.primary.heavier.suffixed('neutral').var,
-			border: PROPS.colors.primary.heavy.suffixed('neutral').var,
+			bg: PROPS.colors.primary.paper.var,
+			fg: PROPS.colors.primary.neutral.ink.var,
+			border: PROPS.colors.primary.ink.var,
 		},
 		auxiliary: {
-			bg: PROPS.colors.primary.wash.suffixed('neutral').var,
-			fg: PROPS.colors.primary.ink.suffixed('neutral').var,
-			border: PROPS.colors.primary.heavy.suffixed('neutral').var,
+			bg: PROPS.colors.primary.neutral.wash.var,
+			fg: PROPS.colors.primary.neutral.ink.var,
+			border: PROPS.colors.primary.neutral.heavy.var,
 		},
 	},
 	control: {
-		bg: PROPS.colors.primary.paper.suffixed('neutral').var,
-		fg: PROPS.colors.primary.ink.suffixed('neutral').var,
-		border: PROPS.colors.primary.heavy.suffixed('neutral').var,
+		bg: PROPS.colors.primary.neutral.paper.var,
+		fg: PROPS.colors.primary.neutral.ink.var,
+		border: PROPS.colors.primary.neutral.heavy.var,
 	},
 	action: {
 		primary: {
@@ -133,14 +135,14 @@ export const rootMode = modeSchema.createBase({
 			border: PROPS.colors.primary.heavy.var,
 		},
 		secondary: {
-			bg: PROPS.colors.primary.lighter.suffixed('neutral').var,
-			fg: PROPS.colors.primary.heavier.suffixed('neutral').var,
-			border: PROPS.colors.primary.heavy.suffixed('neutral').var,
+			bg: PROPS.colors.primary.neutral.lighter.var,
+			fg: PROPS.colors.primary.neutral.heavier.var,
+			border: PROPS.colors.primary.neutral.heavy.var,
 		},
 		auxiliary: {
-			bg: PROPS.colors.primary.wash.suffixed('neutral').var,
-			fg: PROPS.colors.primary.ink.suffixed('neutral').var,
-			border: PROPS.colors.primary.heavy.suffixed('neutral').var,
+			bg: PROPS.colors.primary.neutral.wash.var,
+			fg: PROPS.colors.primary.neutral.ink.var,
+			border: PROPS.colors.primary.neutral.heavy.var,
 		},
 	},
 	text: {
@@ -175,14 +177,14 @@ export const altMode = modeSchema.createPartial({
 		ink: PROPS.colors.alt.ink.var,
 	},
 	neutralColor: {
-		paper: PROPS.colors.alt.paper.suffixed('neutral').var,
-		wash: PROPS.colors.alt.wash.suffixed('neutral').var,
-		lighter: PROPS.colors.alt.lighter.suffixed('neutral').var,
-		light: PROPS.colors.alt.light.suffixed('neutral').var,
-		mid: PROPS.colors.alt.mid.suffixed('neutral').var,
-		heavy: PROPS.colors.alt.heavy.suffixed('neutral').var,
-		heavier: PROPS.colors.alt.heavier.suffixed('neutral').var,
-		ink: PROPS.colors.alt.ink.suffixed('neutral').var,
+		paper: PROPS.colors.alt.neutral.paper.var,
+		wash: PROPS.colors.alt.neutral.wash.var,
+		lighter: PROPS.colors.alt.neutral.lighter.var,
+		light: PROPS.colors.alt.neutral.light.var,
+		mid: PROPS.colors.alt.neutral.mid.var,
+		heavy: PROPS.colors.alt.neutral.heavy.var,
+		heavier: PROPS.colors.alt.neutral.heavier.var,
+		ink: PROPS.colors.alt.neutral.ink.var,
 	},
 	action: {
 		primary: {
@@ -208,14 +210,14 @@ export const altMode = modeSchema.createPartial({
 			border: PROPS.colors.alt.heavy.var,
 		},
 		secondary: {
-			bg: PROPS.colors.alt.lighter.suffixed('neutral').var,
-			fg: PROPS.colors.alt.heavier.suffixed('neutral').var,
-			border: PROPS.colors.alt.heavy.suffixed('neutral').var,
+			bg: PROPS.colors.alt.paper.var,
+			fg: PROPS.colors.alt.neutral.ink.var,
+			border: PROPS.colors.alt.ink.var,
 		},
 		auxiliary: {
-			bg: PROPS.colors.alt.wash.suffixed('neutral').var,
-			fg: PROPS.colors.alt.ink.suffixed('neutral').var,
-			border: PROPS.colors.alt.heavy.suffixed('neutral').var,
+			bg: PROPS.colors.alt.neutral.wash.var,
+			fg: PROPS.colors.alt.neutral.ink.var,
+			border: PROPS.colors.alt.neutral.heavy.var,
 		},
 	},
 	control: {

@@ -1,4 +1,4 @@
-export const PROP_PREFIX = '--🎨';
+export const TOKEN_PREFIX = '--🎨';
 
 /**
  * Allowed types of properties - specifying one allows defining
@@ -28,9 +28,9 @@ export type PropertyType =
 	| 'url'
 	| '*';
 
-const PROP_BRAND = '@@PROP@@';
+const TOKEN_BRAND = '@@TOKEN@@';
 
-export function createProp(
+export function createToken(
 	name: string,
 	{
 		type,
@@ -44,9 +44,9 @@ export function createProp(
 		noNamespace?: boolean;
 	},
 ) {
-	const resolvedName = noPrefix ? `--${name}` : `${PROP_PREFIX}-${name}`;
+	const resolvedName = noPrefix ? `--${name}` : `${TOKEN_PREFIX}-${name}`;
 	return {
-		[PROP_BRAND]: true,
+		[TOKEN_BRAND]: true,
 		name: resolvedName,
 		type: type,
 		fallback: fallback,
@@ -59,14 +59,14 @@ export function createProp(
 	initial-value: ${fallback ?? 'initial'};
 }`,
 		suffixed: (suffix: string) =>
-			createProp(`${name}-${suffix}`, {
+			createToken(`${name}-${suffix}`, {
 				type,
 				fallback,
 				inherits,
 				noNamespace: noPrefix,
 			}),
 		prefixed: (prefix: string) =>
-			createProp(`${prefix}-${name}`, {
+			createToken(`${prefix}-${name}`, {
 				type,
 				fallback,
 				inherits,
@@ -75,40 +75,60 @@ export function createProp(
 	};
 }
 
-export type PropertyDefinition = ReturnType<typeof createProp>;
-export type PropertySchema = {
+export type Token = ReturnType<typeof createToken>;
+export type TokenSchema = {
 	[Key: string]:
-		| PropertyDefinition
-		| PropertySchema
-		| ((...args: any[]) => Record<string, PropertyDefinition>);
+		| Token
+		| TokenSchema
+		| ((...args: any[]) => Record<string, Token>);
 };
 
-export function isProp(value: any): value is ReturnType<typeof createProp> {
-	return typeof value === 'object' && value !== null && PROP_BRAND in value;
-}
-
-export function prefixProp(name: string, prefix: string) {
-	const cleanName =
-		name.startsWith(PROP_PREFIX) ? name.slice(PROP_PREFIX.length) : name;
-	return `${PROP_PREFIX}-${prefix}${cleanName}`;
+export function isToken(value: any): value is ReturnType<typeof createToken> {
+	return typeof value === 'object' && value !== null && TOKEN_BRAND in value;
 }
 
 /**
- * Maps all PROP values to themselves - i.e.
+ * Maps all token values to themselves - i.e.
  * {
  * '--🌗-black': 'var(--🌗-black)',
  * ...
  * }
  */
 export function selfReferencedProps(
-	schema: PropertySchema,
+	schema: TokenSchema,
+	{
+		valuePrefix: prefix,
+	}: {
+		/** Apply a prefix to the referenced value, i.e. 'Ⓜ️' = '--🌗-black': '--🌗-Ⓜ️-black' */
+		valuePrefix?: string;
+	} = {},
 ): Record<string, string> {
 	const result: Record<string, string> = {};
 	function walk(node: Record<string, any>) {
 		for (const key in node) {
 			const value = node[key];
-			if (isProp(value)) {
-				result[value.name] = value.var;
+			if (isToken(value)) {
+				if (prefix) {
+					result[value.name] = value.prefixed(prefix).var;
+				} else {
+					result[value.name] = value.var;
+				}
+			} else if (typeof value === 'object') {
+				walk(value);
+			}
+		}
+	}
+	walk(schema);
+	return result;
+}
+
+export function tokenSchemaToList(schema: TokenSchema): Token[] {
+	const result: Token[] = [];
+	function walk(node: Record<string, any>) {
+		for (const key in node) {
+			const value = node[key];
+			if (isToken(value)) {
+				result.push(value);
 			} else if (typeof value === 'object') {
 				walk(value);
 			}

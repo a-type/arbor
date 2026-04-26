@@ -1,16 +1,23 @@
+import { CompiledColors } from '@arbor-css/color-scheme';
 import { DeepPartial, ModeOf, ModeSchemaLevel } from './modes/modeSchema';
 import { Primitives } from './primitives/primitives';
 
-export interface ArborConfig<ModeShape extends ModeSchemaLevel> {
-	primitives: Primitives;
+export interface ArborConfig<
+	TModeShape extends ModeSchemaLevel,
+	TCompiledColors extends CompiledColors<any, any>,
+> {
+	primitives: Primitives<TCompiledColors>;
 	modes: {
-		base: ModeOf<ModeShape>;
-		[key: string]: DeepPartial<ModeOf<ModeShape>>;
+		base: ModeOf<TModeShape>;
+		[key: string]: DeepPartial<ModeOf<TModeShape>>;
 	};
 }
 
-export function createConfig<ModeShape extends ModeSchemaLevel>(
-	config: ArborConfig<ModeShape>,
-): ArborConfig<ModeShape> {
+export function createConfig<
+	TModeShape extends ModeSchemaLevel,
+	TCompiledColors extends CompiledColors<any, any>,
+>(
+	config: ArborConfig<TModeShape, TCompiledColors>,
+): ArborConfig<TModeShape, TCompiledColors> {
 	return config;
 }

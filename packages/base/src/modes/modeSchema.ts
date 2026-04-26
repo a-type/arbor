@@ -1,9 +1,4 @@
-import {
-	createProp,
-	isProp,
-	PropertyDefinition,
-	PropertyType,
-} from '../core/properties.js';
+import { createToken, isToken, PropertyType, Token } from '@arbor-css/tokens';
 
 export type ModePropertyType = PropertyType;
 export type ModeSchemaProperty =
@@ -38,11 +33,11 @@ function isModeSchemaProperty(value: any): value is ModeSchemaProperty {
 function getModeSchemaPropertyAsPropertyDefinition(
 	name: string,
 	prop: ModeSchemaProperty,
-): PropertyDefinition {
+): Token {
 	if (typeof prop === 'string') {
-		return createProp(name, { type: prop });
+		return createToken(name, { type: prop });
 	} else {
-		return createProp(name, { type: prop.type, fallback: prop.fallback });
+		return createToken(name, { type: prop.type, fallback: prop.fallback });
 	}
 }
 
@@ -90,7 +85,7 @@ export type ModeOf<T extends ModeSchemaLevel> = {
 type AsPropertyDefinitions<T> =
 	T extends object ?
 		{
-			[P in keyof T]: T[P] extends string ? PropertyDefinition
+			[P in keyof T]: T[P] extends string ? Token
 			: T[P] extends object ? AsPropertyDefinitions<T[P]>
 			: never;
 		}
@@ -123,10 +118,10 @@ function generateModeProperties<T extends ModeSchemaLevel>(
 	return generatePropsForSchemaLevel(root, tag);
 }
 
-export function flattenToPropsList(obj: any): PropertyDefinition[] {
-	const propsList: PropertyDefinition[] = [];
+export function flattenToPropsList(obj: any): Token[] {
+	const propsList: Token[] = [];
 	for (const key in obj) {
-		if (isProp(obj[key])) {
+		if (isToken(obj[key])) {
 			propsList.push(obj[key]);
 		} else if (typeof obj[key] === 'object' && obj[key] !== null) {
 			propsList.push(...flattenToPropsList(obj[key]));
@@ -152,9 +147,9 @@ function modeToCssDeep(
 		if (typeof currentProp !== 'object') {
 			continue;
 		}
-		if (!isProp(currentProp)) {
+		if (!isToken(currentProp)) {
 			modeToCssDeep(value, currentProp, cssVars);
-		} else if (isProp(currentProp)) {
+		} else if (isToken(currentProp)) {
 			cssVars[currentProp.name] = value as string;
 		} else {
 			throw new Error(`Invalid mode schema structure at key: ${key}`);

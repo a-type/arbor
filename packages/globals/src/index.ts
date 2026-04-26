@@ -1,24 +1,30 @@
-import { createProp, PropertyDefinition } from '../core/properties';
+import { createToken, Token } from '@arbor-css/tokens';
 
 export interface PrimitiveGlobals {
 	saturation: number;
+	roundness: number;
 }
 
 export const defaultGlobals: PrimitiveGlobals = {
 	saturation: 0.5,
+	roundness: 0.5,
 };
 
 export function createGlobalProps(
 	config: Partial<PrimitiveGlobals>,
 ): GlobalConfigProps {
 	return {
-		saturation: createProp('🧑-sat', {
+		saturation: createToken('🧑-sat', {
 			type: 'number',
 			fallback: config.saturation,
+		}),
+		roundness: createToken('🧑-round', {
+			type: 'number',
+			fallback: config.roundness,
 		}),
 	};
 }
 
 export type GlobalConfigProps = {
-	[K in keyof PrimitiveGlobals]: PropertyDefinition;
+	[K in keyof PrimitiveGlobals]: Token;
 };

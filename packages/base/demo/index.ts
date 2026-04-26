@@ -62,9 +62,10 @@ class ModeLayer extends HTMLElement {
 					flex-direction: column;
 					gap: 1rem;
 					padding: 1rem;
-					border: 1px solid ${modeSchema.$props.surface.auxiliary.border.var};
-					background-color: ${modeSchema.$props.surface.auxiliary.bg.var};
-					color: ${modeSchema.$props.surface.auxiliary.fg.var};
+					border: 1px solid ${modeSchema.$props.surface.secondary.border.var};
+					background-color: ${modeSchema.$props.surface.secondary.bg.var};
+					color: ${modeSchema.$props.surface.secondary.fg.var};
+					border-radius: 0.25rem;
 				}
 			</style>
 		`;

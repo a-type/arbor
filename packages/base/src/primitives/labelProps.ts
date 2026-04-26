@@ -1,6 +1,6 @@
-import { createProp } from '../core/properties';
+import { createToken } from '@arbor-css/tokens';
 
 export const $labelProps = {
-	mode: createProp('ℹ️-mode', { type: 'string' }),
-	scheme: createProp('ℹ️-scheme', { type: 'string' }),
+	mode: createToken('ℹ️-mode', { type: 'string' }),
+	scheme: createToken('ℹ️-scheme', { type: 'string' }),
 };

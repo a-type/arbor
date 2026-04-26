@@ -1,123 +1,81 @@
-import { createProp, PropertyDefinition } from '../core/properties';
+import { ColorRangeItem, CompiledColors } from '@arbor-css/color-scheme';
 import {
-	createColorDarkModeRange,
-	createColorLightModeRange,
-} from '../core/ranges';
-import { SchemeDefinition } from '../schemes/schemes';
-import { createGlobalProps } from './globalsConfig';
+	createGlobalProps,
+	defaultGlobals,
+	PrimitiveGlobals,
+} from '@arbor-css/globals';
+import { Token } from '@arbor-css/tokens';
+import { tokenifyColors } from '../util/tokenifyColors';
 import { $labelProps } from './labelProps';
-
-export const defaultRangeSteps = [
-	'ink',
-	'heavier',
-	'heavy',
-	'mid',
-	'light',
-	'lighter',
-	'wash',
-	'paper',
-] as const;
-type DefaultRangeStep = (typeof defaultRangeSteps)[number];
-
-export const defaultSchemes = {
-	light: {
-		getColorRange: createColorLightModeRange,
-		tag: '☀️',
-	},
-	dark: {
-		getColorRange: createColorDarkModeRange,
-		tag: '🌑',
-	},
-} satisfies Record<string, SchemeDefinition>;
-
-export interface PrimitiveGlobals {
-	saturation: number;
-}
-
-export const defaultGlobals: PrimitiveGlobals = {
-	saturation: 0.5,
-};
 
 export const defaultDefaultScheme = 'light';
 
 export interface PrimitivesConfig<
-	THueNames extends string = string,
-	TRangeSteps extends string = string,
+	TCompiledColors extends CompiledColors<any, any>,
 > {
-	namedHues: Record<THueNames, number>;
-	rangeSteps: readonly TRangeSteps[];
-	schemes: Record<string, SchemeDefinition>;
-	defaultScheme: 'light' | 'dark' | (string & {});
+	colors: TCompiledColors;
+	defaultScheme: keyof TCompiledColors;
+	schemeTags?: Record<string, string>;
 	globals: PrimitiveGlobals;
 }
 
-export type Primitives<
-	THueNames extends string = string,
-	TRangeSteps extends string = string,
-> = {
-	namedHues: Record<THueNames, number>;
-	rangeSteps: readonly TRangeSteps[];
-	schemes: { light: SchemeDefinition; dark: SchemeDefinition } & Record<
-		string,
-		SchemeDefinition
-	>;
-	defaultScheme: 'light' | 'dark' | (string & {});
+type StringsToTokens<T extends Record<string, any>> = {
+	[K in keyof T]: T[K] extends string ? Token
+	: T[K] extends Record<string, any> ? StringsToTokens<T[K]>
+	: never;
+};
+
+export interface PrimitivesColorScheme {
+	[Color: string]: ColorRangeItem[];
+}
+
+export type Primitives<TCompiledColors extends CompiledColors<any, any>> = {
+	colors: TCompiledColors;
+	defaultScheme: keyof TCompiledColors;
+	schemeTags: Record<string, string>;
 	globals: PrimitiveGlobals;
 	$props: {
 		labels: typeof $labelProps;
-		colors: Record<THueNames, Record<TRangeSteps, PropertyDefinition>>;
+		colors: StringsToTokens<TCompiledColors[keyof TCompiledColors]>;
 		user: {
-			saturation: PropertyDefinition;
+			saturation: Token;
 		};
 	};
 };
 
-type MakeOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
-
 export function createPrimitives<
-	THueNames extends string = string,
-	TRangeSteps extends string = DefaultRangeStep,
->(
-	config: MakeOptional<
-		PrimitivesConfig<THueNames, TRangeSteps>,
-		'rangeSteps' | 'schemes' | 'defaultScheme' | 'globals'
-	>,
-): Primitives<THueNames, TRangeSteps> {
-	const { namedHues, rangeSteps = defaultRangeSteps } = config;
-	const schemes = {
-		...defaultSchemes,
-		...config.schemes,
-	};
-	const colorProps = Object.fromEntries(
-		Object.entries(config.namedHues).map(([name, hue]) => {
-			return [
-				name,
-				Object.fromEntries(
-					rangeSteps.map((step) => {
-						const propName = `${name}-${step}`;
-						return [step, createProp(propName, { type: 'color' })];
-					}),
-				),
-			];
-		}),
-	);
+	TCompiledColors extends CompiledColors<any, any>,
+>(config: PrimitivesConfig<TCompiledColors>): Primitives<TCompiledColors> {
+	const { colors, defaultScheme, globals: userGlobals } = config;
+
+	const arbitraryScheme = Object.values(colors)[0];
+	if (!arbitraryScheme) {
+		throw new Error('At least one color scheme must be defined in primitives');
+	}
+	// TODO: validate all scheme shapes are the same...
+	const $colorProps = tokenifyColors(arbitraryScheme);
 
 	const globals: PrimitiveGlobals = {
 		...defaultGlobals,
-		...config.globals,
+		...userGlobals,
+	};
+
+	const schemeTags = {
+		light: '☀️',
+		dark: '🌑',
+		...config.schemeTags,
 	};
 
 	const userProps = createGlobalProps(globals);
 
 	return {
-		namedHues,
-		rangeSteps: rangeSteps as readonly TRangeSteps[],
-		schemes,
-		defaultScheme: config.defaultScheme ?? defaultDefaultScheme,
+		defaultScheme: defaultScheme ?? defaultDefaultScheme,
+		schemeTags,
 		globals,
+		colors,
 		$props: {
 			labels: $labelProps,
-			colors: colorProps as any,
+			colors: $colorProps as any,
 			user: userProps,
 		},
 	};

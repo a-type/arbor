@@ -1,15 +1,15 @@
-import { PropertySchema, selfReferencedProps } from './properties.js';
+import { TokenSchema, selfReferencedProps } from '@arbor-css/tokens';
 
 /**
  * Values to inject for contextual color variables.
  */
 export interface ColorEvaluationContext {
-	propSchema: PropertySchema;
+	propSchema: TokenSchema;
 	/**
 	 * Precomputed CSS property values to inline when evaluating
 	 * an equation. If a value is not provided, it remains runtime-dynamic.
 	 */
-	appliedProperties: Record<string, string>;
+	appliedProperties: Record<string, string | undefined>;
 }
 
 export interface OklchColorEquation {
@@ -37,7 +37,6 @@ export interface OklchColorEquation {
 	};
 }
 export type ColorEquation = OperationTree;
-type ColorContextEvaluation = (ctx: ColorEvaluationContext) => string;
 type OperationTree =
 	| AddOperation
 	| SubtractOperation
@@ -65,7 +64,7 @@ interface DivideOperation {
 }
 interface LiteralOperation {
 	type: 'literal';
-	value: ColorContextEvaluation;
+	value: string | number;
 }
 interface ClampOperation {
 	type: 'clamp';
@@ -82,11 +81,9 @@ interface FunctionCallOperation {
 	args: ColorEquation[];
 }
 const colorEquationTools = {
-	literal: (
-		value: ColorContextEvaluation | string | number,
-	): LiteralOperation => {
+	literal: (value: string | number): LiteralOperation => {
 		if (typeof value === 'string' || typeof value === 'number') {
-			return { type: 'literal', value: () => String(value) };
+			return { type: 'literal', value };
 		}
 		return { type: 'literal', value };
 	},
@@ -121,29 +118,18 @@ const colorEquationTools = {
 };
 export type ColorEquationTools = typeof colorEquationTools;
 
-export function printEquation(
-	equation: ColorEquation,
-	context: ColorEvaluationContext,
-): string {
+export function printEquation(equation: ColorEquation): string {
 	switch (equation.type) {
 		case 'literal':
-			return equation.value(context).toString();
+			return equation.value.toString();
 		case 'add':
-			return `(${equation.values
-				.map((v) => printEquation(v, context))
-				.join(' + ')})`;
+			return `(${equation.values.map((v) => printEquation(v)).join(' + ')})`;
 		case 'subtract':
-			return `(${equation.values
-				.map((v) => printEquation(v, context))
-				.join(' - ')})`;
+			return `(${equation.values.map((v) => printEquation(v)).join(' - ')})`;
 		case 'multiply':
-			return `(${equation.values
-				.map((v) => printEquation(v, context))
-				.join(' * ')})`;
+			return `(${equation.values.map((v) => printEquation(v)).join(' * ')})`;
 		case 'divide':
-			return `(${equation.values
-				.map((v) => printEquation(v, context))
-				.join(' / ')})`;
+			return `(${equation.values.map((v) => printEquation(v)).join(' / ')})`;
 		case 'clamp':
 			if (equation.values.length !== 3) {
 				throw new Error(
@@ -151,15 +137,15 @@ export function printEquation(
 				);
 			}
 			return `clamp(${equation.values
-				.map((v) => printEquation(v, context))
+				.map((v) => printEquation(v))
 				.join(', ')})`;
 		case 'cast':
-			return `(${printEquation(equation.value, context)} * ${
+			return `(${printEquation(equation.value)} * ${
 				equation.unit === '%' ? '100%' : '1'
 			})`;
 		case 'function':
 			return `${equation.name}(${equation.args
-				.map((v) => printEquation(v, context))
+				.map((v) => printEquation(v))
 				.join(', ')})`;
 		default:
 			throw new Error(`Unknown equation type: ${(equation as any).type}`);
@@ -178,6 +164,12 @@ type ComputationResult =
 	  };
 
 function add(a: ComputationResult, b: ComputationResult): ComputationResult {
+	if (a.value === 0) {
+		return b;
+	}
+	if (b.value === 0) {
+		return a;
+	}
 	if (a.type === 'calc' || b.type === 'calc' || a.unit !== b.unit) {
 		return {
 			type: 'calc',
@@ -193,6 +185,12 @@ function subtract(
 	a: ComputationResult,
 	b: ComputationResult,
 ): ComputationResult {
+	if (b.value === 0) {
+		return a;
+	}
+	if (a.value === 0 && b.type === 'numeric') {
+		return { type: 'numeric', value: -b.value, unit: b.unit };
+	}
 	if (a.type === 'calc' || b.type === 'calc' || a.unit !== b.unit) {
 		return {
 			type: 'calc',
@@ -404,12 +402,18 @@ export function printComputationResult(result: ComputationResult): string {
 	return result.unit === '%' ? `${result.value}%` : `${result.value}`;
 }
 
-function evaluateLiteral(literal: string): ComputationResult {
+function evaluateLiteral(
+	literal: string,
+	context: ColorEvaluationContext,
+): ComputationResult {
 	if (literal.startsWith('var(')) {
-		return { type: 'calc', value: literal };
-	} else if (literal.startsWith('--')) {
-		// TODO: this is a defensive path, and it's used... could it be removed?
-		return { type: 'calc', value: `var(${literal})` };
+		const propertyName = literal.slice(4, -1).trim();
+		const propertyValue = context.appliedProperties[propertyName];
+		if (!propertyValue) {
+			return { type: 'calc', value: literal };
+		} else {
+			return evaluateLiteral(propertyValue, context);
+		}
 	} else if (literal === 'PI') {
 		return { type: 'numeric', value: Math.PI, unit: '' };
 	} else if (literal.endsWith('%')) {
@@ -433,7 +437,7 @@ function computeEquation(
 ): ComputationResult {
 	switch (equation.type) {
 		case 'literal':
-			return evaluateLiteral(equation.value(context)?.toString() ?? '');
+			return evaluateLiteral(equation.value.toString(), context);
 		case 'add':
 			return equation.values.reduce<ComputationResult>(
 				(sum, v) => add(sum, computeEquation(v, context)),
@@ -504,18 +508,11 @@ export function oklchBuilder(
 
 	return {
 		...equations,
-		printDynamic(context: ColorEvaluationContext): string {
-			const dynamicContext: ColorEvaluationContext = {
-				propSchema: context.propSchema,
-				appliedProperties: selfReferencedProps(context.propSchema),
-			};
-			const l = printEquation(equations.l, dynamicContext);
-			const c = printEquation(equations.c, dynamicContext);
-			const h = printEquation(equations.h, dynamicContext);
-			const from =
-				equations.from ?
-					printEquation(equations.from, dynamicContext)
-				:	undefined;
+		printDynamic(): string {
+			const l = printEquation(equations.l);
+			const c = printEquation(equations.c);
+			const h = printEquation(equations.h);
+			const from = equations.from ? printEquation(equations.from) : undefined;
 			return `oklch(${
 				from ? `from ${from} ` : ''
 			}calc(${l}) calc(${c}) calc(${h}))`;
