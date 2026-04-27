@@ -1,9 +1,9 @@
-import { ColorRangeItem, CompiledColors } from '@arbor-css/color-scheme';
 import {
 	createGlobalProps,
 	defaultGlobals,
 	PrimitiveGlobals,
 } from '@arbor-css/globals';
+import { ColorRangeItem, CompiledColors } from '@arbor-css/schemes';
 import { Token } from '@arbor-css/tokens';
 import { tokenifyColors } from '../util/tokenifyColors';
 import { $labelProps } from './labelProps';

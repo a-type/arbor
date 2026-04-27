@@ -1,10 +1,10 @@
-import { CompiledColors } from '@arbor-css/color-scheme';
 import {
 	flattenToPropsList,
 	getPropShapeFromMode,
 	ModeSchemaLevel,
 	modeToCss,
 } from '@arbor-css/modes';
+import { CompiledColors } from '@arbor-css/schemes';
 import {
 	isToken,
 	selfReferencedProps,
