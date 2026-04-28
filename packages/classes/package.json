@@ -1,5 +1,5 @@
 {
-	"name": "@arbor-css/core",
+	"name": "@arbor-css/classes",
 	"version": "0.0.0",
 	"type": "module",
 	"exports": {
@@ -14,22 +14,23 @@
 	"sideEffects": false,
 	"scripts": {
 		"build": "tsc",
-		"dev": "pnpm run --filter @arbor-css/core --parallel \"/^dev:.*/\"",
-		"dev:lib": "tsc -w --preserveWatchOutput",
-		"dev:demo": "vite ./demo",
+		"dev": "tsc -w --preserveWatchOutput",
 		"test": "vitest",
 		"test:ci": "vitest --run"
 	},
+	"peerDependencies": {
+		"@arbor-css/core": "*"
+	},
+	"dependencies": {
+		"@unocss/core": "catalog:",
+		"@unocss/preset-wind4": "catalog:",
+		"unocss": "catalog:"
+	},
 	"devDependencies": {
+		"@arbor-css/core": "workspace:*",
 		"@vitest/browser-playwright": "catalog:",
 		"typescript": "catalog:",
 		"vitest": "catalog:",
 		"vite": "catalog:"
-	},
-	"dependencies": {
-		"@arbor-css/tokens": "workspace:*",
-		"@arbor-css/globals": "workspace:*",
-		"@arbor-css/schemes": "workspace:*",
-		"@arbor-css/modes": "workspace:*"
 	}
 }

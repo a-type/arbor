@@ -1,9 +1,4 @@
 ---
-import { PROPS } from '@arbor-css/core';
-import { Code } from 'astro:components';
-import ConfigSlider from '../components/ConfigSlider.astro';
-import Button from '../components/demos/Button.astro';
-import Demo from '../components/demos/Demo.astro';
 import Logo from '../components/Logo.astro';
 import PaletteSwitcher from '../components/PaletteSwitcher.astro';
 import Layout from '../layouts/Homepage.astro';
@@ -16,7 +11,7 @@ import Layout from '../layouts/Homepage.astro';
 			'gap-lg bg-main-wash color-main-ink md:min-h-50vh',
 		]}
 	>
-		<div class="@group nest-all flex flex-col items-center gap-lg md:flex-row">
+		<div class="flex flex-col items-center gap-lg md:flex-row">
 			<Logo className="h-50vmin md:h-120px w-auto" />
 			<div class="flex flex-col gap">
 				<h1 class="text-10vmin">Arbor&nbsp;CSS</h1>
@@ -27,88 +22,10 @@ import Layout from '../layouts/Homepage.astro';
 
 	<div
 		class:list={[
-			'@group sticky top-0 flex items-center justify-center',
+			'sticky top-0 flex items-center justify-center',
 			'@container/scroll-state',
 		]}
 	>
 		<PaletteSwitcher class="stuck-start:(bg-white b rd text-sm)" />
 	</div>
-
-	<div
-		class:list={[
-			'@group nest-all flex flex-col items-stretch gap p bg-wash b rd',
-		]}
-	>
-		<ConfigSlider
-			param={PROPS.USER.SATURATION}
-			min={0}
-			max={1}
-			name="saturation"
-			startEmoji="⬜"
-			endEmoji="🟩"
-			class="w-full"
-		/>
-		<ConfigSlider
-			param={PROPS.USER.SPACING_SCALE}
-			min={0.1}
-			max={2}
-			name="scale"
-			startEmoji="▪️"
-			endEmoji="⬛"
-			class="w-full"
-		/>
-	</div>
-
-	<Demo>
-		<div slot="doc" class="flex flex-col gap">
-			<h2>Best in class color tooling</h2>
-			<p>Adapt your colors to context with palettes.</p>
-			<p>Tweak shades with relative color utilities.</p>
-		</div>
-		<Code
-			slot="source"
-			lang="html"
-			code={`<button
-	class="
-		bg-main color-contrast p rd
-		hover:bg-darken-1
-		active:bg-darken-2
-	"
->`}
-		/>
-		<Button slot="live">Test</Button>
-	</Demo>
-
-	<Demo>
-		<div slot="doc" class="flex flex-col gap">
-			<h2>Magically adaptive grouping</h2>
-			<p>
-				Use default spacing and radius utilities, and we handle the size for
-				you.
-			</p>
-			<p>
-				Nested group spacing is tighter, radius reduces based on parent padding,
-				and most designs work with no thought required.
-			</p>
-		</div>
-		<Code
-			slot="source"
-			lang="html"
-			code={`<div class="@group nest-all b p rd">
-	...
-	<div class="@group nest-all b p rd">
-		...
-		<div class="@group nest-all b p rd">
-`}
-		/>
-		<div slot="live" class="@group-reset">
-			<div class="@group nest-all b p rd" slot="wrapped">
-				<div class="@group nest-all b p rd">
-					<div class="@group nest-all b p rd">
-						<div>All these boxes use the same classes</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</Demo>
 </Layout>

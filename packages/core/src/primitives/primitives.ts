@@ -14,9 +14,9 @@ export interface PrimitivesConfig<
 	TCompiledColors extends CompiledColors<any, any>,
 > {
 	colors: TCompiledColors;
-	defaultScheme: keyof TCompiledColors;
+	defaultScheme?: keyof TCompiledColors;
 	schemeTags?: Record<string, string>;
-	globals: PrimitiveGlobals;
+	globals?: Partial<PrimitiveGlobals>;
 }
 
 type StringsToTokens<T extends Record<string, any>> = {
@@ -30,6 +30,11 @@ export interface PrimitivesColorScheme {
 }
 
 export type Primitives<TCompiledColors extends CompiledColors<any, any>> = {
+	/**
+	 * A map of color values, keyed by scheme name.
+	 * Each entry is the same structure: a record of color name keys
+	 * and string values which represent CSS colors.
+	 */
 	colors: TCompiledColors;
 	defaultScheme: keyof TCompiledColors;
 	schemeTags: Record<string, string>;

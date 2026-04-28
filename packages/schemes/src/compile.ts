@@ -19,7 +19,7 @@ export type CompiledColorRangeWithNeutral<
 	 * An automatically-generated neutral range derived from
 	 * the color range.
 	 */
-	neutral: CompiledColorRange<TRangeConfig>;
+	$neutral: CompiledColorRange<TRangeConfig>;
 };
 
 export type CompiledColorRanges<
@@ -48,7 +48,7 @@ export function compileColors<
 	globals,
 }: {
 	ranges: TRanges;
-	schemes: TSchemes;
+	schemes?: TSchemes;
 	globals?: Partial<PrimitiveGlobals>;
 }) {
 	const globalTokens = createGlobalProps(globals ?? {});
@@ -62,7 +62,7 @@ export function compileColors<
 		light: defaultLightScheme,
 		dark: defaultDarkScheme,
 		...userSchemes,
-	};
+	} as Record<keyof TSchemes, SchemeDefinition>;
 
 	return Object.keys(schemes).reduce(
 		(acc, schemeName) => {
@@ -82,7 +82,7 @@ export function compileColors<
 
 					rangeAcc[rangeName as keyof TRanges] = {
 						...compiled,
-						neutral: compileRange(uncompiledNeutralRange, evalContext),
+						$neutral: compileRange(uncompiledNeutralRange, evalContext),
 					} as any;
 					return rangeAcc;
 				},

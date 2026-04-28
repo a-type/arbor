@@ -77,7 +77,7 @@ export function createModeSchema<T extends ModeSchemaLevel>(
 export type DeepPartial<T> = { [P in keyof T]?: DeepPartial<T[P]> | undefined };
 
 export type ModeOf<T extends ModeSchemaLevel> = {
-	[P in keyof T]: T[P] extends ModeSchemaProperty ? string | number
+	[P in keyof T]: T[P] extends ModeSchemaProperty ? string | number | Token
 	: T[P] extends ModeSchemaLevel ? ModeOf<T[P]>
 	: never;
 };
@@ -150,7 +150,15 @@ function modeToCssDeep(
 		if (!isToken(currentProp)) {
 			modeToCssDeep(value, currentProp, cssVars);
 		} else if (isToken(currentProp)) {
-			cssVars[currentProp.name] = value as string;
+			if (isToken(value)) {
+				cssVars[currentProp.name] = value.var;
+			} else if (typeof value === 'string' || typeof value === 'number') {
+				cssVars[currentProp.name] = value.toString();
+			} else {
+				throw new Error(
+					`Invalid value for token ${currentProp.name}: ${value}. Must be a string, number, or $token`,
+				);
+			}
 		} else {
 			throw new Error(`Invalid mode schema structure at key: ${key}`);
 		}

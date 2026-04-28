@@ -14,7 +14,7 @@
 	"sideEffects": false,
 	"scripts": {
 		"build": "tsc",
-		"dev": "tsc -w"
+		"dev": "tsc -w --preserveWatchOutput"
 	},
 	"devDependencies": {
 		"typescript": "catalog:",

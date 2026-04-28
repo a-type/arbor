@@ -6,6 +6,12 @@ settings:
 
 catalogs:
   default:
+    '@unocss/core':
+      specifier: ^66.6.8
+      version: 66.6.8
+    '@unocss/preset-wind4':
+      specifier: ^66.6.8
+      version: 66.6.8
     '@vitest/browser-playwright':
       specifier: ^4.1.5
       version: 4.1.5
@@ -28,6 +34,9 @@ importers:
 
   docs:
     dependencies:
+      '@arbor-css/classes':
+        specifier: workspace:^
+        version: link:../packages/classes
       '@arbor-css/core':
         specifier: workspace:^
         version: link:../packages/core
@@ -46,9 +55,12 @@ importers:
       '@types/react-dom':
         specifier: 19.2.3
         version: 19.2.3(@types/react@19.2.7)
+      '@unocss/astro':
+        specifier: ^66.6.8
+        version: 66.6.8(vite@7.2.6(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.32.0))
       '@unocss/preset-icons':
-        specifier: ^66.5.10
-        version: 66.5.10
+        specifier: ^66.6.8
+        version: 66.6.8
       astro:
         specifier: ^5.6.1
         version: 5.16.4(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.53.3)(typescript@6.0.3)
@@ -66,7 +78,7 @@ importers:
         version: 0.34.5
       unocss:
         specifier: 'catalog:'
-        version: 66.6.8(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(vite@7.2.6(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.32.0))
+        version: 66.6.8(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@unocss/astro@66.6.8(vite@7.2.6(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.32.0)))(vite@7.2.6(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.32.0))
       vite:
         specifier: ^7.2.6
         version: 7.2.6(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.32.0)
@@ -74,6 +86,34 @@ importers:
       vite-plugin-watch-and-run:
         specifier: ^1.7.5
         version: 1.7.5
+
+  packages/classes:
+    dependencies:
+      '@unocss/core':
+        specifier: 'catalog:'
+        version: 66.6.8
+      '@unocss/preset-wind4':
+        specifier: 'catalog:'
+        version: 66.6.8
+      unocss:
+        specifier: 'catalog:'
+        version: 66.6.8(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@unocss/astro@66.6.8(vite@8.0.10(@types/node@24.10.1)(esbuild@0.27.3)(jiti@2.6.1)))(vite@8.0.10(@types/node@24.10.1)(esbuild@0.27.3)(jiti@2.6.1))
+    devDependencies:
+      '@arbor-css/core':
+        specifier: workspace:*
+        version: link:../core
+      '@vitest/browser-playwright':
+        specifier: 'catalog:'
+        version: 4.1.5(playwright@1.57.0)(vite@8.0.10(@types/node@24.10.1)(esbuild@0.27.3)(jiti@2.6.1))(vitest@4.1.5)
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
+      vite:
+        specifier: 'catalog:'
+        version: 8.0.10(@types/node@24.10.1)(esbuild@0.27.3)(jiti@2.6.1)
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.5(@types/node@24.10.1)(@vitest/browser-playwright@4.1.5)(vite@8.0.10(@types/node@24.10.1)(esbuild@0.27.3)(jiti@2.6.1))
 
   packages/core:
     dependencies:
@@ -1276,6 +1316,14 @@ packages:
   '@ungap/structured-clone@1.3.0':
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
 
+  '@unocss/astro@66.6.8':
+    resolution: {integrity: sha512-yOc7UzCVxr+tVlcCeiT7eguVsFMeGc+sNk6eqO8sPYsFaDt3IL0FFlfTSHE8jSvpWMe0bBuHU35nLsjn8BgO5w==}
+    peerDependencies:
+      vite: ^2.9.0 || ^3.0.0-0 || ^4.0.0 || ^5.0.0-0 || ^6.0.0-0 || ^7.0.0-0 || ^8.0.0-0
+    peerDependenciesMeta:
+      vite:
+        optional: true
+
   '@unocss/cli@66.6.8':
     resolution: {integrity: sha512-dJ4AmrhCtQwEDJtpFG7AgJ4Qi4GWnNgWWlLWq4DhKBOCcvldr9k98mscdhs3MOwph25DIxU5MdLRAg/OS1JryQ==}
     engines: {node: '>=14'}
@@ -1284,9 +1332,6 @@ packages:
   '@unocss/config@66.6.8':
     resolution: {integrity: sha512-f+a8OyhD7ZoK8Pa1b3Cbx1RQc3n5x+Qht/cHg3wh/g4DNQIjBI2EqwSLfBigWhdO96zIqFAdyTlO3onmrJwUOw==}
     engines: {node: '>=14'}
-
-  '@unocss/core@66.5.10':
-    resolution: {integrity: sha512-SEmPE4pWNn9VcCvZqovPwFGuG/j69W3zh+x1Ky4z/I2pnyoB0Y0lBmq22KVu/dwExe+ZKKTQpxa0j5rbE27rDQ==}
 
   '@unocss/core@66.6.8':
     resolution: {integrity: sha512-P9IlQfgms+8/nka7fBhiiWU4SPwrTNKbTdK0z1SLnttXMHHjsB2zpG+Vi1JQDpICfY9Y1/2pWtguPE+zeOVu9Q==}
@@ -1299,9 +1344,6 @@ packages:
 
   '@unocss/preset-attributify@66.6.8':
     resolution: {integrity: sha512-YxyRSF5rq0WbY8kCG0gpj3DSXPL89QGxZeqABmceCzPJbXJBBHEJz/pgBPmzSa2Ziulgs0AEkHzWFPfpb2uGTA==}
-
-  '@unocss/preset-icons@66.5.10':
-    resolution: {integrity: sha512-zf4Sev/F2QQgVjGjKBCw3BKc15HQAtvUrNX2zymXXbAjt83Lf27ofYzTAUVUO9mi/oQhXcP5sQrIGIe7iQX3hw==}
 
   '@unocss/preset-icons@66.6.8':
     resolution: {integrity: sha512-+zD5TNGZIXvVOMcvDIYaTXinffpDMERGj6Ch8WTtJluA6qHHBvRuFexoU2bY8nF1r0HZkYzNT9C+RujFSP+6TA==}
@@ -1329,6 +1371,9 @@ packages:
 
   '@unocss/preset-wind@66.6.8':
     resolution: {integrity: sha512-F0mdmwK/HelYOgBRMHl+Yx/VyARCQJtPlcgPBejI3E9ZWOZlKS7hvPqPrgvS63WTGMHgM3/22cGuYYFjpi/ugA==}
+
+  '@unocss/reset@66.6.8':
+    resolution: {integrity: sha512-H+YP3ltizUiPO9FzFgFhv8WGsefO7fTgT1If1/9ritPDqZlvzTqMmjelhcq8D8MGoQ1RQBUvtkZ5HJoKVY0Tgw==}
 
   '@unocss/rule-utils@66.6.8':
     resolution: {integrity: sha512-WR35L07mLP6PElD4hlUHo5KbQ48uz2HT/XCuJyAsHP+15Gv6539hPWA5SresPuva9r8rl+PeGIgMSIKf4A5Ihw==}
@@ -3908,6 +3953,23 @@ snapshots:
 
   '@ungap/structured-clone@1.3.0': {}
 
+  '@unocss/astro@66.6.8(vite@7.2.6(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.32.0))':
+    dependencies:
+      '@unocss/core': 66.6.8
+      '@unocss/reset': 66.6.8
+      '@unocss/vite': 66.6.8(vite@7.2.6(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.32.0))
+    optionalDependencies:
+      vite: 7.2.6(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.32.0)
+
+  '@unocss/astro@66.6.8(vite@8.0.10(@types/node@24.10.1)(esbuild@0.27.3)(jiti@2.6.1))':
+    dependencies:
+      '@unocss/core': 66.6.8
+      '@unocss/reset': 66.6.8
+      '@unocss/vite': 66.6.8(vite@8.0.10(@types/node@24.10.1)(esbuild@0.27.3)(jiti@2.6.1))
+    optionalDependencies:
+      vite: 8.0.10(@types/node@24.10.1)(esbuild@0.27.3)(jiti@2.6.1)
+    optional: true
+
   '@unocss/cli@66.6.8':
     dependencies:
       '@jridgewell/remapping': 2.3.5
@@ -3933,8 +3995,6 @@ snapshots:
       consola: 3.4.2
       unconfig: 7.5.0
 
-  '@unocss/core@66.5.10': {}
-
   '@unocss/core@66.6.8': {}
 
   '@unocss/extractor-arbitrary-variants@66.6.8':
@@ -3952,12 +4012,6 @@ snapshots:
   '@unocss/preset-attributify@66.6.8':
     dependencies:
       '@unocss/core': 66.6.8
-
-  '@unocss/preset-icons@66.5.10':
-    dependencies:
-      '@iconify/utils': 3.1.0
-      '@unocss/core': 66.5.10
-      ofetch: 1.5.1
 
   '@unocss/preset-icons@66.6.8':
     dependencies:
@@ -4007,6 +4061,8 @@ snapshots:
       '@unocss/core': 66.6.8
       '@unocss/preset-wind3': 66.6.8
 
+  '@unocss/reset@66.6.8': {}
+
   '@unocss/rule-utils@66.6.8':
     dependencies:
       '@unocss/core': 66.6.8
@@ -4047,6 +4103,19 @@ snapshots:
       tinyglobby: 0.2.16
       unplugin-utils: 0.3.1
       vite: 7.2.6(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.32.0)
+
+  '@unocss/vite@66.6.8(vite@8.0.10(@types/node@24.10.1)(esbuild@0.27.3)(jiti@2.6.1))':
+    dependencies:
+      '@jridgewell/remapping': 2.3.5
+      '@unocss/config': 66.6.8
+      '@unocss/core': 66.6.8
+      '@unocss/inspector': 66.6.8
+      chokidar: 5.0.0
+      magic-string: 0.30.21
+      pathe: 2.0.3
+      tinyglobby: 0.2.16
+      unplugin-utils: 0.3.1
+      vite: 8.0.10(@types/node@24.10.1)(esbuild@0.27.3)(jiti@2.6.1)
 
   '@vitejs/plugin-react@4.7.0(vite@6.4.1(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.32.0))':
     dependencies:
@@ -5990,7 +6059,7 @@ snapshots:
       unist-util-is: 6.0.1
       unist-util-visit-parents: 6.0.2
 
-  unocss@66.6.8(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(vite@7.2.6(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.32.0)):
+  unocss@66.6.8(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@unocss/astro@66.6.8(vite@7.2.6(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.32.0)))(vite@7.2.6(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.32.0)):
     dependencies:
       '@unocss/cli': 66.6.8
       '@unocss/core': 66.6.8
@@ -6009,6 +6078,34 @@ snapshots:
       '@unocss/transformer-directives': 66.6.8
       '@unocss/transformer-variant-group': 66.6.8
       '@unocss/vite': 66.6.8(vite@7.2.6(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.32.0))
+    optionalDependencies:
+      '@unocss/astro': 66.6.8(vite@7.2.6(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.32.0))
+    transitivePeerDependencies:
+      - '@emnapi/core'
+      - '@emnapi/runtime'
+      - vite
+
+  unocss@66.6.8(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@unocss/astro@66.6.8(vite@8.0.10(@types/node@24.10.1)(esbuild@0.27.3)(jiti@2.6.1)))(vite@8.0.10(@types/node@24.10.1)(esbuild@0.27.3)(jiti@2.6.1)):
+    dependencies:
+      '@unocss/cli': 66.6.8
+      '@unocss/core': 66.6.8
+      '@unocss/preset-attributify': 66.6.8
+      '@unocss/preset-icons': 66.6.8
+      '@unocss/preset-mini': 66.6.8
+      '@unocss/preset-tagify': 66.6.8
+      '@unocss/preset-typography': 66.6.8
+      '@unocss/preset-uno': 66.6.8
+      '@unocss/preset-web-fonts': 66.6.8
+      '@unocss/preset-wind': 66.6.8
+      '@unocss/preset-wind3': 66.6.8
+      '@unocss/preset-wind4': 66.6.8
+      '@unocss/transformer-attributify-jsx': 66.6.8(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)
+      '@unocss/transformer-compile-class': 66.6.8
+      '@unocss/transformer-directives': 66.6.8
+      '@unocss/transformer-variant-group': 66.6.8
+      '@unocss/vite': 66.6.8(vite@8.0.10(@types/node@24.10.1)(esbuild@0.27.3)(jiti@2.6.1))
+    optionalDependencies:
+      '@unocss/astro': 66.6.8(vite@8.0.10(@types/node@24.10.1)(esbuild@0.27.3)(jiti@2.6.1))
     transitivePeerDependencies:
       - '@emnapi/core'
       - '@emnapi/runtime'
