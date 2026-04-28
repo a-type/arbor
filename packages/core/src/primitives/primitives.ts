@@ -7,6 +7,7 @@ import { ColorRangeItem, CompiledColors } from '@arbor-css/schemes';
 import { Token } from '@arbor-css/tokens';
 import { tokenifyColors } from '../util/tokenifyColors';
 import { $labelProps } from './labelProps';
+import { $systemProps } from './systemProps';
 
 export const defaultDefaultScheme = 'light';
 
@@ -41,6 +42,7 @@ export type Primitives<TCompiledColors extends CompiledColors<any, any>> = {
 	globals: PrimitiveGlobals;
 	$props: {
 		labels: typeof $labelProps;
+		system: typeof $systemProps;
 		colors: StringsToTokens<TCompiledColors[keyof TCompiledColors]>;
 		user: {
 			saturation: Token;
@@ -80,6 +82,7 @@ export function createPrimitives<
 		colors,
 		$props: {
 			labels: $labelProps,
+			system: $systemProps,
 			colors: $colorProps as any,
 			user: userProps,
 		},

@@ -7,5 +7,11 @@ import react from '@astrojs/react';
 
 // https://astro.build/config
 export default defineConfig({
-	integrations: [UnoCSS(), mdx(), react()],
+	integrations: [
+		UnoCSS({
+			configDeps: ['../packages/core', '../packages/classes'],
+		}),
+		mdx(),
+		react(),
+	],
 });

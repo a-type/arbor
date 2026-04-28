@@ -25,6 +25,8 @@ export function createGlobalProps(
 	};
 }
 
+export const $globalPropsUnset = createGlobalProps({});
+
 export type GlobalConfigProps = {
 	[K in keyof PrimitiveGlobals]: Token;
 };

@@ -51,6 +51,8 @@ export function createToken(
 		type: type,
 		fallback: fallback,
 		var: `var(${resolvedName}${fallback ? `, ${fallback}` : ''})`,
+		varFallback: (fallbackOverride?: string | number) =>
+			`var(${resolvedName}, ${fallbackOverride ?? fallback ?? 'initial'})`,
 		assign: (value?: string | number) =>
 			`${resolvedName}: ${value ?? fallback};`,
 		definition: `@property ${resolvedName} {
