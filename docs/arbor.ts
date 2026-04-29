@@ -10,16 +10,22 @@ const primitives = createPrimitives({
 		ranges: {
 			winter: {
 				sourceHue: 200,
+				saturation: 0.3,
 			},
 			spring: {
 				sourceHue: 120,
 			},
 			summer: {
 				sourceHue: 158,
+				saturation: 1,
 			},
 			fall: {
 				sourceHue: 40,
+				saturation: 0.4,
 			},
+		},
+		globals: {
+			saturation: 0.5,
 		},
 	}),
 });

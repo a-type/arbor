@@ -71,10 +71,7 @@ export function compileColors<
 				(rangeAcc, rangeName) => {
 					const rangeConfig = ranges[rangeName as keyof TRanges];
 
-					const uncompiled = scheme.getColorRange({
-						sourceHue: rangeConfig.sourceHue,
-						rangeNames: rangeConfig.rangeNames,
-					});
+					const uncompiled = scheme.getColorRange(rangeConfig);
 
 					const compiled = compileRange(uncompiled, evalContext);
 

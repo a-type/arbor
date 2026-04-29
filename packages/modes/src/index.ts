@@ -133,13 +133,15 @@ export function flattenToPropsList(obj: any): Token[] {
 export function modeToCss(
 	mode: DeepPartial<ModeOf<any>>,
 	propShape: AsPropertyDefinitions<any>,
+	info: { modeName: string },
 ): Record<string, string> {
-	return modeToCssDeep(mode, propShape);
+	return modeToCssDeep(mode, propShape, info);
 }
 
 function modeToCssDeep(
 	mode: any,
 	propStructure: AsPropertyDefinitions<object>,
+	info: { modeName: string },
 	cssVars: Record<string, string> = {},
 ): Record<string, string> {
 	for (const [key, value] of Object.entries(mode)) {
@@ -148,7 +150,7 @@ function modeToCssDeep(
 			continue;
 		}
 		if (!isToken(currentProp)) {
-			modeToCssDeep(value, currentProp, cssVars);
+			modeToCssDeep(value, currentProp, info, cssVars);
 		} else if (isToken(currentProp)) {
 			if (isToken(value)) {
 				cssVars[currentProp.name] = value.var;
@@ -156,11 +158,13 @@ function modeToCssDeep(
 				cssVars[currentProp.name] = value.toString();
 			} else {
 				throw new Error(
-					`Invalid value for token ${currentProp.name}: ${value}. Must be a string, number, or $token`,
+					`Invalid value for token ${currentProp.name}: ${value}. Must be a string, number, or $token (in mode ${info.modeName})`,
 				);
 			}
 		} else {
-			throw new Error(`Invalid mode schema structure at key: ${key}`);
+			throw new Error(
+				`Invalid mode schema structure at key: ${key} with value ${value} in mode ${info.modeName}`,
+			);
 		}
 	}
 	return cssVars;

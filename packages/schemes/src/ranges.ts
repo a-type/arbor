@@ -28,6 +28,8 @@ export interface ColorRangeConfig<
 	/** 0-360ish, OKLCH "H" hue */
 	sourceHue: number;
 	rangeNames?: readonly RangeNames[];
+	/** 0-1, a local multiplier for chroma, stacks on global and computed value */
+	saturation?: number;
 }
 
 export interface ColorRangeCalculations {
@@ -85,6 +87,7 @@ export function createColorRange<RangeNames extends string = DefaultRangeName>(
 				),
 				c: $.clamp(
 					$.multiply(
+						$.literal(config.saturation ?? 1),
 						$.literal('0.4'),
 						chroma($, { step: i, rangeSize: size }),
 						$.literal($globalProps.saturation.var),

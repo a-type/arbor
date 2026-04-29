@@ -11,15 +11,11 @@ export function convertStructure<In, Out>(
 		...options
 	}: {
 		path?: (string | number)[];
-		filter?: (item: In, path: (string | number)[]) => boolean;
 	} = {},
 ): any {
 	path ??= [];
 	if (matchConvertedItem(input, path)) {
-		if (options.filter && (options.filter?.(input, path) ?? true)) {
-			return convert(input, path);
-		}
-		return undefined;
+		return convert(input, path);
 	} else if (Array.isArray(input)) {
 		return input.map((item, index) =>
 			convertStructure(item, matchConvertedItem, convert, {

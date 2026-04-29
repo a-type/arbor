@@ -114,7 +114,7 @@ ${Object.entries(config.modes)
 			)
 			.join(', ')} {
 	${config.primitives.$props.labels.mode.assign(modeName)}
-	${formatPropertiesToCss(modeToCss(modeValue, getPropShapeFromMode(modeValue)))}
+	${formatPropertiesToCss(modeToCss(modeValue, getPropShapeFromMode(modeValue), { modeName }))}
 }
 `;
 	})
