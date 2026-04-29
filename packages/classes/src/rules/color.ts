@@ -16,6 +16,20 @@ function mod(base: string, level: number, sign: number) {
 	return `color-mix(in oklch, ${base} ${50 + level * sign * 10}%, ${sign === 1 ? 'white' : 'black'})`;
 }
 
+function parseColorWithSuffix(input: string, suffixes: string[], theme: any) {
+	let attempt = parseColor(input, theme);
+	if (attempt?.color) {
+		return attempt;
+	}
+	for (const suffix of suffixes) {
+		attempt = parseColor(`${input}-${suffix}`, theme);
+		if (attempt?.color) {
+			return attempt;
+		}
+	}
+	return null;
+}
+
 export const colorRules: Rule[] = [
 	[
 		/^(?:color|c)-(.*)$/,
@@ -26,7 +40,11 @@ export const colorRules: Rule[] = [
 					[$systemProps.fg.applied.name]: 'unset',
 				};
 			}
-			const parsed = parseColor(match[1], theme);
+			const parsed = parseColorWithSuffix(
+				match[1],
+				['color', 'c', 'fg'],
+				theme,
+			);
 			if (!parsed?.color) {
 				return undefined;
 			}
@@ -83,7 +101,11 @@ export const colorRules: Rule[] = [
 					[$systemProps.bg.applied.name]: 'unset',
 				};
 			}
-			const parsed = parseColor(match[1], theme);
+			const parsed = parseColorWithSuffix(
+				match[1],
+				['bg', 'background'],
+				theme,
+			);
 			if (!parsed?.color) {
 				return undefined;
 			}
@@ -133,7 +155,7 @@ export const colorRules: Rule[] = [
 			if (match[1] === 'none') {
 				return undefined;
 			}
-			const parsed = parseColor(match[1], theme);
+			const parsed = parseColorWithSuffix(match[1], ['border', 'b'], theme);
 			if (!parsed?.color) {
 				return undefined;
 			}
@@ -241,7 +263,7 @@ export const colorRules: Rule[] = [
 	[
 		/^ring-(.*)$/,
 		(match, { theme }) => {
-			const parsed = parseColor(match[1], theme);
+			const parsed = parseColorWithSuffix(match[1], ['ring', 'r'], theme);
 			if (!parsed?.color) {
 				return undefined;
 			}

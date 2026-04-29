@@ -1,6 +1,7 @@
 ---
 import Logo from '../components/Logo.astro';
 import PaletteSwitcher from '../components/PaletteSwitcher.astro';
+import Title from '../components/Title.astro';
 import Layout from '../layouts/Homepage.astro';
 ---
 
@@ -8,13 +9,13 @@ import Layout from '../layouts/Homepage.astro';
 	<section
 		class:list={[
 			'p-xl flex flex-col items-center justify-center',
-			'gap-lg bg-main-wash color-main-ink md:min-h-50vh',
+			'gap-lg bg-mainColor-wash color-mainColor-ink md:min-h-50vh',
 		]}
 	>
 		<div class="flex flex-col items-center gap-lg md:flex-row">
 			<Logo className="h-50vmin md:h-120px w-auto" />
 			<div class="flex flex-col gap">
-				<h1 class="text-10vmin">Arbor&nbsp;CSS</h1>
+				<Title>Arbor&nbsp;CSS</Title>
 				<p class="rounded-lg">The next step in on-demand utility CSS.</p>
 			</div>
 		</div>
@@ -23,9 +24,38 @@ import Layout from '../layouts/Homepage.astro';
 	<div
 		class:list={[
 			'sticky top-0 flex items-center justify-center',
-			'@container/scroll-state',
+			'@container [container-type:scroll-state]',
 		]}
 	>
 		<PaletteSwitcher class="stuck-start:(bg-white b rd text-sm)" />
 	</div>
+
+	<section
+		class:list={['p-xl flex flex-row items-center justify-center gap-lg']}
+	>
+		<div>
+			Designed for <span class="@mode-structure">Structure</span> and <span
+				class="@mode-creativity">Creativity</span
+			>.
+		</div>
+	</section>
+	<section>
+		Features (todo)
+		<ul>
+			<li>Define components once, let modes do the rest.</li>
+			<li>Powered by tokens</li>
+			<li>
+				(Go beyond light and dark) Light and dark schemes built-in, extensible
+				with custom schemes
+			</li>
+			<li>Bake your style configuration in, or leave it runtime dynamic</li>
+			<li>
+				Our preset generates your entire color palette from a handful of hues
+			</li>
+			<li>
+				Full control over color values, range size and step names, everything
+				your design system cares about
+			</li>
+		</ul>
+	</section>
 </Layout>

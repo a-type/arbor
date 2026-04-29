@@ -8,10 +8,10 @@ const id =
 </div>
 <div
 	class:list={[
-		'anchor-to absolute left-[calc(anchor(right)+1rem)] bottom-[calc(anchor(top)+1rem)]',
-		'@group-reset bg-white p-xs border shadow rd-sm w-fit',
+		'absolute left-[calc(anchor(right)+1rem)] bottom-[calc(anchor(top)+1rem)]',
+		'bg-surface-ambient-bg p-xs border shadow rd-sm w-fit',
 	]}
-	data-anchor-to={`--${id}`}
+	style={`position-anchor: --${id}`}
 >
 	<slot name="annotation" />
 	<div
