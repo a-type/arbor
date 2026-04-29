@@ -86,9 +86,41 @@ const rootMode = modeSchema.createBase({
 	density: 1,
 });
 
+function makeSeasonMode(season: 'winter' | 'spring' | 'summer' | 'fall') {
+	return modeSchema.createPartial({
+		mainColor: primitives.$props.colors[season],
+		neutralColor: primitives.$props.colors[season].$neutral,
+		action: {
+			primary: {
+				bg: primitives.$props.colors[season].mid,
+				fg: primitives.$props.colors[season].ink,
+			},
+		},
+		surface: {
+			primary: {
+				bg: primitives.$props.colors[season].wash,
+				fg: primitives.$props.colors[season].ink,
+			},
+			ambient: {
+				bg: primitives.$props.colors[season].$neutral.paper,
+				fg: primitives.$props.colors[season].$neutral.ink,
+			},
+		},
+	});
+}
+
+const winterMode = makeSeasonMode('winter');
+const springMode = makeSeasonMode('spring');
+const summerMode = makeSeasonMode('summer');
+const fallMode = makeSeasonMode('fall');
+
 export const arbor = createConfig({
 	primitives,
 	modes: {
 		base: rootMode,
+		winter: winterMode,
+		spring: springMode,
+		summer: summerMode,
+		fall: fallMode,
 	},
 });

@@ -8,7 +8,7 @@ const { class: cs } = Astro.props;
 		constructor() {
 			super();
 			this.group = document.createElement('div');
-			this.group.className = '@group flex gap-lg justify-center p-xs';
+			this.group.className = 'flex gap-lg justify-center p-xs';
 			this.group.addEventListener('change', this.onChange.bind(this));
 			this.appendChild(this.group);
 			this.populateOptions();
@@ -53,16 +53,16 @@ const { class: cs } = Astro.props;
 					'p-sm',
 					'rd',
 					'cursor-pointer',
-					'bg-main-wash',
+					'bg-action-primary-bg',
 					'hover:bg-darken-1',
 					'active:bg-darken-2',
-					`palette-${palette}`,
+					`@mode-${palette}`,
 				);
 				option.appendChild(input);
 				const label = document.createElement('span');
 				label.classList.add('aspect-1', 'text-size-inherit');
 				label.innerHTML = icons[palette];
-				label.attributes['aria-label'] = `Select ${palette} palette`;
+				label.attributes['aria-label'] = `Select ${palette} theme`;
 				option.appendChild(label);
 				this.group.appendChild(option);
 			});
@@ -74,13 +74,14 @@ const { class: cs } = Astro.props;
 		}
 
 		apply(selectedPalette) {
-			document.body.classList.remove(
-				'palette-winter',
-				'palette-spring',
-				'palette-summer',
-				'palette-fall',
+			const target = document.querySelector('article');
+			target.classList.remove(
+				'@mode-winter',
+				'@mode-spring',
+				'@mode-summer',
+				'@mode-fall',
 			);
-			document.body.classList.add(`palette-${selectedPalette}`);
+			target.classList.add(`@mode-${selectedPalette}`);
 		}
 	}
 
