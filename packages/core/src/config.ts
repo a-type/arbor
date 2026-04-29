@@ -1,4 +1,8 @@
-import { DeepPartial, ModeOf, ModeSchemaLevel } from '@arbor-css/modes';
+import {
+	ModeInstance,
+	ModeSchemaLevel,
+	PartialModeInstance,
+} from '@arbor-css/modes';
 import { CompiledColors } from '@arbor-css/schemes';
 import { Primitives } from './primitives/primitives';
 
@@ -8,8 +12,8 @@ export interface ArborConfig<
 > {
 	primitives: Primitives<TCompiledColors>;
 	modes: {
-		base: ModeOf<TModeShape>;
-		[key: string]: DeepPartial<ModeOf<TModeShape>>;
+		base: ModeInstance<TModeShape>;
+		[key: string]: PartialModeInstance<TModeShape>;
 	};
 }
 

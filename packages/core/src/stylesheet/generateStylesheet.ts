@@ -1,6 +1,5 @@
 import {
 	flattenToPropsList,
-	getPropShapeFromMode,
 	ModeSchemaLevel,
 	modeToCss,
 } from '@arbor-css/modes';
@@ -50,7 +49,7 @@ export function generateStylesheet<
 	const allModeProps = Array.from(
 		new Set(
 			Object.values(config.modes).flatMap((mode) => {
-				const shape = getPropShapeFromMode(mode);
+				const shape = mode.schema.$props;
 				return flattenToPropsList(shape);
 			}),
 		),
@@ -114,7 +113,7 @@ ${Object.entries(config.modes)
 			)
 			.join(', ')} {
 	${config.primitives.$props.labels.mode.assign(modeName)}
-	${formatPropertiesToCss(modeToCss(modeValue, getPropShapeFromMode(modeValue), { modeName }))}
+	${formatPropertiesToCss(modeToCss(modeValue.values, modeValue.schema.$props, { modeName }))}
 }
 `;
 	})

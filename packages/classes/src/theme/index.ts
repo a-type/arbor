@@ -1,9 +1,4 @@
-import {
-	ArborConfig,
-	convertStructure,
-	getPropShapeFromMode,
-	isToken,
-} from '@arbor-css/core';
+import { ArborConfig, convertStructure, isToken } from '@arbor-css/core';
 import { Theme } from '@unocss/preset-wind4';
 
 export function createTheme(arbor: ArborConfig<any, any>) {
@@ -13,7 +8,7 @@ export function createTheme(arbor: ArborConfig<any, any>) {
 		(token) => token.var,
 	);
 
-	const baseModeProps = getPropShapeFromMode(arbor.modes.base);
+	const baseModeProps = arbor.modes.base.schema.$props;
 	const modeColors = convertStructure(baseModeProps, isToken, (token) =>
 		token.type === 'color' ? token.var : undefined,
 	);

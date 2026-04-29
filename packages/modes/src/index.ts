@@ -15,10 +15,14 @@ export type ModeSchema<TSchema extends ModeSchemaLevel = ModeSchemaLevel> = {
 	definition: TSchema;
 	tag: string;
 	$props: AsPropertyDefinitions<TSchema>;
-	createBase: (def: ModeOf<TSchema>) => ModeOf<TSchema>;
+	createBase: (
+		def: ModeValues<TSchema>,
+		config?: Partial<ModeConfig>,
+	) => ModeInstance<TSchema>;
 	createPartial: (
-		def: DeepPartial<ModeOf<TSchema>>,
-	) => DeepPartial<ModeOf<TSchema>>;
+		def: DeepPartial<ModeValues<TSchema>>,
+		config?: Partial<ModeConfig>,
+	) => PartialModeInstance<TSchema>;
 };
 
 function isModeSchemaProperty(value: any): value is ModeSchemaProperty {
@@ -41,45 +45,64 @@ function getModeSchemaPropertyAsPropertyDefinition(
 	}
 }
 
-const shapeSymbol = Symbol('modeSchemaShape');
-
-export function getPropShapeFromMode(mode: any): any {
-	return mode[shapeSymbol] || null;
-}
-
-export function attachSchemaToMode(mode: any, schema: any) {
-	Object.defineProperty(mode, shapeSymbol, {
-		value: schema,
-		enumerable: false,
-	});
-}
-
 export function createModeSchema<T extends ModeSchemaLevel>(
-	schema: T,
-	tag = 'Ⓜ️',
+	input: T,
+	{ tag = 'Ⓜ️' }: { tag?: string; maxDepthTracked?: number } = {},
 ): ModeSchema<T> {
-	const PROPS = generateModeProperties(schema, tag);
-	return {
-		definition: schema,
+	const PROPS = generateModeProperties(input, tag);
+	const schema = {
+		definition: input,
 		tag,
 		$props: PROPS,
-		createBase: (def: ModeOf<T>) => {
-			attachSchemaToMode(def, PROPS);
-			return def;
+		createBase: (def: ModeValues<T>, config?: Partial<ModeConfig>) => {
+			return {
+				values: def,
+				schema,
+				config: {
+					maxDepthTracked: 10,
+					...config,
+				},
+			};
 		},
-		createPartial: (def: DeepPartial<ModeOf<T>>) => {
-			attachSchemaToMode(def, PROPS);
-			return def;
+		createPartial: (
+			def: DeepPartial<ModeValues<T>>,
+			config?: Partial<ModeConfig>,
+		) => {
+			return {
+				values: def,
+				schema,
+				config: {
+					maxDepthTracked: 10,
+					...config,
+				},
+			};
 		},
 	};
+	return schema;
 }
 
 export type DeepPartial<T> = { [P in keyof T]?: DeepPartial<T[P]> | undefined };
 
-export type ModeOf<T extends ModeSchemaLevel> = {
+export type ModeValues<T extends ModeSchemaLevel> = {
 	[P in keyof T]: T[P] extends ModeSchemaProperty ? string | number | Token
-	: T[P] extends ModeSchemaLevel ? ModeOf<T[P]>
+	: T[P] extends ModeSchemaLevel ? ModeValues<T[P]>
 	: never;
+};
+
+export interface ModeConfig {
+	maxDepthTracked: number;
+}
+
+export type ModeInstance<T extends ModeSchemaLevel> = {
+	values: ModeValues<T>;
+	schema: ModeSchema<T>;
+	config: ModeConfig;
+};
+export type PartialModeInstance<T extends ModeSchemaLevel> = Omit<
+	ModeInstance<T>,
+	'values'
+> & {
+	values: DeepPartial<ModeValues<T>>;
 };
 
 type AsPropertyDefinitions<T> =
@@ -131,11 +154,11 @@ export function flattenToPropsList(obj: any): Token[] {
 }
 
 export function modeToCss(
-	mode: DeepPartial<ModeOf<any>>,
+	values: DeepPartial<ModeValues<any>>,
 	propShape: AsPropertyDefinitions<any>,
 	info: { modeName: string },
 ): Record<string, string> {
-	return modeToCssDeep(mode, propShape, info);
+	return modeToCssDeep(values, propShape, info);
 }
 
 function modeToCssDeep(
