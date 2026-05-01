@@ -1,0 +1,27 @@
+{
+	"name": "@arbor-css/typography",
+	"version": "0.0.0",
+	"type": "module",
+	"exports": {
+		".": {
+			"development": "./src/index.ts",
+			"import": "./dist/index.js",
+			"node": "./dist/index.js",
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
+	"sideEffects": false,
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsc -w --preserveWatchOutput"
+	},
+	"devDependencies": {
+		"typescript": "catalog:"
+	},
+	"dependencies": {
+		"@arbor-css/calc": "workspace:*",
+		"@arbor-css/tokens": "workspace:*",
+		"@arbor-css/globals": "workspace:*"
+	}
+}

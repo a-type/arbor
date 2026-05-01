@@ -1,6 +1,17 @@
 import { createToken } from '@arbor-css/tokens';
 
+export const $labelProps = {
+	mode: createToken('ℹ️-mode', { type: 'string' }),
+	scheme: createToken('ℹ️-scheme', { type: 'string' }),
+};
+
 export const $systemProps = {
+	labels: $labelProps,
+	// System color tokens are well-known properties you can
+	// assign colors to which are used by util classes for
+	// color mixing and other things...
+	// TODO: move these to `classes`? Not sure they're relevant
+	// outside that package.
 	fg: makeSystemColorTokens('fg'),
 	bg: makeSystemColorTokens('bg'),
 	borderColor: {

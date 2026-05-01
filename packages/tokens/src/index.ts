@@ -44,7 +44,9 @@ export function createToken(
 		noNamespace?: boolean;
 	},
 ) {
-	const resolvedName = noPrefix ? `--${name}` : `${TOKEN_PREFIX}-${name}`;
+	const escapedName = name.replace('$', '');
+	const resolvedName =
+		noPrefix ? `--${escapedName}` : `${TOKEN_PREFIX}-${escapedName}`;
 	return {
 		[TOKEN_BRAND]: true,
 		name: resolvedName,

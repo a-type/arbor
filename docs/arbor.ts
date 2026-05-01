@@ -9,18 +9,18 @@ const primitives = createPrimitives({
 	colors: compileColors({
 		ranges: {
 			winter: {
-				sourceHue: 200,
+				hue: 200,
 				saturation: 0.3,
 			},
 			spring: {
-				sourceHue: 120,
+				hue: 120,
 			},
 			summer: {
-				sourceHue: 158,
+				hue: 158,
 				saturation: 1,
 			},
 			fall: {
-				sourceHue: 40,
+				hue: 40,
 				saturation: 0.4,
 			},
 		},
@@ -71,22 +71,22 @@ const modeSchema = createModeSchema({
 });
 
 const rootMode = modeSchema.createBase({
-	mainColor: primitives.$props.colors.summer,
-	neutralColor: primitives.$props.colors.summer.$neutral,
+	mainColor: primitives.$tokens.colors.summer,
+	neutralColor: primitives.$tokens.colors.summer.$neutral,
 	action: {
 		primary: {
-			bg: primitives.$props.colors.spring.mid,
-			fg: primitives.$props.colors.spring.ink,
+			bg: primitives.$tokens.colors.spring.mid,
+			fg: primitives.$tokens.colors.spring.ink,
 		},
 	},
 	surface: {
 		primary: {
-			bg: primitives.$props.colors.summer.wash,
-			fg: primitives.$props.colors.summer.ink,
+			bg: primitives.$tokens.colors.summer.wash,
+			fg: primitives.$tokens.colors.summer.ink,
 		},
 		ambient: {
-			bg: primitives.$props.colors.summer.$neutral.paper,
-			fg: primitives.$props.colors.summer.$neutral.ink,
+			bg: primitives.$tokens.colors.summer.$neutral.paper,
+			fg: primitives.$tokens.colors.summer.$neutral.ink,
 		},
 	},
 	density: 1,
@@ -94,22 +94,22 @@ const rootMode = modeSchema.createBase({
 
 function makeSeasonMode(season: 'winter' | 'spring' | 'summer' | 'fall') {
 	return modeSchema.createPartial({
-		mainColor: primitives.$props.colors[season],
-		neutralColor: primitives.$props.colors[season].$neutral,
+		mainColor: primitives.$tokens.colors[season],
+		neutralColor: primitives.$tokens.colors[season].$neutral,
 		action: {
 			primary: {
-				bg: primitives.$props.colors[season].mid,
-				fg: primitives.$props.colors[season].ink,
+				bg: primitives.$tokens.colors[season].mid,
+				fg: primitives.$tokens.colors[season].ink,
 			},
 		},
 		surface: {
 			primary: {
-				bg: primitives.$props.colors[season].wash,
-				fg: primitives.$props.colors[season].ink,
+				bg: primitives.$tokens.colors[season].wash,
+				fg: primitives.$tokens.colors[season].ink,
 			},
 			ambient: {
-				bg: primitives.$props.colors[season].$neutral.paper,
-				fg: primitives.$props.colors[season].$neutral.ink,
+				bg: primitives.$tokens.colors[season].$neutral.paper,
+				fg: primitives.$tokens.colors[season].$neutral.ink,
 			},
 		},
 	});

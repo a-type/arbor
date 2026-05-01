@@ -4,13 +4,13 @@ import { contrastScheme } from './schemes.js';
 export const colors = compileColors({
 	ranges: {
 		primary: {
-			sourceHue: 98,
+			hue: 98,
 		},
 		alt: {
-			sourceHue: 210,
+			hue: 210,
 		},
 		green: {
-			sourceHue: 150,
+			hue: 150,
 		},
 	},
 	schemes: {

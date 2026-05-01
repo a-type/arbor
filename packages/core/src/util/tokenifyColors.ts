@@ -1,5 +1,5 @@
 import { createToken } from '@arbor-css/tokens';
-import { convertStructure } from './convertStructure';
+import { convertStructure } from './convertStructure.js';
 
 /**
  * Replaces each level of a structure of color strings

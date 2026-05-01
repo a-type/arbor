@@ -1,17 +1,17 @@
-import { PrimitiveGlobals } from '@arbor-css/globals';
+import { createGlobals, PrimitiveGlobals } from '@arbor-css/globals';
 import { expect, it } from 'vitest';
-import { compileColors } from './compile';
-import { createColorRange, defaultRangeNames } from './ranges';
+import { compileColors } from './compile.js';
+import { createColorRange, defaultRangeNames } from './ranges.js';
 
 it('compiles a set of color ranges with default schemes and no precalculated globals', () => {
 	const compiled = compileColors({
 		ranges: {
 			primary: {
-				sourceHue: 90,
+				hue: 90,
 				rangeNames: ['dark', 'mid', 'light'],
 			},
 			alt: {
-				sourceHue: 210,
+				hue: 210,
 				rangeNames: ['dark', 'mid', 'light'],
 			},
 		},
@@ -72,11 +72,11 @@ it('compiles a set of color ranges with a custom scheme', () => {
 	const compiled = compileColors({
 		ranges: {
 			primary: {
-				sourceHue: 90,
+				hue: 90,
 				rangeNames: ['dark', 'mid', 'light'],
 			},
 			alt: {
-				sourceHue: 210,
+				hue: 210,
 				rangeNames: ['dark', 'mid', 'light'],
 			},
 		},
@@ -165,14 +165,13 @@ it('compiles a set of color ranges with a custom scheme', () => {
 });
 
 it('precomputes colors when globals are provided', () => {
-	const globals: PrimitiveGlobals = {
+	const globals: PrimitiveGlobals = createGlobals({
 		saturation: 0.5,
-		roundness: 0.5,
-	};
+	});
 	const compiled = compileColors({
 		ranges: {
 			primary: {
-				sourceHue: 90,
+				hue: 90,
 				rangeNames: ['dark', 'mid', 'light'],
 			},
 		},
@@ -214,7 +213,7 @@ it('provides default range names', () => {
 	const compiled = compileColors({
 		ranges: {
 			primary: {
-				sourceHue: 90,
+				hue: 90,
 			},
 		},
 		schemes: {},
@@ -229,11 +228,11 @@ it('supports color-level saturation', () => {
 	const compiled = compileColors({
 		ranges: {
 			primaryLight: {
-				sourceHue: 90,
+				hue: 90,
 				saturation: 0.5,
 			},
 			primary: {
-				sourceHue: 90,
+				hue: 90,
 			},
 		},
 		schemes: {},

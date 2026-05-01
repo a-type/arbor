@@ -11,6 +11,9 @@
 			"default": "./dist/index.js"
 		}
 	},
+	"bin": {
+		"arbor": "./dist/cli/run.js"
+	},
 	"sideEffects": false,
 	"scripts": {
 		"build": "tsc",
@@ -18,9 +21,13 @@
 		"dev:lib": "tsc -w --preserveWatchOutput",
 		"dev:demo": "vite ./demo",
 		"test": "vitest",
-		"test:ci": "vitest --run"
+		"test:ci": "vitest --run",
+		"predemo:generate": "pnpm build",
+		"demo:generate": "node dist/cli/run.js build -c demo/arbor.ts -o demo/arbor.css"
 	},
 	"devDependencies": {
+		"@types/node": "^25.6.0",
+		"@types/yargs": "^17.0.35",
 		"@vitest/browser-playwright": "catalog:",
 		"typescript": "catalog:",
 		"vitest": "catalog:",
@@ -29,7 +36,9 @@
 	"dependencies": {
 		"@arbor-css/tokens": "workspace:*",
 		"@arbor-css/globals": "workspace:*",
-		"@arbor-css/schemes": "workspace:*",
-		"@arbor-css/modes": "workspace:*"
+		"@arbor-css/colors": "workspace:*",
+		"@arbor-css/modes": "workspace:*",
+		"jiti": "^2.6.1",
+		"yargs": "^18.0.0"
 	}
 }

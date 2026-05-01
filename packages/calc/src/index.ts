@@ -1,43 +1,9 @@
-import { TokenSchema, selfReferencedProps } from '@arbor-css/tokens';
-
-/**
- * Values to inject for contextual color variables.
- */
-export interface ColorEvaluationContext {
-	propSchema: TokenSchema;
-	/**
-	 * Precomputed CSS property values to inline when evaluating
-	 * an equation. If a value is not provided, it remains runtime-dynamic.
-	 */
-	appliedProperties: Record<string, string | undefined>;
+export interface CalcEvaluationContext {
+	propertyValues: Record<string, string | undefined>;
 }
 
-export interface OklchColorEquation {
-	l: ColorEquation;
-	c: ColorEquation;
-	h: ColorEquation;
-
-	/**
-	 * Prints the CSS value of the color equation, including all
-	 * calculations and variable references - fully dynamic.
-	 */
-	printDynamic(context: ColorEvaluationContext): string;
-	/**
-	 * Uses the equation and provided context to compute a static
-	 * OKLCH color string with calculations and references resolved.
-	 */
-	printComputed(context: ColorEvaluationContext): string;
-	/**
-	 * Returns the raw computed L, C, H values as numbers with units.
-	 */
-	compute(ctx: ColorEvaluationContext): {
-		l: ComputationResult;
-		c: ComputationResult;
-		h: ComputationResult;
-	};
-}
-export type ColorEquation = OperationTree;
-type OperationTree =
+export type Equation = OperationTree;
+export type OperationTree =
 	| AddOperation
 	| SubtractOperation
 	| MultiplyOperation
@@ -48,19 +14,19 @@ type OperationTree =
 	| FunctionCallOperation;
 interface AddOperation {
 	type: 'add';
-	values: ColorEquation[];
+	values: Equation[];
 }
 interface SubtractOperation {
 	type: 'subtract';
-	values: ColorEquation[];
+	values: Equation[];
 }
 interface MultiplyOperation {
 	type: 'multiply';
-	values: ColorEquation[];
+	values: Equation[];
 }
 interface DivideOperation {
 	type: 'divide';
-	values: [ColorEquation, ColorEquation];
+	values: [Equation, Equation];
 }
 interface LiteralOperation {
 	type: 'literal';
@@ -68,57 +34,51 @@ interface LiteralOperation {
 }
 interface ClampOperation {
 	type: 'clamp';
-	values: ColorEquation[];
+	values: Equation[];
 }
 interface CastOperation {
 	type: 'cast';
-	value: ColorEquation;
+	value: Equation;
 	unit: '%' | '';
 }
 interface FunctionCallOperation {
 	type: 'function';
 	name: string;
-	args: ColorEquation[];
+	args: Equation[];
 }
-const colorEquationTools = {
+
+export const $ = {
 	literal: (value: string | number): LiteralOperation => {
 		if (typeof value === 'string' || typeof value === 'number') {
 			return { type: 'literal', value };
 		}
 		return { type: 'literal', value };
 	},
-	add: (...values: ColorEquation[]): AddOperation => {
+	add: (...values: Equation[]): AddOperation => {
 		return { type: 'add', values };
 	},
-	subtract: (...values: ColorEquation[]): SubtractOperation => {
+	subtract: (...values: Equation[]): SubtractOperation => {
 		return { type: 'subtract', values };
 	},
-	multiply: (...values: ColorEquation[]): MultiplyOperation => {
+	multiply: (...values: Equation[]): MultiplyOperation => {
 		return { type: 'multiply', values };
 	},
-	divide: (
-		numerator: ColorEquation,
-		denominator: ColorEquation,
-	): DivideOperation => {
+	divide: (numerator: Equation, denominator: Equation): DivideOperation => {
 		return { type: 'divide', values: [numerator, denominator] };
 	},
-	clamp: (
-		equation: ColorEquation,
-		min: ColorEquation,
-		max: ColorEquation,
-	): ColorEquation => {
+	clamp: (equation: Equation, min: Equation, max: Equation): Equation => {
 		return { type: 'clamp', values: [min, equation, max] };
 	},
-	castPercentage: (value: ColorEquation): ColorEquation => {
+	castPercentage: (value: Equation): Equation => {
 		return { type: 'cast', value, unit: '%' };
 	},
-	fn: (name: string, ...args: ColorEquation[]): FunctionCallOperation => {
+	fn: (name: string, ...args: Equation[]): FunctionCallOperation => {
 		return { type: 'function', name, args };
 	},
 };
-export type ColorEquationTools = typeof colorEquationTools;
+export type CalcOperations = typeof $;
 
-export function printEquation(equation: ColorEquation): string {
+export function printEquation(equation: Equation): string {
 	switch (equation.type) {
 		case 'literal':
 			return equation.value.toString();
@@ -152,7 +112,7 @@ export function printEquation(equation: ColorEquation): string {
 	}
 }
 
-type ComputationResult =
+export type ComputationResult =
 	| {
 			type: 'numeric';
 			value: number;
@@ -404,11 +364,11 @@ export function printComputationResult(result: ComputationResult): string {
 
 function evaluateLiteral(
 	literal: string,
-	context: ColorEvaluationContext,
+	context: CalcEvaluationContext,
 ): ComputationResult {
 	if (literal.startsWith('var(')) {
 		const propertyName = literal.slice(4, -1).trim();
-		const propertyValue = context.appliedProperties[propertyName];
+		const propertyValue = context.propertyValues[propertyName];
 		if (!propertyValue) {
 			return { type: 'calc', value: literal };
 		} else {
@@ -431,9 +391,9 @@ function evaluateLiteral(
 	}
 }
 
-function computeEquation(
-	equation: ColorEquation,
-	context: ColorEvaluationContext,
+export function computeEquation(
+	equation: Equation,
+	context: CalcEvaluationContext,
 ): ComputationResult {
 	switch (equation.type) {
 		case 'literal':
@@ -485,53 +445,4 @@ function computeEquation(
 		default:
 			throw new Error(`Unknown equation type: ${(equation as any).type}`);
 	}
-}
-
-export function oklchBuilder(
-	impl: (tools: ColorEquationTools) => {
-		from?: ColorEquation;
-		l: ColorEquation;
-		c: ColorEquation;
-		h: ColorEquation;
-	},
-): OklchColorEquation {
-	const equations = impl(colorEquationTools);
-
-	function compute(context: ColorEvaluationContext) {
-		const l = computeEquation(equations.l, context);
-		const c = computeEquation(equations.c, context);
-		const h = computeEquation(equations.h, context);
-		const from =
-			equations.from ? computeEquation(equations.from, context) : undefined;
-		return { l, c, h, from };
-	}
-
-	return {
-		...equations,
-		printDynamic(): string {
-			const l = printEquation(equations.l);
-			const c = printEquation(equations.c);
-			const h = printEquation(equations.h);
-			const from = equations.from ? printEquation(equations.from) : undefined;
-			return `oklch(${
-				from ? `from ${from} ` : ''
-			}calc(${l}) calc(${c}) calc(${h}))`;
-		},
-		printComputed(context: ColorEvaluationContext): string {
-			const { l, c, h, from } = compute({
-				...context,
-				appliedProperties: {
-					// default to self-referenced for undeclared props
-					...selfReferencedProps(context.propSchema),
-					...context?.appliedProperties,
-				},
-			});
-			return `oklch(${
-				from ? `from ${printComputationResult(from)} ` : ''
-			}${printComputationResult(l)} ${printComputationResult(
-				c,
-			)} ${printComputationResult(h)})`;
-		},
-		compute,
-	};
 }

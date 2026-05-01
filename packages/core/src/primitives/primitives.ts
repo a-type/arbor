@@ -1,20 +1,22 @@
+import { ColorRangeItem, CompiledColors } from '@arbor-css/colors';
 import {
 	createGlobalProps,
 	defaultGlobals,
+	GlobalConfigProps,
 	PrimitiveGlobals,
 } from '@arbor-css/globals';
-import { ColorRangeItem, CompiledColors } from '@arbor-css/schemes';
-import { Token } from '@arbor-css/tokens';
-import { tokenifyColors } from '../util/tokenifyColors';
-import { $labelProps } from './labelProps';
-import { $systemProps } from './systemProps';
+import { Token, TokenSchema } from '@arbor-css/tokens';
+import { tokenifyColors } from '../util/tokenifyColors.js';
+import { $systemProps } from './systemProps.js';
 
 export const defaultDefaultScheme = 'light';
 
 export interface PrimitivesConfig<
 	TCompiledColors extends CompiledColors<any, any>,
+	TOtherTokens extends TokenSchema,
 > {
 	colors: TCompiledColors;
+	misc?: TOtherTokens;
 	defaultScheme?: keyof TCompiledColors;
 	schemeTags?: Record<string, string>;
 	globals?: Partial<PrimitiveGlobals>;
@@ -30,7 +32,10 @@ export interface PrimitivesColorScheme {
 	[Color: string]: ColorRangeItem[];
 }
 
-export type Primitives<TCompiledColors extends CompiledColors<any, any>> = {
+export type Primitives<
+	TCompiledColors extends CompiledColors<any, any>,
+	TOtherTokens extends TokenSchema,
+> = {
 	/**
 	 * A map of color values, keyed by scheme name.
 	 * Each entry is the same structure: a record of color name keys
@@ -41,18 +46,20 @@ export type Primitives<TCompiledColors extends CompiledColors<any, any>> = {
 	schemeTags: Record<string, string>;
 	globals: PrimitiveGlobals;
 	$props: {
-		labels: typeof $labelProps;
 		system: typeof $systemProps;
-		colors: StringsToTokens<TCompiledColors[keyof TCompiledColors]>;
-		user: {
-			saturation: Token;
-		};
+		config: GlobalConfigProps;
 	};
+	$tokens: {
+		colors: StringsToTokens<TCompiledColors[keyof TCompiledColors]>;
+	} & TOtherTokens;
 };
 
 export function createPrimitives<
 	TCompiledColors extends CompiledColors<any, any>,
->(config: PrimitivesConfig<TCompiledColors>): Primitives<TCompiledColors> {
+	TOtherTokens extends TokenSchema,
+>(
+	config: PrimitivesConfig<TCompiledColors, TOtherTokens>,
+): Primitives<TCompiledColors, TOtherTokens> {
 	const { colors, defaultScheme, globals: userGlobals } = config;
 
 	const arbitraryScheme = Object.values(colors)[0];
@@ -73,7 +80,7 @@ export function createPrimitives<
 		...config.schemeTags,
 	};
 
-	const userProps = createGlobalProps(globals);
+	const $configProps = createGlobalProps(globals);
 
 	return {
 		defaultScheme: defaultScheme ?? defaultDefaultScheme,
@@ -81,10 +88,12 @@ export function createPrimitives<
 		globals,
 		colors,
 		$props: {
-			labels: $labelProps,
 			system: $systemProps,
-			colors: $colorProps as any,
-			user: userProps,
+			config: $configProps,
+		},
+		$tokens: {
+			...(config.misc ?? ({} as TOtherTokens)),
+			colors: $colorProps,
 		},
 	};
 }

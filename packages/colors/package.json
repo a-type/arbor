@@ -1,5 +1,5 @@
 {
-	"name": "@arbor-css/schemes",
+	"name": "@arbor-css/colors",
 	"version": "0.0.0",
 	"type": "module",
 	"exports": {
@@ -25,6 +25,7 @@
 		"vite": "catalog:"
 	},
 	"dependencies": {
+		"@arbor-css/calc": "workspace:*",
 		"@arbor-css/tokens": "workspace:*",
 		"@arbor-css/globals": "workspace:*"
 	}

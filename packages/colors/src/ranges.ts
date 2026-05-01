@@ -1,11 +1,10 @@
-import { createGlobalProps } from '@arbor-css/globals';
 import {
-	ColorEquation,
-	ColorEquationTools,
-	ColorEvaluationContext,
-	oklchBuilder,
-	OklchColorEquation,
-} from './color.js';
+	CalcEvaluationContext,
+	CalcOperations,
+	Equation,
+} from '@arbor-css/calc';
+import { createGlobalProps } from '@arbor-css/globals';
+import { oklchBuilder, OklchColorEquation } from './color.js';
 
 // values not important, just need the names.
 const $globalProps = createGlobalProps({});
@@ -26,7 +25,7 @@ export interface ColorRangeConfig<
 	RangeNames extends string = DefaultRangeName,
 > {
 	/** 0-360ish, OKLCH "H" hue */
-	sourceHue: number;
+	hue: number;
 	rangeNames?: readonly RangeNames[];
 	/** 0-1, a local multiplier for chroma, stacks on global and computed value */
 	saturation?: number;
@@ -35,14 +34,14 @@ export interface ColorRangeConfig<
 export interface ColorRangeCalculations {
 	/** A computation for lightness at each step - resolve 0-1 */
 	lightness: (
-		tools: ColorEquationTools,
+		tools: CalcOperations,
 		details: { step: number; rangeSize: number },
-	) => ColorEquation;
+	) => Equation;
 	/** A computation for chroma at each step - resolve 0-1 */
 	chroma: (
-		tools: ColorEquationTools,
+		tools: CalcOperations,
 		details: { step: number; rangeSize: number },
-	) => ColorEquation;
+	) => Equation;
 }
 
 export type InferRangeNames<Config> =
@@ -73,7 +72,7 @@ export function createColorRange<RangeNames extends string = DefaultRangeName>(
 	config: ColorRangeConfig<RangeNames>,
 	calcs: ColorRangeCalculations,
 ): UncompiledColorRange<ColorRangeConfig<RangeNames>> {
-	const { sourceHue, rangeNames = defaultRangeNames } = config;
+	const { hue: sourceHue, rangeNames = defaultRangeNames } = config;
 	const { lightness, chroma } = calcs;
 	const size = rangeNames.length;
 
@@ -111,7 +110,7 @@ function presetLightnessRange({
 	scale = 1.2,
 	grade = 1,
 } = {}) {
-	return function ($: ColorEquationTools, step: number, rangeSize: number) {
+	return function ($: CalcOperations, step: number, rangeSize: number) {
 		const inverseStep = rangeSize - step;
 		const stepToUse = dir > 0 ? step : inverseStep;
 		// inverse cosine curve
@@ -137,7 +136,7 @@ function presetLightnessRange({
 }
 // chroma: reduced at either end of the range
 function presetChromaRange({ base = 0.1, scale = 1.2, grade = 1 }) {
-	return function ($: ColorEquationTools, step: number, rangeSize: number) {
+	return function ($: CalcOperations, step: number, rangeSize: number) {
 		const baseSlope = $.multiply(
 			$.literal(base),
 			$.literal(grade),
@@ -218,7 +217,7 @@ export function createColorDarkModeRange(
 export function createNeutralDerivedRange(
 	sourceRange: UncompiledColorRange<ColorRangeConfig<string>>,
 ): UncompiledColorRange<ColorRangeConfig<string>> {
-	function lightness($: ColorEquationTools, source: OklchColorEquation) {
+	function lightness($: CalcOperations, source: OklchColorEquation) {
 		const sourceLAsZeroToOne = $.divide(source.l, $.literal('100%'));
 		const fromL = $.add(
 			sourceLAsZeroToOne,
@@ -232,7 +231,7 @@ export function createNeutralDerivedRange(
 		);
 		return $.subtract(fromL, $.fn('pow', source.c, $.literal(1.6)));
 	}
-	function chroma($: ColorEquationTools, source: OklchColorEquation) {
+	function chroma($: CalcOperations, source: OklchColorEquation) {
 		return $.multiply(
 			source.c,
 			$.literal($globalProps.saturation.var),
@@ -265,7 +264,7 @@ export function compileRange<
 	TRanges extends Record<string, ColorRangeConfig>,
 >(
 	range: UncompiledColorRange<TRanges[R]>,
-	context: ColorEvaluationContext,
+	context: CalcEvaluationContext,
 ): CompiledColorRange<TRanges[R]> {
 	return Object.fromEntries(
 		Object.keys(range).map((name) => [

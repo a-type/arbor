@@ -22,23 +22,23 @@ class ModeComponentExample extends HTMLElement {
 					padding: 1rem;
 				}
 				.input {
-					padding: calc(0.5rem * ${modeSchema.$props.density.var}) calc(1rem * ${modeSchema.$props.density.var});
-					border: 1px solid ${modeSchema.$props.control.border.var};
-					background-color: ${modeSchema.$props.control.bg.var};
-					color: ${modeSchema.$props.control.fg.var};
+					padding: calc(0.5rem * ${modeSchema.$tokens.density.var}) calc(1rem * ${modeSchema.$tokens.density.var});
+					border: 1px solid ${modeSchema.$tokens.control.border.var};
+					background-color: ${modeSchema.$tokens.control.bg.var};
+					color: ${modeSchema.$tokens.control.fg.var};
 				}
 				.button {
-					padding: calc(0.5rem * ${modeSchema.$props.density.var}) calc(1rem * ${modeSchema.$props.density.var});
+					padding: calc(0.5rem * ${modeSchema.$tokens.density.var}) calc(1rem * ${modeSchema.$tokens.density.var});
 					border-radius: 0.25rem;
 					&.primary {
-						border: 1px solid ${modeSchema.$props.action.primary.border.var};
-						background-color: ${modeSchema.$props.action.primary.bg.var};
-						color: ${modeSchema.$props.action.primary.fg.var};
+						border: 1px solid ${modeSchema.$tokens.action.primary.border.var};
+						background-color: ${modeSchema.$tokens.action.primary.bg.var};
+						color: ${modeSchema.$tokens.action.primary.fg.var};
 					}
 					&.secondary {
-						border: 1px solid ${modeSchema.$props.action.secondary.border.var};
-						background-color: ${modeSchema.$props.action.secondary.bg.var};
-						color: ${modeSchema.$props.action.secondary.fg.var};
+						border: 1px solid ${modeSchema.$tokens.action.secondary.border.var};
+						background-color: ${modeSchema.$tokens.action.secondary.bg.var};
+						color: ${modeSchema.$tokens.action.secondary.fg.var};
 					}
 				}
 			</style>
@@ -62,9 +62,9 @@ class ModeLayer extends HTMLElement {
 					flex-direction: column;
 					gap: 1rem;
 					padding: 1rem;
-					border: 1px solid ${modeSchema.$props.surface.secondary.border.var};
-					background-color: ${modeSchema.$props.surface.secondary.bg.var};
-					color: ${modeSchema.$props.surface.secondary.fg.var};
+					border: 1px solid ${modeSchema.$tokens.surface.secondary.border.var};
+					background-color: ${modeSchema.$tokens.surface.secondary.bg.var};
+					color: ${modeSchema.$tokens.surface.secondary.fg.var};
 					border-radius: 0.25rem;
 				}
 			</style>
@@ -79,24 +79,24 @@ class ColorRange extends HTMLElement {
 		super();
 		this.attachShadow({ mode: 'closed' }).innerHTML = `
 			<div class="range">
-				<div class="color" style="background-color: ${modeSchema.$props.mainColor.paper.var}; color: ${modeSchema.$props.mainColor.ink.var}">Paper</div>
-				<div class="color" style="background-color: ${modeSchema.$props.mainColor.wash.var}; color: ${modeSchema.$props.mainColor.ink.var}">Wash</div>
-				<div class="color" style="background-color: ${modeSchema.$props.mainColor.lighter.var}; color: ${modeSchema.$props.mainColor.ink.var}">Lighter</div>
-				<div class="color" style="background-color: ${modeSchema.$props.mainColor.light.var}; color: ${modeSchema.$props.mainColor.ink.var}">Light</div>
-				<div class="color" style="background-color: ${modeSchema.$props.mainColor.mid.var}; color: ${modeSchema.$props.mainColor.ink.var}">Default</div>
-				<div class="color" style="background-color: ${modeSchema.$props.mainColor.heavy.var}; color: ${modeSchema.$props.mainColor.paper.var}">Heavy</div>
-				<div class="color" style="background-color: ${modeSchema.$props.mainColor.heavier.var}; color: ${modeSchema.$props.mainColor.paper.var}">Heavier</div>
-				<div class="color" style="background-color: ${modeSchema.$props.mainColor.ink.var}; color: ${modeSchema.$props.mainColor.paper.var}">Ink</div>
+				<div class="color" style="background-color: ${modeSchema.$tokens.mainColor.paper.var}; color: ${modeSchema.$tokens.mainColor.ink.var}">Paper</div>
+				<div class="color" style="background-color: ${modeSchema.$tokens.mainColor.wash.var}; color: ${modeSchema.$tokens.mainColor.ink.var}">Wash</div>
+				<div class="color" style="background-color: ${modeSchema.$tokens.mainColor.lighter.var}; color: ${modeSchema.$tokens.mainColor.ink.var}">Lighter</div>
+				<div class="color" style="background-color: ${modeSchema.$tokens.mainColor.light.var}; color: ${modeSchema.$tokens.mainColor.ink.var}">Light</div>
+				<div class="color" style="background-color: ${modeSchema.$tokens.mainColor.mid.var}; color: ${modeSchema.$tokens.mainColor.ink.var}">Default</div>
+				<div class="color" style="background-color: ${modeSchema.$tokens.mainColor.heavy.var}; color: ${modeSchema.$tokens.mainColor.paper.var}">Heavy</div>
+				<div class="color" style="background-color: ${modeSchema.$tokens.mainColor.heavier.var}; color: ${modeSchema.$tokens.mainColor.paper.var}">Heavier</div>
+				<div class="color" style="background-color: ${modeSchema.$tokens.mainColor.ink.var}; color: ${modeSchema.$tokens.mainColor.paper.var}">Ink</div>
 			</div>
 			<div class="range">
-				<div class="color" style="background-color: ${modeSchema.$props.neutralColor.paper.var}; color: ${modeSchema.$props.neutralColor.ink.var}">Paper</div>
-				<div class="color" style="background-color: ${modeSchema.$props.neutralColor.wash.var}; color: ${modeSchema.$props.neutralColor.ink.var}">Wash</div>
-				<div class="color" style="background-color: ${modeSchema.$props.neutralColor.lighter.var}; color: ${modeSchema.$props.neutralColor.ink.var}">Lighter</div>
-				<div class="color" style="background-color: ${modeSchema.$props.neutralColor.light.var}; color: ${modeSchema.$props.neutralColor.ink.var}">Light</div>
-				<div class="color" style="background-color: ${modeSchema.$props.neutralColor.mid.var}; color: ${modeSchema.$props.neutralColor.ink.var}">Default</div>
-				<div class="color" style="background-color: ${modeSchema.$props.neutralColor.heavy.var}; color: ${modeSchema.$props.neutralColor.paper.var}">Heavy</div>
-				<div class="color" style="background-color: ${modeSchema.$props.neutralColor.heavier.var}; color: ${modeSchema.$props.neutralColor.paper.var}">Heavier</div>
-				<div class="color" style="background-color: ${modeSchema.$props.neutralColor.ink.var}; color: ${modeSchema.$props.neutralColor.paper.var}">Ink</div>
+				<div class="color" style="background-color: ${modeSchema.$tokens.neutralColor.paper.var}; color: ${modeSchema.$tokens.neutralColor.ink.var}">Paper</div>
+				<div class="color" style="background-color: ${modeSchema.$tokens.neutralColor.wash.var}; color: ${modeSchema.$tokens.neutralColor.ink.var}">Wash</div>
+				<div class="color" style="background-color: ${modeSchema.$tokens.neutralColor.lighter.var}; color: ${modeSchema.$tokens.neutralColor.ink.var}">Lighter</div>
+				<div class="color" style="background-color: ${modeSchema.$tokens.neutralColor.light.var}; color: ${modeSchema.$tokens.neutralColor.ink.var}">Light</div>
+				<div class="color" style="background-color: ${modeSchema.$tokens.neutralColor.mid.var}; color: ${modeSchema.$tokens.neutralColor.ink.var}">Default</div>
+				<div class="color" style="background-color: ${modeSchema.$tokens.neutralColor.heavy.var}; color: ${modeSchema.$tokens.neutralColor.paper.var}">Heavy</div>
+				<div class="color" style="background-color: ${modeSchema.$tokens.neutralColor.heavier.var}; color: ${modeSchema.$tokens.neutralColor.paper.var}">Heavier</div>
+				<div class="color" style="background-color: ${modeSchema.$tokens.neutralColor.ink.var}; color: ${modeSchema.$tokens.neutralColor.paper.var}">Ink</div>
 			</div>
 			<style>
 				.range {
@@ -104,8 +104,8 @@ class ColorRange extends HTMLElement {
 				}
 				.color {
 					flex: 1;
-					padding: calc(${modeSchema.$props.density.var} * 1rem);
-					color: ${modeSchema.$props.surface.auxiliary.fg.var};
+					padding: calc(${modeSchema.$tokens.density.var} * 1rem);
+					color: ${modeSchema.$tokens.surface.ambient.fg.var};
 					text-align: center;
 				}
 			</style>

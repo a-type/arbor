@@ -14,4 +14,4 @@ export const primitives = createPrimitives({
 });
 
 primitives.colors.contrast.primary.heavier;
-primitives.$props.colors.primary.heavier;
+primitives.$tokens.colors.primary.heavier;

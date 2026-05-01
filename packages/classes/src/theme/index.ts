@@ -3,12 +3,12 @@ import { Theme } from '@unocss/preset-wind4';
 
 export function createTheme(arbor: ArborConfig<any, any>) {
 	const primitiveColors = convertStructure(
-		arbor.primitives.$props.colors,
+		arbor.primitives.$tokens.colors,
 		(item) => isToken(item),
 		(token) => token.var,
 	);
 
-	const baseModeProps = arbor.modes.base.schema.$props;
+	const baseModeProps = arbor.modes.base.schema.$tokens;
 	const modeColors = convertStructure(baseModeProps, isToken, (token) =>
 		token.type === 'color' ? token.var : undefined,
 	);

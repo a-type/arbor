@@ -1,6 +1,6 @@
 import { TOKEN_PREFIX } from '@arbor-css/tokens';
 import { expect, it } from 'vitest';
-import { tokenifyColors } from './tokenifyColors';
+import { tokenifyColors } from './tokenifyColors.js';
 
 it('tokenifyColors should convert color values to tokens', () => {
 	const input = {

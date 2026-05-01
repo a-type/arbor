@@ -1,8 +1,8 @@
 import { ArborConfig, generateStylesheet } from '@arbor-css/core';
 import { Preset, presetWind4, transformerVariantGroup } from 'unocss';
-import { rules } from './rules';
-import { createTheme } from './theme';
-import { variants } from './variants';
+import { rules } from './rules/index.js';
+import { createTheme } from './theme/index.js';
+import { variants } from './variants/index.js';
 
 const basePreset = presetWind4({
 	arbitraryVariants: true,

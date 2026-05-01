@@ -11,3 +11,5 @@ export const arbor = createConfig({
 		dense: denseMode,
 	},
 });
+
+export default arbor;

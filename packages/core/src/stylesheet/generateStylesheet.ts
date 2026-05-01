@@ -1,9 +1,9 @@
+import { CompiledColors } from '@arbor-css/colors';
 import {
 	flattenToPropsList,
 	ModeSchemaLevel,
 	modeToCss,
 } from '@arbor-css/modes';
-import { CompiledColors } from '@arbor-css/schemes';
 import {
 	isToken,
 	selfReferencedProps,
@@ -18,7 +18,8 @@ const noPreference = `, (prefers-color-scheme: no-preference)`;
 export function generateStylesheet<
 	TModeShape extends ModeSchemaLevel,
 	TCompiledColors extends CompiledColors<any, any>,
->(config: ArborConfig<TModeShape, TCompiledColors>) {
+	TOtherTokens extends TokenSchema,
+>(config: ArborConfig<TModeShape, TCompiledColors, TOtherTokens>): string {
 	const defaultMode = config.primitives.defaultScheme ?? 'light';
 
 	/**
@@ -29,7 +30,7 @@ export function generateStylesheet<
 	 */
 	function getSchemeRootPropertiesCss(schemeName: string) {
 		const values = flattenAndApplyTokenValues(
-			config.primitives.$props.colors,
+			config.primitives.$tokens.colors,
 			config.primitives.colors[schemeName],
 			{ prefix: config.primitives.schemeTags[schemeName] ?? schemeName },
 		);
@@ -38,10 +39,10 @@ export function generateStylesheet<
 	}
 
 	function schemeApplicationCss(schemeName: string) {
-		const values = selfReferencedProps(config.primitives.$props.colors, {
+		const values = selfReferencedProps(config.primitives.$tokens.colors, {
 			valuePrefix: config.primitives.schemeTags[schemeName] ?? schemeName,
 		});
-		return `${config.primitives.$props.labels.scheme.assign(schemeName)}
+		return `${config.primitives.$props.system.labels.scheme.assign(schemeName)}
 	${formatPropertiesToCss(values)}
 	`;
 	}
@@ -49,7 +50,7 @@ export function generateStylesheet<
 	const allModeProps = Array.from(
 		new Set(
 			Object.values(config.modes).flatMap((mode) => {
-				const shape = mode.schema.$props;
+				const shape = mode.schema.$tokens;
 				return flattenToPropsList(shape);
 			}),
 		),
@@ -72,7 +73,7 @@ export function generateStylesheet<
 	return `/* Auto-generated CSS - do not edit directly */
 :root, body {
 	/* Assign user globals */
-	${Object.entries(config.primitives.$props.user)
+	${Object.entries(config.primitives.$props.config)
 		.map(([key, prop]) => prop.assign())
 		.join('\n')}
 
@@ -112,8 +113,8 @@ ${Object.entries(config.modes)
 				(schemeName) => `:where(.\\@mode-${modeName}) .\\@scheme-${schemeName}`,
 			)
 			.join(', ')} {
-	${config.primitives.$props.labels.mode.assign(modeName)}
-	${formatPropertiesToCss(modeToCss(modeValue.values, modeValue.schema.$props, { modeName }))}
+	${config.primitives.$props.system.labels.mode.assign(modeName)}
+	${formatPropertiesToCss(modeToCss(modeValue.values, modeValue.schema.$tokens, { modeName }))}
 }
 `;
 	})

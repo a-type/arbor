@@ -1,16 +1,16 @@
+import { CalcEvaluationContext } from '@arbor-css/calc';
 import { createGlobalProps, PrimitiveGlobals } from '@arbor-css/globals';
-import { ColorEvaluationContext } from './color';
 import {
 	ColorRangeConfig,
 	CompiledColorRange,
 	compileRange,
 	createNeutralDerivedRange,
-} from './ranges';
+} from './ranges.js';
 import {
 	defaultDarkScheme,
 	defaultLightScheme,
 	SchemeDefinition,
-} from './schemes';
+} from './schemes.js';
 
 export type CompiledColorRangeWithNeutral<
 	TRangeConfig extends ColorRangeConfig<any>,
@@ -52,9 +52,8 @@ export function compileColors<
 	globals?: Partial<PrimitiveGlobals>;
 }) {
 	const globalTokens = createGlobalProps(globals ?? {});
-	const evalContext: ColorEvaluationContext = {
-		propSchema: globalTokens,
-		appliedProperties: {
+	const evalContext: CalcEvaluationContext = {
+		propertyValues: {
 			[globalTokens.saturation.name]: globals?.saturation?.toString(),
 		},
 	};
