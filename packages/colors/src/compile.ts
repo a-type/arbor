@@ -29,8 +29,14 @@ export type CompiledColorRanges<
 };
 
 export type CompiledColors<
-	TRanges extends Record<string, ColorRangeConfig<string>>,
-	TSchemes extends Record<string, SchemeDefinition>,
+	TRanges extends Record<string, ColorRangeConfig<any>> = Record<
+		string,
+		ColorRangeConfig
+	>,
+	TSchemes extends Record<string, SchemeDefinition> = Record<
+		string,
+		SchemeDefinition
+	>,
 > = {
 	[K in keyof TSchemes | 'light' | 'dark']: CompiledColorRanges<TRanges>;
 };

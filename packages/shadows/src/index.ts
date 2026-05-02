@@ -34,9 +34,9 @@ const defaultShadowEquation = (step: number) =>
 		' ',
 	);
 
-export function compileShadows<TShadowLevel extends string>(
-	config: ShadowConfig<TShadowLevel>,
-): CompiledShadows<TShadowLevel> {
+export function compileShadows<
+	TShadowLevel extends string = DefaultShadowLevel,
+>(config: ShadowConfig<TShadowLevel>): CompiledShadows<TShadowLevel> {
 	const levelNames =
 		config.levels ?
 			Object.keys(config.levels)

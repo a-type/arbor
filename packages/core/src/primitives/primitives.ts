@@ -36,11 +36,11 @@ export interface PrimitivesColorScheme {
 }
 
 export type Primitives<
-	TCompiledColors extends CompiledColors<any, any>,
-	TCompiledTypography extends CompiledTypography,
-	TCompiledSpacing extends CompiledSpacing,
-	TCompiledShadows extends CompiledShadows,
-	TOtherTokens extends TokenSchema,
+	TCompiledColors extends CompiledColors<any, any> = CompiledColors<any, any>,
+	TCompiledTypography extends CompiledTypography = CompiledTypography,
+	TCompiledSpacing extends CompiledSpacing = CompiledSpacing,
+	TCompiledShadows extends CompiledShadows = CompiledShadows,
+	TOtherTokens extends TokenSchema = TokenSchema,
 > = {
 	/**
 	 * A map of color values, keyed by scheme name.

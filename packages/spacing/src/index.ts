@@ -40,9 +40,9 @@ export interface CompiledSpacing<
 	};
 }
 
-export function compileSpacing<TSpacingLevel extends string>(
-	config: SpacingConfig<TSpacingLevel>,
-): CompiledSpacing<TSpacingLevel> {
+export function compileSpacing<
+	TSpacingLevel extends string = DefaultSpacingLevel,
+>(config: SpacingConfig<TSpacingLevel>): CompiledSpacing<TSpacingLevel> {
 	const levelNames =
 		config.levels ?
 			Object.keys(config.levels)

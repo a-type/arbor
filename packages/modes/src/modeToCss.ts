@@ -38,7 +38,14 @@ function toFlatKeys<V = any>(
 function getBaseModeDependents(
 	baseMode: ModeInstance<any>,
 	token: Token,
+	seen: Set<Token> = new Set(),
 ): Record<string, string> {
+	if (seen.has(token)) {
+		throw new Error(
+			`Circular dependency detected for token ${token.name} in mode ${baseMode.config.name}`,
+		);
+	}
+	seen.add(token);
 	const dependents: Record<string, string> = {};
 	const flatBase = toFlatKeys(baseMode.values, isModeValue);
 	const flatTokens = toFlatKeys<Token>(baseMode.schema.$tokens, isToken);
@@ -52,7 +59,7 @@ function getBaseModeDependents(
 				if (tokenForKey) {
 					Object.assign(
 						dependents,
-						getBaseModeDependents(baseMode, tokenForKey),
+						getBaseModeDependents(baseMode, tokenForKey, seen),
 					);
 				}
 			}

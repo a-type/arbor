@@ -11,6 +11,7 @@ export * from '@arbor-css/shadows';
 export * from '@arbor-css/spacing';
 export * from '@arbor-css/tokens';
 export * from '@arbor-css/typography';
+export * from './arborPreset.js';
 export * from './config.js';
 export * from './primitives/primitives.js';
 export { generateStylesheet } from './stylesheet/generateStylesheet.js';

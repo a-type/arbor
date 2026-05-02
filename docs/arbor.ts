@@ -1,11 +1,12 @@
 import {
+	arborModeSchema,
 	compileColors,
 	compileShadows,
 	compileSpacing,
 	compileTypography,
+	createArborMode,
 	createConfig,
 	createGlobals,
-	createModeSchema,
 	createPrimitives,
 } from '@arbor-css/core';
 
@@ -45,70 +46,15 @@ const primitives = createPrimitives({
 	}),
 });
 
-const modeSchema = createModeSchema({
-	mainColor: {
-		paper: 'color',
-		wash: 'color',
-		lighter: 'color',
-		light: 'color',
-		mid: 'color',
-		heavy: 'color',
-		heavier: 'color',
-		ink: 'color',
-	},
-	neutralColor: {
-		paper: 'color',
-		wash: 'color',
-		lighter: 'color',
-		light: 'color',
-		mid: 'color',
-		heavy: 'color',
-		heavier: 'color',
-		ink: 'color',
-	},
-	action: {
-		primary: {
-			bg: 'color',
-			fg: 'color',
-		},
-	},
-	surface: {
-		primary: {
-			bg: 'color',
-			fg: 'color',
-		},
-		ambient: {
-			bg: 'color',
-			fg: 'color',
-		},
-	},
-	density: 'number',
-});
+const modeSchema = arborModeSchema;
 
-const rootMode = modeSchema.createBase({
-	mainColor: primitives.$tokens.colors.summer,
-	neutralColor: primitives.$tokens.colors.summer.$neutral,
-	action: {
-		primary: {
-			bg: primitives.$tokens.colors.spring.mid,
-			fg: primitives.$tokens.colors.spring.ink,
-		},
-	},
-	surface: {
-		primary: {
-			bg: primitives.$tokens.colors.summer.wash,
-			fg: primitives.$tokens.colors.summer.ink,
-		},
-		ambient: {
-			bg: primitives.$tokens.colors.summer.$neutral.paper,
-			fg: primitives.$tokens.colors.summer.$neutral.ink,
-		},
-	},
-	density: 1,
+const rootMode = createArborMode({
+	mainColor: 'summer',
+	primitives,
 });
 
 function makeSeasonMode(season: 'winter' | 'spring' | 'summer' | 'fall') {
-	return modeSchema.createPartial({
+	return modeSchema.createPartial(season, {
 		mainColor: primitives.$tokens.colors[season],
 		neutralColor: primitives.$tokens.colors[season].$neutral,
 		action: {

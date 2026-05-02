@@ -45,9 +45,9 @@ export type TypographyConfig<TLevels extends string> = {
 	globals?: Partial<GlobalConfig>;
 };
 
-export function compileTypography<TLevels extends string>(
-	config: TypographyConfig<TLevels>,
-): CompiledTypography<TLevels> {
+export function compileTypography<
+	TLevels extends string = DefaultTypographyLevel,
+>(config: TypographyConfig<TLevels>): CompiledTypography<TLevels> {
 	const levelNames =
 		config.levels ?
 			Object.keys(config.levels)
