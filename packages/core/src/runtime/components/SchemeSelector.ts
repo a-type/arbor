@@ -1,6 +1,6 @@
 import { getConfig, getStyleSheet } from '../registration.js';
 
-class ModeSelector extends HTMLElement {
+class SchemeSelector extends HTMLElement {
 	constructor() {
 		super();
 
@@ -11,21 +11,21 @@ class ModeSelector extends HTMLElement {
 
 	render = () => {
 		const config = getConfig();
-		const modeNames = Object.keys(config.modes);
+		const schemeNames = Object.keys(config.primitives.colors);
 		const selected = this.getAttribute('selected') || 'base';
-		this.shadowRoot!.innerHTML = `<div data-mode-${selected}>
-			<select data-mode-select name="mode" aria-label="Select mode">
-				${modeNames
+		this.shadowRoot!.innerHTML = `<div data-scheme-${selected}>
+			<select data-scheme-select name="scheme" aria-label="Select scheme" style="position: sticky; top: 0;">
+				${schemeNames
 					.map(
-						(modeName) =>
-							`<option value="${modeName}" ${modeName === selected ? 'selected' : ''}>${modeName}</option>`,
+						(schemeName) =>
+							`<option value="${schemeName}" ${schemeName === selected ? 'selected' : ''}>${schemeName}</option>`,
 					)
 					.join('\n')}
 			</select>
 			<slot></slot>
 		</div>`;
 		const modeSelect = this.shadowRoot?.querySelector(
-			'[data-mode-select]',
+			'[data-scheme-select]',
 		) as HTMLSelectElement | null;
 		modeSelect?.addEventListener('change', () => {
 			const selectedMode = modeSelect.value;
@@ -46,4 +46,4 @@ class ModeSelector extends HTMLElement {
 	}
 }
 
-customElements.define('arbor-mode-selector', ModeSelector);
+customElements.define('arbor-scheme-selector', SchemeSelector);

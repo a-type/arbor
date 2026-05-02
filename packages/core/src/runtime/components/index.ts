@@ -1,4 +1,5 @@
 import './ModeSelector.js';
+import './SchemeSelector.js';
 import './SystemDemo.js';
 import './TokenColorValuePreview.js';
 import './TokenFontValuesPreview.js';
