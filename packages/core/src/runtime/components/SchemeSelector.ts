@@ -1,17 +1,13 @@
-import { getConfig, getStyleSheet } from '../registration.js';
+import { ArborElement } from './BaseElement.js';
 
-class SchemeSelector extends HTMLElement {
+class SchemeSelector extends ArborElement {
 	constructor() {
 		super();
-
-		const root = this.attachShadow({ mode: 'open' });
-		root.adoptedStyleSheets = [getStyleSheet()];
 		this.render();
 	}
 
 	render = () => {
-		const config = getConfig();
-		const schemeNames = Object.keys(config.primitives.colors);
+		const schemeNames = Object.keys(this.config.primitives.colors);
 		const selected = this.getAttribute('selected') || 'base';
 		this.shadowRoot!.innerHTML = `<div data-scheme-${selected}>
 			<select data-scheme-select name="scheme" aria-label="Select scheme" style="position: sticky; top: 0;">

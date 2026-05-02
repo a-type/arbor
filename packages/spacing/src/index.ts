@@ -11,6 +11,7 @@ export const defaultSpacingLevels = [
 	'2xl',
 	'3xl',
 ] as const;
+export type DefaultSpacingLevel = (typeof defaultSpacingLevels)[number];
 
 const defaultSpacingEquation = (step: number) =>
 	$.multiply(
@@ -30,7 +31,9 @@ export interface SpacingConfig<TSpacingLevel extends string> {
 	globals?: GlobalConfig;
 }
 
-export interface CompiledSpacing<TSpacingLevel extends string> {
+export interface CompiledSpacing<
+	TSpacingLevel extends string = DefaultSpacingLevel,
+> {
 	defaultLevel: TSpacingLevel;
 	levels: {
 		[K in TSpacingLevel]: string | number;

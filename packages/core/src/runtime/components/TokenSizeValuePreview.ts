@@ -1,8 +1,10 @@
-class TokenSizeValuePreview extends HTMLElement {
+import { ArborElement } from './BaseElement.js';
+
+class TokenSizeValuePreview extends ArborElement {
 	constructor() {
 		super();
 		const size = this.getAttribute('size') ?? 'unknown';
-		this.attachShadow({ mode: 'open' }).innerHTML = `
+		this.shadowRoot.innerHTML = `
 			<div style="width: ${size}; height: ${size}; border: 1px solid black;"></div>
 		`;
 	}

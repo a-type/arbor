@@ -1,9 +1,7 @@
 import { arborModeSchema } from '../src/index.js';
 import { primitives } from './primitives.js';
 
-export const modeSchema = arborModeSchema.extend({
-	density: 'other',
-});
+export const modeSchema = arborModeSchema;
 
 export const rootMode = modeSchema.createBase({
 	mainColor: primitives.$tokens.colors.primary,
@@ -49,25 +47,32 @@ export const rootMode = modeSchema.createBase({
 	},
 	text: {
 		primary: {
-			size: '5rem',
+			size: `calc(${primitives.$tokens.typography['3xl'].size.var} / ${modeSchema.$tokens.density.var})`,
 			weight: 'bold',
 			lineHeight: '1.5',
 			font: 'sans-serif',
 		},
 		secondary: {
-			size: '1rem',
+			size: `calc(${primitives.$tokens.typography.md.size.var} / ${modeSchema.$tokens.density.var})`,
 			weight: 'normal',
 			lineHeight: '1.5',
 			font: 'sans-serif',
 		},
 		ambient: {
-			size: '0.875rem',
+			size: `calc(${primitives.$tokens.typography.sm.size.var} / ${modeSchema.$tokens.density.var})`,
 			weight: 'normal',
 			lineHeight: '1.5',
 			font: 'sans-serif',
 		},
 	},
 	density: 1,
+	spacing: {
+		xs: `calc(${primitives.$tokens.spacing.xs.var} / ${modeSchema.$tokens.density.var})`,
+		sm: `calc(${primitives.$tokens.spacing.sm.var} / ${modeSchema.$tokens.density.var})`,
+		md: `calc(${primitives.$tokens.spacing.md.var} / ${modeSchema.$tokens.density.var})`,
+		lg: `calc(${primitives.$tokens.spacing.lg.var} / ${modeSchema.$tokens.density.var})`,
+		xl: `calc(${primitives.$tokens.spacing.xl.var} / ${modeSchema.$tokens.density.var})`,
+	},
 });
 
 export const altMode = modeSchema.createPartial({
@@ -129,5 +134,12 @@ export const greenButtonsMode = modeSchema.createPartial({
 });
 
 export const denseMode = modeSchema.createPartial({
-	density: 0.5,
+	density: 2,
+	spacing: {
+		xs: `calc(${primitives.$tokens.spacing.xs.var} / ${modeSchema.$tokens.density.var})`,
+		sm: `calc(${primitives.$tokens.spacing.sm.var} / ${modeSchema.$tokens.density.var})`,
+		md: `calc(${primitives.$tokens.spacing.md.var} / ${modeSchema.$tokens.density.var})`,
+		lg: `calc(${primitives.$tokens.spacing.lg.var} / ${modeSchema.$tokens.density.var})`,
+		xl: `calc(${primitives.$tokens.spacing.xl.var} / ${modeSchema.$tokens.density.var})`,
+	},
 });

@@ -11,7 +11,9 @@ export interface ShadowConfig<TSpacingLevel extends string> {
 	globals?: GlobalConfig;
 }
 
-export interface CompiledShadows<TShadowLevel extends string> {
+export interface CompiledShadows<
+	TShadowLevel extends string = DefaultShadowLevel,
+> {
 	defaultLevel: TShadowLevel;
 	levels: {
 		[K in TShadowLevel]: string | number;

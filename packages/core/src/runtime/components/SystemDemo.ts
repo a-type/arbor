@@ -1,27 +1,19 @@
 import { isToken } from '@arbor-css/tokens';
 import { generateStylesheet } from '../../stylesheet/generateStylesheet.js';
 import { convertStructure } from '../../util/convertStructure.js';
-import { getConfig } from '../registration.js';
+import { ArborElement } from './BaseElement.js';
 
-class SystemDemo extends HTMLElement {
+class SystemDemo extends ArborElement {
 	constructor() {
 		super();
-		const config = getConfig();
 
-		// get all color ranges and render them
-		const colorRanges = Object.entries(config.primitives.$tokens.colors).filter(
-			([, value]) => {
-				return !isToken(value) && Object.values(value).some(isToken);
-			},
-		);
-
-		this.attachShadow({ mode: 'open' }).innerHTML = `
-			<div>
+		this.shadowRoot.innerHTML = `
+			<div data-mode-base>
 				<details>
 					<summary>Primitive Tokens</summary>
 					<pre>${JSON.stringify(
 						convertStructure(
-							config.primitives.$tokens,
+							this.config.primitives.$tokens,
 							isToken,
 							(token) => token.name,
 						),
@@ -33,7 +25,7 @@ class SystemDemo extends HTMLElement {
 					<summary>Mode Tokens</summary>
 					<pre>${JSON.stringify(
 						convertStructure(
-							config.modes.base.schema.$tokens,
+							this.config.modes.base.schema.$tokens,
 							isToken,
 							(token) => token.name,
 						),
@@ -43,7 +35,7 @@ class SystemDemo extends HTMLElement {
 				</details>
 				<details>
 					<summary>Generated CSS</summary>
-					<pre>${generateStylesheet(config)}</pre>
+					<pre>${generateStylesheet(this.config)}</pre>
 				</details>
 				<arbor-scheme-selector>
 					<details open>

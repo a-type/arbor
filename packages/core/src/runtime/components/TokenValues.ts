@@ -1,12 +1,12 @@
 import { Token } from '@arbor-css/tokens';
-import { getConfig } from '../registration.js';
 import { groupTokens } from '../tokenGroups.js';
+import { ArborElement } from './BaseElement.js';
 
-class TokenValues extends HTMLElement {
+class TokenValues extends ArborElement {
 	constructor() {
 		super();
 
-		const config = getConfig();
+		const config = this.config;
 		const schemaPath = this.getAttribute('schema-path');
 		const schemaPathParts = schemaPath ? schemaPath.split('.') : [];
 		const tokenSchema = schemaPathParts.reduce(
@@ -15,7 +15,7 @@ class TokenValues extends HTMLElement {
 		);
 		const tokens = groupTokens(tokenSchema);
 
-		this.attachShadow({ mode: 'open' }).innerHTML = `
+		this.shadowRoot.innerHTML = `
 			<div class="root">
 				${Object.entries(tokens.simple)
 					.map(([purpose, tokens]) => {

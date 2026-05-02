@@ -53,4 +53,14 @@ export const arborModeSchema = createModeSchema({
 		secondary: textIntents,
 		ambient: textIntents,
 	},
+
+	// density
+	density: 'other',
+	spacing: {
+		xs: 'spacing',
+		sm: 'spacing',
+		md: 'spacing',
+		lg: 'spacing',
+		xl: 'spacing',
+	},
 });

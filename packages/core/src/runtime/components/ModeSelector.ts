@@ -1,20 +1,16 @@
-import { getConfig, getStyleSheet } from '../registration.js';
+import { ArborElement } from './BaseElement.js';
 
-class ModeSelector extends HTMLElement {
+class ModeSelector extends ArborElement {
 	constructor() {
 		super();
-
-		const root = this.attachShadow({ mode: 'open' });
-		root.adoptedStyleSheets = [getStyleSheet()];
 		this.render();
 	}
 
 	render = () => {
-		const config = getConfig();
-		const modeNames = Object.keys(config.modes);
+		const modeNames = Object.keys(this.config.modes);
 		const selected = this.getAttribute('selected') || 'base';
-		this.shadowRoot!.innerHTML = `<div data-mode-${selected}>
-			<select data-mode-select name="mode" aria-label="Select mode">
+		this.shadowRoot.innerHTML = `<div data-mode-${selected}>
+			<select data-mode-select name="mode" aria-label="Select mode" style="position: sticky; top: 16px;">
 				${modeNames
 					.map(
 						(modeName) =>

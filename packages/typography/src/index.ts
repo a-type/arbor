@@ -16,7 +16,9 @@ export function isTypographyLevel(value: any): value is TypographyLevel {
 	return value && 'size' in value && 'weight' in value && 'lineHeight' in value;
 }
 
-export interface CompiledTypography<TLevels extends string> {
+export interface CompiledTypography<
+	TLevels extends string = DefaultTypographyLevel,
+> {
 	defaultLevel: TLevels;
 	levels: {
 		[K in TLevels]: TypographyLevel;

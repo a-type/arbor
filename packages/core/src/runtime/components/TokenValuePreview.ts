@@ -1,4 +1,6 @@
-class TokenValuePreview extends HTMLElement {
+import { ArborElement } from './BaseElement.js';
+
+class TokenValuePreview extends ArborElement {
 	constructor() {
 		super();
 		const value = this.getAttribute('value');
@@ -19,7 +21,7 @@ class TokenValuePreview extends HTMLElement {
 				preview = `<div style="width: 50px; height: 50px; border: 1px solid black; display: flex; align-items: center; justify-content: center;">?</div>`;
 		}
 
-		this.attachShadow({ mode: 'open' }).innerHTML = preview;
+		this.shadowRoot.innerHTML = preview;
 	}
 }
 

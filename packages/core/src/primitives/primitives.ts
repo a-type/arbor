@@ -25,9 +25,9 @@ export interface PrimitivesConfig<
 	globals?: Partial<GlobalConfig>;
 }
 
-type StringsToTokens<T extends Record<string, any>> = {
-	[K in keyof T]: T[K] extends string ? Token
-	: T[K] extends Record<string, any> ? StringsToTokens<T[K]>
+type LiteralsToTokens<T extends Record<string, any>> = {
+	[K in keyof T]: T[K] extends string | number ? Token
+	: T[K] extends Record<string, any> ? LiteralsToTokens<T[K]>
 	: never;
 };
 
@@ -37,9 +37,9 @@ export interface PrimitivesColorScheme {
 
 export type Primitives<
 	TCompiledColors extends CompiledColors<any, any>,
-	TCompiledTypography extends CompiledTypography<any>,
-	TCompiledSpacing extends CompiledSpacing<any>,
-	TCompiledShadows extends CompiledShadows<any>,
+	TCompiledTypography extends CompiledTypography,
+	TCompiledSpacing extends CompiledSpacing,
+	TCompiledShadows extends CompiledShadows,
 	TOtherTokens extends TokenSchema,
 > = {
 	/**
@@ -48,25 +48,25 @@ export type Primitives<
 	 * and string values which represent CSS colors.
 	 */
 	colors: TCompiledColors;
-	typography: CompiledTypography<any>;
-	spacing: CompiledSpacing<any>;
-	shadows: CompiledShadows<any>;
+	typography: TCompiledTypography;
+	spacing: TCompiledSpacing;
+	shadows: TCompiledShadows;
 	defaultScheme: keyof TCompiledColors;
 	schemeTags: Record<string, string>;
 	globals: GlobalConfig;
 	$tokens: {
-		colors: StringsToTokens<TCompiledColors[keyof TCompiledColors]>;
-		typography: StringsToTokens<TCompiledTypography['levels']>;
-		spacing: StringsToTokens<TCompiledSpacing['levels']>;
-		shadows: StringsToTokens<TCompiledShadows['levels']>;
+		colors: LiteralsToTokens<TCompiledColors[keyof TCompiledColors]>;
+		typography: LiteralsToTokens<TCompiledTypography['levels']>;
+		spacing: LiteralsToTokens<TCompiledSpacing['levels']>;
+		shadows: LiteralsToTokens<TCompiledShadows['levels']>;
 	} & TOtherTokens;
 };
 
 export function createPrimitives<
 	TCompiledColors extends CompiledColors<any, any>,
-	TCompiledTypography extends CompiledTypography<any>,
-	TCompiledSpacing extends CompiledSpacing<any>,
-	TCompiledShadows extends CompiledShadows<any>,
+	TCompiledTypography extends CompiledTypography,
+	TCompiledSpacing extends CompiledSpacing,
+	TCompiledShadows extends CompiledShadows,
 	TOtherTokens extends TokenSchema,
 >(
 	config: PrimitivesConfig<
