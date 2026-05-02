@@ -1,5 +1,5 @@
 import { $, computeEquation, printComputationResult } from '@arbor-css/calc';
-import { $globalPropsUnset, PrimitiveGlobals } from '@arbor-css/globals';
+import { $globalProps, GlobalConfig } from '../../globals/dist/globalProps.js';
 
 export const defaultSpacingLevels = [
 	'2xs',
@@ -14,14 +14,20 @@ export const defaultSpacingLevels = [
 
 const defaultSpacingEquation = (step: number) =>
 	$.multiply(
-		$.literal($globalPropsUnset.spacingUnitPixels.var),
+		// calculate rem value of the spacing relative to the
+		// font size.
+		$.divide(
+			$.literal($globalProps.spacingUnitPixels.var),
+			$.literal($globalProps.baseFontSizePixels.var),
+		),
+		$.literal('1rem'),
 		$.fn('pow', $.literal(1.5), $.literal(step)),
 	);
 
 export interface SpacingConfig<TSpacingLevel extends string> {
 	levels?: Record<TSpacingLevel, string | number>;
 	defaultLevel?: TSpacingLevel;
-	globals?: PrimitiveGlobals;
+	globals?: GlobalConfig;
 }
 
 export interface CompiledSpacing<TSpacingLevel extends string> {
@@ -56,7 +62,7 @@ export function compileSpacing<TSpacingLevel extends string>(
 				printComputationResult(
 					computeEquation(defaultSpacingEquation(i - baseIndex), {
 						propertyValues: {
-							[$globalPropsUnset.spacingUnitPixels.name]:
+							[$globalProps.spacingUnitPixels.name]:
 								config.globals?.spacingUnitPixels?.toString(),
 						},
 					}),

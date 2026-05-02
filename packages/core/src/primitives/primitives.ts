@@ -1,16 +1,10 @@
 import { ColorRangeItem, CompiledColors } from '@arbor-css/colors';
-import {
-	createGlobalProps,
-	defaultGlobals,
-	GlobalConfigProps,
-	PrimitiveGlobals,
-} from '@arbor-css/globals';
+import { defaultGlobals, GlobalConfig } from '@arbor-css/globals';
 import { CompiledShadows } from '@arbor-css/shadows';
 import { CompiledSpacing } from '@arbor-css/spacing';
 import { createToken, Token, TokenSchema } from '@arbor-css/tokens';
 import { CompiledTypography, isTypographyLevel } from '@arbor-css/typography';
 import { convertStructure } from '../util/convertStructure.js';
-import { $systemProps } from './systemProps.js';
 
 export const defaultDefaultScheme = 'light';
 
@@ -28,7 +22,7 @@ export interface PrimitivesConfig<
 	misc?: TOtherTokens;
 	defaultScheme?: keyof TCompiledColors;
 	schemeTags?: Record<string, string>;
-	globals?: Partial<PrimitiveGlobals>;
+	globals?: Partial<GlobalConfig>;
 }
 
 type StringsToTokens<T extends Record<string, any>> = {
@@ -59,11 +53,7 @@ export type Primitives<
 	shadows: CompiledShadows<any>;
 	defaultScheme: keyof TCompiledColors;
 	schemeTags: Record<string, string>;
-	globals: PrimitiveGlobals;
-	$props: {
-		system: typeof $systemProps;
-		config: GlobalConfigProps;
-	};
+	globals: GlobalConfig;
 	$tokens: {
 		colors: StringsToTokens<TCompiledColors[keyof TCompiledColors]>;
 		typography: StringsToTokens<TCompiledTypography['levels']>;
@@ -134,7 +124,7 @@ export function createPrimitives<
 		(_, path) => createToken(`shadow-${path.join('-')}`, { type: '*' }),
 	);
 
-	const globals: PrimitiveGlobals = {
+	const globals: GlobalConfig = {
 		...defaultGlobals,
 		...userGlobals,
 	};
@@ -145,8 +135,6 @@ export function createPrimitives<
 		...config.schemeTags,
 	};
 
-	const $configProps = createGlobalProps(globals);
-
 	return {
 		defaultScheme: defaultScheme ?? defaultDefaultScheme,
 		schemeTags,
@@ -155,10 +143,6 @@ export function createPrimitives<
 		typography: config.typography,
 		spacing: config.spacing,
 		shadows: config.shadows,
-		$props: {
-			system: $systemProps,
-			config: $configProps,
-		},
 		$tokens: {
 			...(config.misc ?? ({} as TOtherTokens)),
 			colors: $colorProps,

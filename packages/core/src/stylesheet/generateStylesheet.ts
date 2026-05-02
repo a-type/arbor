@@ -1,4 +1,5 @@
 import { CompiledColors } from '@arbor-css/colors';
+import { $globalProps } from '@arbor-css/globals';
 import {
 	flattenToPropsList,
 	ModeSchemaLevel,
@@ -13,7 +14,7 @@ import {
 } from '@arbor-css/tokens';
 import { CompiledTypography } from '@arbor-css/typography';
 import { ArborConfig } from '../config.js';
-import { CompiledShadows, CompiledSpacing } from '../index.js';
+import { $systemProps, CompiledShadows, CompiledSpacing } from '../index.js';
 import { convertStructure } from '../util/convertStructure.js';
 
 const noPreference = `, (prefers-color-scheme: no-preference)`;
@@ -57,7 +58,7 @@ export function generateStylesheet<
 		const values = selfReferencedProps(config.primitives.$tokens.colors, {
 			valuePrefix: config.primitives.schemeTags[schemeName] ?? schemeName,
 		});
-		return `${config.primitives.$props.system.labels.scheme.assign(schemeName)}
+		return `${$systemProps.labels.scheme.assign(schemeName)}
 	${formatPropertiesToCss(values)}
 	`;
 	}
@@ -90,9 +91,7 @@ export function generateStylesheet<
 	return `/* Auto-generated CSS - do not edit directly */
 :root {
 	/* Assign user globals */
-	${Object.entries(config.primitives.$props.config)
-		.map(([key, prop]) => prop.assign())
-		.join('\n')}
+	${printTokens($globalProps, config.primitives.globals)}
 
 	/* Raw scheme ranges */
 	${Object.keys(config.primitives.colors)
@@ -121,7 +120,7 @@ export function generateStylesheet<
 /* Scheme classes */
 ${Object.keys(config.primitives.colors)
 	.map(
-		(schemeName) => `.\\@scheme-${schemeName} {
+		(schemeName) => `.\\@scheme-${schemeName}, [data-scheme-${schemeName}] {
 	${schemeApplicationCss(schemeName)}
 }`,
 	)
@@ -130,12 +129,14 @@ ${Object.keys(config.primitives.colors)
 ${Object.entries(config.modes)
 	.map(([modeName, modeValue]) => {
 		return `/* Mode: ${modeName} */
-.\\@mode-${modeName}, ${Object.keys(config.primitives.colors)
+.\\@mode-${modeName}, [data-mode-${modeName}], ${Object.keys(
+			config.primitives.colors,
+		)
 			.map(
 				(schemeName) => `:where(.\\@mode-${modeName}) .\\@scheme-${schemeName}`,
 			)
 			.join(', ')} {
-	${config.primitives.$props.system.labels.mode.assign(modeName)}
+	${$systemProps.labels.mode.assign(modeName)}
 	${formatPropertiesToCss(modeToCss(modeValue.values, modeValue.schema.$tokens, { modeName }))}
 }
 `;

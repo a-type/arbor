@@ -1,4 +1,4 @@
-import { createGlobals, PrimitiveGlobals } from '@arbor-css/globals';
+import { createGlobals, GlobalConfig } from '@arbor-css/globals';
 import { expect, it } from 'vitest';
 import { compileColors } from './compile.js';
 import { createColorRange, defaultRangeNames } from './ranges.js';
@@ -165,7 +165,7 @@ it('compiles a set of color ranges with a custom scheme', () => {
 });
 
 it('precomputes colors when globals are provided', () => {
-	const globals: PrimitiveGlobals = createGlobals({
+	const globals: GlobalConfig = createGlobals({
 		saturation: 0.5,
 	});
 	const compiled = compileColors({

@@ -37,11 +37,18 @@ export function createToken(
 		fallback,
 		inherits = true,
 		noNamespace: noPrefix,
+		forceDefinition,
 	}: {
 		type: PropertyType;
 		fallback?: string | number;
 		inherits?: boolean;
 		noNamespace?: boolean;
+		/**
+		 * Force the generation of a @property rule definition, even if it's not meaningful.
+		 * Otherwise tokens whose properties have no special concerns like inherit:false will
+		 * skip generating an @property
+		 */
+		forceDefinition?: boolean;
 	},
 ) {
 	const escapedName = name.replace('$', '');
@@ -57,11 +64,12 @@ export function createToken(
 			`var(${resolvedName}, ${fallbackOverride ?? fallback ?? 'initial'})`,
 		assign: (value?: string | number) =>
 			`${resolvedName}: ${value ?? fallback};`,
-		definition: `@property ${resolvedName} {
-	syntax: '${type === '*' ? '*' : `<${type}>`}';
-	inherits: ${inherits};
-	initial-value: ${fallback ?? 'initial'};
-}`,
+		get definition() {
+			if (inherits === false || forceDefinition) {
+				return `@property ${resolvedName} { syntax: '${type === '*' ? '*' : `<${type}>`}'; inherits: ${inherits}; initial-value: ${fallback ?? 'initial'}; }`;
+			}
+			return '';
+		},
 		suffixed: (suffix: string) =>
 			createToken(`${name}-${suffix}`, {
 				type,

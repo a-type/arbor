@@ -1,5 +1,6 @@
 import { $, computeEquation, printComputationResult } from '@arbor-css/calc';
-import { $globalPropsUnset, PrimitiveGlobals } from '@arbor-css/globals';
+import { $dynamicProps } from '@arbor-css/globals';
+import { $globalProps, GlobalConfig } from '../../globals/dist/globalProps.js';
 
 export const defaultShadowLevels = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
 export type DefaultShadowLevel = (typeof defaultShadowLevels)[number];
@@ -7,7 +8,7 @@ export type DefaultShadowLevel = (typeof defaultShadowLevels)[number];
 export interface ShadowConfig<TSpacingLevel extends string> {
 	levels?: Record<TSpacingLevel, string | number>;
 	defaultLevel?: TSpacingLevel;
-	globals?: PrimitiveGlobals;
+	globals?: GlobalConfig;
 }
 
 export interface CompiledShadows<TShadowLevel extends string> {
@@ -26,7 +27,7 @@ const defaultShadowEquation = (step: number) =>
 				$.literal('0.15px'),
 				$.fn('pow', $.literal(2), $.literal(step - 1)),
 			),
-			$.literal('rgba(0, 0, 0, 0.1)'),
+			$.literal($dynamicProps.shadowColor.var),
 		],
 		' ',
 	);
@@ -56,7 +57,7 @@ export function compileShadows<TShadowLevel extends string>(
 				printComputationResult(
 					computeEquation(defaultShadowEquation(i - baseIndex), {
 						propertyValues: {
-							[$globalPropsUnset.spacingUnitPixels.name]:
+							[$globalProps.spacingUnitPixels.name]:
 								config.globals?.spacingUnitPixels?.toString(),
 						},
 					}),

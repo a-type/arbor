@@ -1,5 +1,5 @@
 import { CalcEvaluationContext } from '@arbor-css/calc';
-import { createGlobalProps, PrimitiveGlobals } from '@arbor-css/globals';
+import { $globalProps, GlobalConfig } from '@arbor-css/globals';
 import {
 	ColorRangeConfig,
 	CompiledColorRange,
@@ -49,12 +49,11 @@ export function compileColors<
 }: {
 	ranges: TRanges;
 	schemes?: TSchemes;
-	globals?: Partial<PrimitiveGlobals>;
+	globals?: Partial<GlobalConfig>;
 }) {
-	const globalTokens = createGlobalProps(globals ?? {});
 	const evalContext: CalcEvaluationContext = {
 		propertyValues: {
-			[globalTokens.saturation.name]: globals?.saturation?.toString(),
+			[$globalProps.saturation.name]: globals?.saturation?.toString(),
 		},
 	};
 	const schemes = {

@@ -5,8 +5,18 @@ export const $labelProps = {
 	scheme: createToken('ℹ️-scheme', { type: 'string' }),
 };
 
+export const $dynamicProps = {
+	shadowColor: createToken('👟-shadowColor', {
+		type: 'color',
+		fallback: 'rgba(0, 0, 0, 0.1)',
+	}),
+};
+
 export const $systemProps = {
+	// bookkeeping and context inference
 	labels: $labelProps,
+	// runtime-assignable properties
+	dynamic: $dynamicProps,
 	// System color tokens are well-known properties you can
 	// assign colors to which are used by util classes for
 	// color mixing and other things...

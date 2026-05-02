@@ -1,4 +1,5 @@
 import { isToken } from '@arbor-css/tokens';
+import { generateStylesheet } from '../../stylesheet/generateStylesheet.js';
 import { convertStructure } from '../../util/convertStructure.js';
 import { getConfig } from '../registration.js';
 
@@ -39,6 +40,10 @@ class SystemDemo extends HTMLElement {
 						null,
 						2,
 					)}</pre>
+				</details>
+				<details>
+					<summary>Generated CSS</summary>
+					<pre>${generateStylesheet(config)}</pre>
 				</details>
 				<h2>Color Ranges</h2>
 				${colorRanges

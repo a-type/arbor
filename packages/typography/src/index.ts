@@ -4,7 +4,7 @@ import {
 	computeEquation,
 	printComputationResult,
 } from '@arbor-css/calc';
-import { $globalPropsUnset, PrimitiveGlobals } from '@arbor-css/globals';
+import { $globalProps, GlobalConfig } from '../../globals/dist/globalProps.js';
 
 export interface TypographyLevel {
 	size: string;
@@ -40,7 +40,7 @@ export type DefaultTypographyLevel = (typeof defaultTypographyLevels)[number];
 export type TypographyConfig<TLevels extends string> = {
 	levels?: Record<TLevels, Partial<TypographyLevel>>;
 	defaultLevel?: TLevels;
-	globals?: Partial<PrimitiveGlobals>;
+	globals?: Partial<GlobalConfig>;
 };
 
 export function compileTypography<TLevels extends string>(
@@ -60,7 +60,7 @@ export function compileTypography<TLevels extends string>(
 
 	const evalContext: CalcEvaluationContext = {
 		propertyValues: {
-			[$globalPropsUnset.baseFontSizePixels.name]:
+			[$globalProps.baseFontSizePixels.name]:
 				config.globals?.baseFontSizePixels?.toString(),
 		},
 	};
@@ -96,10 +96,7 @@ export function compileTypography<TLevels extends string>(
 }
 
 const typographySizeEquation = (step: number) =>
-	$.multiply(
-		$.literal($globalPropsUnset.baseFontSizePixels.var),
-		$.fn('pow', $.literal(1.25), $.literal(step)),
-	);
+	$.multiply($.literal('1rem'), $.fn('pow', $.literal(1.25), $.literal(step)));
 
 const typographyWeightEquation = (step: number) =>
 	$.add($.literal(400), $.multiply($.literal(25), $.literal(step)));

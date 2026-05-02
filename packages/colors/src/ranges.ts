@@ -3,11 +3,8 @@ import {
 	CalcOperations,
 	Equation,
 } from '@arbor-css/calc';
-import { createGlobalProps } from '@arbor-css/globals';
+import { $globalProps } from '@arbor-css/globals';
 import { oklchBuilder, OklchColorEquation } from './color.js';
-
-// values not important, just need the names.
-const $globalProps = createGlobalProps({});
 
 export const defaultRangeNames = [
 	'ink',
