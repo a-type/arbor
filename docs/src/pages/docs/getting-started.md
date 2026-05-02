@@ -175,20 +175,30 @@ const baseMode = arborModeSchema.createBase({
 
 Wow, ok, we finally have an Arbor style system ready with our first mode.
 
+If you're using a bundler like Vite, the fastest way to get a look at your style system is to import Arbor's runtime and drop its `<arbor-system-demo>` custom element in your HTML.
+
+```ts
+import { connect } from '@arbor-css/core/runtime';
+import arbor from './arbor.ts';
+
+const demo = document.createElement('arbor-system-demo');
+document.body.appendChild(demo);
+```
+
+You should see a collection of color swatches and other bits showing what your system values do.
+
+## Building for production
+
+You probably don't want Arbor in your runtime code, though. You just want some CSS. So let's move away from the runtime demo and get set up for real.
+
 First, use the CLI to generate your CSS.
 
 ```sh
 $ npx arbor -c arbor.ts
 ```
 
-Now let's see what it looks like!
+Point it to your `arbor.ts` file and optionally add `-o` to specify what the destination CSS file should be.
 
-If you're using a bundler like Vite, the fastest way to get a look at your style system is to import Arbor's runtime and drop its `<arbor-system-demo>` custom element in your HTML.
+This will generate a single CSS file which contains your whole Arbor system: primitives, schemes, and modes.
 
-```html
-<link rel="stylesheet" href="arbor.css" />
-<script src="@arbor-css/core/runtime"></script>
-<arbor-system-demo></arbor-system-demo>
-```
-
-You should see a collection of color swatches and other bits showing what your system values do.
+Now, it's time to actually use it to style _your_ UI.

@@ -1,43 +1,43 @@
 import { $, computeEquation, printComputationResult } from '@arbor-css/calc';
 import { $globalPropsUnset, PrimitiveGlobals } from '@arbor-css/globals';
 
-export const defaultSpacingLevels = [
-	'2xs',
-	'xs',
-	'sm',
-	'md',
-	'lg',
-	'xl',
-	'2xl',
-	'3xl',
-] as const;
+export const defaultShadowLevels = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
+export type DefaultShadowLevel = (typeof defaultShadowLevels)[number];
 
-const defaultSpacingEquation = (step: number) =>
-	$.multiply(
-		$.literal($globalPropsUnset.spacingUnitPixels.var),
-		$.fn('pow', $.literal(1.5), $.literal(step)),
-	);
-
-export interface SpacingConfig<TSpacingLevel extends string> {
+export interface ShadowConfig<TSpacingLevel extends string> {
 	levels?: Record<TSpacingLevel, string | number>;
 	defaultLevel?: TSpacingLevel;
 	globals?: PrimitiveGlobals;
 }
 
-export interface CompiledSpacing<TSpacingLevel extends string> {
-	defaultLevel: TSpacingLevel;
+export interface CompiledShadows<TShadowLevel extends string> {
+	defaultLevel: TShadowLevel;
 	levels: {
-		[K in TSpacingLevel]: string | number;
+		[K in TShadowLevel]: string | number;
 	};
 }
 
-export function compileSpacing<TSpacingLevel extends string>(
-	config: SpacingConfig<TSpacingLevel>,
-): CompiledSpacing<TSpacingLevel> {
+const defaultShadowEquation = (step: number) =>
+	$.concat(
+		[
+			$.literal('0px'),
+			$.multiply($.literal('1px'), $.fn('pow', $.literal(2), $.literal(step))),
+			$.multiply(
+				$.literal('0.15px'),
+				$.fn('pow', $.literal(2), $.literal(step - 1)),
+			),
+			$.literal('rgba(0, 0, 0, 0.1)'),
+		],
+		' ',
+	);
+
+export function compileShadows<TShadowLevel extends string>(
+	config: ShadowConfig<TShadowLevel>,
+): CompiledShadows<TShadowLevel> {
 	const levelNames =
 		config.levels ?
 			Object.keys(config.levels)
-		:	(defaultSpacingLevels as unknown as TSpacingLevel[]);
+		:	(defaultShadowLevels as unknown as TShadowLevel[]);
 
 	const baseIndex =
 		// user supplied explicit default level
@@ -45,16 +45,16 @@ export function compileSpacing<TSpacingLevel extends string>(
 			// user did not give us a default level, but did give us custom levels, so we'll pick the middle one as the default
 		: config.levels ? Math.floor(levelNames.length / 2)
 			// user did not give us a default level, and is using the default levels, so we'll use 'md' as the default.
-		: levelNames.indexOf('md' as TSpacingLevel);
+		: levelNames.indexOf('md' as TShadowLevel);
 
 	const levels = levelNames.reduce(
 		(acc, name, i) => {
-			const nameCast = name as TSpacingLevel;
+			const nameCast = name as TShadowLevel;
 			const levelConfig = config.levels?.[nameCast]?.toString();
 			acc[nameCast] =
 				levelConfig ??
 				printComputationResult(
-					computeEquation(defaultSpacingEquation(i - baseIndex), {
+					computeEquation(defaultShadowEquation(i - baseIndex), {
 						propertyValues: {
 							[$globalPropsUnset.spacingUnitPixels.name]:
 								config.globals?.spacingUnitPixels?.toString(),
@@ -63,12 +63,12 @@ export function compileSpacing<TSpacingLevel extends string>(
 				);
 			return acc;
 		},
-		{} as Record<TSpacingLevel, string>,
-	) as CompiledSpacing<TSpacingLevel>['levels'];
+		{} as Record<TShadowLevel, string>,
+	) as CompiledShadows<TShadowLevel>['levels'];
 
 	return {
 		defaultLevel:
-			config.defaultLevel ?? (levelNames[baseIndex] as TSpacingLevel),
+			config.defaultLevel ?? (levelNames[baseIndex] as TShadowLevel),
 		levels,
 	};
 }

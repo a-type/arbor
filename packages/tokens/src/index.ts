@@ -48,7 +48,7 @@ export function createToken(
 	const resolvedName =
 		noPrefix ? `--${escapedName}` : `${TOKEN_PREFIX}-${escapedName}`;
 	return {
-		[TOKEN_BRAND]: true,
+		[TOKEN_BRAND]: true as const,
 		name: resolvedName,
 		type: type,
 		fallback: fallback,
@@ -81,10 +81,7 @@ export function createToken(
 
 export type Token = ReturnType<typeof createToken>;
 export type TokenSchema = {
-	[Key: string]:
-		| Token
-		| TokenSchema
-		| ((...args: any[]) => Record<string, Token>);
+	[Key: string]: Token | TokenSchema;
 };
 
 export function isToken(value: any): value is ReturnType<typeof createToken> {

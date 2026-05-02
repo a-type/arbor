@@ -11,7 +11,9 @@ export type OperationTree =
 	| LiteralOperation
 	| ClampOperation
 	| CastOperation
-	| FunctionCallOperation;
+	| FunctionCallOperation
+	| ConcatenateOperation;
+
 interface AddOperation {
 	type: 'add';
 	values: Equation[];
@@ -46,6 +48,12 @@ interface FunctionCallOperation {
 	name: string;
 	args: Equation[];
 }
+/** Not strictly calc(), but useful for constructing non-numeric outputs... */
+interface ConcatenateOperation {
+	type: 'concatenate';
+	separator: string;
+	values: Equation[];
+}
 
 export const $ = {
 	literal: (value: string | number): LiteralOperation => {
@@ -74,6 +82,9 @@ export const $ = {
 	},
 	fn: (name: string, ...args: Equation[]): FunctionCallOperation => {
 		return { type: 'function', name, args };
+	},
+	concat: (values: Equation[], sep = ' '): ConcatenateOperation => {
+		return { type: 'concatenate', values, separator: sep };
 	},
 };
 export type CalcOperations = typeof $;
@@ -107,6 +118,10 @@ export function printEquation(equation: Equation): string {
 			return `${equation.name}(${equation.args
 				.map((v) => printEquation(v))
 				.join(', ')})`;
+		case 'concatenate':
+			return equation.values
+				.map((v) => printEquation(v))
+				.join(equation.separator);
 		default:
 			throw new Error(`Unknown equation type: ${(equation as any).type}`);
 	}
@@ -121,9 +136,19 @@ export type ComputationResult =
 	| {
 			type: 'calc';
 			value: string;
+	  }
+	| {
+			type: 'concatenated';
+			value: string;
 	  };
 
 function add(a: ComputationResult, b: ComputationResult): ComputationResult {
+	if (a.type === 'concatenated' || b.type === 'concatenated') {
+		return {
+			type: 'concatenated',
+			value: `${printComputationResult(a)} + ${printComputationResult(b)}`,
+		};
+	}
 	if (a.value === 0) {
 		return b;
 	}
@@ -145,6 +170,12 @@ function subtract(
 	a: ComputationResult,
 	b: ComputationResult,
 ): ComputationResult {
+	if (a.type === 'concatenated' || b.type === 'concatenated') {
+		return {
+			type: 'concatenated',
+			value: `${printComputationResult(a)} - ${printComputationResult(b)}`,
+		};
+	}
 	if (b.value === 0) {
 		return a;
 	}
@@ -166,6 +197,12 @@ function multiply(
 	a: ComputationResult,
 	b: ComputationResult,
 ): ComputationResult {
+	if (a.type === 'concatenated' || b.type === 'concatenated') {
+		return {
+			type: 'concatenated',
+			value: `${printComputationResult(a)} * ${printComputationResult(b)}`,
+		};
+	}
 	if (a.type === 'numeric' && a.value === 0) {
 		return { type: 'numeric', value: 0, unit: a.unit };
 	}
@@ -201,6 +238,12 @@ function multiply(
 }
 
 function divide(a: ComputationResult, b: ComputationResult): ComputationResult {
+	if (a.type === 'concatenated' || b.type === 'concatenated') {
+		return {
+			type: 'concatenated',
+			value: `${printComputationResult(a)} / ${printComputationResult(b)}`,
+		};
+	}
 	if (b.type === 'numeric' && b.value === 0) {
 		throw new Error('Division by zero');
 	}
@@ -231,6 +274,18 @@ function clamp(
 	max: ComputationResult,
 ): ComputationResult {
 	if (
+		value.type === 'concatenated' ||
+		min.type === 'concatenated' ||
+		max.type === 'concatenated'
+	) {
+		return {
+			type: 'concatenated',
+			value: `clamp(${printComputationResult(min)}, ${printComputationResult(
+				value,
+			)}, ${printComputationResult(max)})`,
+		};
+	}
+	if (
 		value.type === 'calc' ||
 		min.type === 'calc' ||
 		max.type === 'calc' ||
@@ -253,6 +308,14 @@ function clamp(
 }
 
 function cast(value: ComputationResult, unit: '%' | ''): ComputationResult {
+	if (value.type === 'concatenated') {
+		return {
+			type: 'concatenated',
+			value: `(${printComputationResult(value)} * ${
+				unit === '%' ? '100%' : '1'
+			})`,
+		};
+	}
 	if (value.type === 'calc') {
 		return {
 			type: 'calc',
@@ -349,6 +412,13 @@ function fnCall(name: string, ...args: ComputationResult[]): ComputationResult {
 				break;
 		}
 	}
+	const isConcatenated = args.some((arg) => arg.type === 'concatenated');
+	if (isConcatenated) {
+		return {
+			type: 'concatenated',
+			value: `${name}(${args.map(printComputationResult).join(', ')})`,
+		};
+	}
 	return {
 		type: 'calc',
 		value: `${name}(${args.map(printComputationResult).join(', ')})`,
@@ -357,6 +427,9 @@ function fnCall(name: string, ...args: ComputationResult[]): ComputationResult {
 
 export function printComputationResult(result: ComputationResult): string {
 	if (result.type === 'calc') {
+		return result.value;
+	}
+	if (result.type === 'concatenated') {
 		return result.value;
 	}
 	return result.unit === '%' ? `${result.value}%` : `${result.value}`;
@@ -442,6 +515,14 @@ export function computeEquation(
 		case 'function':
 			const args = equation.args.map((arg) => computeEquation(arg, context));
 			return fnCall(equation.name, ...args);
+		case 'concatenate':
+			const concatenatedValues = equation.values.map((v) =>
+				printComputationResult(computeEquation(v, context)),
+			);
+			return {
+				type: 'concatenated',
+				value: concatenatedValues.join(equation.separator),
+			};
 		default:
 			throw new Error(`Unknown equation type: ${(equation as any).type}`);
 	}

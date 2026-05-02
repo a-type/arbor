@@ -11,7 +11,7 @@ export const defaultGlobals: PrimitiveGlobals = {
 	saturation: 0.5,
 	roundness: 0.5,
 	baseFontSizePixels: 16,
-	spacingUnitPixels: 4,
+	spacingUnitPixels: 8,
 };
 
 export function createGlobals(

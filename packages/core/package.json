@@ -38,6 +38,9 @@
 		"@arbor-css/globals": "workspace:*",
 		"@arbor-css/colors": "workspace:*",
 		"@arbor-css/modes": "workspace:*",
+		"@arbor-css/typography": "workspace:*",
+		"@arbor-css/spacing": "workspace:*",
+		"@arbor-css/shadows": "workspace:*",
 		"jiti": "^2.6.1",
 		"yargs": "^18.0.0"
 	}

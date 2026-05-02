@@ -5,17 +5,26 @@ import {
 	GlobalConfigProps,
 	PrimitiveGlobals,
 } from '@arbor-css/globals';
-import { Token, TokenSchema } from '@arbor-css/tokens';
-import { tokenifyColors } from '../util/tokenifyColors.js';
+import { CompiledShadows } from '@arbor-css/shadows';
+import { CompiledSpacing } from '@arbor-css/spacing';
+import { createToken, Token, TokenSchema } from '@arbor-css/tokens';
+import { CompiledTypography, isTypographyLevel } from '@arbor-css/typography';
+import { convertStructure } from '../util/convertStructure.js';
 import { $systemProps } from './systemProps.js';
 
 export const defaultDefaultScheme = 'light';
 
 export interface PrimitivesConfig<
 	TCompiledColors extends CompiledColors<any, any>,
-	TOtherTokens extends TokenSchema,
+	TCompiledTypography extends CompiledTypography<any>,
+	TCompiledSpacing extends CompiledSpacing<any>,
+	TCompiledShadows extends CompiledShadows<any>,
+	TOtherTokens extends TokenSchema = TokenSchema,
 > {
 	colors: TCompiledColors;
+	typography: TCompiledTypography;
+	spacing: TCompiledSpacing;
+	shadows: TCompiledShadows;
 	misc?: TOtherTokens;
 	defaultScheme?: keyof TCompiledColors;
 	schemeTags?: Record<string, string>;
@@ -34,6 +43,9 @@ export interface PrimitivesColorScheme {
 
 export type Primitives<
 	TCompiledColors extends CompiledColors<any, any>,
+	TCompiledTypography extends CompiledTypography<any>,
+	TCompiledSpacing extends CompiledSpacing<any>,
+	TCompiledShadows extends CompiledShadows<any>,
 	TOtherTokens extends TokenSchema,
 > = {
 	/**
@@ -42,6 +54,9 @@ export type Primitives<
 	 * and string values which represent CSS colors.
 	 */
 	colors: TCompiledColors;
+	typography: CompiledTypography<any>;
+	spacing: CompiledSpacing<any>;
+	shadows: CompiledShadows<any>;
 	defaultScheme: keyof TCompiledColors;
 	schemeTags: Record<string, string>;
 	globals: PrimitiveGlobals;
@@ -51,15 +66,33 @@ export type Primitives<
 	};
 	$tokens: {
 		colors: StringsToTokens<TCompiledColors[keyof TCompiledColors]>;
+		typography: StringsToTokens<TCompiledTypography['levels']>;
+		spacing: StringsToTokens<TCompiledSpacing['levels']>;
+		shadows: StringsToTokens<TCompiledShadows['levels']>;
 	} & TOtherTokens;
 };
 
 export function createPrimitives<
 	TCompiledColors extends CompiledColors<any, any>,
+	TCompiledTypography extends CompiledTypography<any>,
+	TCompiledSpacing extends CompiledSpacing<any>,
+	TCompiledShadows extends CompiledShadows<any>,
 	TOtherTokens extends TokenSchema,
 >(
-	config: PrimitivesConfig<TCompiledColors, TOtherTokens>,
-): Primitives<TCompiledColors, TOtherTokens> {
+	config: PrimitivesConfig<
+		TCompiledColors,
+		TCompiledTypography,
+		TCompiledSpacing,
+		TCompiledShadows,
+		TOtherTokens
+	>,
+): Primitives<
+	TCompiledColors,
+	TCompiledTypography,
+	TCompiledSpacing,
+	TCompiledShadows,
+	TOtherTokens
+> {
 	const { colors, defaultScheme, globals: userGlobals } = config;
 
 	const arbitraryScheme = Object.values(colors)[0];
@@ -67,7 +100,39 @@ export function createPrimitives<
 		throw new Error('At least one color scheme must be defined in primitives');
 	}
 	// TODO: validate all scheme shapes are the same...
-	const $colorProps = tokenifyColors(arbitraryScheme);
+	const $colorProps = convertStructure(
+		arbitraryScheme,
+		(item) => typeof item === 'string',
+		(_, path) => createToken(path.join('-'), { type: 'color' }),
+	);
+
+	const $typographyProps = convertStructure(
+		config.typography.levels,
+		isTypographyLevel,
+		(_, path) => ({
+			size: createToken(`typography-${path.join('-')}-size`, {
+				type: 'length',
+			}),
+			weight: createToken(`typography-${path.join('-')}-weight`, { type: '*' }),
+			lineHeight: createToken(`typography-${path.join('-')}-line-height`, {
+				type: '*',
+			}),
+		}),
+	);
+
+	const $spacingProps = convertStructure(
+		config.spacing.levels,
+		(value): value is string | number =>
+			typeof value === 'string' || typeof value === 'number',
+		(_, path) => createToken(`spacing-${path.join('-')}`, { type: 'length' }),
+	);
+
+	const $shadowProps = convertStructure(
+		config.shadows.levels,
+		(value): value is string | number =>
+			typeof value === 'string' || typeof value === 'number',
+		(_, path) => createToken(`shadow-${path.join('-')}`, { type: '*' }),
+	);
 
 	const globals: PrimitiveGlobals = {
 		...defaultGlobals,
@@ -87,6 +152,9 @@ export function createPrimitives<
 		schemeTags,
 		globals,
 		colors,
+		typography: config.typography,
+		spacing: config.spacing,
+		shadows: config.shadows,
 		$props: {
 			system: $systemProps,
 			config: $configProps,
@@ -94,6 +162,9 @@ export function createPrimitives<
 		$tokens: {
 			...(config.misc ?? ({} as TOtherTokens)),
 			colors: $colorProps,
+			typography: $typographyProps,
+			spacing: $spacingProps,
+			shadows: $shadowProps,
 		},
 	};
 }

@@ -5,21 +5,36 @@ import {
 	modeToCss,
 } from '@arbor-css/modes';
 import {
+	createToken,
 	isToken,
 	selfReferencedProps,
 	TokenSchema,
 	tokenSchemaToList,
 } from '@arbor-css/tokens';
+import { CompiledTypography } from '@arbor-css/typography';
 import { ArborConfig } from '../config.js';
-import { tokenifyColors } from '../util/tokenifyColors.js';
+import { CompiledShadows, CompiledSpacing } from '../index.js';
+import { convertStructure } from '../util/convertStructure.js';
 
 const noPreference = `, (prefers-color-scheme: no-preference)`;
 
 export function generateStylesheet<
 	TModeShape extends ModeSchemaLevel,
 	TCompiledColors extends CompiledColors<any, any>,
+	TTypography extends CompiledTypography<any>,
+	TSpacing extends CompiledSpacing<any>,
+	TShadows extends CompiledShadows<any>,
 	TOtherTokens extends TokenSchema,
->(config: ArborConfig<TModeShape, TCompiledColors, TOtherTokens>): string {
+>(
+	config: ArborConfig<
+		TModeShape,
+		TCompiledColors,
+		TTypography,
+		TSpacing,
+		TShadows,
+		TOtherTokens
+	>,
+): string {
 	const defaultMode = config.primitives.defaultScheme ?? 'light';
 
 	/**
@@ -67,11 +82,13 @@ export function generateStylesheet<
 	);
 	// convert all tagged scheme colors to Tokens
 	const allColorTokens = tokenSchemaToList(
-		tokenifyColors(schemeColorsWithTags),
+		convertStructure(schemeColorsWithTags, isToken, (_, path) =>
+			createToken(path.join('-'), { type: 'color' }),
+		),
 	);
 
 	return `/* Auto-generated CSS - do not edit directly */
-:root, body {
+:root {
 	/* Assign user globals */
 	${Object.entries(config.primitives.$props.config)
 		.map(([key, prop]) => prop.assign())
@@ -94,9 +111,14 @@ export function generateStylesheet<
 	} {
 		${schemeApplicationCss('dark')}
 	}
+
+	/* Other primitives */
+	${printTokens(config.primitives.$tokens.typography, config.primitives.typography.levels)}
+	${printTokens(config.primitives.$tokens.spacing, config.primitives.spacing.levels)}
+	${printTokens(config.primitives.$tokens.shadows, config.primitives.shadows.levels)}
 }
 
-/* Scheme class names */
+/* Scheme classes */
 ${Object.keys(config.primitives.colors)
 	.map(
 		(schemeName) => `.\\@scheme-${schemeName} {
@@ -173,4 +195,14 @@ function flattenAndApplyTokenValues(
 	}
 	walk(tokens, values);
 	return result;
+}
+
+function printTokens(
+	tokens: TokenSchema,
+	values: Record<string, any>,
+	{ prefix }: { prefix?: string } = {},
+) {
+	return formatPropertiesToCss(
+		flattenAndApplyTokenValues(tokens, values, { prefix }),
+	);
 }

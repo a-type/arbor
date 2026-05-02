@@ -12,7 +12,11 @@ export interface TypographyLevel {
 	lineHeight: number;
 }
 
-export interface Typography<TLevels extends string> {
+export function isTypographyLevel(value: any): value is TypographyLevel {
+	return value && 'size' in value && 'weight' in value && 'lineHeight' in value;
+}
+
+export interface CompiledTypography<TLevels extends string> {
 	defaultLevel: TLevels;
 	levels: {
 		[K in TLevels]: TypographyLevel;
@@ -41,7 +45,7 @@ export type TypographyConfig<TLevels extends string> = {
 
 export function compileTypography<TLevels extends string>(
 	config: TypographyConfig<TLevels>,
-): Typography<TLevels> {
+): CompiledTypography<TLevels> {
 	const levelNames =
 		config.levels ?
 			Object.keys(config.levels)
@@ -83,7 +87,7 @@ export function compileTypography<TLevels extends string>(
 			return acc;
 		},
 		{} as Record<TLevels, TypographyLevel>,
-	) as Typography<TLevels>['levels'];
+	) as CompiledTypography<TLevels>['levels'];
 
 	return {
 		defaultLevel: config.defaultLevel ?? (levelNames[baseIndex] as TLevels),

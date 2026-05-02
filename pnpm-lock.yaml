@@ -161,9 +161,18 @@ importers:
       '@arbor-css/modes':
         specifier: workspace:*
         version: link:../modes
+      '@arbor-css/shadows':
+        specifier: workspace:*
+        version: link:../shadows
+      '@arbor-css/spacing':
+        specifier: workspace:*
+        version: link:../spacing
       '@arbor-css/tokens':
         specifier: workspace:*
         version: link:../tokens
+      '@arbor-css/typography':
+        specifier: workspace:*
+        version: link:../typography
       jiti:
         specifier: ^2.6.1
         version: 2.6.1
@@ -205,6 +214,22 @@ importers:
 
   packages/modes:
     dependencies:
+      '@arbor-css/tokens':
+        specifier: workspace:*
+        version: link:../tokens
+    devDependencies:
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
+
+  packages/shadows:
+    dependencies:
+      '@arbor-css/calc':
+        specifier: workspace:*
+        version: link:../calc
+      '@arbor-css/globals':
+        specifier: workspace:*
+        version: link:../globals
       '@arbor-css/tokens':
         specifier: workspace:*
         version: link:../tokens

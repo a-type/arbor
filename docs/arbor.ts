@@ -1,9 +1,17 @@
 import {
 	compileColors,
+	compileShadows,
+	compileSpacing,
+	compileTypography,
 	createConfig,
+	createGlobals,
 	createModeSchema,
 	createPrimitives,
 } from '@arbor-css/core';
+
+const globals = createGlobals({
+	saturation: 0.5,
+});
 
 const primitives = createPrimitives({
 	colors: compileColors({
@@ -24,9 +32,16 @@ const primitives = createPrimitives({
 				saturation: 0.4,
 			},
 		},
-		globals: {
-			saturation: 0.5,
-		},
+		globals,
+	}),
+	typography: compileTypography({
+		globals,
+	}),
+	spacing: compileSpacing({
+		globals,
+	}),
+	shadows: compileShadows({
+		globals,
 	}),
 });
 
