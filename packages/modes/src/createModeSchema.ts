@@ -40,11 +40,16 @@ function isModeSchemaProperty(value: any): value is ModeSchemaProperty {
 function getModeSchemaPropertyAsPropertyDefinition(
 	name: string,
 	prop: ModeSchemaProperty,
+	group?: string,
 ): Token {
 	if (typeof prop === 'string') {
-		return createToken(name, { purpose: prop });
+		return createToken(name, { purpose: prop, group });
 	} else {
-		return createToken(name, { purpose: prop.type, fallback: prop.fallback });
+		return createToken(name, {
+			purpose: prop.type,
+			fallback: prop.fallback,
+			group,
+		});
 	}
 }
 
@@ -144,6 +149,7 @@ function createModeTokens<T extends ModeSchemaLevel>(
 				const propertyDefinition = getModeSchemaPropertyAsPropertyDefinition(
 					currentPrefix,
 					value,
+					propPrefix,
 				);
 				propsLevel[key] = propertyDefinition;
 			} else if (typeof value === 'object' && value !== null) {

@@ -1,3 +1,4 @@
+import { Token } from '@arbor-css/tokens';
 import { getConfig } from '../registration.js';
 import { groupTokens } from '../tokenGroups.js';
 
@@ -17,23 +18,42 @@ class TokenValues extends HTMLElement {
 		this.attachShadow({ mode: 'open' }).innerHTML = `
 			<div class="root">
 				${Object.entries(tokens.simple)
-					.map(
-						([purpose, tokens]) =>
-							`<div class="token-group">
+					.map(([purpose, tokens]) => {
+						// subgroup by group if exists
+						const subgroups = tokens.reduce(
+							(groups, token) => {
+								const group = token.group ?? '';
+								if (!groups[group]) {
+									groups[group] = [];
+								}
+								groups[group].push(token);
+								return groups;
+							},
+							{} as Record<string, Token[]>,
+						);
+						return `<div class="token-group">
 								<h3>${purpose}</h3>
 								<div class="token-values">
-								${tokens
-									.map((token) => {
+								${Object.entries(subgroups)
+									.map(([group, tokens]) => {
 										return `
-										<div class="token-value">
-											<strong>${token.name}</strong>
-											<arbor-token-value-preview value="${token.var}" purpose="${token.purpose}"></arbor-token-value-preview>
+										<div class="token-subgroup">
+											<h4>${group}</h4>
+											${tokens
+												.map((token) => {
+													return `
+													<div class="token-value">
+														<strong>${token.name}</strong>
+														<arbor-token-value-preview value="${token.var}" purpose="${token.purpose}"></arbor-token-value-preview>
+													</div>`;
+												})
+												.join('\n')}
 										</div>`;
 									})
 									.join('\n')}
 								</div>
-							</div>`,
-					)
+							</div>`;
+					})
 					.join('\n')}
 				<div class="token-group">
 					<h3>Typography</h3>
@@ -71,6 +91,10 @@ class TokenValues extends HTMLElement {
 					border: 1px solid black;
 					padding: 0.25rem;
 				}
+					.token-subgroup {
+						margin-bottom: 1rem;
+						padding-left: 0.5rem;
+					}
 					.token-values {
 						display: grid;
 						grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
