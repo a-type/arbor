@@ -45,19 +45,16 @@ class SystemDemo extends HTMLElement {
 					<summary>Generated CSS</summary>
 					<pre>${generateStylesheet(config)}</pre>
 				</details>
-				<h2>Color Ranges</h2>
-				${colorRanges
-					.map(
-						([name]) =>
-							`<arbor-color-range color="${name}"></arbor-color-range>`,
-					)
-					.join('\n')}
-				<h2>Typography</h2>
-				<arbor-typography></arbor-typography>
-				<h2>Spacing</h2>
-				<arbor-spacing></arbor-spacing>
-				<h2>Shadows</h2>
-				<arbor-shadows></arbor-shadows>
+				<details open>
+					<summary><h2 id="primitives" style="display: inline; margin: 0;">Primitive Tokens</h2></summary>
+					<arbor-token-values schema-path="primitives.$tokens"></arbor-token-values>
+				</details>
+				<details open>
+					<summary><h2 id="modes" style="display: inline; margin: 0;">Mode Tokens</h2></summary>
+					<arbor-mode-selector>
+						<arbor-token-values schema-path="modes.base.schema.$tokens"></arbor-token-values>
+					</arbor-mode-selector>
+				</details>
 			</div>
 			<style>
 				h2 {

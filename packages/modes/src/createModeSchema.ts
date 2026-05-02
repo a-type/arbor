@@ -1,6 +1,6 @@
-import { createToken, isToken, PropertyType, Token } from '@arbor-css/tokens';
+import { createToken, isToken, Token, TokenPurpose } from '@arbor-css/tokens';
 
-export type ModePropertyType = PropertyType;
+export type ModePropertyType = TokenPurpose;
 export type ModeSchemaProperty =
 	| ModePropertyType
 	| {
@@ -42,9 +42,9 @@ function getModeSchemaPropertyAsPropertyDefinition(
 	prop: ModeSchemaProperty,
 ): Token {
 	if (typeof prop === 'string') {
-		return createToken(name, { type: prop });
+		return createToken(name, { purpose: prop });
 	} else {
-		return createToken(name, { type: prop.type, fallback: prop.fallback });
+		return createToken(name, { purpose: prop.type, fallback: prop.fallback });
 	}
 }
 
@@ -52,7 +52,7 @@ export function createModeSchema<T extends ModeSchemaLevel>(
 	input: T,
 	{ tag = 'Ⓜ️' }: { tag?: string } = {},
 ): ModeSchema<T> {
-	const PROPS = generateModeProperties(input, tag);
+	const PROPS = createModeTokens(input, tag);
 	const schema = {
 		definition: input,
 		tag,
@@ -128,7 +128,7 @@ type AsPropertyDefinitions<T> =
 		}
 	:	never;
 
-function generateModeProperties<T extends ModeSchemaLevel>(
+function createModeTokens<T extends ModeSchemaLevel>(
 	root: T,
 	tag: string,
 ): AsPropertyDefinitions<T> {

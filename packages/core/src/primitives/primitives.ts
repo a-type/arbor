@@ -93,7 +93,13 @@ export function createPrimitives<
 	const $colorProps = convertStructure(
 		arbitraryScheme,
 		(item) => typeof item === 'string',
-		(_, path) => createToken(path.join('-'), { type: 'color' }),
+		(_, path) =>
+			createToken(path.join('-'), {
+				type: 'color',
+				purpose: 'color',
+				group: path.slice(0, -1).join('-'),
+				tag: '🎨',
+			}),
 	);
 
 	const $typographyProps = convertStructure(
@@ -102,10 +108,21 @@ export function createPrimitives<
 		(_, path) => ({
 			size: createToken(`typography-${path.join('-')}-size`, {
 				type: 'length',
+				purpose: 'font-size',
+				group: path.join('-'),
+				tag: '🅰️',
 			}),
-			weight: createToken(`typography-${path.join('-')}-weight`, { type: '*' }),
+			weight: createToken(`typography-${path.join('-')}-weight`, {
+				type: '*',
+				purpose: 'font-weight',
+				group: path.join('-'),
+				tag: '🅰️',
+			}),
 			lineHeight: createToken(`typography-${path.join('-')}-line-height`, {
 				type: '*',
+				purpose: 'line-height',
+				group: path.join('-'),
+				tag: '🅰️',
 			}),
 		}),
 	);
@@ -114,14 +131,24 @@ export function createPrimitives<
 		config.spacing.levels,
 		(value): value is string | number =>
 			typeof value === 'string' || typeof value === 'number',
-		(_, path) => createToken(`spacing-${path.join('-')}`, { type: 'length' }),
+		(_, path) =>
+			createToken(`spacing-${path.join('-')}`, {
+				type: 'length',
+				purpose: 'spacing',
+				tag: '📏',
+			}),
 	);
 
 	const $shadowProps = convertStructure(
 		config.shadows.levels,
 		(value): value is string | number =>
 			typeof value === 'string' || typeof value === 'number',
-		(_, path) => createToken(`shadow-${path.join('-')}`, { type: '*' }),
+		(_, path) =>
+			createToken(`shadow-${path.join('-')}`, {
+				type: '*',
+				purpose: 'shadow',
+				tag: '🌫️',
+			}),
 	);
 
 	const globals: GlobalConfig = {

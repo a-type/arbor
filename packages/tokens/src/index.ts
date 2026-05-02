@@ -1,4 +1,4 @@
-export const TOKEN_PREFIX = '--🎨';
+export const TOKEN_PREFIX = '--';
 
 /**
  * Allowed types of properties - specifying one allows defining
@@ -28,21 +28,54 @@ export type PropertyType =
 	| 'url'
 	| '*';
 
+export type TokenPurpose =
+	| 'color'
+	| 'font-size'
+	| 'font-weight'
+	| 'line-height'
+	| 'spacing'
+	| 'shadow'
+	| 'other';
+
+export function getTypeFromPurpose(purpose: TokenPurpose): PropertyType {
+	switch (purpose) {
+		case 'color':
+			return 'color';
+		case 'font-size':
+			return 'length';
+		case 'font-weight':
+			return 'number';
+		case 'line-height':
+			return 'length-percentage';
+		case 'spacing':
+			return 'length';
+		case 'shadow':
+			return 'string';
+		default:
+			return '*';
+	}
+}
+
 const TOKEN_BRAND = '@@TOKEN@@';
 
 export function createToken(
 	name: string,
 	{
-		type,
 		fallback,
 		inherits = true,
-		noNamespace: noPrefix,
 		forceDefinition,
+		purpose = 'other',
+		type = getTypeFromPurpose(purpose),
+		group,
+		tag,
 	}: {
-		type: PropertyType;
+		/** Inferred from purpose if not provided, defaults to "*" */
+		type?: PropertyType;
+		purpose?: TokenPurpose;
+		group?: string;
 		fallback?: string | number;
+		tag?: string;
 		inherits?: boolean;
-		noNamespace?: boolean;
 		/**
 		 * Force the generation of a @property rule definition, even if it's not meaningful.
 		 * Otherwise tokens whose properties have no special concerns like inherit:false will
@@ -52,13 +85,15 @@ export function createToken(
 	},
 ) {
 	const escapedName = name.replace('$', '');
-	const resolvedName =
-		noPrefix ? `--${escapedName}` : `${TOKEN_PREFIX}-${escapedName}`;
+	const taggedName = tag ? `${tag}-${escapedName}` : escapedName;
+	const resolvedName = `${TOKEN_PREFIX}${taggedName}`;
 	return {
 		[TOKEN_BRAND]: true as const,
 		name: resolvedName,
-		type: type,
-		fallback: fallback,
+		type,
+		purpose,
+		group,
+		fallback,
 		var: `var(${resolvedName}${fallback ? `, ${fallback}` : ''})`,
 		varFallback: (fallbackOverride?: string | number) =>
 			`var(${resolvedName}, ${fallbackOverride ?? fallback ?? 'initial'})`,
@@ -75,14 +110,14 @@ export function createToken(
 				type,
 				fallback,
 				inherits,
-				noNamespace: noPrefix,
+				tag,
 			}),
 		prefixed: (prefix: string) =>
 			createToken(`${prefix}-${name}`, {
 				type,
 				fallback,
 				inherits,
-				noNamespace: noPrefix,
+				tag,
 			}),
 	};
 }

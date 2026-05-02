@@ -2,7 +2,7 @@ import { arborModeSchema } from '../src/index.js';
 import { primitives } from './primitives.js';
 
 export const modeSchema = arborModeSchema.extend({
-	density: 'number',
+	density: 'other',
 });
 
 export const rootMode = modeSchema.createBase({

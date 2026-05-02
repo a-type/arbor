@@ -1,17 +1,17 @@
-import { createModeSchema } from './createModeSchema.js';
+import { createModeSchema, ModeSchemaLevel } from './createModeSchema.js';
 
 const colorIntents = {
 	fg: 'color',
 	bg: 'color',
 	border: 'color',
-} as const;
+} satisfies ModeSchemaLevel;
 
 const textIntents = {
-	size: 'length',
-	weight: 'number',
-	lineHeight: 'number',
-	font: '*',
-} as const;
+	size: 'font-size',
+	weight: 'font-weight',
+	lineHeight: 'line-height',
+	font: 'other',
+} satisfies ModeSchemaLevel;
 
 export const arborModeSchema = createModeSchema({
 	// colors
