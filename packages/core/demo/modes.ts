@@ -1,4 +1,4 @@
-import { arborModeSchema } from '../src/index.js';
+import { arborModeSchema, derive } from '../src/index.js';
 import { primitives } from './primitives.js';
 
 export const modeSchema = arborModeSchema;
@@ -47,35 +47,35 @@ export const rootMode = modeSchema.createBase({
 	},
 	text: {
 		primary: {
-			size: `calc(${primitives.$tokens.typography['3xl'].size.var} / ${modeSchema.$tokens.density.var})`,
-			weight: 'bold',
-			lineHeight: '1.5',
+			size: derive`calc(${primitives.$tokens.typography['3xl'].size} / ${modeSchema.$tokens.density})`,
+			weight: primitives.$tokens.typography['3xl'].weight,
+			lineHeight: primitives.$tokens.typography['3xl'].lineHeight,
 			font: 'sans-serif',
 		},
 		secondary: {
-			size: `calc(${primitives.$tokens.typography.md.size.var} / ${modeSchema.$tokens.density.var})`,
-			weight: 'normal',
-			lineHeight: '1.5',
+			size: derive`calc(${primitives.$tokens.typography.md.size} / ${modeSchema.$tokens.density})`,
+			weight: primitives.$tokens.typography.md.weight,
+			lineHeight: primitives.$tokens.typography.md.lineHeight,
 			font: 'sans-serif',
 		},
 		ambient: {
-			size: `calc(${primitives.$tokens.typography.sm.size.var} / ${modeSchema.$tokens.density.var})`,
-			weight: 'normal',
-			lineHeight: '1.5',
+			size: derive`calc(${primitives.$tokens.typography.sm.size} / ${modeSchema.$tokens.density})`,
+			weight: primitives.$tokens.typography.sm.weight,
+			lineHeight: primitives.$tokens.typography.sm.lineHeight,
 			font: 'sans-serif',
 		},
 	},
 	density: 1,
 	spacing: {
-		xs: `calc(${primitives.$tokens.spacing.xs.var} / ${modeSchema.$tokens.density.var})`,
-		sm: `calc(${primitives.$tokens.spacing.sm.var} / ${modeSchema.$tokens.density.var})`,
-		md: `calc(${primitives.$tokens.spacing.md.var} / ${modeSchema.$tokens.density.var})`,
-		lg: `calc(${primitives.$tokens.spacing.lg.var} / ${modeSchema.$tokens.density.var})`,
-		xl: `calc(${primitives.$tokens.spacing.xl.var} / ${modeSchema.$tokens.density.var})`,
+		xs: derive`calc(${primitives.$tokens.spacing.xs} / ${modeSchema.$tokens.density})`,
+		sm: derive`calc(${primitives.$tokens.spacing.sm} / ${modeSchema.$tokens.density})`,
+		md: derive`calc(${primitives.$tokens.spacing.md} / ${modeSchema.$tokens.density})`,
+		lg: derive`calc(${primitives.$tokens.spacing.lg} / ${modeSchema.$tokens.density})`,
+		xl: derive`calc(${primitives.$tokens.spacing.xl} / ${modeSchema.$tokens.density})`,
 	},
 });
 
-export const altMode = modeSchema.createPartial({
+export const altMode = modeSchema.createPartial('alt', {
 	mainColor: primitives.$tokens.colors.alt,
 	neutralColor: primitives.$tokens.colors.alt.$neutral,
 	action: {
@@ -118,7 +118,7 @@ export const altMode = modeSchema.createPartial({
 	},
 });
 
-export const greenButtonsMode = modeSchema.createPartial({
+export const greenButtonsMode = modeSchema.createPartial('greenButtons', {
 	action: {
 		primary: {
 			bg: primitives.$tokens.colors.green.mid.var,
@@ -133,13 +133,6 @@ export const greenButtonsMode = modeSchema.createPartial({
 	},
 });
 
-export const denseMode = modeSchema.createPartial({
+export const denseMode = modeSchema.createPartial('dense', {
 	density: 2,
-	spacing: {
-		xs: `calc(${primitives.$tokens.spacing.xs.var} / ${modeSchema.$tokens.density.var})`,
-		sm: `calc(${primitives.$tokens.spacing.sm.var} / ${modeSchema.$tokens.density.var})`,
-		md: `calc(${primitives.$tokens.spacing.md.var} / ${modeSchema.$tokens.density.var})`,
-		lg: `calc(${primitives.$tokens.spacing.lg.var} / ${modeSchema.$tokens.density.var})`,
-		xl: `calc(${primitives.$tokens.spacing.xl.var} / ${modeSchema.$tokens.density.var})`,
-	},
 });

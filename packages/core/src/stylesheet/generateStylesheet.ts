@@ -39,7 +39,8 @@ export function generateStylesheet<
 		TOtherTokens
 	>,
 ): string {
-	const defaultMode = config.primitives.defaultScheme ?? 'light';
+	const defaultScheme = config.primitives.defaultScheme ?? 'light';
+	const baseMode = config.modes.base;
 
 	/**
 	 * Each scheme generates a full set of CSS color properties
@@ -103,13 +104,13 @@ export function generateStylesheet<
 
 	/* Dark/Light schemes are assigned to built-in device preferences */
 	@media (prefers-color-scheme: light)${
-		defaultMode === 'light' ? noPreference : ''
+		defaultScheme === 'light' ? noPreference : ''
 	} {
 		${schemeApplicationCss('light')}
 	}
 
 	@media (prefers-color-scheme: dark)${
-		defaultMode === 'dark' ? noPreference : ''
+		defaultScheme === 'dark' ? noPreference : ''
 	} {
 		${schemeApplicationCss('dark')}
 	}
@@ -140,7 +141,7 @@ ${Object.entries(config.modes)
 			)
 			.join(', ')} {
 	${$systemProps.labels.mode.assign(modeName)}
-	${formatObjectToCss(modeToCss(modeValue.values, modeValue.schema.$tokens, { modeName }))}
+	${modeToCss(modeValue, baseMode)}
 }
 `;
 	})

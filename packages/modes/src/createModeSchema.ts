@@ -1,4 +1,5 @@
 import { createToken, isToken, Token, TokenPurpose } from '@arbor-css/tokens';
+import { isTrackedValue, TrackedValue } from './tracking.js';
 
 export type ModePropertyType = TokenPurpose;
 export type ModeSchemaProperty =
@@ -15,13 +16,10 @@ export type ModeSchema<TSchema extends ModeSchemaLevel = ModeSchemaLevel> = {
 	definition: TSchema;
 	tag: string;
 	$tokens: AsPropertyDefinitions<TSchema>;
-	createBase: (
-		def: ModeValues<TSchema>,
-		config?: Partial<ModeConfig>,
-	) => ModeInstance<TSchema>;
+	createBase: (def: ModeValues<TSchema>) => ModeInstance<TSchema>;
 	createPartial: (
+		name: string,
 		def: DeepPartial<ModeValues<TSchema>>,
-		config?: Partial<ModeConfig>,
 	) => PartialModeInstance<TSchema>;
 	extend: <TExtensionSchema extends ModeSchemaLevel>(
 		extension: TExtensionSchema,
@@ -62,26 +60,21 @@ export function createModeSchema<T extends ModeSchemaLevel>(
 		definition: input,
 		tag,
 		$tokens: PROPS,
-		createBase: (def: ModeValues<T>, config?: Partial<ModeConfig>) => {
+		createBase: (def: ModeValues<T>) => {
 			return {
 				values: def,
 				schema,
 				config: {
-					maxDepthTracked: 10,
-					...config,
+					name: 'base',
 				},
 			};
 		},
-		createPartial: (
-			def: DeepPartial<ModeValues<T>>,
-			config?: Partial<ModeConfig>,
-		) => {
+		createPartial: (name: string, def: DeepPartial<ModeValues<T>>) => {
 			return {
 				values: def,
 				schema,
 				config: {
-					maxDepthTracked: 10,
-					...config,
+					name,
 				},
 			};
 		},
@@ -102,14 +95,23 @@ export function createModeSchema<T extends ModeSchemaLevel>(
 
 export type DeepPartial<T> = { [P in keyof T]?: DeepPartial<T[P]> | undefined };
 
+export type ModeValue = string | number | Token | TrackedValue;
+export function isModeValue(value: any): value is ModeValue {
+	return (
+		isTrackedValue(value) ||
+		isToken(value) ||
+		typeof value === 'string' ||
+		typeof value === 'number'
+	);
+}
 export type ModeValues<T extends ModeSchemaLevel> = {
-	[P in keyof T]: T[P] extends ModeSchemaProperty ? string | number | Token
+	[P in keyof T]: T[P] extends ModeSchemaProperty ? ModeValue
 	: T[P] extends ModeSchemaLevel ? ModeValues<T[P]>
 	: never;
 };
 
 export interface ModeConfig {
-	maxDepthTracked: number;
+	name: string;
 }
 
 export type ModeInstance<T extends ModeSchemaLevel> = {
@@ -171,44 +173,4 @@ export function flattenToPropsList(obj: any): Token[] {
 		}
 	}
 	return propsList;
-}
-
-export function modeToCss(
-	values: DeepPartial<ModeValues<any>>,
-	propShape: AsPropertyDefinitions<any>,
-	info: { modeName: string },
-): Record<string, string> {
-	return modeToCssDeep(values, propShape, info);
-}
-
-function modeToCssDeep(
-	mode: any,
-	propStructure: AsPropertyDefinitions<object>,
-	info: { modeName: string },
-	cssVars: Record<string, string> = {},
-): Record<string, string> {
-	for (const [key, value] of Object.entries(mode)) {
-		const currentProp = (propStructure as any)[key as any] as any;
-		if (typeof currentProp !== 'object') {
-			continue;
-		}
-		if (!isToken(currentProp)) {
-			modeToCssDeep(value, currentProp, info, cssVars);
-		} else if (isToken(currentProp)) {
-			if (isToken(value)) {
-				cssVars[currentProp.name] = value.var;
-			} else if (typeof value === 'string' || typeof value === 'number') {
-				cssVars[currentProp.name] = value.toString();
-			} else {
-				throw new Error(
-					`Invalid value for token ${currentProp.name}: ${value}. Must be a string, number, or $token (in mode ${info.modeName})`,
-				);
-			}
-		} else {
-			throw new Error(
-				`Invalid mode schema structure at key: ${key} with value ${value} in mode ${info.modeName}`,
-			);
-		}
-	}
-	return cssVars;
 }

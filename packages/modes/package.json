@@ -14,10 +14,12 @@
 	"sideEffects": false,
 	"scripts": {
 		"build": "tsc",
-		"dev": "tsc -w --preserveWatchOutput"
+		"dev": "tsc -w --preserveWatchOutput",
+		"test": "vitest"
 	},
 	"devDependencies": {
-		"typescript": "catalog:"
+		"typescript": "catalog:",
+		"vitest": "catalog:"
 	},
 	"dependencies": {
 		"@arbor-css/tokens": "workspace:*"
