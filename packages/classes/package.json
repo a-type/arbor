@@ -22,6 +22,7 @@
 		"@arbor-css/core": "*"
 	},
 	"dependencies": {
+		"@arbor-css/util": "workspace:*",
 		"@unocss/core": "catalog:",
 		"@unocss/preset-wind4": "catalog:",
 		"unocss": "catalog:"

@@ -32,6 +32,7 @@ export type TokenPurpose =
 	| 'color'
 	| 'font-size'
 	| 'font-weight'
+	| 'font-family'
 	| 'line-height'
 	| 'spacing'
 	| 'shadow'
@@ -47,6 +48,8 @@ export function getTypeFromPurpose(purpose: TokenPurpose): PropertyType {
 			return 'number';
 		case 'line-height':
 			return 'length-percentage';
+		case 'font-family':
+			return 'string';
 		case 'spacing':
 			return 'length';
 		case 'shadow':
@@ -91,6 +94,7 @@ export function createToken(
 		[TOKEN_BRAND]: true as const,
 		name: resolvedName,
 		type,
+		tag,
 		purpose,
 		group,
 		fallback,

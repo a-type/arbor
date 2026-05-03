@@ -4,7 +4,7 @@ import {
 	compileShadows,
 	compileSpacing,
 	compileTypography,
-	createArborMode,
+	createArborModeValues,
 	createConfig,
 	createGlobals,
 	createPrimitives,
@@ -46,11 +46,16 @@ const primitives = createPrimitives({
 	}),
 });
 
-const modeSchema = arborModeSchema;
+export const modeSchema = arborModeSchema.extend({
+	decoration: 'other',
+});
 
-const rootMode = createArborMode({
-	mainColor: 'summer',
-	primitives,
+const rootMode = modeSchema.createBase({
+	...createArborModeValues({
+		mainColor: 'summer',
+		primitives,
+	}),
+	decoration: 'none',
 });
 
 function makeSeasonMode(season: 'winter' | 'spring' | 'summer' | 'fall') {
@@ -81,6 +86,13 @@ const springMode = makeSeasonMode('spring');
 const summerMode = makeSeasonMode('summer');
 const fallMode = makeSeasonMode('fall');
 
+const structureMode = modeSchema.createPartial('structure', {
+	decoration: 'url("/images/structure.svg")',
+});
+const creativityMode = modeSchema.createPartial('creativity', {
+	decoration: 'url("/images/creativity.svg")',
+});
+
 export const arbor = createConfig({
 	primitives,
 	modes: {
@@ -89,5 +101,7 @@ export const arbor = createConfig({
 		spring: springMode,
 		summer: summerMode,
 		fall: fallMode,
+		structure: structureMode,
+		creativity: creativityMode,
 	},
 });

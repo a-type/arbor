@@ -7,6 +7,9 @@ import { variants } from './variants/index.js';
 const basePreset = presetWind4({
 	arbitraryVariants: true,
 	variablePrefix: '🍂-',
+	preflights: {
+		theme: false,
+	},
 });
 
 basePreset.rules = rules;

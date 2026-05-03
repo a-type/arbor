@@ -12,5 +12,5 @@ export default defineConfig({
 		}),
 		presetArbor(arbor),
 	],
-	configDeps: ['./arbor.ts'],
+	configDeps: ['./arbor.ts', '../packages/classes/src'],
 });

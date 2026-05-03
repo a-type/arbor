@@ -67,7 +67,7 @@ export const arborModeSchema = createModeSchema({
 	},
 });
 
-export function createArborMode<
+export function createArborModeValues<
 	TCompiledColors extends CompiledColors,
 >(config: {
 	mainColor: keyof TCompiledColors[keyof TCompiledColors];
@@ -77,7 +77,7 @@ export function createArborMode<
 	// broken...
 	const mainColor: any = config.primitives.$tokens.colors[config.mainColor];
 
-	return arborModeSchema.createBase({
+	return {
 		mainColor,
 		neutralColor: mainColor.$neutral,
 		surface: {
@@ -147,5 +147,5 @@ export function createArborMode<
 				font: 'sans-serif',
 			},
 		},
-	});
+	};
 }

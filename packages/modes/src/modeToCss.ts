@@ -1,4 +1,5 @@
 import { isToken, Token } from '@arbor-css/tokens';
+import { toFlatKeys } from '@arbor-css/util';
 import {
 	isModeValue,
 	ModeInstance,
@@ -7,25 +8,6 @@ import {
 	PartialModeInstance,
 } from './createModeSchema.js';
 import { isTrackedValue } from './tracking.js';
-
-function toFlatKeys<V = any>(
-	obj: Record<string, any>,
-	stop: (value: any) => boolean = (value) =>
-		typeof value !== 'object' || value === null,
-	prefix = '',
-): Record<string, V> {
-	const flatObj: Record<string, V> = {};
-	for (const key in obj) {
-		const value = obj[key];
-		const flatKey = prefix ? `${prefix}-${key}` : key;
-		if (!stop(value)) {
-			Object.assign(flatObj, toFlatKeys(value, stop, flatKey));
-		} else {
-			flatObj[flatKey] = value;
-		}
-	}
-	return flatObj;
-}
 
 /**
  * For a given Token, returns which values in the base mode depend on it.
@@ -47,8 +29,10 @@ function getBaseModeDependents(
 	}
 	seen.add(token);
 	const dependents: Record<string, string> = {};
-	const flatBase = toFlatKeys(baseMode.values, isModeValue);
-	const flatTokens = toFlatKeys<Token>(baseMode.schema.$tokens, isToken);
+	const flatBase = toFlatKeys(baseMode.values, isModeValue, { separator: '-' });
+	const flatTokens = toFlatKeys<Token>(baseMode.schema.$tokens, isToken, {
+		separator: '-',
+	});
 	for (const key in flatBase) {
 		const value = flatBase[key];
 		if (isTrackedValue(value)) {
@@ -72,8 +56,12 @@ export function modeToCss<TModeShape extends ModeSchemaLevel>(
 	mode: PartialModeInstance<TModeShape>,
 	baseMode: ModeInstance<TModeShape>,
 ): string {
-	const flatValues = toFlatKeys<ModeValue>(mode.values, isModeValue);
-	const flatTokens = toFlatKeys<Token>(mode.schema.$tokens, isToken);
+	const flatValues = toFlatKeys<ModeValue>(mode.values, isModeValue, {
+		separator: '-',
+	});
+	const flatTokens = toFlatKeys<Token>(mode.schema.$tokens, isToken, {
+		separator: '-',
+	});
 
 	const cssVars: Record<string, string> = {};
 	const lowPriorityVars: Record<string, string> = {};

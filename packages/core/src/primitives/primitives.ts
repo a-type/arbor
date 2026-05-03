@@ -135,7 +135,7 @@ export function createPrimitives<
 			createToken(`spacing-${path.join('-')}`, {
 				type: 'length',
 				purpose: 'spacing',
-				tag: '📏',
+				tag: 's',
 			}),
 	);
 

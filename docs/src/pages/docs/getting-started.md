@@ -1,5 +1,5 @@
 ---
-layout: '../../layouts/Docs.astro'
+layout: '../../layouts/Doc.astro'
 ---
 
 # Getting Started

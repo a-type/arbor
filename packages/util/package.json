@@ -1,5 +1,5 @@
 {
-	"name": "@arbor-css/modes",
+	"name": "@arbor-css/util",
 	"version": "0.0.0",
 	"type": "module",
 	"exports": {
@@ -14,15 +14,10 @@
 	"sideEffects": false,
 	"scripts": {
 		"build": "tsc",
-		"dev": "tsc -w --preserveWatchOutput",
-		"test": "vitest"
+		"dev": "tsc -w --preserveWatchOutput"
 	},
 	"devDependencies": {
-		"typescript": "catalog:",
-		"vitest": "catalog:"
+		"typescript": "catalog:"
 	},
-	"dependencies": {
-		"@arbor-css/tokens": "workspace:*",
-		"@arbor-css/util": "workspace:*"
-	}
+	"dependencies": {}
 }
