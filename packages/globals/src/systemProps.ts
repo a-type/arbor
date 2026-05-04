@@ -23,13 +23,21 @@ export const $systemProps = {
 	// TODO: move these to `classes`? Not sure they're relevant
 	// outside that package.
 	fg: makeSystemColorTokens('fg'),
-	bg: makeSystemColorTokens('bg'),
+	bg: {
+		...makeSystemColorTokens('bg'),
+		contrast: createToken(`💲-bg-contrast`, {
+			type: 'color',
+			inherits: true,
+		}),
+	},
 	borderColor: {
-		all: makeSystemColorTokens('borderColor-all'),
-		top: makeSystemColorTokens('borderColor-top'),
-		right: makeSystemColorTokens('borderColor-right'),
-		bottom: makeSystemColorTokens('borderColor-bottom'),
-		left: makeSystemColorTokens('borderColor-left'),
+		'': makeSystemColorTokens('borderColor-all'),
+		block: makeSystemColorTokens('borderColor-block'),
+		inline: makeSystemColorTokens('borderColor-inline'),
+		'block-start': makeSystemColorTokens('borderColor-block-start'),
+		'inline-end': makeSystemColorTokens('borderColor-inline-end'),
+		'block-end': makeSystemColorTokens('borderColor-block-end'),
+		'inline-start': makeSystemColorTokens('borderColor-inline-start'),
 	},
 	ring: {
 		...makeSystemColorTokens('ring'),
@@ -40,6 +48,8 @@ export const $systemProps = {
 	},
 	placeholder: makeSystemColorTokens('placeholder'),
 	accent: makeSystemColorTokens('accent'),
+	fill: makeSystemColorTokens('fill'),
+	stroke: makeSystemColorTokens('stroke'),
 };
 
 function makeSystemColorTokens(name: string) {

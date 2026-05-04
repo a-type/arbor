@@ -1,5 +1,10 @@
 import { CompiledColors } from '@arbor-css/colors';
-import { createModeSchema, derive, ModeSchemaLevel } from '@arbor-css/modes';
+import {
+	createModeSchema,
+	derive,
+	ModeSchemaLevel,
+	ModeValues,
+} from '@arbor-css/modes';
 import { Primitives } from './primitives/primitives.js';
 
 const colorIntents = {
@@ -64,6 +69,18 @@ export const arborModeSchema = createModeSchema({
 		md: 'spacing',
 		lg: 'spacing',
 		xl: 'spacing',
+	},
+
+	// other cosmetics
+	borderWidth: {
+		sm: 'border-width',
+		md: 'border-width',
+		lg: 'border-width',
+	},
+	borderRadius: {
+		sm: 'border-radius',
+		md: 'border-radius',
+		lg: 'border-radius',
 	},
 });
 
@@ -147,5 +164,15 @@ export function createArborModeValues<
 				font: 'sans-serif',
 			},
 		},
-	};
+		borderRadius: {
+			sm: derive`calc(${config.primitives.$tokens.spacing.md} / ${arborModeSchema.$tokens.density})`,
+			md: derive`calc(${config.primitives.$tokens.spacing.lg} / ${arborModeSchema.$tokens.density})`,
+			lg: derive`calc(${config.primitives.$tokens.spacing.xl} / ${arborModeSchema.$tokens.density})`,
+		},
+		borderWidth: {
+			sm: '1',
+			md: '1',
+			lg: '2',
+		},
+	} satisfies ModeValues<(typeof arborModeSchema)['definition']>;
 }

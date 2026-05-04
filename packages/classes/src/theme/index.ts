@@ -1,17 +1,6 @@
-import { ArborConfig, isToken, Token, TokenPurpose } from '@arbor-css/core';
+import { ArborConfig, isToken, Token } from '@arbor-css/core';
 import { toFlatKeys } from '@arbor-css/util';
 import { Theme } from './types.js';
-
-const tokenPurposeToThemeMapping: Record<TokenPurpose, keyof Theme | 'none'> = {
-	color: 'colors',
-	'font-size': 'text',
-	'font-weight': 'fontWeight',
-	'line-height': 'leading',
-	'font-family': 'fontFamily',
-	shadow: 'shadow',
-	spacing: 'spacing',
-	other: 'none',
-};
 
 const extraWords = [
 	'colors',
@@ -28,6 +17,10 @@ const extraWords = [
 	'family',
 	'lineHeight',
 	'size',
+	'width',
+	'radius',
+	'borderWidth',
+	'borderRadius',
 ];
 function removeExtraWords(key: string, extraWords: string[]) {
 	for (const word of extraWords) {
@@ -58,11 +51,7 @@ export function createTheme(arbor: ArborConfig<any, any>) {
 	for (const rawKey in flatPrimitiveTokens) {
 		const token = flatPrimitiveTokens[rawKey];
 		const key = `_${removeExtraWords(rawKey, extraWords)}`;
-		const themeCategory = tokenPurposeToThemeMapping[token.purpose];
-		if (themeCategory === 'none') {
-			theme[key] = token.var;
-			continue;
-		}
+		const themeCategory = token.purpose;
 		if (!theme[themeCategory]) {
 			theme[themeCategory] = {};
 		}
@@ -71,16 +60,12 @@ export function createTheme(arbor: ArborConfig<any, any>) {
 	for (const rawKey in flatModeTokens) {
 		const token = flatModeTokens[rawKey];
 		const key = removeExtraWords(rawKey, extraWords);
-		const themeCategory = tokenPurposeToThemeMapping[token.purpose];
-		if (themeCategory === 'none') {
-			theme[key] = token.var;
-			continue;
-		}
+		const themeCategory = token.purpose;
 		if (!theme[themeCategory]) {
 			theme[themeCategory] = {};
 		}
 		(theme[themeCategory] as Record<string, string>)[key] = token.var;
 	}
 
-	return theme;
+	return theme as Theme;
 }

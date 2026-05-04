@@ -1,122 +1,36 @@
 import { Rule } from 'unocss';
 import { Theme } from '../theme/types.js';
+import {
+	dashConcat,
+	directionMapEntries,
+	dirRegex,
+	themeOrLiteral,
+} from './_util.js';
+
+function makeSpacingRules(
+	shorthand: string,
+	cssPropGroup: string,
+	themeKey: keyof Theme,
+): Rule<Theme>[] {
+	return directionMapEntries.map(([dirSuffix, cssProps]) => {
+		return [
+			new RegExp(`^${shorthand}${dirRegex(dirSuffix)}-(.+)$`),
+			([, size], { theme }) => {
+				const [value] = themeOrLiteral(size, theme, {
+					startFrom: themeKey,
+				});
+				return Object.fromEntries(
+					cssProps.map((prop) => [dashConcat(cssPropGroup, prop), value]),
+				);
+			},
+		] as Rule<Theme>;
+	});
+}
 
 export const spacingRules: Rule<Theme>[] = [
-	[
-		/^m-(.+)$/,
-		([, d], { theme }) => {
-			const value = theme.spacing?.[d] || d;
-			return {
-				margin: value,
-			};
-		},
-	],
-	[
-		/^mt-(.+)$/,
-		([, d], { theme }) => {
-			const value = theme.spacing?.[d] || d;
-			return {
-				'margin-top': value,
-			};
-		},
-	],
-	[
-		/^mr-(.+)$/,
-		([, d], { theme }) => {
-			const value = theme.spacing?.[d] || d;
-			return {
-				'margin-right': value,
-			};
-		},
-	],
-	[
-		/^mb-(.+)$/,
-		([, d], { theme }) => {
-			const value = theme.spacing?.[d] || d;
-			return {
-				'margin-bottom': value,
-			};
-		},
-	],
-	[
-		/^ml-(.+)$/,
-		([, d], { theme }) => {
-			const value = theme.spacing?.[d] || d;
-			return {
-				'margin-left': value,
-			};
-		},
-	],
-	[
-		/^p-(.+)$/,
-		([, d], { theme }) => {
-			const value = theme.spacing?.[d] || d;
-			return {
-				padding: value,
-			};
-		},
-	],
-	[
-		/^pt-(.+)$/,
-		([, d], { theme }) => {
-			const value = theme.spacing?.[d] || d;
-			return {
-				'padding-top': value,
-			};
-		},
-	],
-	[
-		/^pr-(.+)$/,
-		([, d], { theme }) => {
-			const value = theme.spacing?.[d] || d;
-			return {
-				'padding-right': value,
-			};
-		},
-	],
-	[
-		/^pb-(.+)$/,
-		([, d], { theme }) => {
-			const value = theme.spacing?.[d] || d;
-			return {
-				'padding-bottom': value,
-			};
-		},
-	],
-	[
-		/^pl-(.+)$/,
-		([, d], { theme }) => {
-			const value = theme.spacing?.[d] || d;
-			return {
-				'padding-left': value,
-			};
-		},
-	],
-	[
-		/^gap-(.+)$/,
-		([, d], { theme }) => {
-			const value = theme.spacing?.[d] || d;
-			return {
-				gap: value,
-			};
-		},
-	],
-	[
-		/^row-gap-(.+)$/,
-		([, d], { theme }) => {
-			const value = theme.spacing?.[d] || d;
-			return {
-				'row-gap': value,
-			};
-		},
-	],
-	[
-		/^col-gap-(.+)$/,
-		([, d], { theme }) => {
-			const value = theme.spacing?.[d] || d;
-			return {
-				'column-gap': value,
-			};
-		},
-	],
+	...makeSpacingRules('p', 'padding', 'spacing'),
+	...makeSpacingRules('m', 'margin', 'spacing'),
+	...makeSpacingRules('gap', 'gap', 'spacing'),
+	...makeSpacingRules('gap-row', 'row-gap', 'spacing'),
+	...makeSpacingRules('gap-col', 'column-gap', 'spacing'),
 ];

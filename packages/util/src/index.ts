@@ -23,3 +23,19 @@ export function toFlatKeys<V = any>(
 	}
 	return flatObj;
 }
+
+export function getByConcatKey(
+	obj: Record<string, any>,
+	concatKey: string,
+	separator = '-',
+): any {
+	const keys = concatKey.split(separator);
+	let current: any = obj;
+	for (const key of keys) {
+		if (current[key] === undefined) {
+			return undefined;
+		}
+		current = current[key];
+	}
+	return current;
+}

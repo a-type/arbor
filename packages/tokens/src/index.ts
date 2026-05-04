@@ -36,6 +36,8 @@ export type TokenPurpose =
 	| 'line-height'
 	| 'spacing'
 	| 'shadow'
+	| 'border-radius'
+	| 'border-width'
 	| 'other';
 
 export function getTypeFromPurpose(purpose: TokenPurpose): PropertyType {

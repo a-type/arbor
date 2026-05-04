@@ -133,7 +133,7 @@ ${Object.keys(config.primitives.colors)
 ${Object.entries(config.modes)
 	.map(([modeName, modeValue]) => {
 		return `/* Mode: ${modeName} */
-.\\@mode-${modeName}, [data-mode-${modeName}=""], ${Object.keys(
+${modeName === 'base' ? ':root,' : ''} .\\@mode-${modeName}, [data-mode-${modeName}=""], ${Object.keys(
 			config.primitives.colors,
 		)
 			.map(

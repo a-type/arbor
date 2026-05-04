@@ -1,5 +1,5 @@
-import { Theme as BaseTheme } from '@unocss/preset-wind4';
+import { TokenPurpose } from '@arbor-css/core';
 
-export type Theme = BaseTheme & {
-	[key: string]: any;
+export type Theme = {
+	[Purpose in TokenPurpose]: Record<string, string>;
 };
