@@ -64,6 +64,35 @@ function Input({ placeholder }: { placeholder?: string }) {
 export default function Demo() {
 	return (
 		<div className="p-lg flex flex-col gap-lg">
+			<div>
+				<div className="flex flex-row">
+					{[
+						'bg-mainColor-paper',
+						'bg-mainColor-wash',
+						'bg-mainColor-lighter',
+						'bg-mainColor-light',
+						'bg-mainColor-mid',
+						'bg-mainColor-heavy',
+						'bg-mainColor-heavier',
+						'bg-mainColor-ink',
+					].map((className) => (
+						<div className={clsx(className, 'flex-1 h-16')} />
+					))}
+				</div>
+				<div className="flex flex-row">
+					{[
+						'bg-lighten-3',
+						'bg-lighten-2',
+						'bg-lighten-1',
+						'',
+						'bg-darken-1',
+						'bg-darken-2',
+						'bg-darken-3',
+					].map((className) => (
+						<div className={clsx(className, 'bg-mainColor-mid flex-1 h-16')} />
+					))}
+				</div>
+			</div>
 			<Box level="primary">
 				Primary Box
 				<Button level="primary">Primary Button</Button>

@@ -1,15 +1,9 @@
-function mod(base: string, level: number, sign: number) {
-	// TODO: not hardcode white/black... figure out how to interpret these
-	// with schemes/modes
-	return `color-mix(in oklch, ${base} ${50 + level * sign * 5}%, ${sign === 1 ? 'white' : 'black'})`;
-}
-
 export function lighten(base: string, level: string) {
-	return mod(base, parseInt(level, 10), 1);
+	return `color-mix(in oklch, white ${parseInt(level, 10) * 10}%, ${base})`;
 }
 
 export function darken(base: string, level: string) {
-	return mod(base, parseInt(level, 10), -1);
+	return `color-mix(in oklch, black ${parseInt(level, 10) * 10}%, ${base})`;
 }
 
 export const colorAlters: Record<
