@@ -1,5 +1,6 @@
 import { describe, it } from 'vitest';
-import { testBaseMode, testRules } from './_test.js';
+import { testBaseMode } from '../_test.js';
+import { testRules } from './_test.js';
 import { spacingRules } from './spacing.js';
 
 describe('padding', () => {

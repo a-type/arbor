@@ -1,6 +1,7 @@
 import { $systemProps } from '@arbor-css/core';
 import { describe, it } from 'vitest';
-import { testBaseMode, testRules } from './_test.js';
+import { testBaseMode } from '../_test.js';
+import { testRules } from './_test.js';
 import { borderRules } from './border.js';
 
 describe('border color', () => {

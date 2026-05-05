@@ -1,53 +1,7 @@
-import {
-	arborModeSchema,
-	compileColors,
-	compileShadows,
-	compileSpacing,
-	compileTypography,
-	createArborModeValues,
-	createConfig,
-	createGlobals,
-	createPrimitives,
-} from '@arbor-css/core';
 import { CSSEntry, CSSObject, DynamicRule, Rule } from 'unocss';
 import { expect } from 'vitest';
-import { createTheme } from '../theme/index.js';
+import { testTheme as theme } from '../_test.js';
 import { Theme } from '../theme/types.js';
-
-const globals = createGlobals({});
-
-const primitives = createPrimitives({
-	colors: compileColors({
-		ranges: {
-			brand: {
-				hue: 200,
-			},
-		},
-		globals,
-	}),
-	shadows: compileShadows({ globals }),
-	spacing: compileSpacing({ globals }),
-	typography: compileTypography({ globals }),
-	globals,
-});
-
-const modeSchema = arborModeSchema;
-
-export const testBaseMode = modeSchema.createBase(
-	createArborModeValues({
-		primitives,
-		mainColor: 'brand',
-	}),
-);
-
-export const testArbor = createConfig({
-	primitives,
-	modes: {
-		base: testBaseMode,
-	},
-});
-
-const theme = createTheme(testArbor);
 
 type RuleResult = ReturnType<DynamicRule[1]>;
 

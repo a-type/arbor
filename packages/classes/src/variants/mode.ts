@@ -1,7 +1,8 @@
-import { variantGetParameter } from '@unocss/preset-wind4/utils';
+import { variantGetParameter } from '@unocss/rule-utils';
 import { Variant } from 'unocss';
+import { Theme } from '../theme/types.js';
 
-export const modeVariants: Variant[] = [
+export const modeVariants: Variant<Theme>[] = [
 	{
 		name: '@mode',
 		match(input, ctx) {

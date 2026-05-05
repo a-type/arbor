@@ -1,18 +1,13 @@
 import { $systemProps } from '@arbor-css/core';
 import { CSSObject, Rule } from 'unocss';
 import { Theme } from '../theme/types.js';
-import {
-	colorAlters,
-	colorAltersMatch,
-	dashConcat,
-	directionMapEntries,
-	dirRegex,
-	globalKeywords,
-	isNumericLiteral,
-	isNumericUnitLiteral,
-	parseColor,
-	themeOrLiteral,
-} from './_util.js';
+import { colorAlters, colorAltersMatch } from '../util/alters.js';
+import { parseColor } from '../util/color.js';
+import { dashConcat } from '../util/concat.js';
+import { directionMapEntries, globalKeywords } from '../util/mappings.js';
+import { dirRegex } from '../util/matchers.js';
+import { isNumericLiteral, isNumericUnitLiteral } from '../util/tests.js';
+import { themeOrLiteral } from '../util/themeOrLiteral.js';
 
 const borderStyles = [
 	'solid',

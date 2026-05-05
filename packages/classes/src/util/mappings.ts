@@ -1,0 +1,35 @@
+export const globalKeywords = [
+	'inherit',
+	'initial',
+	'revert',
+	'revert-layer',
+	'unset',
+];
+
+export const directionMap = {
+	'': [''],
+	l: ['inline-start'],
+	r: ['inline-end'],
+	t: ['block-start'],
+	b: ['block-end'],
+	s: ['inline-start'],
+	e: ['inline-end'],
+	x: ['inline'],
+	y: ['block'],
+	bs: ['block-start'],
+	be: ['block-end'],
+	is: ['inline-start'],
+	ie: ['inline-end'],
+	block: ['block-start', 'block-end'],
+	inline: ['inline-start', 'inline-end'],
+	'block-start': ['block-start'],
+	'block-end': ['block-end'],
+	'inline-start': ['inline-start'],
+	'inline-end': ['inline-end'],
+} as const;
+export const directionMapEntries = Object.entries(directionMap).sort((a, b) => {
+	// "" should be first, so it doesn't interfere with more specific matches
+	if (a[0] === '') return -1;
+	if (b[0] === '') return 1;
+	return b[0].length - a[0].length;
+});

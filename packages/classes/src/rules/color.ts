@@ -1,12 +1,9 @@
 import { $systemProps } from '@arbor-css/core';
 import { Rule, symbols } from 'unocss';
 import { Theme } from '../theme/types.js';
-import {
-	colorAlters,
-	colorAltersMatch,
-	parseColor,
-	themeOrLiteral,
-} from './_util.js';
+import { colorAlters, colorAltersMatch } from '../util/alters.js';
+import { parseColor } from '../util/color.js';
+import { themeOrLiteral } from '../util/themeOrLiteral.js';
 
 function makeColorSystemRules({
 	target,

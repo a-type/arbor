@@ -1,4 +1,5 @@
 import { ArborConfig, generateStylesheet } from '@arbor-css/core';
+import { extractorArbitraryVariants } from '@unocss/extractor-arbitrary-variants';
 import { Preset, transformerVariantGroup } from 'unocss';
 import { rules } from './rules/index.js';
 import { createTheme } from './theme/index.js';
@@ -12,6 +13,7 @@ export function presetArbor(arbor: ArborConfig<any, any>): Preset<Theme> {
 		theme: createTheme(arbor),
 		variants,
 		transformers: [transformerVariantGroup()],
+		extractorDefault: extractorArbitraryVariants(),
 		preflights: [
 			{
 				layer: 'base',

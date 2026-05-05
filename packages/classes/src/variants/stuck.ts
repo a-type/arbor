@@ -1,6 +1,6 @@
-import { Theme } from '@unocss/preset-wind4';
-import { variantGetParameter } from '@unocss/preset-wind4/utils';
+import { variantGetParameter } from '@unocss/rule-utils';
 import { Variant } from 'unocss';
+import { Theme } from '../theme/types.js';
 
 export const stuckVariant: Variant<Theme> = {
 	name: 'stuck',

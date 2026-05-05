@@ -1,11 +1,9 @@
 import { Rule } from 'unocss';
 import { Theme } from '../theme/types.js';
-import {
-	dashConcat,
-	directionMapEntries,
-	dirRegex,
-	themeOrLiteral,
-} from './_util.js';
+import { dashConcat } from '../util/concat.js';
+import { directionMapEntries } from '../util/mappings.js';
+import { dirRegex } from '../util/matchers.js';
+import { themeOrLiteral } from '../util/themeOrLiteral.js';
 
 function makeSpacingRules(
 	shorthand: string,
