@@ -42,7 +42,8 @@ function Button({
 				{
 					'bg-action-primary b-action-primary': level === 'primary',
 					'bg-action-secondary b-action-secondary': level === 'secondary',
-					'hover:bg-action-ambient b-action-ambient': level === 'ambient',
+					'bg-transparent hover:bg-action-ambient b-action-ambient':
+						level === 'ambient',
 				},
 				'hover:bg-darken-1 active:bg-darken-2 focus:bg-lighten-1',
 			)}

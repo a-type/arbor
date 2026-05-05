@@ -46,7 +46,9 @@ function makeColorSystemRules({
 
 				if (systemProp === 'bg') {
 					result[$systemProps.bg.contrast.name] =
-						parsed.color === 'inherit' ? 'unset' : parsed.color;
+						parsed.color === 'inherit' || parsed.color === 'transparent' ?
+							'unset'
+						:	parsed.color;
 				}
 
 				return result;

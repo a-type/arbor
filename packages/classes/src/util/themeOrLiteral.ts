@@ -22,7 +22,7 @@ export function themeOrLiteral(
 	if (bracketedValue) {
 		return [bracketedValue, { source: 'bracket' }];
 	}
-	if (globalKeywords.includes(value)) {
+	if (globalKeywords.includes(value) || value === 'transparent') {
 		return [value, { source: 'global' }];
 	}
 	for (const suffix of ['', ...(trySuffixes || [])]) {

@@ -3,7 +3,7 @@ export function lighten(base: string, level: string) {
 }
 
 export function darken(base: string, level: string) {
-	return `color-mix(in oklch, black ${parseInt(level, 10) * 10}%, ${base})`;
+	return `color-mix(in oklch, black ${parseInt(level, 10) * 2}%, ${base})`;
 }
 
 export const colorAlters: Record<

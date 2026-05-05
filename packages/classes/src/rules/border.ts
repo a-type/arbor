@@ -84,7 +84,7 @@ const borderColorRules: Rule<Theme>[] = directionMapEntries.flatMap(
 					const opacityPart = split[1];
 					const [value] = themeOrLiteral(baseColor, theme, {
 						startFrom: 'color',
-						trySuffixes: ['color'],
+						trySuffixes: ['color', 'border', 'border-color'],
 					});
 					if (!value) return;
 					const restoredOpacity =
