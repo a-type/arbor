@@ -8,7 +8,7 @@ type RuleResult = ReturnType<DynamicRule[1]>;
 export async function testRules(
 	rules: Rule<Theme>[],
 	className: string,
-	output: Record<string, string>,
+	output: Record<string, string> | null,
 ) {
 	let match: { rule: Rule<Theme>; result: RuleResult } | null = null;
 	for (const rule of rules.toReversed()) {
@@ -25,6 +25,10 @@ export async function testRules(
 				break;
 			}
 		}
+	}
+	if (output === null) {
+		expect(match, 'Expected no rules to match').toBeNull();
+		return;
 	}
 	expect(match, 'No rules matched').not.toBeNull();
 	expect(await coerceResult(match?.result)).toEqual(output);

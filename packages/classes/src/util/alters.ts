@@ -1,7 +1,7 @@
 function mod(base: string, level: number, sign: number) {
 	// TODO: not hardcode white/black... figure out how to interpret these
 	// with schemes/modes
-	return `color-mix(in oklch, ${base} ${50 + level * sign * 10}%, ${sign === 1 ? 'white' : 'black'})`;
+	return `color-mix(in oklch, ${base} ${50 + level * sign * 5}%, ${sign === 1 ? 'white' : 'black'})`;
 }
 
 export function lighten(base: string, level: string) {

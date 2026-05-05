@@ -1,4 +1,4 @@
-import { $systemProps } from '@arbor-css/core';
+import { $systemProps, getContrastColor } from '@arbor-css/core';
 import { Rule, symbols } from 'unocss';
 import { Theme } from '../theme/types.js';
 import { colorAlters, colorAltersMatch } from '../util/alters.js';
@@ -20,11 +20,18 @@ function makeColorSystemRules({
 		[
 			new RegExp(`^(?:${shorthands.join('|')})-(.*)$`),
 			([, color], { theme }) => {
-				const [value] = themeOrLiteral(color, theme, {
+				// pre-splitting opacity and restoring it later allows
+				// supporting [color]/50 syntax while detecting the color portion
+				const split = color.split('/');
+				const baseColor = split[0];
+				const opacityPart = split[1];
+				const [value] = themeOrLiteral(baseColor, theme, {
 					startFrom: 'color',
 					trySuffixes: suffixes,
 				});
-				const parsed = parseColor(value);
+				if (!value) return;
+				const restoredOpacity = opacityPart ? `${value}/${opacityPart}` : value;
+				const parsed = parseColor(restoredOpacity);
 				if (!parsed) return;
 
 				const result = {
@@ -117,6 +124,7 @@ export const colorRules: Rule<Theme>[] = [
 				startFrom: 'color',
 				trySuffixes: ['placeholder', 'color'],
 			});
+			if (!value) return;
 			const parsed = parseColor(value);
 			if (!parsed) return;
 			yield {
@@ -146,6 +154,20 @@ export const colorRules: Rule<Theme>[] = [
 		},
 		{
 			autocomplete: 'placeholder-(l|lighten|d|darken)-<number>',
+		},
+	],
+
+	// color-contrast: "magic" rule which uses the contrast bg system color
+	// to compute a valid foreground
+	[
+		/^color-contrast$/,
+		() => {
+			return {
+				color: getContrastColor($systemProps.bg.contrast.varFallback('white')),
+				[$systemProps.fg.applied.name]: getContrastColor(
+					$systemProps.bg.contrast.varFallback('white'),
+				),
+			};
 		},
 	],
 ];

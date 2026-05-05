@@ -15,7 +15,7 @@ describe('fg color', () => {
 		});
 	});
 	it('matches literal colors', async () => {
-		await testRules(colorRules, 'color-red', {
+		await testRules(colorRules, 'color-[red]', {
 			color: $systemProps.fg.applied.var,
 			[$systemProps.fg.applied.name]: 'red',
 			[$systemProps.fg.opacity.name]: '1',
@@ -29,14 +29,14 @@ describe('fg color', () => {
 		});
 	});
 	it('maps color with opacity to system props', async () => {
-		await testRules(colorRules, 'color-red/50', {
+		await testRules(colorRules, 'color-[red]/50', {
 			color: `rgb(from ${$systemProps.fg.applied.var} r g b / ${$systemProps.fg.opacity.var})`,
 			[$systemProps.fg.applied.name]: 'red',
 			[$systemProps.fg.opacity.name]: '0.5',
 		});
 	});
 	it('maps color without opacity to system props', async () => {
-		await testRules(colorRules, 'color-red', {
+		await testRules(colorRules, 'color-[red]', {
 			color: $systemProps.fg.applied.var,
 			[$systemProps.fg.applied.name]: 'red',
 			[$systemProps.fg.opacity.name]: '1',
@@ -64,6 +64,9 @@ describe('fg color', () => {
 			[$systemProps.fg.opacity.name]: '1',
 		});
 	});
+	it('doesnt just toss anything in there, it only matches theme tokens if no brackets', async () => {
+		await testRules(colorRules, 'color-foo', null);
+	});
 
 	describe('lighten and darken', () => {
 		it('lightens a color', async () => {
@@ -87,7 +90,7 @@ describe('fg color', () => {
 
 describe('bg color', () => {
 	it('maps color to system props, includes contrast prop', async () => {
-		await testRules(colorRules, 'bg-red', {
+		await testRules(colorRules, 'bg-[red]', {
 			'background-color': $systemProps.bg.applied.var,
 			[$systemProps.bg.applied.name]: 'red',
 			[$systemProps.bg.opacity.name]: '1',

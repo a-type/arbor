@@ -17,6 +17,7 @@ function makeSpacingRules(
 				const [value] = themeOrLiteral(size, theme, {
 					startFrom: themeKey,
 				});
+				if (!value) return;
 				return Object.fromEntries(
 					cssProps.map((prop) => [dashConcat(cssPropGroup, prop), value]),
 				);

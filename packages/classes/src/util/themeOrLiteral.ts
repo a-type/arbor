@@ -1,4 +1,5 @@
 import { getByConcatKey } from '@arbor-css/util';
+import { globalKeywords } from '@unocss/preset-mini/utils';
 import { Theme } from '../theme/types.js';
 import { dashConcat } from './concat.js';
 import { h } from './h.js';
@@ -8,17 +9,21 @@ export function themeOrLiteral(
 	theme: Theme,
 	{
 		startFrom,
-		unitForLiteralNumber,
 		trySuffixes,
 	}: {
 		startFrom?: keyof Theme | (string & {});
-		unitForLiteralNumber?: string;
 		trySuffixes?: string[];
 	},
-): [string, { source: 'theme' | 'bracket' | 'literal' }] {
-	const bracketedValue = h.bracket(value);
+): [
+	string | undefined,
+	{ source: 'theme' | 'bracket' | 'global' | 'unmatched' },
+] {
+	const bracketedValue = h.bracket.bracketOfColor(value);
 	if (bracketedValue) {
 		return [bracketedValue, { source: 'bracket' }];
+	}
+	if (globalKeywords.includes(value)) {
+		return [value, { source: 'global' }];
 	}
 	for (const suffix of ['', ...(trySuffixes || [])]) {
 		const lookFor = dashConcat(startFrom, value, suffix);
@@ -28,9 +33,11 @@ export function themeOrLiteral(
 		}
 	}
 
-	if (unitForLiteralNumber && /^\d+$/.test(value)) {
-		return [`${value}${unitForLiteralNumber}`, { source: 'literal' }];
-	}
+	return [undefined, { source: 'unmatched' }];
 
-	return [value, { source: 'literal' }];
+	// if (unitForLiteralNumber && /^\d+$/.test(value)) {
+	// 	return [`${value}${unitForLiteralNumber}`, { source: 'literal' }];
+	// }
+
+	// return [value, { source: 'literal' }];
 }

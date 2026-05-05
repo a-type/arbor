@@ -1,6 +1,7 @@
 import { $systemProps } from '@arbor-css/core';
 import { describe, it } from 'vitest';
 import { testBaseMode } from '../_test.js';
+import { colorAlters } from '../util/alters.js';
 import { testRules } from './_test.js';
 import { borderRules } from './border.js';
 
@@ -17,7 +18,7 @@ describe('border color', () => {
 		});
 	});
 	it('matches literal colors', async () => {
-		await testRules(borderRules, 'border-red', {
+		await testRules(borderRules, 'border-[red]', {
 			'border-color': $systemProps.borderColor[''].applied.varFallback(
 				$systemProps.borderColor[''].applied.var,
 			),
@@ -35,7 +36,7 @@ describe('border color', () => {
 		});
 	});
 	it('maps color with opacity to system props', async () => {
-		await testRules(borderRules, 'border-red/50', {
+		await testRules(borderRules, 'border-[red]/50', {
 			'border-color': `rgb(from ${$systemProps.borderColor[
 				''
 			].applied.varFallback(
@@ -48,7 +49,7 @@ describe('border color', () => {
 		});
 	});
 	it('maps color without opacity to system props', async () => {
-		await testRules(borderRules, 'border-red', {
+		await testRules(borderRules, 'border-[red]', {
 			'border-color': $systemProps.borderColor[''].applied.varFallback(
 				$systemProps.borderColor[''].applied.var,
 			),
@@ -57,7 +58,7 @@ describe('border color', () => {
 		});
 	});
 	it('maps literal color with opacity on directional rules', async () => {
-		await testRules(borderRules, 'border-t-red/50', {
+		await testRules(borderRules, 'border-t-[red]/50', {
 			'border-block-start-color': `rgb(from ${$systemProps.borderColor[
 				'block-start'
 			].applied.varFallback(
@@ -70,7 +71,7 @@ describe('border color', () => {
 		});
 	});
 	it('maps literal color without opacity on directional rules', async () => {
-		await testRules(borderRules, 'border-t-red', {
+		await testRules(borderRules, 'border-t-[red]', {
 			'border-block-start-color': $systemProps.borderColor[
 				'block-start'
 			].applied.varFallback($systemProps.borderColor[''].applied.var),
@@ -92,29 +93,32 @@ describe('border color', () => {
 	describe('lighten/darken', () => {
 		it('lightens a color', async () => {
 			await testRules(borderRules, 'border-lighten-2', {
-				'border-color': `color-mix(in oklch, ${$systemProps.borderColor[
-					''
-				].applied.varFallback(
-					$systemProps.borderColor[''].applied.var,
-				)} 70%, white)`,
+				'border-color': colorAlters.lighten(
+					$systemProps.borderColor[''].applied.varFallback(
+						$systemProps.borderColor[''].applied.var,
+					),
+					'2',
+				),
 			});
 		});
 		it('darkens a color', async () => {
 			await testRules(borderRules, 'border-darken-2', {
-				'border-color': `color-mix(in oklch, ${$systemProps.borderColor[
-					''
-				].applied.varFallback(
-					$systemProps.borderColor[''].applied.var,
-				)} 30%, black)`,
+				'border-color': colorAlters.darken(
+					$systemProps.borderColor[''].applied.varFallback(
+						$systemProps.borderColor[''].applied.var,
+					),
+					'2',
+				),
 			});
 		});
 		it('lightens a directional color', async () => {
 			await testRules(borderRules, 'border-t-lighten-2', {
-				'border-block-start-color': `color-mix(in oklch, ${$systemProps.borderColor[
-					'block-start'
-				].applied.varFallback(
-					$systemProps.borderColor[''].applied.var,
-				)} 70%, white)`,
+				'border-block-start-color': colorAlters.lighten(
+					$systemProps.borderColor['block-start'].applied.varFallback(
+						$systemProps.borderColor[''].applied.var,
+					),
+					'2',
+				),
 			});
 		});
 	});

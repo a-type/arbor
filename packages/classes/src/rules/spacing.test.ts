@@ -11,7 +11,7 @@ describe('padding', () => {
 	});
 
 	it('matches literal padding values', async () => {
-		await testRules(spacingRules, 'p-10px', {
+		await testRules(spacingRules, 'p-[10px]', {
 			padding: '10px',
 		});
 	});
@@ -24,7 +24,7 @@ describe('gap', () => {
 		});
 	});
 	it('matches literal gap values', async () => {
-		await testRules(spacingRules, 'gap-10px', {
+		await testRules(spacingRules, 'gap-[10px]', {
 			gap: '10px',
 		});
 	});

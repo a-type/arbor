@@ -37,16 +37,14 @@ function Button({
 	return (
 		<button
 			className={clsx(
-				'px-md py-sm rd-sm b b-solid',
+				'px-md py-sm rd-sm b b-solid !color-contrast',
+				'cursor-pointer transition-color',
 				{
-					'bg-action-primary color-action-primary b-action-primary':
-						level === 'primary',
-					'bg-action-secondary color-action-secondary b-action-secondary':
-						level === 'secondary',
-					'hover:bg-action-ambient color-action-ambient b-action-ambient':
-						level === 'ambient',
+					'bg-action-primary b-action-primary': level === 'primary',
+					'bg-action-secondary b-action-secondary': level === 'secondary',
+					'hover:bg-action-ambient b-action-ambient': level === 'ambient',
 				},
-				'hover:bg-lighten-1',
+				'hover:bg-darken-1 active:bg-darken-2 focus:bg-lighten-1',
 			)}
 		>
 			{children}

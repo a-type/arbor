@@ -6,7 +6,6 @@ import { parseColor } from '../util/color.js';
 import { dashConcat } from '../util/concat.js';
 import { directionMapEntries, globalKeywords } from '../util/mappings.js';
 import { dirRegex } from '../util/matchers.js';
-import { isNumericLiteral, isNumericUnitLiteral } from '../util/tests.js';
 import { themeOrLiteral } from '../util/themeOrLiteral.js';
 
 const borderStyles = [
@@ -32,18 +31,12 @@ const borderWidthRules: Rule<Theme>[] = directionMapEntries.flatMap(
 				([, size], { theme }) => {
 					const [value, { source }] = themeOrLiteral(size, theme, {
 						startFrom: 'border-width',
-						unitForLiteralNumber: 'px',
 						trySuffixes: ['width', 'w'],
 					});
+					if (!value) return;
 					if (source === 'bracket') {
 						// bracket values should be numeric values...
 						if (!/^\d+(px|em|rem|%)$/.test(value)) {
-							return;
-						}
-					}
-					if (source === 'literal') {
-						// bare literals must be numbers
-						if (!isNumericUnitLiteral(size) && !isNumericLiteral(size)) {
 							return;
 						}
 					}
@@ -65,9 +58,9 @@ const borderRadiusRules: Rule<Theme>[] = directionMapEntries.flatMap(
 				([, size], { theme }) => {
 					const [value] = themeOrLiteral(size, theme, {
 						startFrom: 'border-radius',
-						unitForLiteralNumber: 'px',
 						trySuffixes: ['radius', 'r'],
 					});
+					if (!value) return;
 					return Object.fromEntries(
 						dirs.map((dir) => [`${dashConcat('border', dir)}-radius`, value]),
 					);
@@ -84,11 +77,19 @@ const borderColorRules: Rule<Theme>[] = directionMapEntries.flatMap(
 			[
 				new RegExp(`^(?:border|b)${dirRegex(dirSuffix)}-(.+)$`),
 				([, color], { theme }) => {
-					const [value] = themeOrLiteral(color, theme, {
+					// pre-splitting opacity and restoring it later allows
+					// supporting [color]/50 syntax while detecting the color portion
+					const split = color.split('/');
+					const baseColor = split[0];
+					const opacityPart = split[1];
+					const [value] = themeOrLiteral(baseColor, theme, {
 						startFrom: 'color',
 						trySuffixes: ['color'],
 					});
-					const parsed = parseColor(value);
+					if (!value) return;
+					const restoredOpacity =
+						opacityPart ? `${value}/${opacityPart}` : value;
+					const parsed = parseColor(restoredOpacity);
 					if (!parsed) return;
 
 					// Maps input color to a system prop associated with direction,
