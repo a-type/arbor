@@ -24,18 +24,28 @@ export function toFlatKeys<V = any>(
 	return flatObj;
 }
 
+/**
+ * Takes a key like "action-primary-fg" and looks it up from a nested object.
+ * We don't necessarily know if a - is part of the next key or a separator,
+ * so we first try to find the longest matching key and then work our way down until we find a match or run out of keys.
+ */
 export function getByConcatKey(
 	obj: Record<string, any>,
 	concatKey: string,
 	separator = '-',
 ): any {
-	const keys = concatKey.split(separator);
-	let current: any = obj;
-	for (const key of keys) {
-		if (current[key] === undefined) {
-			return undefined;
+	const parts = concatKey.split(separator);
+	for (let i = parts.length; i > 0; i--) {
+		const key = parts.slice(0, i).join(separator);
+		if (key in obj) {
+			const value = obj[key];
+			if (i === parts.length) {
+				return value;
+			} else if (typeof value === 'object' && value !== null) {
+				const restKey = parts.slice(i).join(separator);
+				return getByConcatKey(value, restKey, separator);
+			}
 		}
-		current = current[key];
 	}
-	return current;
+	return undefined;
 }

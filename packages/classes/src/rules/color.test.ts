@@ -1,8 +1,8 @@
 import { $systemProps } from '@arbor-css/core';
 import { describe, it } from 'vitest';
 import { testBaseMode } from '../_test.js';
+import { colorAlters } from '../util/alters.js';
 import { testRules } from './_test.js';
-import { colorAlters } from './_util.js';
 import { colorRules } from './color.js';
 
 describe('fg color', () => {
@@ -56,6 +56,14 @@ describe('fg color', () => {
 			[$systemProps.fg.opacity.name]: '0.5',
 		});
 	});
+	it('handles mode theme tokens without extraneous bits', async () => {
+		await testRules(colorRules, 'color-action-primary', {
+			color: $systemProps.fg.applied.var,
+			[$systemProps.fg.applied.name]:
+				testBaseMode.schema.$tokens.action.primary.fg.var,
+			[$systemProps.fg.opacity.name]: '1',
+		});
+	});
 
 	describe('lighten and darken', () => {
 		it('lightens a color', async () => {
@@ -84,6 +92,17 @@ describe('bg color', () => {
 			[$systemProps.bg.applied.name]: 'red',
 			[$systemProps.bg.opacity.name]: '1',
 			[$systemProps.bg.contrast.name]: 'red',
+		});
+	});
+
+	it('handles nested mode tokens without suffixes', async () => {
+		await testRules(colorRules, 'bg-surface-primary', {
+			'background-color': $systemProps.bg.applied.var,
+			[$systemProps.bg.applied.name]:
+				testBaseMode.schema.$tokens.surface.primary.bg.var,
+			[$systemProps.bg.opacity.name]: '1',
+			[$systemProps.bg.contrast.name]:
+				testBaseMode.schema.$tokens.surface.primary.bg.var,
 		});
 	});
 

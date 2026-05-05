@@ -105,6 +105,9 @@ importers:
       '@unocss/extractor-arbitrary-variants':
         specifier: ^66.6.8
         version: 66.6.8
+      '@unocss/preset-mini':
+        specifier: ^66.6.8
+        version: 66.6.8
       '@unocss/rule-utils':
         specifier: ^66.6.8
         version: 66.6.8

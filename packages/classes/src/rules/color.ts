@@ -9,10 +9,12 @@ function makeColorSystemRules({
 	target,
 	shorthands,
 	systemProp,
+	suffixes,
 }: {
 	target: string;
 	shorthands: string[];
 	systemProp: 'fg' | 'bg' | 'fill' | 'stroke' | 'accent' | 'ring';
+	suffixes?: string[];
 }): Rule<Theme>[] {
 	return [
 		[
@@ -20,7 +22,7 @@ function makeColorSystemRules({
 			([, color], { theme }) => {
 				const [value] = themeOrLiteral(color, theme, {
 					startFrom: 'color',
-					trySuffixes: ['color', 'c', 'fg'],
+					trySuffixes: suffixes,
 				});
 				const parsed = parseColor(value);
 				if (!parsed) return;
@@ -74,31 +76,37 @@ export const colorRules: Rule<Theme>[] = [
 	...makeColorSystemRules({
 		target: 'color',
 		shorthands: ['color', 'c', 'fg'],
+		suffixes: ['color', 'fg'],
 		systemProp: 'fg',
 	}),
 	...makeColorSystemRules({
 		target: 'background-color',
 		shorthands: ['bg'],
+		suffixes: ['background', 'background-color', 'bg'],
 		systemProp: 'bg',
 	}),
 	...makeColorSystemRules({
 		target: 'accent-color',
 		shorthands: ['accent'],
+		suffixes: ['accent', 'color'],
 		systemProp: 'accent',
 	}),
 	...makeColorSystemRules({
 		target: 'fill',
 		shorthands: ['fill'],
+		suffixes: ['fill', 'bg', 'color', 'fg', 'background', 'background-color'],
 		systemProp: 'fill',
 	}),
 	...makeColorSystemRules({
 		target: 'stroke',
 		shorthands: ['stroke'],
+		suffixes: ['stroke', 'color'],
 		systemProp: 'stroke',
 	}),
 	...makeColorSystemRules({
 		target: $systemProps.ring.target.name,
 		shorthands: ['ring'],
+		suffixes: ['ring', 'color'],
 		systemProp: 'ring',
 	}),
 	// placeholder requires special handling for the pseudo-element

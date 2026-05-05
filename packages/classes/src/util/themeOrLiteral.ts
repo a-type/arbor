@@ -1,6 +1,6 @@
 import { getByConcatKey } from '@arbor-css/util';
 import { Theme } from '../theme/types.js';
-import { dotConcat } from './concat.js';
+import { dashConcat } from './concat.js';
 import { h } from './h.js';
 
 export function themeOrLiteral(
@@ -21,8 +21,8 @@ export function themeOrLiteral(
 		return [bracketedValue, { source: 'bracket' }];
 	}
 	for (const suffix of ['', ...(trySuffixes || [])]) {
-		const lookFor = dotConcat(startFrom, value, suffix);
-		const themeValue = theme ? getByConcatKey(theme, lookFor, '.') : undefined;
+		const lookFor = dashConcat(startFrom, value, suffix);
+		const themeValue = theme ? getByConcatKey(theme, lookFor, '-') : undefined;
 		if (themeValue) {
 			return [themeValue, { source: 'theme' }];
 		}
