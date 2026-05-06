@@ -41,14 +41,14 @@ function Button({
 				'px-md py-sm rd-sm b b-solid',
 				'cursor-pointer transition-color',
 				{
-					'bg-action-primary b-action-primary color-contrast disabled:(bg-desaturate-2 color-lighten-5)':
+					'bg-action-primary b-action-primary color-contrast disabled:(bg-desaturate-2)':
 						level === 'primary',
 					'bg-action-secondary b-action-secondary color-contrast disabled:(bg-lighten-1 color-lighten-5)':
 						level === 'secondary',
 					'bg-transparent hover:bg-action-ambient b-action-ambient color-action-ambient disabled:(color-lighten-5)':
 						level === 'ambient',
 				},
-				'hover:bg-darken-1 active:bg-darken-2 focus:bg-lighten-1',
+				'hover:bg-darken-1 active:bg-darken-2 focus-visible:bg-lighten-1',
 			)}
 		>
 			{children}
@@ -69,10 +69,18 @@ function SchemeSwitcher({ children }: { children: ReactNode }) {
 	const [scheme, setScheme] = useState('light');
 
 	return (
-		<div className={`@scheme-${scheme}`}>
+		<div className={`@scheme-${scheme} bg-neutralColor-paper`}>
 			<Button onClick={() => setScheme(scheme === 'light' ? 'dark' : 'light')}>
 				Switch to {scheme === 'light' ? 'dark' : 'light'} scheme
 			</Button>
+			{children}
+		</div>
+	);
+}
+
+function Row({ children }: { children: ReactNode }) {
+	return (
+		<div className="flex flex-row gap-md flex-wrap">
 			{children}
 		</div>
 	);
@@ -83,6 +91,20 @@ export default function Demo() {
 		<SchemeSwitcher>
 			<div className="p-lg flex flex-col gap-lg">
 				<div>
+					<div className="flex flex-row">
+						{[
+							'bg-neutralColor-paper',
+							'bg-neutralColor-wash',
+							'bg-neutralColor-lighter',
+							'bg-neutralColor-light',
+							'bg-neutralColor-mid',
+							'bg-neutralColor-heavy',
+							'bg-neutralColor-heavier',
+							'bg-neutralColor-ink',
+						].map((className) => (
+							<div className={clsx(className, 'flex-1 h-16')} />
+						))}
+					</div>
 					<div className="flex flex-row">
 						{[
 							'bg-mainColor-paper',
@@ -97,6 +119,7 @@ export default function Demo() {
 							<div className={clsx(className, 'flex-1 h-16')} />
 						))}
 					</div>
+
 					<div className="flex flex-row">
 						{[
 							'bg-lighten-3',
@@ -115,26 +138,32 @@ export default function Demo() {
 				</div>
 				<Box level="primary">
 					Primary Box
+					<Row>
 					<Button level="primary">Primary Button</Button>
 					<Button level="secondary">Secondary Button</Button>
 					<Button level="ambient">Ambient Button</Button>
 					<Button level="primary" disabled>
 						Disabled Button
 					</Button>
+					</Row>
 					<Input placeholder="Input" />
 				</Box>
 				<Box level="secondary">
 					Secondary Box
+					<Row>
 					<Button level="primary">Primary Button</Button>
 					<Button level="secondary">Secondary Button</Button>
 					<Button level="ambient">Ambient Button</Button>
+					</Row>
 					<Input placeholder="Input" />
 				</Box>
 				<Box level="ambient">
 					Ambient Box
+					<Row>
 					<Button level="primary">Primary Button</Button>
 					<Button level="secondary">Secondary Button</Button>
 					<Button level="ambient">Ambient Button</Button>
+					</Row>
 					<Input placeholder="Input" />
 				</Box>
 			</div>

@@ -50,6 +50,7 @@ const deps = [
 	...globSync('./src/**/*.{ts,tsx}'),
 	...globSync('../core/src/**/*.{ts,tsx}'),
 	...globSync('../modes/src/**/*.{ts,tsx}'),
+	...globSync('../colors/src/**/*.{ts,tsx}'),
 ];
 export default defineConfig({
 	presets: [presetArbor(arbor)],

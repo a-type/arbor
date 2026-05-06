@@ -33,12 +33,12 @@ export function darken(base: string, level: string) {
 		value: 'l',
 		step: level,
 		lightStep: -4,
-		darkStep: 6,
+		darkStep: 8,
 	})} ${tweak({
 		value: 'c',
 		step: level,
 		lightStep: 1,
-		darkStep: -4,
+		darkStep: -5,
 	})} h)`;
 }
 
@@ -46,8 +46,8 @@ export function desaturate(base: string, level: string) {
 	return `oklch(from ${base} l ${tweak({
 		value: 'c',
 		step: level,
-		lightStep: -1,
-		darkStep: -1,
+		lightStep: -20,
+		darkStep: -20,
 	})} h)`;
 }
 
@@ -55,8 +55,8 @@ export function saturate(base: string, level: string) {
 	return `oklch(from ${base} l ${tweak({
 		value: 'c',
 		step: level,
-		lightStep: 1,
-		darkStep: 1,
+		lightStep: 20,
+		darkStep: 20,
 	})} h)`;
 }
 

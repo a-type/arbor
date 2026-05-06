@@ -56,6 +56,3 @@ export const primitives = createPrimitives({
 		contrast: contrastScheme.tag,
 	},
 });
-
-primitives.colors.contrast.primary.heavier;
-primitives.$tokens.colors.primary.heavier;

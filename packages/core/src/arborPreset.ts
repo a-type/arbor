@@ -121,13 +121,13 @@ export function createArborModeValues<
 				border: derive`${arborModeSchema.$tokens.mainColor.heavy}`,
 			},
 			secondary: {
-				bg: derive`${arborModeSchema.$tokens.neutralColor.lighter}`,
+				bg: derive`${arborModeSchema.$tokens.neutralColor.wash}`,
 				fg: derive`${arborModeSchema.$tokens.neutralColor.heavier}`,
 				border: derive`${arborModeSchema.$tokens.neutralColor.heavy}`,
 			},
 			ambient: {
-				bg: derive`${arborModeSchema.$tokens.neutralColor.wash}`,
-				fg: derive`${arborModeSchema.$tokens.neutralColor.ink}`,
+				bg: derive`${arborModeSchema.$tokens.mainColor.lighter}`,
+				fg: derive`${arborModeSchema.$tokens.mainColor.ink}`,
 				border: 'transparent',
 			},
 		},

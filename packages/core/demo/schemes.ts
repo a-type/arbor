@@ -2,6 +2,7 @@ import { createColorRange, createScheme } from '../src/index.js';
 
 export const contrastScheme = createScheme({
 	tag: '💟',
+	isDark: false,
 	getColorRange: (config) =>
 		createColorRange(config, {
 			lightness: ($, { step, rangeSize }) => {
