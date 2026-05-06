@@ -7,13 +7,13 @@ import { borderRules } from './border.js';
 
 describe('border color', () => {
 	it('matches border colors from theme', async () => {
-		await testRules(borderRules, 'b-mainColor-mid', {
+		await testRules(borderRules, 'b-main-mid', {
 			// TODO: remove redundant fallback on "all" direction
 			'border-color': $systemProps.borderColor[''].applied.varFallback(
 				$systemProps.borderColor[''].applied.var,
 			),
 			[$systemProps.borderColor[''].applied.name]:
-				testBaseMode.schema.$tokens.mainColor.mid.var,
+				testBaseMode.schema.$tokens.colors.main.mid.var,
 			[$systemProps.borderColor[''].opacity.name]: '1',
 		});
 	});
@@ -80,12 +80,12 @@ describe('border color', () => {
 		});
 	});
 	it('maps color without opacity to system props on directional rules with suffixes', async () => {
-		await testRules(borderRules, 'border-t-mainColor-mid', {
+		await testRules(borderRules, 'border-t-main-mid', {
 			'border-block-start-color': $systemProps.borderColor[
 				'block-start'
 			].applied.varFallback($systemProps.borderColor[''].applied.var),
 			[$systemProps.borderColor['block-start'].applied.name]:
-				testBaseMode.schema.$tokens.mainColor.mid.var,
+				testBaseMode.schema.$tokens.colors.main.mid.var,
 			[$systemProps.borderColor['block-start'].opacity.name]: '1',
 		});
 	});

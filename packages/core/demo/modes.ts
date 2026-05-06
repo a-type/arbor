@@ -1,83 +1,20 @@
-import { arborModeSchema, derive } from '../src/index.js';
+import { arborModeSchema, createArborModeValues } from '../src/index.js';
 import { primitives } from './primitives.js';
 
 export const modeSchema = arborModeSchema;
 
 export const rootMode = modeSchema.createBase({
-	mainColor: primitives.$tokens.colors.primary,
-	neutralColor: primitives.$tokens.colors.primary.$neutral,
-	surface: {
-		primary: {
-			bg: primitives.$tokens.colors.primary.wash.var,
-			fg: primitives.$tokens.colors.primary.ink.var,
-			border: primitives.$tokens.colors.primary.heavy.var,
-		},
-		secondary: {
-			bg: primitives.$tokens.colors.primary.paper.var,
-			fg: primitives.$tokens.colors.primary.$neutral.ink.var,
-			border: primitives.$tokens.colors.primary.ink.var,
-		},
-		ambient: {
-			bg: primitives.$tokens.colors.primary.$neutral.wash.var,
-			fg: primitives.$tokens.colors.primary.$neutral.ink.var,
-			border: primitives.$tokens.colors.primary.$neutral.heavy.var,
-		},
-	},
-	control: {
-		bg: primitives.$tokens.colors.primary.$neutral.paper.var,
-		fg: primitives.$tokens.colors.primary.$neutral.ink.var,
-		border: primitives.$tokens.colors.primary.$neutral.heavy.var,
-	},
-	action: {
-		primary: {
-			bg: primitives.$tokens.colors.primary.mid.var,
-			fg: primitives.$tokens.colors.primary.ink.var,
-			border: primitives.$tokens.colors.primary.heavy.var,
-		},
-		secondary: {
-			bg: primitives.$tokens.colors.primary.$neutral.lighter.var,
-			fg: primitives.$tokens.colors.primary.$neutral.heavier.var,
-			border: primitives.$tokens.colors.primary.$neutral.heavy.var,
-		},
-		ambient: {
-			bg: primitives.$tokens.colors.primary.$neutral.wash.var,
-			fg: primitives.$tokens.colors.primary.$neutral.ink.var,
-			border: primitives.$tokens.colors.primary.$neutral.heavy.var,
-		},
-	},
-	text: {
-		primary: {
-			size: derive`calc(${primitives.$tokens.typography['3xl'].size} / ${modeSchema.$tokens.density})`,
-			weight: primitives.$tokens.typography['3xl'].weight,
-			lineHeight: primitives.$tokens.typography['3xl'].lineHeight,
-			font: 'sans-serif',
-		},
-		secondary: {
-			size: derive`calc(${primitives.$tokens.typography.md.size} / ${modeSchema.$tokens.density})`,
-			weight: primitives.$tokens.typography.md.weight,
-			lineHeight: primitives.$tokens.typography.md.lineHeight,
-			font: 'sans-serif',
-		},
-		ambient: {
-			size: derive`calc(${primitives.$tokens.typography.sm.size} / ${modeSchema.$tokens.density})`,
-			weight: primitives.$tokens.typography.sm.weight,
-			lineHeight: primitives.$tokens.typography.sm.lineHeight,
-			font: 'sans-serif',
-		},
-	},
-	density: 1,
-	spacing: {
-		xs: derive`calc(${primitives.$tokens.spacing.xs} / ${modeSchema.$tokens.density})`,
-		sm: derive`calc(${primitives.$tokens.spacing.sm} / ${modeSchema.$tokens.density})`,
-		md: derive`calc(${primitives.$tokens.spacing.md} / ${modeSchema.$tokens.density})`,
-		lg: derive`calc(${primitives.$tokens.spacing.lg} / ${modeSchema.$tokens.density})`,
-		xl: derive`calc(${primitives.$tokens.spacing.xl} / ${modeSchema.$tokens.density})`,
-	},
+	...createArborModeValues({
+		primitives,
+		mainColor: 'primary',
+	}),
 });
 
 export const altMode = modeSchema.createPartial('alt', {
-	mainColor: primitives.$tokens.colors.alt,
-	neutralColor: primitives.$tokens.colors.alt.$neutral,
+	colors: {
+		main: primitives.$tokens.colors.alt,
+		neutral: primitives.$tokens.colors.alt.$neutral,
+	},
 	action: {
 		primary: {
 			bg: primitives.$tokens.colors.alt.mid.var,

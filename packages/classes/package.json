@@ -32,6 +32,7 @@
 	},
 	"devDependencies": {
 		"@arbor-css/core": "workspace:*",
+		"@base-ui/react": "^1.4.1",
 		"@types/react": "19.2.7",
 		"@types/react-dom": "19.2.3",
 		"@vitejs/plugin-react": "^6.0.1",

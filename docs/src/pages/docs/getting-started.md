@@ -120,8 +120,10 @@ import { arborModeSchema } from '@arbor-css/core';
 const { $tokens } = primitives;
 
 const baseMode = arborModeSchema.createBase({
-	mainColor: $tokens.color.primary,
-	neutralColor: $tokens.color.primary.$neutral,
+	colors: {
+		main: $tokens.color.primary,
+		neutral: $tokens.color.primary.$neutral,
+	},
 	action: {
 		primary: {
 			bg: $tokens.color.primary.mid,

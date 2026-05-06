@@ -60,8 +60,10 @@ const rootMode = modeSchema.createBase({
 
 function makeSeasonMode(season: 'winter' | 'spring' | 'summer' | 'fall') {
 	return modeSchema.createPartial(season, {
-		mainColor: primitives.$tokens.colors[season],
-		neutralColor: primitives.$tokens.colors[season].$neutral,
+		colors: {
+			main: primitives.$tokens.colors[season],
+			neutral: primitives.$tokens.colors[season].$neutral,
+		},
 		action: {
 			primary: {
 				bg: primitives.$tokens.colors[season].mid,

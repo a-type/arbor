@@ -7,10 +7,10 @@ import { colorRules } from './color.js';
 
 describe('fg color', () => {
 	it('matches colors from theme', async () => {
-		await testRules(colorRules, 'color-mainColor-mid', {
+		await testRules(colorRules, 'color-main-mid', {
 			color: $systemProps.fg.applied.var,
 			[$systemProps.fg.applied.name]:
-				testBaseMode.schema.$tokens.mainColor.mid.var,
+				testBaseMode.schema.$tokens.colors.main.mid.var,
 			[$systemProps.fg.opacity.name]: '1',
 		});
 	});

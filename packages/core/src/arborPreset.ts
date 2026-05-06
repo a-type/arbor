@@ -21,26 +21,27 @@ const textIntents = {
 } satisfies ModeSchemaLevel;
 
 export const arborModeSchema = createModeSchema({
-	// colors
-	mainColor: {
-		paper: 'color',
-		wash: 'color',
-		lighter: 'color',
-		light: 'color',
-		mid: 'color',
-		heavy: 'color',
-		heavier: 'color',
-		ink: 'color',
-	},
-	neutralColor: {
-		paper: 'color',
-		wash: 'color',
-		lighter: 'color',
-		light: 'color',
-		mid: 'color',
-		heavy: 'color',
-		heavier: 'color',
-		ink: 'color',
+	colors: {
+		main: {
+			paper: 'color',
+			wash: 'color',
+			lighter: 'color',
+			light: 'color',
+			mid: 'color',
+			heavy: 'color',
+			heavier: 'color',
+			ink: 'color',
+		},
+		neutral: {
+			paper: 'color',
+			wash: 'color',
+			lighter: 'color',
+			light: 'color',
+			mid: 'color',
+			heavy: 'color',
+			heavier: 'color',
+			ink: 'color',
+		},
 	},
 
 	// intents
@@ -95,46 +96,48 @@ export function createArborModeValues<
 	const mainColor: any = config.primitives.$tokens.colors[config.mainColor];
 
 	return {
-		mainColor,
-		neutralColor: mainColor.$neutral,
+		colors: {
+			main: mainColor,
+			neutral: mainColor.$neutral,
+		},
 		surface: {
 			primary: {
-				bg: derive`${arborModeSchema.$tokens.mainColor.wash}`,
-				fg: derive`${arborModeSchema.$tokens.mainColor.ink}`,
-				border: derive`${arborModeSchema.$tokens.mainColor.heavy}`,
+				bg: derive`${arborModeSchema.$tokens.colors.main.wash}`,
+				fg: derive`${arborModeSchema.$tokens.colors.main.ink}`,
+				border: derive`${arborModeSchema.$tokens.colors.main.heavy}`,
 			},
 			secondary: {
-				bg: derive`${arborModeSchema.$tokens.mainColor.paper}`,
-				fg: derive`${arborModeSchema.$tokens.neutralColor.ink}`,
-				border: derive`${arborModeSchema.$tokens.mainColor.ink}`,
+				bg: derive`${arborModeSchema.$tokens.colors.main.paper}`,
+				fg: derive`${arborModeSchema.$tokens.colors.neutral.ink}`,
+				border: derive`${arborModeSchema.$tokens.colors.main.ink}`,
 			},
 			ambient: {
-				bg: derive`${arborModeSchema.$tokens.neutralColor.paper}`,
-				fg: derive`${arborModeSchema.$tokens.neutralColor.ink}`,
-				border: derive`${arborModeSchema.$tokens.neutralColor.heavy}`,
+				bg: derive`${arborModeSchema.$tokens.colors.neutral.paper}`,
+				fg: derive`${arborModeSchema.$tokens.colors.neutral.ink}`,
+				border: derive`${arborModeSchema.$tokens.colors.neutral.heavy}`,
 			},
 		},
 		action: {
 			primary: {
-				bg: derive`${arborModeSchema.$tokens.mainColor.mid}`,
-				fg: derive`${arborModeSchema.$tokens.mainColor.ink}`,
-				border: derive`${arborModeSchema.$tokens.mainColor.heavy}`,
+				bg: derive`${arborModeSchema.$tokens.colors.main.mid}`,
+				fg: derive`${arborModeSchema.$tokens.colors.main.ink}`,
+				border: derive`${arborModeSchema.$tokens.colors.main.heavy}`,
 			},
 			secondary: {
-				bg: derive`${arborModeSchema.$tokens.neutralColor.wash}`,
-				fg: derive`${arborModeSchema.$tokens.neutralColor.heavier}`,
-				border: derive`${arborModeSchema.$tokens.neutralColor.heavy}`,
+				bg: derive`${arborModeSchema.$tokens.colors.neutral.wash}`,
+				fg: derive`${arborModeSchema.$tokens.colors.neutral.heavier}`,
+				border: derive`${arborModeSchema.$tokens.colors.neutral.heavy}`,
 			},
 			ambient: {
-				bg: derive`${arborModeSchema.$tokens.mainColor.lighter}`,
-				fg: derive`${arborModeSchema.$tokens.mainColor.ink}`,
+				bg: derive`${arborModeSchema.$tokens.colors.main.lighter}`,
+				fg: derive`${arborModeSchema.$tokens.colors.main.ink}`,
 				border: 'transparent',
 			},
 		},
 		control: {
-			bg: derive`${arborModeSchema.$tokens.neutralColor.paper}`,
-			fg: derive`${arborModeSchema.$tokens.neutralColor.ink}`,
-			border: derive`${arborModeSchema.$tokens.neutralColor.heavy}`,
+			bg: derive`${arborModeSchema.$tokens.colors.neutral.paper}`,
+			fg: derive`${arborModeSchema.$tokens.colors.neutral.ink}`,
+			border: derive`${arborModeSchema.$tokens.colors.neutral.heavy}`,
 		},
 		density: 1,
 		spacing: {
