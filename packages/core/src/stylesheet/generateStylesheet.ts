@@ -51,7 +51,7 @@ export function generateStylesheet<
 	function getSchemeRootPropertiesCss(schemeName: string) {
 		const values = flattenAndApplyTokenValues(
 			config.primitives.$tokens.colors,
-			config.primitives.colors[schemeName],
+			config.primitives.colors[schemeName].colors,
 			{ prefix: config.primitives.schemeTags[schemeName] ?? schemeName },
 		);
 
@@ -63,6 +63,11 @@ export function generateStylesheet<
 			valuePrefix: config.primitives.schemeTags[schemeName] ?? schemeName,
 		});
 		return `${$systemProps.labels.scheme.assign(schemeName)}
+	${$systemProps.scheme.invertMultiplier.assign(
+		config.primitives.colors[schemeName].isDark ? -1 : 1,
+	)}
+	${$systemProps.scheme.whenDark.assign(schemeName === 'dark' ? 1 : 0)}
+	${$systemProps.scheme.whenLight.assign(schemeName === 'light' ? 1 : 0)}
 	${formatObjectToCss(values)}
 	`;
 	}
@@ -80,7 +85,7 @@ export function generateStylesheet<
 	const schemeColorsWithTags = Object.keys(config.primitives.colors).reduce(
 		(acc, scheme) => {
 			const key = config.primitives.schemeTags[scheme] ?? scheme;
-			acc[key] = config.primitives.colors[scheme];
+			acc[key] = config.primitives.colors[scheme].colors;
 			return acc;
 		},
 		{} as Record<string, Record<string, any>>,
@@ -136,8 +141,14 @@ ${Object.entries(config.modes)
 ${modeName === 'base' ? ':root,' : ''} .\\@mode-${modeName}, [data-mode-${modeName}=""], ${Object.keys(
 			config.primitives.colors,
 		)
-			.map(
-				(schemeName) => `:where(.\\@mode-${modeName}) .\\@scheme-${schemeName}`,
+			.map((schemeName) =>
+				[
+					`:where(.\\@mode-${modeName}) .\\@scheme-${schemeName}`,
+					`:where([data-mode-${modeName}=""]) .\\@scheme-${schemeName}`,
+					modeName === 'base' ? `:root .\\@scheme-${schemeName}` : null,
+				]
+					.filter((s) => !!s)
+					.join(', '),
 			)
 			.join(', ')} {
 	${$systemProps.labels.mode.assign(modeName)}

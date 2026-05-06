@@ -18,7 +18,7 @@ export const variantContainerQuery: VariantObject<Theme> = {
 
 			const [container] = themeOrLiteral(match, ctx.theme, {
 				startFrom: 'container',
-				unitForLiteralNumber: 'px',
+				trySuffixes: ['-width'],
 			});
 
 			if (container) {

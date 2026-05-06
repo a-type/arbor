@@ -88,6 +88,7 @@ it('compiles a set of color ranges with a custom scheme', () => {
 						lightness: ($) => $.literal('0'),
 						chroma: ($) => $.literal('0'),
 					}),
+				isDark: true,
 			},
 		},
 	});
@@ -220,7 +221,7 @@ it('provides default range names', () => {
 	});
 
 	for (const name of defaultRangeNames) {
-		expect(compiled.dark.primary).toHaveProperty(name);
+		expect(compiled.dark.colors.primary).toHaveProperty(name);
 	}
 });
 
@@ -242,12 +243,12 @@ it('supports color-level saturation', () => {
 	});
 
 	const matchChroma = /oklch\((.*)\)/;
-	expect(compiled.dark.primaryLight.light).toMatch(matchChroma);
-	expect(compiled.dark.primary.light).toMatch(matchChroma);
-	const lightChroma = compiled.dark.primaryLight.light
+	expect(compiled.dark.colors.primaryLight.light).toMatch(matchChroma);
+	expect(compiled.dark.colors.primary.light).toMatch(matchChroma);
+	const lightChroma = compiled.dark.colors.primaryLight.light
 		.match(matchChroma)?.[1]
 		.split(' ')[1];
-	const primaryChroma = compiled.dark.primary.light
+	const primaryChroma = compiled.dark.colors.primary.light
 		.match(matchChroma)?.[1]
 		.split(' ')[1];
 

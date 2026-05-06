@@ -12,11 +12,29 @@ export const $dynamicProps = {
 	}),
 };
 
+export const $schemeProps = {
+	invertMultiplier: createToken('💲-scheme-invert-mult', {
+		type: 'number',
+		fallback: 1,
+	}),
+	whenDark: createToken('💲-scheme-when-dark', {
+		type: 'number',
+		fallback: 0,
+	}),
+	whenLight: createToken('💲-scheme-when-light', {
+		type: 'number',
+		fallback: 1,
+	}),
+};
+
 export const $systemProps = {
 	// bookkeeping and context inference
 	labels: $labelProps,
 	// runtime-assignable properties
 	dynamic: $dynamicProps,
+	// scheme-related properties
+	scheme: $schemeProps,
+
 	// System color tokens are well-known properties you can
 	// assign colors to which are used by util classes for
 	// color mixing and other things...

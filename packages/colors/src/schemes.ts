@@ -10,6 +10,7 @@ export interface SchemeDefinition<
 > {
 	getColorRange: (config: RangeConfig) => UncompiledColorRange<RangeConfig>;
 	tag: string;
+	isDark: boolean;
 }
 
 export function createScheme<
@@ -18,12 +19,14 @@ export function createScheme<
 	return def;
 }
 
-export const defaultLightScheme = {
+export const defaultLightScheme: SchemeDefinition = {
 	tag: '☀️',
 	getColorRange: createColorLightModeRange,
+	isDark: false,
 };
 
-export const defaultDarkScheme = {
+export const defaultDarkScheme: SchemeDefinition = {
 	tag: '🌑',
 	getColorRange: createColorDarkModeRange,
+	isDark: true,
 };

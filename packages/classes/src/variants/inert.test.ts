@@ -1,3 +1,4 @@
+import { VariantObject } from 'unocss';
 import { expect, it } from 'vitest';
 import { testTheme } from '../_test.js';
 import { variantInert } from './inert.js';
@@ -13,11 +14,14 @@ it('wraps selector in inert scope', async () => {
 		theme: testTheme,
 	} as any;
 
-	const result = await variantInert.match?.('inert:bg-red', ctx);
+	const result = await (variantInert as VariantObject).match?.(
+		'inert:bg-red',
+		ctx,
+	);
 	expect(result).toBeTruthy();
 	expect(result).not.toBeTypeOf('string');
 
-	if (!result || typeof result === 'string') return;
+	if (!result || typeof result === 'string' || Array.isArray(result)) return;
 
 	const input = {
 		entries: [],

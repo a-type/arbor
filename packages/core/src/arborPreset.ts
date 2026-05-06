@@ -87,7 +87,7 @@ export const arborModeSchema = createModeSchema({
 export function createArborModeValues<
 	TCompiledColors extends CompiledColors,
 >(config: {
-	mainColor: keyof TCompiledColors[keyof TCompiledColors];
+	mainColor: keyof TCompiledColors[keyof TCompiledColors]['colors'];
 	primitives: Primitives<TCompiledColors>;
 }) {
 	// FIXME: user-facing typing for this is good, but internally something is

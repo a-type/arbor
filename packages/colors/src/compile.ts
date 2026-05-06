@@ -25,7 +25,10 @@ export type CompiledColorRangeWithNeutral<
 export type CompiledColorRanges<
 	TRanges extends Record<string, ColorRangeConfig<any>>,
 > = {
-	[K in keyof TRanges]: CompiledColorRangeWithNeutral<TRanges[K]>;
+	isDark: boolean;
+	colors: {
+		[K in keyof TRanges]: CompiledColorRangeWithNeutral<TRanges[K]>;
+	};
 };
 
 export type CompiledColors<
@@ -71,27 +74,31 @@ export function compileColors<
 	return Object.keys(schemes).reduce(
 		(acc, schemeName) => {
 			const scheme = schemes[schemeName as keyof TSchemes];
-			acc[schemeName as keyof TSchemes] = Object.keys(ranges).reduce(
-				(rangeAcc, rangeName) => {
-					const rangeConfig = ranges[rangeName as keyof TRanges];
+			acc[schemeName as keyof TSchemes] = {
+				isDark: scheme.isDark,
+				colors: Object.keys(ranges).reduce(
+					(rangeAcc, rangeName) => {
+						const rangeConfig = ranges[rangeName as keyof TRanges];
 
-					const uncompiled = scheme.getColorRange(rangeConfig);
+						const uncompiled = scheme.getColorRange(rangeConfig);
 
-					const compiled = compileRange(uncompiled, evalContext);
+						const compiled = compileRange(uncompiled, evalContext);
 
-					const uncompiledNeutralRange = createNeutralDerivedRange(uncompiled);
+						const uncompiledNeutralRange =
+							createNeutralDerivedRange(uncompiled);
 
-					rangeAcc[rangeName as keyof TRanges] = {
-						...compiled,
-						$neutral: compileRange(uncompiledNeutralRange, evalContext),
-					} as any;
-					return rangeAcc;
-				},
-				{} as Record<
-					keyof TRanges,
-					CompiledColorRangeWithNeutral<TRanges[keyof TRanges]>
-				>,
-			);
+						rangeAcc[rangeName as keyof TRanges] = {
+							...compiled,
+							$neutral: compileRange(uncompiledNeutralRange, evalContext),
+						} as any;
+						return rangeAcc;
+					},
+					{} as Record<
+						keyof TRanges,
+						CompiledColorRangeWithNeutral<TRanges[keyof TRanges]>
+					>,
+				),
+			};
 			return acc;
 		},
 		{} as CompiledColors<TRanges, TSchemes>,

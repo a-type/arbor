@@ -55,7 +55,7 @@ export type Primitives<
 	schemeTags: Record<string, string>;
 	globals: GlobalConfig;
 	$tokens: {
-		colors: LiteralsToTokens<TCompiledColors[keyof TCompiledColors]>;
+		colors: LiteralsToTokens<TCompiledColors[keyof TCompiledColors]['colors']>;
 		typography: LiteralsToTokens<TCompiledTypography['levels']>;
 		spacing: LiteralsToTokens<TCompiledSpacing['levels']>;
 		shadows: LiteralsToTokens<TCompiledShadows['levels']>;
@@ -91,7 +91,7 @@ export function createPrimitives<
 	}
 	// TODO: validate all scheme shapes are the same...
 	const $colorProps = convertStructure(
-		arbitraryScheme,
+		arbitraryScheme.colors,
 		(item) => typeof item === 'string',
 		(_, path) =>
 			createToken(path.join('-'), {
