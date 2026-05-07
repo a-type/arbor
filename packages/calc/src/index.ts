@@ -1,5 +1,7 @@
 export interface CalcEvaluationContext {
 	propertyValues: Record<string, string | undefined>;
+	/** Prevents the baking of known literals into calculations. */
+	skipBaking?: boolean;
 }
 
 export type Equation = OperationTree;
@@ -442,9 +444,10 @@ function evaluateLiteral(
 	if (literal.startsWith('var(')) {
 		const propertyName = literal.slice(4, -1).trim();
 		const propertyValue = context.propertyValues[propertyName];
-		if (!propertyValue) {
+		if (!propertyValue || context.skipBaking) {
 			return { type: 'calc', value: literal };
 		} else {
+			// replace literal with known value from context
 			return evaluateLiteral(propertyValue, context);
 		}
 	} else if (literal === 'PI') {
@@ -466,8 +469,15 @@ function evaluateLiteral(
 
 export function computeEquation(
 	equation: Equation,
-	context: CalcEvaluationContext,
+	userContext: CalcEvaluationContext,
 ): ComputationResult {
+	const context: CalcEvaluationContext = {
+		propertyValues: userContext.propertyValues,
+		// unless otherwise specified, we do NOT bake literal values when
+		// running in a browser - this makes a runtime-evaluated equation
+		// responsive to runtime-tweaked globals.
+		skipBaking: userContext.skipBaking ?? typeof window !== 'undefined',
+	};
 	switch (equation.type) {
 		case 'literal':
 			return evaluateLiteral(equation.value.toString(), context);

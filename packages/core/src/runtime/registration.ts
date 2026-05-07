@@ -24,7 +24,8 @@ export function getStyleSheet(): CSSStyleSheet {
 
 export function connect(arbor: ArborConfig<any>) {
 	config = arbor;
-	const styles = generateStylesheet(config);
+	// by turning off layers, we make the generated CSS take precedence over any existing pregenerated stylesheet.
+	const styles = generateStylesheet(config, { layer: false });
 	styleSheet = new CSSStyleSheet();
 	styleSheet.replaceSync(styles);
 	document.adoptedStyleSheets = [...document.adoptedStyleSheets, styleSheet];

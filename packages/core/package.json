@@ -9,6 +9,13 @@
 			"node": "./dist/index.js",
 			"types": "./dist/index.d.ts",
 			"default": "./dist/index.js"
+		},
+		"./runtime": {
+			"development": "./src/runtime/index.ts",
+			"import": "./dist/runtime/index.js",
+			"node": "./dist/runtime/index.js",
+			"types": "./dist/runtime/index.d.ts",
+			"default": "./dist/runtime/index.js"
 		}
 	},
 	"bin": {
@@ -42,6 +49,7 @@
 		"@arbor-css/spacing": "workspace:*",
 		"@arbor-css/shadows": "workspace:*",
 		"jiti": "^2.6.1",
+		"lil-gui": "^0.21.0",
 		"yargs": "^18.0.0"
 	}
 }

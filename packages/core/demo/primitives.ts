@@ -10,9 +10,9 @@ import { contrastScheme } from './schemes.js';
 
 const globals = createGlobals({
 	saturation: 0.5,
-	baseFontSizePixels: 16,
+	baseFontSize: '16px',
 	roundness: 0.5,
-	spacingUnitPixels: 8,
+	baseSpacingSize: '8px',
 });
 
 const colors = compileColors({

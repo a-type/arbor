@@ -59,8 +59,8 @@ export function compileShadows<
 				printComputationResult(
 					computeEquation(defaultShadowEquation(i - baseIndex), {
 						propertyValues: {
-							[$globalProps.spacingUnitPixels.name]:
-								config.globals?.spacingUnitPixels?.toString(),
+							[$globalProps.baseSpacingSize.name]:
+								config.globals?.baseSpacingSize?.toString(),
 						},
 					}),
 				);

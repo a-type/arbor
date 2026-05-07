@@ -38,6 +38,11 @@ export function generateStylesheet<
 		TShadows,
 		TOtherTokens
 	>,
+	{
+		layer: cascadeLayerName = 'arbor',
+	}: {
+		layer?: string | false;
+	} = {},
 ): string {
 	const defaultScheme = config.primitives.defaultScheme ?? 'light';
 	const baseMode = config.modes.base;
@@ -98,9 +103,12 @@ export function generateStylesheet<
 	);
 
 	return `/* Auto-generated CSS - do not edit directly */
+${cascadeLayerName ? `@layer ${cascadeLayerName} {` : ''}
 :root {
 	/* Assign user globals */
 	${printTokens($globalProps, config.primitives.globals)}
+	/* By default we set the font size */
+	font-size: ${$globalProps.baseFontSize.var};
 
 	/* Raw scheme ranges */
 	${Object.keys(config.primitives.colors)
@@ -163,5 +171,7 @@ ${allColorTokens.map((token) => token.definition).join('\n')}
 
 /* Custom properties for each mode property */
 ${allModeProps.map((PROP) => PROP.definition).join('\n\n')}
+
+${cascadeLayerName ? `}` : ''}
 `.trim();
 }

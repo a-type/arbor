@@ -18,8 +18,8 @@ const defaultSpacingEquation = (step: number) =>
 		// calculate rem value of the spacing relative to the
 		// font size.
 		$.divide(
-			$.literal($globalProps.spacingUnitPixels.var),
-			$.literal($globalProps.baseFontSizePixels.var),
+			$.literal($globalProps.baseSpacingSize.var),
+			$.literal($globalProps.baseFontSize.var),
 		),
 		$.literal('1rem'),
 		$.fn('pow', $.literal(1.5), $.literal(step)),
@@ -65,8 +65,8 @@ export function compileSpacing<
 				printComputationResult(
 					computeEquation(defaultSpacingEquation(i - baseIndex), {
 						propertyValues: {
-							[$globalProps.spacingUnitPixels.name]:
-								config.globals?.spacingUnitPixels?.toString(),
+							[$globalProps.baseSpacingSize.name]:
+								config.globals?.baseSpacingSize?.toString(),
 						},
 					}),
 				);

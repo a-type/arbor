@@ -3,28 +3,28 @@ import { createToken, Token } from '@arbor-css/tokens';
 export interface GlobalConfig {
 	saturation: number;
 	roundness: number;
-	baseFontSizePixels: number;
-	spacingUnitPixels: number;
+	baseFontSize: string;
+	baseSpacingSize: string;
 }
 
 export const defaultGlobals: GlobalConfig = {
 	saturation: 0.5,
 	roundness: 0.5,
-	baseFontSizePixels: 16,
-	spacingUnitPixels: 8,
+	baseFontSize: '16px',
+	baseSpacingSize: '8px',
 };
 
-export const $globalProps = {
+export const $globalProps: GlobalConfigProps = {
 	saturation: createToken('🧑-sat', {
 		type: 'number',
 	}),
 	roundness: createToken('🧑-round', {
 		type: 'number',
 	}),
-	baseFontSizePixels: createToken('🧑-base-font-px', {
+	baseFontSize: createToken('🧑-base-font-size', {
 		type: 'length',
 	}),
-	spacingUnitPixels: createToken('🧑-spacing-unit-px', {
+	baseSpacingSize: createToken('🧑-base-spacing-size', {
 		type: 'length',
 	}),
 };

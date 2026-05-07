@@ -4,4 +4,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
 	plugins: [pluginReact(), pluginUno()],
+	resolve: {
+		conditions: ['development', 'browser', 'import', 'default'],
+	},
 });

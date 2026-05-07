@@ -1,4 +1,5 @@
 import { CompiledColors } from '@arbor-css/colors';
+import { $globalProps } from '@arbor-css/globals';
 import {
 	createModeSchema,
 	derive,
@@ -168,9 +169,9 @@ export function createArborModeValues<
 			},
 		},
 		borderRadius: {
-			sm: derive`calc(${config.primitives.$tokens.spacing.md} / ${arborModeSchema.$tokens.density})`,
-			md: derive`calc(${config.primitives.$tokens.spacing.lg} / ${arborModeSchema.$tokens.density})`,
-			lg: derive`calc(${config.primitives.$tokens.spacing.xl} / ${arborModeSchema.$tokens.density})`,
+			sm: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.md} / ${arborModeSchema.$tokens.density})`,
+			md: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.lg} / ${arborModeSchema.$tokens.density})`,
+			lg: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.xl} / ${arborModeSchema.$tokens.density})`,
 		},
 		borderWidth: {
 			sm: '1',

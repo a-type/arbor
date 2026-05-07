@@ -5,6 +5,11 @@ import clsx from 'clsx';
 import { ComponentProps, ReactNode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 
+import { connect } from '@arbor-css/core/runtime';
+import arbor from '../arbor.config';
+
+connect(arbor);
+
 function Box({
 	children,
 	level = 'ambient',
@@ -178,4 +183,9 @@ export default function Demo() {
 	);
 }
 
-createRoot(document.getElementById('root')!).render(<Demo />);
+createRoot(document.getElementById('root')!).render(
+	<>
+		<Demo />
+		<arbor-globals-editor />
+	</>,
+);

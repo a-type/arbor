@@ -16,7 +16,8 @@ Let's just go with these for now:
 import { createGlobals } from '@arbor-css/core';
 
 const globals = createGlobals({
-	baseFontSizePixels: 16,
+	baseFontSize: '16px',
+	baseSpacingSize: '8px',
 	saturation: 0.5,
 	roundness: 0.5,
 });

@@ -62,8 +62,8 @@ export function compileTypography<
 
 	const evalContext: CalcEvaluationContext = {
 		propertyValues: {
-			[$globalProps.baseFontSizePixels.name]:
-				config.globals?.baseFontSizePixels?.toString(),
+			[$globalProps.baseFontSize.name]:
+				config.globals?.baseFontSize?.toString(),
 		},
 	};
 
