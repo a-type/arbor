@@ -7,20 +7,20 @@ import {
 } from '@unocss/preset-mini/rules';
 import { entriesToCss, Preset, transformerVariantGroup } from 'unocss';
 import { rules } from './rules/index.js';
-import { createTheme } from './theme/index.js';
-import { Theme } from './theme/types.js';
+import { createTheme, ThemeConfig } from './theme/index.js';
 import { variants } from './variants/index.js';
 
 export function presetArbor(
 	arbor: ArborConfig<any, any>,
 	options?: {
 		preflight?: 'on-demand' | boolean;
+		theme?: ThemeConfig;
 	},
-): Preset<Theme> {
+): Preset<any> {
 	return {
 		name: 'arbor',
 		rules,
-		theme: createTheme(arbor),
+		theme: createTheme(arbor, options?.theme),
 		variants,
 		transformers: [transformerVariantGroup()],
 		extractorDefault: extractorArbitraryVariants(),

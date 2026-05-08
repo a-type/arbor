@@ -41,7 +41,27 @@ function removeExtraWords(key: string, extraWords: string[]) {
 	return key;
 }
 
-export function createTheme(arbor: ArborConfig<any, any>) {
+export interface ThemeConfig {
+	breakpoints: Record<string, string>;
+	verticalBreakpoints: Record<string, string>;
+	containers: Record<string, string>;
+}
+
+export const defaultThemeConfig: ThemeConfig = {
+	breakpoints: {
+		sm: '640px',
+		md: '768px',
+		lg: '1024px',
+		xl: '1280px',
+	},
+	verticalBreakpoints: {},
+	containers: {},
+};
+
+export function createTheme(
+	arbor: ArborConfig<any, any>,
+	breakpointConfig: ThemeConfig = defaultThemeConfig,
+) {
 	const flatPrimitiveTokens = toFlatKeys<Token>(
 		arbor.primitives.$tokens,
 		isToken,
@@ -75,7 +95,8 @@ export function createTheme(arbor: ArborConfig<any, any>) {
 		(theme[themeCategory] as Record<string, string>)[key] = token.var;
 	}
 
-	console.log(theme);
-
-	return theme as Theme;
+	return {
+		...breakpointConfig,
+		...theme,
+	} as Theme;
 }
