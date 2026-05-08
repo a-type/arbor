@@ -68,6 +68,7 @@ export const $systemProps = {
 	accent: makeSystemColorTokens('accent'),
 	fill: makeSystemColorTokens('fill'),
 	stroke: makeSystemColorTokens('stroke'),
+	shadow: makeSystemColorTokens('shadow'),
 };
 
 function makeSystemColorTokens(name: string) {

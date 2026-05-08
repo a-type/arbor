@@ -21,6 +21,15 @@ const textIntents = {
 	font: 'other',
 } satisfies ModeSchemaLevel;
 
+const shadowIntents = {
+	x: 'shadow-x',
+	y: 'shadow-y',
+	blur: 'shadow-blur',
+	spread: 'shadow-spread',
+	color: 'shadow-color',
+	compiled: 'shadow',
+} satisfies ModeSchemaLevel;
+
 export const arborModeSchema = createModeSchema({
 	colors: {
 		main: {
@@ -84,7 +93,31 @@ export const arborModeSchema = createModeSchema({
 		md: 'border-radius',
 		lg: 'border-radius',
 	},
+	shadow: {
+		color: 'color',
+		sm: shadowIntents,
+		md: shadowIntents,
+		lg: shadowIntents,
+		xl: shadowIntents,
+	},
 });
+
+function createShadowIntentLevel(
+	primitives: Primitives,
+	size: 'sm' | 'md' | 'lg' | 'xl',
+) {
+	return {
+		x: derive`${primitives.$tokens.shadows[size].x}`,
+		y: derive`${primitives.$tokens.shadows[size].y}`,
+		blur: derive`${primitives.$tokens.shadows[size].blur}`,
+		spread: derive`${primitives.$tokens.shadows[size].spread}`,
+		color: derive`${{
+			value: arborModeSchema.$tokens.shadow.color,
+			fallback: primitives.$tokens.shadows[size].color,
+		}}`,
+		compiled: derive`${arborModeSchema.$tokens.shadow[size].x} ${arborModeSchema.$tokens.shadow[size].y} ${arborModeSchema.$tokens.shadow[size].blur} ${arborModeSchema.$tokens.shadow[size].spread} ${arborModeSchema.$tokens.shadow[size].color}`,
+	} satisfies ModeValues<typeof shadowIntents>;
+}
 
 export function createArborModeValues<
 	TCompiledColors extends CompiledColors,
@@ -103,12 +136,12 @@ export function createArborModeValues<
 		},
 		surface: {
 			primary: {
-				bg: derive`${arborModeSchema.$tokens.colors.main.wash}`,
+				bg: derive`${arborModeSchema.$tokens.colors.main.lighter}`,
 				fg: derive`${arborModeSchema.$tokens.colors.main.ink}`,
 				border: derive`${arborModeSchema.$tokens.colors.main.heavy}`,
 			},
 			secondary: {
-				bg: derive`${arborModeSchema.$tokens.colors.main.paper}`,
+				bg: derive`${arborModeSchema.$tokens.colors.main.wash}`,
 				fg: derive`${arborModeSchema.$tokens.colors.neutral.ink}`,
 				border: derive`${arborModeSchema.$tokens.colors.main.ink}`,
 			},
@@ -177,6 +210,13 @@ export function createArborModeValues<
 			sm: '1',
 			md: '1',
 			lg: '2',
+		},
+		shadow: {
+			color: derive`${arborModeSchema.$tokens.colors.neutral.heavier}`,
+			sm: createShadowIntentLevel(config.primitives, 'sm'),
+			md: createShadowIntentLevel(config.primitives, 'md'),
+			lg: createShadowIntentLevel(config.primitives, 'lg'),
+			xl: createShadowIntentLevel(config.primitives, 'xl'),
 		},
 	} satisfies ModeValues<(typeof arborModeSchema)['definition']>;
 }

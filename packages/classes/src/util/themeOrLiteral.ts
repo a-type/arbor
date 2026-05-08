@@ -4,6 +4,26 @@ import { Theme } from '../theme/types.js';
 import { dashConcat } from './concat.js';
 import { h } from './h.js';
 
+export function getFromTheme(
+	value: string,
+	theme: Theme,
+	{
+		startFrom,
+		trySuffixes,
+	}: {
+		startFrom?: keyof Theme | (string & {});
+		trySuffixes?: string[];
+	},
+) {
+	for (const suffix of ['', ...(trySuffixes || [])]) {
+		const lookFor = dashConcat(startFrom, value, suffix);
+		const themeValue = getByConcatKey(theme, lookFor, '-');
+		if (themeValue) {
+			return themeValue;
+		}
+	}
+}
+
 export function themeOrLiteral(
 	value: string,
 	theme: Theme,
@@ -25,19 +45,10 @@ export function themeOrLiteral(
 	if (globalKeywords.includes(value) || value === 'transparent') {
 		return [value, { source: 'global' }];
 	}
-	for (const suffix of ['', ...(trySuffixes || [])]) {
-		const lookFor = dashConcat(startFrom, value, suffix);
-		const themeValue = theme ? getByConcatKey(theme, lookFor, '-') : undefined;
-		if (themeValue) {
-			return [themeValue, { source: 'theme' }];
-		}
+	const fromTheme = getFromTheme(value, theme, { startFrom, trySuffixes });
+	if (fromTheme) {
+		return [fromTheme, { source: 'theme' }];
 	}
 
 	return [undefined, { source: 'unmatched' }];
-
-	// if (unitForLiteralNumber && /^\d+$/.test(value)) {
-	// 	return [`${value}${unitForLiteralNumber}`, { source: 'literal' }];
-	// }
-
-	// return [value, { source: 'literal' }];
 }

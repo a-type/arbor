@@ -13,7 +13,7 @@ function makeColorSystemRules({
 }: {
 	target: string;
 	shorthands: string[];
-	systemProp: 'fg' | 'bg' | 'fill' | 'stroke' | 'accent' | 'ring';
+	systemProp: 'fg' | 'bg' | 'fill' | 'stroke' | 'accent' | 'ring' | 'shadow';
 	suffixes?: string[];
 }): Rule<Theme>[] {
 	return [
@@ -117,6 +117,12 @@ export const colorRules: Rule<Theme>[] = [
 		shorthands: ['ring'],
 		suffixes: ['ring', 'color'],
 		systemProp: 'ring',
+	}),
+	...makeColorSystemRules({
+		target: $systemProps.dynamic.shadowColor.name,
+		shorthands: ['shadow', 'shadow-color'],
+		suffixes: ['shadow', 'color', 'shadow-color'],
+		systemProp: 'shadow',
 	}),
 	// placeholder requires special handling for the pseudo-element
 	[

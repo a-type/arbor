@@ -47,11 +47,11 @@ function Button({
 				'px-md py-sm rd-sm b b-solid',
 				'cursor-pointer transition-color',
 				{
-					'bg-action-primary b-action-primary color-contrast disabled:(bg-desaturate-2)':
+					'bg-action-primary b-action-primary color-contrast shadow-md shadow-main-ink disabled:(bg-desaturate-2)':
 						level === 'primary',
-					'bg-action-secondary b-action-secondary color-contrast disabled:(bg-lighten-1 color-lighten-5)':
+					'bg-action-secondary b-action-secondary color-contrast shadow-sm disabled:(bg-lighten-1 color-lighten-5)':
 						level === 'secondary',
-					'bg-transparent hover:bg-action-ambient b-action-ambient color-action-ambient disabled:(color-lighten-5)':
+					'bg-transparent hover:bg-inherit b-action-ambient color-action-ambient disabled:(color-lighten-5)':
 						level === 'ambient',
 				},
 				'hover:bg-darken-1 active:bg-darken-2 focus-visible:bg-lighten-1',

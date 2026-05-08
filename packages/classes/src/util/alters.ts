@@ -18,7 +18,7 @@ export function lighten(base: string, level: string) {
 	return `oklch(from ${base} ${tweak({
 		value: 'l',
 		step: level,
-		lightStep: 1,
+		lightStep: 3,
 		darkStep: -7,
 	})} ${tweak({
 		value: 'c',
@@ -33,12 +33,12 @@ export function darken(base: string, level: string) {
 		value: 'l',
 		step: level,
 		lightStep: -4,
-		darkStep: 8,
+		darkStep: 10,
 	})} ${tweak({
 		value: 'c',
 		step: level,
 		lightStep: 1,
-		darkStep: -5,
+		darkStep: -9,
 	})} h)`;
 }
 

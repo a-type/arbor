@@ -28,6 +28,69 @@ export type PropertyType =
 	| 'url'
 	| '*';
 
+/**
+ * Roughly mapped / inspired by designtokens.org.
+ * Not currently used... but I wrote them down, so...
+ */
+export type TokenType =
+	| 'color'
+	| 'dimension'
+	| 'font-family'
+	| 'font-weight'
+	| 'duration'
+	| 'cubic-bezier'
+	| 'number'
+	| 'font-style'
+	| 'ratio'
+	| 'url'
+	| TokenCompositeType;
+
+export type TokenCompositeTypeShapes = {
+	strokeStyle:
+		| {
+				dashArray: { value: string; unit: string }[];
+				lineCap: string;
+		  }
+		| string;
+	border: {
+		color: string;
+		width: string;
+		style: string;
+	};
+	transition: {
+		duration: string;
+		delay: string;
+		timingFunction: string;
+	};
+	shadow:
+		| {
+				offsetX: string;
+				offsetY: string;
+				blur: string;
+				spread: string;
+				color: string;
+		  }
+		| {
+				offsetX: string;
+				offsetY: string;
+				blur: string;
+				spread: string;
+				color: string;
+		  }[];
+	gradient: {
+		color: string;
+		position: string;
+	}[];
+	typography: {
+		fontFamily: string;
+		fontSize: string;
+		fontWeight: string;
+		letterSpacing: string;
+		lineHeight: string;
+	};
+};
+export type TokenCompositeType = keyof TokenCompositeTypeShapes;
+
 export type TokenPurpose =
 	| 'color'
 	| 'font-size'
@@ -38,6 +101,12 @@ export type TokenPurpose =
 	| 'shadow'
 	| 'border-radius'
 	| 'border-width'
+	| 'shadow-x'
+	| 'shadow-y'
+	| 'shadow-blur'
+	| 'shadow-spread'
+	| 'shadow-color'
+	| 'size'
 	| 'other';
 
 export function getTypeFromPurpose(purpose: TokenPurpose): PropertyType {

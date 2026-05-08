@@ -194,16 +194,16 @@ export function createColorDarkModeRange(
 ) {
 	const lightness = presetLightnessRange({
 		dir: -1,
-		base: config.base ?? 0.1,
+		base: config.base ?? 0.2,
 		// larger = upper range is brighter
-		scale: config.scale ?? 1.2,
+		scale: config.scale ?? 0.7,
 		grade: 0.8,
 	});
 	const chroma = presetChromaRange({
-		base: 0.3,
+		base: 0.4,
 		// larger = lower range is desaturated
-		scale: 1.1,
-		grade: 1.3,
+		scale: 1,
+		grade: 2,
 	});
 	return createColorRange(config, {
 		lightness: ($, { step, rangeSize }) => lightness($, step, rangeSize),

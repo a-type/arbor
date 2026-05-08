@@ -5,6 +5,9 @@ export interface GlobalConfig {
 	roundness: number;
 	baseFontSize: string;
 	baseSpacingSize: string;
+	defaultShadowColor: string;
+	shadowSpread: number;
+	shadowBlur: number;
 }
 
 export const defaultGlobals: GlobalConfig = {
@@ -12,6 +15,9 @@ export const defaultGlobals: GlobalConfig = {
 	roundness: 0.5,
 	baseFontSize: '16px',
 	baseSpacingSize: '8px',
+	defaultShadowColor: 'rgba(0 0 0 / 0.5)',
+	shadowSpread: 0,
+	shadowBlur: 0.5,
 };
 
 export const $globalProps: GlobalConfigProps = {
@@ -26,6 +32,15 @@ export const $globalProps: GlobalConfigProps = {
 	}),
 	baseSpacingSize: createToken('🧑-base-spacing-size', {
 		type: 'length',
+	}),
+	defaultShadowColor: createToken('🧑-default-shadow-color', {
+		type: 'color',
+	}),
+	shadowSpread: createToken('🧑-shadow-spread', {
+		type: 'number',
+	}),
+	shadowBlur: createToken('🧑-shadow-blur', {
+		type: 'number',
 	}),
 };
 

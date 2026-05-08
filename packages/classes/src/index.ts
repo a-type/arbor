@@ -1,12 +1,22 @@
 import { ArborConfig, generateStylesheet } from '@arbor-css/core';
 import { extractorArbitraryVariants } from '@unocss/extractor-arbitrary-variants';
-import { Preset, transformerVariantGroup } from 'unocss';
+import {
+	boxShadowsBase,
+	ringBase,
+	transformBase,
+} from '@unocss/preset-mini/rules';
+import { entriesToCss, Preset, transformerVariantGroup } from 'unocss';
 import { rules } from './rules/index.js';
 import { createTheme } from './theme/index.js';
 import { Theme } from './theme/types.js';
 import { variants } from './variants/index.js';
 
-export function presetArbor(arbor: ArborConfig<any, any>): Preset<Theme> {
+export function presetArbor(
+	arbor: ArborConfig<any, any>,
+	options?: {
+		preflight?: 'on-demand' | boolean;
+	},
+): Preset<Theme> {
 	return {
 		name: 'arbor',
 		rules,
@@ -15,6 +25,32 @@ export function presetArbor(arbor: ArborConfig<any, any>): Preset<Theme> {
 		transformers: [transformerVariantGroup()],
 		extractorDefault: extractorArbitraryVariants(),
 		preflights: [
+			{
+				layer: 'preflights',
+				getCSS({ generator }) {
+					let entries = Object.entries({
+						...transformBase,
+						...boxShadowsBase,
+						...ringBase,
+					});
+					if (options?.preflight === 'on-demand') {
+						const keys = new Set(
+							Array.from(generator.activatedRules)
+								.map((r) => r[2]?.custom?.preflightKeys)
+								.filter(Boolean)
+								.flat(),
+						);
+						entries = entries.filter(([k]) => keys.has(k));
+					}
+
+					if (entries.length > 0) {
+						let css = entriesToCss(entries);
+						css = css.replace(/--un-/g, `--🍂-`);
+						const roots = ['*,::before,::after', '::backdrop'];
+						return roots.map((root) => `${root}{${css}}`).join('');
+					}
+				},
+			},
 			{
 				layer: 'base',
 				getCSS: () => {

@@ -21,10 +21,18 @@ const extraWords = [
 	'radius',
 	'borderWidth',
 	'borderRadius',
+	'x',
+	'y',
+	'offsetX',
+	'offsetY',
+	'blur',
+	'spread',
 ];
 function removeExtraWords(key: string, extraWords: string[]) {
 	for (const word of extraWords) {
-		key = key.replaceAll(word, '');
+		key = key.replaceAll(new RegExp(`-${word}-`, 'g'), '-');
+		key = key.replaceAll(new RegExp(`^${word}-`, 'g'), '');
+		key = key.replaceAll(new RegExp(`-${word}$`, 'g'), '');
 	}
 	key = key
 		.replaceAll(/^-+/g, '')
@@ -66,6 +74,8 @@ export function createTheme(arbor: ArborConfig<any, any>) {
 		}
 		(theme[themeCategory] as Record<string, string>)[key] = token.var;
 	}
+
+	console.log(theme);
 
 	return theme as Theme;
 }

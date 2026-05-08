@@ -13,7 +13,7 @@ export function flattenAndApplyTokenValues(
 	) {
 		for (const key in tokenNode) {
 			const tokenCurrent = tokenNode[key];
-			if (!valueNode[key]) {
+			if (valueNode[key] === undefined) {
 				throw new Error(
 					`Missing value for token ${tokenCurrent.name} at path ${[...path, key].join('.')} (values: ${JSON.stringify(valueNode)})`,
 				);

@@ -10,7 +10,10 @@ import {
 	createPrimitives,
 } from '@arbor-css/core';
 
-const globals = createGlobals({});
+const globals = createGlobals({
+	shadowBlur: 0,
+	shadowSpread: 0,
+});
 
 const primitives = createPrimitives({
 	colors: compileColors({

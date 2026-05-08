@@ -8,10 +8,10 @@ import { ArborElement } from './BaseElement.js';
 class GlobalsEditor extends ArborElement {
 	connectedCallback() {
 		const gui = new GUI();
+		gui.close();
 		const config = getConfig();
 
 		const globalsFolder = gui.addFolder('Globals');
-		globalsFolder.open();
 
 		for (const [globalKey, token] of Object.entries($globalProps)) {
 			let entry =
@@ -28,7 +28,6 @@ class GlobalsEditor extends ArborElement {
 		}
 
 		const primitivesFolder = gui.addFolder('Primitives');
-		primitivesFolder.open();
 
 		function addToken(parent: any, key: string, token: Token, folder: GUI) {
 			let entry =
@@ -50,7 +49,6 @@ class GlobalsEditor extends ArborElement {
 		}
 
 		const values = readProperties(config.primitives.$tokens);
-		console.log(values);
 
 		for (const [firstLayerKey, firstTokenLayer] of Object.entries(
 			config.primitives.$tokens,
@@ -59,7 +57,6 @@ class GlobalsEditor extends ArborElement {
 				addToken(values, firstLayerKey, firstTokenLayer, primitivesFolder);
 			} else {
 				const primitiveFolder = primitivesFolder.addFolder(firstLayerKey);
-				primitiveFolder.open();
 				for (const [secondLayerKey, secondTokenLayer] of Object.entries(
 					firstTokenLayer,
 				)) {
@@ -72,7 +69,6 @@ class GlobalsEditor extends ArborElement {
 						);
 					} else {
 						const secondLayerFolder = primitiveFolder.addFolder(secondLayerKey);
-						secondLayerFolder.open();
 						for (const [thirdLayerKey, thirdTokenLayer] of Object.entries(
 							secondTokenLayer,
 						)) {
