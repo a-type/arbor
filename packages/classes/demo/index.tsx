@@ -47,7 +47,7 @@ function Button({
 				'px-md py-sm rd-sm b b-solid',
 				'cursor-pointer transition-color',
 				{
-					'bg-action-primary b-action-primary color-contrast shadow-md shadow-main-ink disabled:(bg-desaturate-2)':
+					'bg-action-primary b-action-primary color-contrast shadow-md shadow-main-ink shadow-reverse disabled:(bg-desaturate-2)':
 						level === 'primary',
 					'bg-action-secondary b-action-secondary color-contrast shadow-sm disabled:(bg-lighten-1 color-lighten-5)':
 						level === 'secondary',

@@ -6,9 +6,13 @@ export const $labelProps = {
 };
 
 export const $dynamicProps = {
-	shadowColor: createToken('👟-shadowColor', {
+	shadowColor: createToken('👟-shadow-color', {
 		type: 'color',
 		fallback: 'rgba(0, 0, 0, 0.1)',
+	}),
+	shadowReverse: createToken('👟-shadow-reverse', {
+		type: 'number',
+		fallback: 1,
 	}),
 };
 

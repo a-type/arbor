@@ -48,7 +48,7 @@ export const shadowRules: Rule<Theme>[] = [
 			}
 
 			const shadowValue = colorableShadows(
-				`var(--🍂-shadow-inset) ${x ?? '0'} ${y ?? '0'} ${blur} ${spread} ${color}`,
+				`var(--🍂-shadow-inset) calc(${x ?? '0'} * ${$systemProps.dynamic.shadowReverse.var}) calc(${y ?? '0'} * ${$systemProps.dynamic.shadowReverse.var}) ${blur} ${spread} ${color}`,
 				$systemProps.dynamic.shadowColor.name,
 			).join(',');
 
@@ -61,6 +61,13 @@ export const shadowRules: Rule<Theme>[] = [
 		{
 			autocomplete: ['shadow-$shadows'],
 		},
+	],
+	// reverse shadow direction
+	[
+		/^shadow-reverse$/,
+		() => ({
+			[$systemProps.dynamic.shadowReverse.name]: '-1',
+		}),
 	],
 	// text shadow sizes
 	[
