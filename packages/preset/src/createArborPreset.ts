@@ -40,7 +40,10 @@ export function createArborPreset<
 	TSchemes extends Record<string, SchemeDefinition> = Record<string, never>,
 >(
 	config: CreateArborPresetConfig<TRanges, TSchemes>,
-): ArborPreset<ArborModeSchema['definition']> & {
+): ArborPreset<
+	ArborModeSchema['definition'],
+	CompiledColors<TRanges, TSchemes>
+> & {
 	addMode: (
 		name: string,
 		mode: DeepPartial<ModeValues<ArborModeSchema['definition']>>,
