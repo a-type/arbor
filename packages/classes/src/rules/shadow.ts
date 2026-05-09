@@ -62,4 +62,44 @@ export const shadowRules: Rule<Theme>[] = [
 			autocomplete: ['shadow-$shadows'],
 		},
 	],
+	// text shadow sizes
+	[
+		/^text-shadow(?:-(.+))?$/,
+		([, size], { theme }) => {
+			const asLiteral = h.bracket(size);
+			if (asLiteral) {
+				return {
+					'text-shadow': asLiteral,
+				};
+			}
+
+			const x = getFromTheme(size, theme, {
+				startFrom: 'shadow-x',
+				trySuffixes: ['x', 'offsetX', 'xOffset'],
+			});
+			const y = getFromTheme(size, theme, {
+				startFrom: 'shadow-y',
+				trySuffixes: ['y', 'offsetY', 'yOffset'],
+			});
+			const blur = getFromTheme(size, theme, {
+				startFrom: 'shadow-blur',
+				trySuffixes: ['blur'],
+			});
+			const color = getFromTheme(size, theme, {
+				startFrom: 'shadow-color',
+				trySuffixes: ['color'],
+			});
+
+			if (!(x && y && blur && color)) {
+				return;
+			}
+
+			return {
+				'text-shadow': `${x} ${y} ${blur} ${color}`,
+			};
+		},
+		{
+			autocomplete: ['text-shadow-$shadows'],
+		},
+	],
 ];
