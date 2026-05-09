@@ -24,6 +24,7 @@ export type ModeSchema<TSchema extends ModeSchemaLevel = ModeSchemaLevel> = {
 	extend: <TExtensionSchema extends ModeSchemaLevel>(
 		extension: TExtensionSchema,
 	) => ModeSchema<TSchema & TExtensionSchema>;
+	extraCss?: string;
 };
 
 function isModeSchemaProperty(value: any): value is ModeSchemaProperty {
@@ -53,13 +54,14 @@ function getModeSchemaPropertyAsPropertyDefinition(
 
 export function createModeSchema<T extends ModeSchemaLevel>(
 	input: T,
-	{ tag = 'Ⓜ️' }: { tag?: string } = {},
+	{ tag = 'Ⓜ️', extraCss }: { tag?: string; extraCss?: string } = {},
 ): ModeSchema<T> {
 	const PROPS = createModeTokens(input, tag);
 	const schema = {
 		definition: input,
 		tag,
 		$tokens: PROPS,
+		extraCss,
 		createBase: (def: ModeValues<T>) => {
 			return {
 				values: def,

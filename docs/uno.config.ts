@@ -27,7 +27,24 @@ export default defineConfig({
 			* {
 				box-sizing: border-box;
 			}
-		`,
+			ul, ol {
+				padding-left: 1.5em;
+			}
+			li {
+				line-height: 1.5;
+			}
+			a {
+				color: inherit;
+				text-decoration: none;
+			}
+			img {
+				display: block;
+				max-width: 100%;
+			}
+			h1, h2, h3, h4, h5, h6, p {
+				margin: 0;
+			}
+			`,
 		},
 	],
 	configDeps: ['./arbor.ts', '../packages/classes/src'],

@@ -91,8 +91,9 @@ export function modeToCss<TModeShape extends ModeSchemaLevel>(
 		Object.assign(lowPriorityVars, baseDeps);
 	}
 
-	return Object.entries({
+	const valuesCss = Object.entries({
 		...lowPriorityVars,
 		...cssVars,
 	}).reduce((acc, [key, value]) => `${acc}${key}: ${value};\n`, '');
+	return [valuesCss, mode.schema.extraCss].filter(Boolean).join('\n');
 }

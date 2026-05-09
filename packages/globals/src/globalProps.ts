@@ -15,7 +15,7 @@ export const defaultGlobals: GlobalConfig = {
 	roundness: 0.5,
 	baseFontSize: '16px',
 	baseSpacingSize: '8px',
-	defaultShadowColor: 'rgba(0 0 0 / 0.5)',
+	defaultShadowColor: 'rgba(0 0 0 / 0.15)',
 	shadowSpread: 0,
 	shadowBlur: 0.5,
 };

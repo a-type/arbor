@@ -1,12 +1,12 @@
 ---
 import { modeSchema } from '../../arbor.js';
-const style = `background-image: ${modeSchema.$tokens.decoration.var}`;
+const style = `background-image: ${modeSchema.$tokens.decoration.var}; background-size: cover; background-position: 0% 0%;`;
 const { className } = Astro.props;
 ---
 
 <div
 	class:list={[
-		'bg-surface-primary rd-sm flex items-center justify-center leading-[1]',
+		'bg-surface-primary color-main-heavier rd-md overflow-hidden flex items-center justify-center leading-[1]',
 		className,
 	]}
 	style={style}

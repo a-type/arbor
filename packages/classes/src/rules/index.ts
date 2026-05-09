@@ -5,6 +5,7 @@ import { borderRules } from './border.js';
 import { colorRules } from './color.js';
 import { shadowRules } from './shadow.js';
 import { spacingRules } from './spacing.js';
+import { typographyRules } from './typography.js';
 
 export const rules: Rule<Theme>[] = [
 	...(baseRules as any),
@@ -12,4 +13,5 @@ export const rules: Rule<Theme>[] = [
 	...colorRules,
 	...spacingRules,
 	...borderRules,
+	...typographyRules,
 ];

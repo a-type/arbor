@@ -22,7 +22,7 @@ const primitives = createPrimitives({
 				saturation: 0.3,
 			},
 			spring: {
-				hue: 120,
+				hue: 140,
 			},
 			summer: {
 				hue: 158,
@@ -31,6 +31,10 @@ const primitives = createPrimitives({
 			fall: {
 				hue: 40,
 				saturation: 0.4,
+			},
+
+			attention: {
+				hue: 0,
 			},
 		},
 		globals,
@@ -64,22 +68,6 @@ function makeSeasonMode(season: 'winter' | 'spring' | 'summer' | 'fall') {
 			main: primitives.$tokens.colors[season],
 			neutral: primitives.$tokens.colors[season].$neutral,
 		},
-		action: {
-			primary: {
-				bg: primitives.$tokens.colors[season].mid,
-				fg: primitives.$tokens.colors[season].ink,
-			},
-		},
-		surface: {
-			primary: {
-				bg: primitives.$tokens.colors[season].wash,
-				fg: primitives.$tokens.colors[season].ink,
-			},
-			ambient: {
-				bg: primitives.$tokens.colors[season].$neutral.paper,
-				fg: primitives.$tokens.colors[season].$neutral.ink,
-			},
-		},
 	});
 }
 
@@ -95,6 +83,15 @@ const creativityMode = modeSchema.createPartial('creativity', {
 	decoration: 'url("/images/creativity.svg")',
 });
 
+const heroMode = modeSchema.createPartial('hero', {
+	density: 0.5,
+	text: {
+		primary: primitives.$tokens.typography['4xl'],
+		secondary: primitives.$tokens.typography['2xl'],
+		ambient: primitives.$tokens.typography.md,
+	},
+});
+
 export const arbor = createConfig({
 	primitives,
 	modes: {
@@ -105,5 +102,6 @@ export const arbor = createConfig({
 		fall: fallMode,
 		structure: structureMode,
 		creativity: creativityMode,
+		hero: heroMode,
 	},
 });
