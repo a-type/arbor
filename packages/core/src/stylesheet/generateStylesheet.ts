@@ -65,15 +65,16 @@ export function generateStylesheet<
 	}
 
 	function schemeApplicationCss(schemeName: string) {
+		const scheme = config.primitives.colors[schemeName];
 		const values = selfReferencedProps(config.primitives.$tokens.colors, {
 			valuePrefix: config.primitives.schemeTags[schemeName] ?? schemeName,
 		});
 		return `${$systemProps.labels.scheme.assign(schemeName)}
-	${$systemProps.scheme.invertMultiplier.assign(
-		config.primitives.colors[schemeName].isDark ? -1 : 1,
-	)}
-	${$systemProps.scheme.whenDark.assign(schemeName === 'dark' ? 1 : 0)}
-	${$systemProps.scheme.whenLight.assign(schemeName === 'light' ? 1 : 0)}
+	${$systemProps.scheme.invertMultiplier.assign(scheme.isDark ? -1 : 1)}
+	${$systemProps.scheme.whenDark.assign(scheme.isDark ? 1 : 0)}
+	${$systemProps.scheme.whenLight.assign(scheme.isDark ? 0 : 1)}
+	${$systemProps.scheme.trueLight.assign(scheme.isDark ? 'black' : 'white')}
+	${$systemProps.scheme.trueHeavy.assign(scheme.isDark ? 'white' : 'black')}
 	${formatObjectToCss(values)}
 	`;
 	}

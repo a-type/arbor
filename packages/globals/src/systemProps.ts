@@ -25,6 +25,14 @@ export const $schemeProps = {
 		type: 'number',
 		fallback: 1,
 	}),
+	trueLight: createToken('💲-scheme-true-light', {
+		type: 'color',
+		fallback: 'white',
+	}),
+	trueHeavy: createToken('💲-scheme-true-heavy', {
+		type: 'color',
+		fallback: 'black',
+	}),
 };
 
 export const $systemProps = {
