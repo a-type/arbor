@@ -38,7 +38,7 @@ jobs:
 
       - name: Install dependencies
         shell: bash
-        run: pnpm ci
+        run: pnpm i --frozen-lockfile
 
       - name: Setup Pages
         id: pages

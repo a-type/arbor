@@ -34,7 +34,7 @@ jobs:
 
       - name: Install dependencies
         shell: bash
-        run: pnpm ci
+        run: pnpm i --frozen-lockfile
 
       - name: Generate GitHub Changelog
         run: pnpx changelogithub
