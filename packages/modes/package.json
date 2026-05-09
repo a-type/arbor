@@ -15,7 +15,8 @@
 	"scripts": {
 		"build": "tsc",
 		"dev": "tsc -w --preserveWatchOutput",
-		"test": "vitest"
+		"test": "vitest",
+		"prepublishOnly": "pnpm build"
 	},
 	"devDependencies": {
 		"typescript": "catalog:",

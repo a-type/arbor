@@ -16,7 +16,8 @@
 		"build": "tsc",
 		"dev": "tsc -w --preserveWatchOutput",
 		"test": "vitest",
-		"test:ci": "vitest --run"
+		"test:ci": "vitest --run",
+		"prepublishOnly": "pnpm build"
 	},
 	"devDependencies": {
 		"@vitest/browser-playwright": "catalog:",

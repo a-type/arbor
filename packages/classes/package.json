@@ -17,7 +17,8 @@
 		"dev": "tsc -w --preserveWatchOutput",
 		"test": "vitest",
 		"test:ci": "vitest --run",
-		"demo": "vite ./demo --port 5174"
+		"demo": "vite ./demo --port 5174",
+		"prepublishOnly": "pnpm build"
 	},
 	"peerDependencies": {
 		"@arbor-css/core": "*"

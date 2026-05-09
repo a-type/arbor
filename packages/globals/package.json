@@ -14,7 +14,8 @@
 	"sideEffects": false,
 	"scripts": {
 		"build": "tsc",
-		"dev": "tsc -w --preserveWatchOutput"
+		"dev": "tsc -w --preserveWatchOutput",
+		"prepublishOnly": "pnpm build"
 	},
 	"devDependencies": {
 		"typescript": "catalog:",
