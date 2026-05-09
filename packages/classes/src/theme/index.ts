@@ -1,5 +1,6 @@
 import { ArborPreset, isToken, Token } from '@arbor-css/core';
 import { toFlatKeys } from '@arbor-css/util';
+import { Theme as MiniTheme } from '@unocss/preset-mini';
 import { Theme } from './types.js';
 
 const extraWords = [
@@ -58,6 +59,64 @@ export const defaultThemeConfig: ThemeConfig = {
 	containers: {},
 };
 
+// keep preset-mini happy with an empty theme shape since we rely on lots of their rules still
+const emptyMini: MiniTheme = {
+	accentColor: {},
+	animation: {},
+	aria: {},
+	backgroundColor: {},
+	borderColor: {},
+	borderRadius: {},
+	blockSize: {},
+	blur: {},
+	boxShadow: {},
+	breakpoints: {},
+	colors: {},
+	container: {},
+	containers: {},
+	data: {},
+	dropShadow: {},
+	duration: {},
+	easing: {},
+	fontFamily: {},
+	fontSize: {},
+	fontWeight: {},
+	gridAutoColumn: {},
+	gridAutoRow: {},
+	gridColumn: {},
+	gridRow: {},
+	gridTemplateColumn: {},
+	gridTemplateRow: {},
+	height: {},
+	inlineSize: {},
+	letterSpacing: {},
+	lineHeight: {},
+	lineWidth: {},
+	maxBlockSize: {},
+	maxHeight: {},
+	maxInlineSize: {},
+	minBlockSize: {},
+	minHeight: {},
+	minInlineSize: {},
+	ringWidth: {},
+	shadowColor: {},
+	textColor: {},
+	transitionProperty: {},
+	width: {},
+	zIndex: {},
+	verticalBreakpoints: {},
+	maxWidth: {},
+	media: {},
+	minWidth: {},
+	preflightBase: {},
+	spacing: {},
+	supports: {},
+	textIndent: {},
+	textShadow: {},
+	textStrokeWidth: {},
+	wordSpacing: {},
+};
+
 export function createTheme(
 	arbor: ArborPreset<any, any>,
 	breakpointConfig: ThemeConfig = defaultThemeConfig,
@@ -96,6 +155,7 @@ export function createTheme(
 	}
 
 	return {
+		...(emptyMini as any),
 		...breakpointConfig,
 		...theme,
 	} as Theme;
