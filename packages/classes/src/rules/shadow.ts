@@ -69,6 +69,12 @@ export const shadowRules: Rule<Theme>[] = [
 			[$systemProps.dynamic.shadowReverse.name]: '-1',
 		}),
 	],
+	[
+		/^shadow-none$/,
+		() => ({
+			'--🍂-shadow': '0 0 rgb(0 0 0 / 0)',
+		}),
+	],
 	// text shadow sizes
 	[
 		/^text-shadow(?:-(.+))?$/,
