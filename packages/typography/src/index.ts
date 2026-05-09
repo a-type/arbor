@@ -39,11 +39,12 @@ export const defaultTypographyLevels = [
 ] as const;
 export type DefaultTypographyLevel = (typeof defaultTypographyLevels)[number];
 
-export type TypographyConfig<TLevels extends string> = {
-	levels?: Record<TLevels, Partial<TypographyLevel>>;
-	defaultLevel?: TLevels;
-	globals?: Partial<GlobalConfig>;
-};
+export type TypographyConfig<TLevels extends string = DefaultTypographyLevel> =
+	{
+		levels?: Record<TLevels, Partial<TypographyLevel>>;
+		defaultLevel?: TLevels;
+		globals?: Partial<GlobalConfig>;
+	};
 
 export function compileTypography<
 	TLevels extends string = DefaultTypographyLevel,

@@ -1,21 +1,11 @@
-import {
-	arborModeSchema,
-	compileColors,
-	compileShadows,
-	compileSpacing,
-	compileTypography,
-	createArborModeValues,
-	createConfig,
-	createGlobals,
-	createPrimitives,
-} from '@arbor-css/core';
+import { createArborPreset, definePreset } from '@arbor-css/core';
 
-const globals = createGlobals({
-	saturation: 0.5,
-});
-
-const primitives = createPrimitives({
-	colors: compileColors({
+const preset = createArborPreset({
+	globals: {
+		saturation: 0.5,
+	},
+	colors: {
+		mainColor: 'summer',
 		ranges: {
 			winter: {
 				hue: 200,
@@ -32,33 +22,21 @@ const primitives = createPrimitives({
 				hue: 40,
 				saturation: 0.4,
 			},
-
 			attention: {
 				hue: 0,
 			},
 		},
-		globals,
-	}),
-	typography: compileTypography({
-		globals,
-	}),
-	spacing: compileSpacing({
-		globals,
-	}),
-	shadows: compileShadows({
-		globals,
-	}),
+	},
 });
 
-export const modeSchema = arborModeSchema.extend({
+const { primitives } = preset;
+
+export const modeSchema = preset.modes.base.schema.extend({
 	decoration: 'other',
 });
 
 const rootMode = modeSchema.createBase({
-	...createArborModeValues({
-		mainColor: 'summer',
-		primitives,
-	}),
+	...preset.modes.base.values,
 	decoration: 'none',
 });
 
@@ -92,7 +70,7 @@ const heroMode = modeSchema.createPartial('hero', {
 	},
 });
 
-export const arbor = createConfig({
+export const arbor = definePreset({
 	primitives,
 	modes: {
 		base: rootMode,

@@ -28,7 +28,7 @@ const globals = createGlobals({
 I don't know about you, but this is usually where I begin. Arbor cares about colors a lot, and a lot of its configuration revolves around them, but all we need to begin is a single OKLCH hue.
 
 ```ts
-import { compileColors } from '@arbor-css/core';
+import { compileColors } from '@arbor-css/preset';
 
 const colors = compileColors({
 	ranges: {
@@ -39,6 +39,31 @@ const colors = compileColors({
 	globals,
 });
 ```
+
+## One-step preset quick start
+
+If you just want a working Arbor setup fast, `core` now exposes a one-step scaffold helper.
+
+```ts
+import { createArborPreset } from '@arbor-css/core';
+
+const { primitives, baseMode, modeSchema } = createArborPreset({
+	globals: {
+		baseFontSize: '16px',
+		baseSpacingSize: '8px',
+		saturation: 0.5,
+		roundness: 0.5,
+	},
+	colors: {
+		mainColor: 'primary',
+		ranges: {
+			primary: { hue: 158 },
+		},
+	},
+});
+```
+
+Use `@arbor-css/preset` when you want to manually tweak the compile steps (`compileColors`, `compileSpacing`, etc).
 
 Arbor will generate light and dark color ranges for you from this hue, and it will also create a matching tinted gray range called `$neutral` to go with them.
 
@@ -116,7 +141,7 @@ With a schema in hand, your job is now to fill it in to create your Base Mode. T
 This snippet ain't short, nor should it really be. These are some of the core expressive decisions you make in your design. Feel free to copy this as a starting point, but each value here is a distinct opportunity to make your mark!
 
 ```ts
-import { arborModeSchema } from '@arbor-css/core';
+import { arborModeSchema } from '@arbor-css/preset';
 
 const { $tokens } = primitives;
 

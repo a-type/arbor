@@ -25,7 +25,9 @@ const defaultSpacingEquation = (step: number) =>
 		$.fn('pow', $.literal(1.5), $.literal(step)),
 	);
 
-export interface SpacingConfig<TSpacingLevel extends string> {
+export interface SpacingConfig<
+	TSpacingLevel extends string = DefaultSpacingLevel,
+> {
 	levels?: Record<TSpacingLevel, string | number>;
 	defaultLevel?: TSpacingLevel;
 	globals?: GlobalConfig;

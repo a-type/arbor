@@ -10,7 +10,7 @@ import { CompiledSpacing } from '@arbor-css/spacing';
 import { TokenSchema } from '@arbor-css/tokens';
 import { CompiledTypography } from '@arbor-css/typography';
 
-export interface ArborConfig<
+export interface ArborPreset<
 	TModeShape extends ModeSchemaLevel,
 	TCompiledColors extends CompiledColors<any, any> = CompiledColors<any, any>,
 	TTypography extends CompiledTypography<any> = CompiledTypography<any>,
@@ -31,7 +31,7 @@ export interface ArborConfig<
 	};
 }
 
-export function createConfig<
+export function definePreset<
 	TModeShape extends ModeSchemaLevel,
 	TCompiledColors extends CompiledColors<any, any>,
 	TTypography extends CompiledTypography<any>,
@@ -39,7 +39,7 @@ export function createConfig<
 	TShadows extends CompiledShadows<any>,
 	TOtherTokens extends TokenSchema = TokenSchema,
 >(
-	config: ArborConfig<
+	config: ArborPreset<
 		TModeShape,
 		TCompiledColors,
 		TTypography,
@@ -47,7 +47,7 @@ export function createConfig<
 		TShadows,
 		TOtherTokens
 	>,
-): ArborConfig<
+): ArborPreset<
 	TModeShape,
 	TCompiledColors,
 	TTypography,

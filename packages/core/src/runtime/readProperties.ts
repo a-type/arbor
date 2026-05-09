@@ -1,5 +1,5 @@
 import { isToken, TokenSchema } from '@arbor-css/tokens';
-import { convertStructure } from '../util/convertStructure.js';
+import { convertStructure } from '@arbor-css/util';
 
 export function readProperties(
 	tokens: TokenSchema,

@@ -1,10 +1,12 @@
 import { CompiledColors } from '@arbor-css/colors';
-import { $globalProps } from '@arbor-css/globals';
+import { $globalProps, $systemProps } from '@arbor-css/globals';
 import {
 	flattenToPropsList,
 	ModeSchemaLevel,
 	modeToCss,
 } from '@arbor-css/modes';
+import { CompiledShadows } from '@arbor-css/shadows';
+import { CompiledSpacing } from '@arbor-css/spacing';
 import {
 	createToken,
 	isToken,
@@ -13,9 +15,8 @@ import {
 	tokenSchemaToList,
 } from '@arbor-css/tokens';
 import { CompiledTypography } from '@arbor-css/typography';
+import { convertStructure } from '@arbor-css/util';
 import { ArborConfig } from '../config.js';
-import { $systemProps, CompiledShadows, CompiledSpacing } from '../index.js';
-import { convertStructure } from '../util/convertStructure.js';
 import { flattenAndApplyTokenValues } from '../util/flattenAndApplyTokenValues.js';
 import { formatObjectToCss } from '../util/formatObjectToCss.js';
 import { printTokens } from '../util/printTokens.js';

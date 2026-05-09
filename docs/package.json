@@ -12,6 +12,7 @@
 	},
 	"dependencies": {
 		"@arbor-css/core": "workspace:^",
+		"@arbor-css/preset": "workspace:^",
 		"@arbor-css/classes": "workspace:^",
 		"@astrojs/mdx": "4.3.12",
 		"@astrojs/react": "4.4.2",

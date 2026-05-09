@@ -10,9 +10,11 @@ import { $globalProps, GlobalConfig } from '../../globals/dist/globalProps.js';
 export const defaultShadowLevels = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
 export type DefaultShadowLevel = (typeof defaultShadowLevels)[number];
 
-export interface ShadowConfig<TSpacingLevel extends string> {
-	levels?: Record<TSpacingLevel, CompiledShadowLevel>;
-	defaultLevel?: TSpacingLevel;
+export interface ShadowConfig<
+	TShadowLevel extends string = DefaultShadowLevel,
+> {
+	levels?: Record<TShadowLevel, CompiledShadowLevel>;
+	defaultLevel?: TShadowLevel;
 	globals?: GlobalConfig;
 }
 

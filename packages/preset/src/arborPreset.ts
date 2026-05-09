@@ -6,7 +6,7 @@ import {
 	ModeSchemaLevel,
 	ModeValues,
 } from '@arbor-css/modes';
-import { Primitives } from './primitives/primitives.js';
+import { Primitives } from '@arbor-css/primitives';
 
 const colorIntents = {
 	fg: 'color',
@@ -101,6 +101,9 @@ export const arborModeSchema = createModeSchema({
 		xl: shadowIntents,
 	},
 });
+
+export type ArborModeSchema = typeof arborModeSchema;
+export type ArborModeShape = ModeValues<ArborModeSchema['definition']>;
 
 function createShadowIntentLevel(
 	primitives: Primitives,

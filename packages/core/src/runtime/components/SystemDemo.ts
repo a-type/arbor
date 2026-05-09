@@ -1,6 +1,6 @@
 import { isToken } from '@arbor-css/tokens';
+import { convertStructure } from '@arbor-css/util';
 import { generateStylesheet } from '../../stylesheet/generateStylesheet.js';
-import { convertStructure } from '../../util/convertStructure.js';
 import { ArborElement } from './BaseElement.js';
 
 class SystemDemo extends ArborElement {

@@ -1,4 +1,5 @@
-import { $systemProps, getContrastColor } from '@arbor-css/core';
+import { getContrastColor } from '@arbor-css/colors';
+import { $systemProps } from '@arbor-css/core';
 import { Rule, symbols } from 'unocss';
 import { Theme } from '../theme/types.js';
 import { colorAlters, colorAltersMatch } from '../util/alters.js';

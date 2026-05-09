@@ -1,0 +1,46 @@
+{
+	"name": "@arbor-css/preset",
+	"version": "0.0.1",
+	"type": "module",
+	"publishConfig": {
+		"access": "public"
+	},
+	"files": [
+		"dist"
+	],
+	"exports": {
+		".": {
+			"development": "./src/index.ts",
+			"import": "./dist/index.js",
+			"node": "./dist/index.js",
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		},
+		"./config": {
+			"development": "./src/config.ts",
+			"import": "./dist/config.js",
+			"node": "./dist/config.js",
+			"types": "./dist/config.d.ts",
+			"default": "./dist/config.js"
+		}
+	},
+	"sideEffects": false,
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsc -w --preserveWatchOutput",
+		"prepublishOnly": "pnpm build"
+	},
+	"devDependencies": {
+		"typescript": "catalog:"
+	},
+	"dependencies": {
+		"@arbor-css/colors": "workspace:*",
+		"@arbor-css/globals": "workspace:*",
+		"@arbor-css/modes": "workspace:*",
+		"@arbor-css/primitives": "workspace:*",
+		"@arbor-css/shadows": "workspace:*",
+		"@arbor-css/spacing": "workspace:*",
+		"@arbor-css/tokens": "workspace:*",
+		"@arbor-css/typography": "workspace:*"
+	}
+}

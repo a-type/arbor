@@ -1,4 +1,4 @@
-import { ArborConfig, generateStylesheet } from '@arbor-css/core';
+import { ArborPreset, generateStylesheet } from '@arbor-css/core';
 import { extractorArbitraryVariants } from '@unocss/extractor-arbitrary-variants';
 import {
 	boxShadowsBase,
@@ -11,7 +11,7 @@ import { createTheme, ThemeConfig } from './theme/index.js';
 import { variants } from './variants/index.js';
 
 export function presetArbor(
-	arbor: ArborConfig<any, any>,
+	arbor: ArborPreset<any, any>,
 	options?: {
 		preflight?: 'on-demand' | boolean;
 		theme?: ThemeConfig;

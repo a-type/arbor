@@ -39,6 +39,8 @@
 	},
 	"devDependencies": {
 		"@arbor-css/core": "workspace:*",
+		"@arbor-css/colors": "workspace:*",
+		"@arbor-css/preset": "workspace:*",
 		"@base-ui/react": "^1.4.1",
 		"@types/react": "19.2.7",
 		"@types/react-dom": "19.2.3",

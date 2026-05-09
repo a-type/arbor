@@ -1,4 +1,4 @@
-import { createColorRange, createScheme } from '../src/index.js';
+import { createColorRange, createScheme } from '@arbor-css/colors';
 
 export const contrastScheme = createScheme({
 	tag: '💟',

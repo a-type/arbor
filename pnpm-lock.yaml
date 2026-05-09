@@ -41,6 +41,9 @@ importers:
       '@arbor-css/core':
         specifier: workspace:^
         version: link:../packages/core
+      '@arbor-css/preset':
+        specifier: workspace:^
+        version: link:../packages/preset
       '@astrojs/mdx':
         specifier: 4.3.12
         version: 4.3.12(astro@5.16.4(@types/node@25.6.0)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.53.3)(typescript@6.0.3)(yaml@2.8.4))
@@ -119,9 +122,15 @@ importers:
         specifier: 'catalog:'
         version: 66.6.8(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@unocss/astro@66.6.8(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.3)(jiti@2.6.1)(yaml@2.8.4)))(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.3)(jiti@2.6.1)(yaml@2.8.4))
     devDependencies:
+      '@arbor-css/colors':
+        specifier: workspace:*
+        version: link:../colors
       '@arbor-css/core':
         specifier: workspace:*
         version: link:../core
+      '@arbor-css/preset':
+        specifier: workspace:*
+        version: link:../preset
       '@base-ui/react':
         specifier: ^1.4.1
         version: 1.4.1(@types/react@19.2.7)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
@@ -192,6 +201,12 @@ importers:
       '@arbor-css/modes':
         specifier: workspace:*
         version: link:../modes
+      '@arbor-css/preset':
+        specifier: workspace:*
+        version: link:../preset
+      '@arbor-css/primitives':
+        specifier: workspace:*
+        version: link:../primitives
       '@arbor-css/shadows':
         specifier: workspace:*
         version: link:../shadows
@@ -204,6 +219,9 @@ importers:
       '@arbor-css/typography':
         specifier: workspace:*
         version: link:../typography
+      '@arbor-css/util':
+        specifier: workspace:*
+        version: link:../util
       jiti:
         specifier: ^2.6.1
         version: 2.6.1
@@ -261,6 +279,68 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 4.1.5(@types/node@25.6.0)(@vitest/browser-playwright@4.1.5)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.3)(jiti@2.6.1)(yaml@2.8.4))
+
+  packages/preset:
+    dependencies:
+      '@arbor-css/colors':
+        specifier: workspace:*
+        version: link:../colors
+      '@arbor-css/globals':
+        specifier: workspace:*
+        version: link:../globals
+      '@arbor-css/modes':
+        specifier: workspace:*
+        version: link:../modes
+      '@arbor-css/primitives':
+        specifier: workspace:*
+        version: link:../primitives
+      '@arbor-css/shadows':
+        specifier: workspace:*
+        version: link:../shadows
+      '@arbor-css/spacing':
+        specifier: workspace:*
+        version: link:../spacing
+      '@arbor-css/tokens':
+        specifier: workspace:*
+        version: link:../tokens
+      '@arbor-css/typography':
+        specifier: workspace:*
+        version: link:../typography
+    devDependencies:
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
+
+  packages/primitives:
+    dependencies:
+      '@arbor-css/colors':
+        specifier: workspace:*
+        version: link:../colors
+      '@arbor-css/globals':
+        specifier: workspace:*
+        version: link:../globals
+      '@arbor-css/modes':
+        specifier: workspace:*
+        version: link:../modes
+      '@arbor-css/shadows':
+        specifier: workspace:*
+        version: link:../shadows
+      '@arbor-css/spacing':
+        specifier: workspace:*
+        version: link:../spacing
+      '@arbor-css/tokens':
+        specifier: workspace:*
+        version: link:../tokens
+      '@arbor-css/typography':
+        specifier: workspace:*
+        version: link:../typography
+      '@arbor-css/util':
+        specifier: workspace:*
+        version: link:../util
+    devDependencies:
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
 
   packages/shadows:
     dependencies:

@@ -1,4 +1,4 @@
-import { ArborConfig, isToken, Token } from '@arbor-css/core';
+import { ArborPreset, isToken, Token } from '@arbor-css/core';
 import { toFlatKeys } from '@arbor-css/util';
 import { Theme } from './types.js';
 
@@ -59,7 +59,7 @@ export const defaultThemeConfig: ThemeConfig = {
 };
 
 export function createTheme(
-	arbor: ArborConfig<any, any>,
+	arbor: ArborPreset<any, any>,
 	breakpointConfig: ThemeConfig = defaultThemeConfig,
 ) {
 	const flatPrimitiveTokens = toFlatKeys<Token>(

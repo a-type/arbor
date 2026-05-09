@@ -48,13 +48,16 @@
 		"vite": "catalog:"
 	},
 	"dependencies": {
+		"@arbor-css/preset": "workspace:*",
 		"@arbor-css/tokens": "workspace:*",
 		"@arbor-css/globals": "workspace:*",
 		"@arbor-css/colors": "workspace:*",
 		"@arbor-css/modes": "workspace:*",
 		"@arbor-css/typography": "workspace:*",
+		"@arbor-css/primitives": "workspace:*",
 		"@arbor-css/spacing": "workspace:*",
 		"@arbor-css/shadows": "workspace:*",
+		"@arbor-css/util": "workspace:*",
 		"jiti": "^2.6.1",
 		"lil-gui": "^0.21.0",
 		"yargs": "^18.0.0"

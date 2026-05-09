@@ -4,7 +4,7 @@ import { CompiledShadows } from '@arbor-css/shadows';
 import { CompiledSpacing } from '@arbor-css/spacing';
 import { createToken, Token, TokenSchema } from '@arbor-css/tokens';
 import { CompiledTypography, isTypographyLevel } from '@arbor-css/typography';
-import { convertStructure } from '../util/convertStructure.js';
+import { convertStructure } from '@arbor-css/util';
 
 export const defaultDefaultScheme = 'light';
 
