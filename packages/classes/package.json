@@ -20,7 +20,9 @@
 	"sideEffects": false,
 	"scripts": {
 		"build": "tsc",
-		"dev": "tsc -w --preserveWatchOutput",
+		"dev": "pnpm run --filter @arbor-css/classes --parallel \"/^dev:.*/\"",
+		"dev:ts": "tsc -w --preserveWatchOutput",
+		"dev:demo": "vite ./demo",
 		"test": "vitest",
 		"test:ci": "vitest --run",
 		"demo": "vite ./demo --port 5174",

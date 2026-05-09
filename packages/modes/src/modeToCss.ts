@@ -1,3 +1,4 @@
+import { $systemProps } from '@arbor-css/globals';
 import { isToken, Token } from '@arbor-css/tokens';
 import { toFlatKeys } from '@arbor-css/util';
 import {
@@ -95,5 +96,14 @@ export function modeToCss<TModeShape extends ModeSchemaLevel>(
 		...lowPriorityVars,
 		...cssVars,
 	}).reduce((acc, [key, value]) => `${acc}${key}: ${value};\n`, '');
-	return [valuesCss, mode.schema.extraCss].filter(Boolean).join('\n');
+	const content = [valuesCss, mode.schema.extraCss].filter(Boolean).join('\n');
+
+	return `.\\@mode-${mode.config.name},
+[data-mode-${mode.config.name}=""],
+:where(.\\@mode-${mode.config.name} [class^="\\@scheme-"]),
+:where([data-mode-${mode.config.name}=""] [class^="\\@scheme-"]) {
+	${$systemProps.labels.mode.assign(mode.config.name)}
+	${content}
+}
+`;
 }

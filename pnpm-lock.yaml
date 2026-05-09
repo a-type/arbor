@@ -266,6 +266,9 @@ importers:
 
   packages/modes:
     dependencies:
+      '@arbor-css/globals':
+        specifier: workspace:*
+        version: link:../globals
       '@arbor-css/tokens':
         specifier: workspace:*
         version: link:../tokens

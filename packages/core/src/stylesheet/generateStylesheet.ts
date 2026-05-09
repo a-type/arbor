@@ -147,22 +147,7 @@ ${Object.keys(config.primitives.colors)
 ${Object.entries(config.modes)
 	.map(([modeName, modeValue]) => {
 		return `/* Mode: ${modeName} */
-${modeName === 'base' ? ':root,' : ''} .\\@mode-${modeName}, [data-mode-${modeName}=""], ${Object.keys(
-			config.primitives.colors,
-		)
-			.map((schemeName) =>
-				[
-					`:where(.\\@mode-${modeName}) .\\@scheme-${schemeName}`,
-					`:where([data-mode-${modeName}=""]) .\\@scheme-${schemeName}`,
-					modeName === 'base' ? `:root .\\@scheme-${schemeName}` : null,
-				]
-					.filter((s) => !!s)
-					.join(', '),
-			)
-			.join(', ')} {
-	${$systemProps.labels.mode.assign(modeName)}
-	${modeToCss(modeValue, baseMode)}
-}
+${modeName === 'base' ? ':root, :root [class^="\\@scheme-"], ' : ''}${modeToCss(modeValue, baseMode)}
 `;
 	})
 	.join('\n\n')}
