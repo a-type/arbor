@@ -1,6 +1,9 @@
 {
 	"name": "@arbor-css/docs",
 	"type": "module",
+	"publishConfig": {
+		"access": "public"
+	},
 	"version": "0.0.1",
 	"scripts": {
 		"dev": "astro dev",
