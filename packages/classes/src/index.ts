@@ -6,7 +6,7 @@ import {
 	transformBase,
 } from '@unocss/preset-mini/rules';
 import { entriesToCss, Preset, transformerVariantGroup } from 'unocss';
-import { rules } from './rules/index.js';
+import { createRules } from './rules/index.js';
 import { createTheme, ThemeConfig } from './theme/index.js';
 import { variants } from './variants/index.js';
 
@@ -22,7 +22,7 @@ export function presetArbor(
 ): Preset<any> {
 	return {
 		name: 'arbor',
-		rules,
+		rules: createRules(arbor),
 		theme: createTheme(arbor, options?.theme),
 		variants,
 		transformers: [transformerVariantGroup()],
