@@ -8,6 +8,8 @@ export interface GlobalConfig {
 	defaultShadowColor: string;
 	shadowSpread: number;
 	shadowBlur: number;
+	arrowWidth: string;
+	arrowHeight: string;
 }
 
 export const defaultGlobals: GlobalConfig = {
@@ -18,6 +20,8 @@ export const defaultGlobals: GlobalConfig = {
 	defaultShadowColor: 'rgba(0 0 0 / 0.15)',
 	shadowSpread: 0,
 	shadowBlur: 0.5,
+	arrowWidth: '1rem',
+	arrowHeight: '0.5rem',
 };
 
 export const $globalProps: GlobalConfigProps = {
@@ -41,6 +45,12 @@ export const $globalProps: GlobalConfigProps = {
 	}),
 	shadowBlur: createToken('🧑-shadow-blur', {
 		type: 'number',
+	}),
+	arrowWidth: createToken('🧑-arrow-width', {
+		type: 'length',
+	}),
+	arrowHeight: createToken('🧑-arrow-height', {
+		type: 'length',
 	}),
 };
 

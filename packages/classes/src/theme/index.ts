@@ -1,6 +1,6 @@
 import { ArborPreset, isToken, Token } from '@arbor-css/core';
 import { toFlatKeys } from '@arbor-css/util';
-import { Theme as MiniTheme } from '@unocss/preset-mini';
+import { Theme as MiniTheme, ThemeAnimation } from '@unocss/preset-mini';
 import { Theme } from './types.js';
 
 const extraWords = [
@@ -46,6 +46,7 @@ export interface ThemeConfig {
 	breakpoints: Record<string, string>;
 	verticalBreakpoints: Record<string, string>;
 	containers: Record<string, string>;
+	animation: ThemeAnimation;
 }
 
 export const defaultThemeConfig: ThemeConfig = {
@@ -57,6 +58,7 @@ export const defaultThemeConfig: ThemeConfig = {
 	},
 	verticalBreakpoints: {},
 	containers: {},
+	animation: {},
 };
 
 // keep preset-mini happy with an empty theme shape since we rely on lots of their rules still
