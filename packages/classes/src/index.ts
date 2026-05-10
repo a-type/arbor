@@ -10,6 +10,9 @@ import { rules } from './rules/index.js';
 import { createTheme, ThemeConfig } from './theme/index.js';
 import { variants } from './variants/index.js';
 
+export type { Theme } from './theme/types.js';
+export type { ThemeConfig };
+
 export function presetArbor(
 	arbor: ArborPreset<any, any>,
 	options?: {
