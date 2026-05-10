@@ -47,6 +47,8 @@ export interface ThemeConfig {
 	verticalBreakpoints: Record<string, string>;
 	containers: Record<string, string>;
 	animation: ThemeAnimation;
+	height: Record<string, string>;
+	width: Record<string, string>;
 }
 
 export const defaultThemeConfig: ThemeConfig = {
@@ -59,6 +61,9 @@ export const defaultThemeConfig: ThemeConfig = {
 	verticalBreakpoints: {},
 	containers: {},
 	animation: {},
+	// TODO: should these be tokens instead?
+	height: {},
+	width: {},
 };
 
 // keep preset-mini happy with an empty theme shape since we rely on lots of their rules still
