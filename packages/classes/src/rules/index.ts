@@ -12,7 +12,7 @@ import { spacingRules } from './spacing.js';
 import { touchActionRules } from './touchAction.js';
 import { typographyRules } from './typography.js';
 
-export const createRules = (preset: ArborPreset<any>): Rule<Theme>[] => [
+export const createRules = (preset: ArborPreset<any, any>): Rule<Theme>[] => [
 	...(baseRules as any),
 	...createModeRules(preset),
 	...shadowRules,

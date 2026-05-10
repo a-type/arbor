@@ -12,6 +12,7 @@ import { CompiledTypography } from '@arbor-css/typography';
 
 export interface ArborPreset<
 	TModeShape extends ModeSchemaLevel,
+	TModes extends Record<string, PartialModeInstance<TModeShape>>,
 	TCompiledColors extends CompiledColors<any, any> = CompiledColors<any, any>,
 	TTypography extends CompiledTypography<any> = CompiledTypography<any>,
 	TSpacing extends CompiledSpacing<any> = CompiledSpacing<any>,
@@ -27,12 +28,12 @@ export interface ArborPreset<
 	>;
 	modes: {
 		base: ModeInstance<TModeShape>;
-		[key: string]: PartialModeInstance<TModeShape>;
-	};
+	} & TModes;
 }
 
 export function definePreset<
 	TModeShape extends ModeSchemaLevel,
+	TModes extends Record<string, PartialModeInstance<TModeShape>>,
 	TCompiledColors extends CompiledColors<any, any>,
 	TTypography extends CompiledTypography<any>,
 	TSpacing extends CompiledSpacing<any>,
@@ -41,6 +42,7 @@ export function definePreset<
 >(
 	config: ArborPreset<
 		TModeShape,
+		TModes,
 		TCompiledColors,
 		TTypography,
 		TSpacing,
@@ -49,6 +51,7 @@ export function definePreset<
 	>,
 ): ArborPreset<
 	TModeShape,
+	TModes,
 	TCompiledColors,
 	TTypography,
 	TSpacing,

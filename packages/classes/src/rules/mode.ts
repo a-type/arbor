@@ -1,7 +1,8 @@
 import { ArborPreset } from '@arbor-css/core';
 import { Rule } from 'unocss';
 
-export const createModeRules = (preset: ArborPreset<any>): Rule[] => [
+// TODO: disable automatic root generation and make these act as on-demands?
+export const createModeRules = (preset: ArborPreset<any, any>): Rule[] => [
 	[
 		/^@mode-(.+)$/,
 		([, value]) => {
