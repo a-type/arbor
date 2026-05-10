@@ -88,44 +88,10 @@ export function createPrimitives<
 	if (!arbitraryScheme) {
 		throw new Error('At least one color scheme must be defined in primitives');
 	}
-	const withoutRoot = <T extends Record<string, any>>(value: T) => {
-		const output = { ...value };
-		delete output.$root;
-		return output;
-	};
-	const getKeyForRootValue = (
-		values: Record<string, string>,
-		rootValue: string,
-	) => {
-		const rootEntry = Object.entries(values).find(([key, value]) => {
-			return key !== '$root' && value === rootValue;
-		});
-		if (!rootEntry) {
-			throw new Error('Unable to resolve $root key for compiled color range');
-		}
-		return rootEntry[0];
-	};
-	const colorsWithoutRoot = Object.fromEntries(
-		Object.entries(arbitraryScheme.colors).map(([colorName, color]) => {
-			const colorValues = color as Record<string, any>;
-			const neutral = colorValues.$neutral as Record<string, any>;
-
-			return [
-				colorName,
-				{
-					...withoutRoot(colorValues),
-					$neutral: withoutRoot(neutral),
-				},
-			];
-		}),
-	);
-	const spacingLevelsWithoutRoot = withoutRoot(config.spacing.levels);
-	const typographyLevelsWithoutRoot = withoutRoot(config.typography.levels);
-	const shadowLevelsWithoutRoot = withoutRoot(config.shadows.levels);
 
 	// TODO: validate all scheme shapes are the same...
 	const $colorProps = convertStructure(
-		colorsWithoutRoot,
+		arbitraryScheme.colors,
 		(item) => typeof item === 'string',
 		(_, path) =>
 			createToken(path.join('-'), {
@@ -135,20 +101,9 @@ export function createPrimitives<
 				tag: '🎨',
 			}),
 	);
-	for (const colorName in $colorProps) {
-		const colorTokens = ($colorProps as Record<string, any>)[colorName];
-		const colorValues = (arbitraryScheme.colors as Record<string, any>)[colorName];
-		const colorRootKey = getKeyForRootValue(colorValues, colorValues.$root);
-		colorTokens.$root = colorTokens[colorRootKey];
-
-		const neutralTokens = colorTokens.$neutral as Record<string, any>;
-		const neutralValues = colorValues.$neutral as Record<string, any>;
-		const neutralRootKey = getKeyForRootValue(neutralValues, neutralValues.$root);
-		neutralTokens.$root = neutralTokens[neutralRootKey];
-	}
 
 	const $typographyProps = convertStructure(
-		typographyLevelsWithoutRoot,
+		config.typography.levels,
 		isTypographyLevel,
 		(_, path) => ({
 			size: createToken(`typography-${path.join('-')}-size`, {
@@ -171,12 +126,9 @@ export function createPrimitives<
 			}),
 		}),
 	);
-	($typographyProps as Record<string, any>).$root = (
-		$typographyProps as Record<string, any>
-	)[config.typography.defaultLevel];
 
 	const $spacingProps = convertStructure(
-		spacingLevelsWithoutRoot,
+		config.spacing.levels,
 		(value): value is string | number =>
 			typeof value === 'string' || typeof value === 'number',
 		(_, path) =>
@@ -186,12 +138,9 @@ export function createPrimitives<
 				tag: 's',
 			}),
 	);
-	($spacingProps as Record<string, any>).$root = (
-		$spacingProps as Record<string, any>
-	)[config.spacing.defaultLevel];
 
 	const $shadowProps = convertStructure(
-		shadowLevelsWithoutRoot,
+		config.shadows.levels,
 		(value): value is string | number =>
 			typeof value === 'string' || typeof value === 'number',
 		(_, path) =>
@@ -201,9 +150,6 @@ export function createPrimitives<
 				tag: '🌫️',
 			}),
 	);
-	($shadowProps as Record<string, any>).$root = (
-		$shadowProps as Record<string, any>
-	)[config.shadows.defaultLevel];
 
 	const globals: GlobalConfig = {
 		...defaultGlobals,

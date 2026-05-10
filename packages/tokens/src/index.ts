@@ -158,7 +158,7 @@ export function createToken(
 		forceDefinition?: boolean;
 	},
 ) {
-	const escapedName = name.replace('$', '');
+	const escapedName = name.replaceAll('$', '');
 	const taggedName = tag ? `${tag}-${escapedName}` : escapedName;
 	const resolvedName = `${TOKEN_PREFIX}${taggedName}`;
 	return {
