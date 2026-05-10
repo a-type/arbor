@@ -1,5 +1,5 @@
 import { TokenPurpose } from '@arbor-css/core';
-import { ThemeAnimation } from '@unocss/preset-mini';
+import { Theme as MiniTheme, ThemeAnimation } from '@unocss/preset-mini';
 
 export type Theme = {
 	[Purpose in TokenPurpose]: Record<string, string>;
@@ -8,6 +8,7 @@ export type Theme = {
 	verticalBreakpoints: Record<string, string>;
 	containers: Record<string, string>;
 	animation: ThemeAnimation;
+	easing: MiniTheme['easing'];
 } & {
 	[K in string]: any;
 };
