@@ -84,39 +84,58 @@ export function createPrimitives<
 	TOtherTokens
 > {
 	const { colors, defaultScheme, globals: userGlobals } = config;
-	const getRootKey = (keys: string[]) =>
-		(keys.includes('mid') ? 'mid' : keys[Math.floor(keys.length / 2)]) ?? keys[0];
+	const getRootKey = (keys: string[], preferredKey = 'mid') =>
+		(() => {
+			if (!keys.length) {
+				throw new Error('Cannot derive $root from an empty token/value level');
+			}
+			return (
+				(keys.includes(preferredKey) ?
+					preferredKey
+				:	keys[Math.floor(keys.length / 2)]) ?? keys[0]
+			);
+		})();
+	const withRootValue = (
+		values: Record<string, any>,
+		preferredKey = 'mid',
+		excludeKeys: string[] = ['$root'],
+	) => {
+		const keys = Object.keys(values).filter((key) => !excludeKeys.includes(key));
+		const rootKey = getRootKey(keys, preferredKey);
+		return {
+			...values,
+			$root: values[rootKey],
+		};
+	};
+	const assignRootTokenAlias = (
+		tokens: Record<string, any>,
+		preferredKey = 'mid',
+		excludeKeys: string[] = ['$root'],
+	) => {
+		const keys = Object.keys(tokens).filter((key) => !excludeKeys.includes(key));
+		const rootKey = getRootKey(keys, preferredKey);
+		tokens.$root = tokens[rootKey];
+	};
 	const colorsWithRoot = Object.fromEntries(
 		Object.entries(colors).map(([schemeName, scheme]) => [
 			schemeName,
 			{
 				...scheme,
 				colors: Object.fromEntries(
-					Object.entries((scheme as any).colors).map(([colorName, color]) => {
+					Object.entries(
+						(scheme as { colors: Record<string, Record<string, any>> }).colors,
+					).map(([colorName, color]) => {
 						const colorValues = color as Record<string, any>;
-						const colorLevelKeys = Object.keys(colorValues).filter(
-							(key) => key !== '$neutral' && key !== '$root',
-						);
-						const colorRootKey = getRootKey(colorLevelKeys);
-
-						const neutralValues = colorValues.$neutral as Record<string, any>;
-						const neutralKeys = Object.keys(neutralValues).filter(
-							(key) => key !== '$root',
-						);
-						const neutralRootKey = getRootKey(neutralKeys);
 
 						return [
 							colorName,
 							{
-								...colorValues,
-								$root: colorValues[colorRootKey],
-								$neutral: {
-									...neutralValues,
-									$root: neutralValues[neutralRootKey],
-								},
+								...withRootValue(colorValues, 'mid', ['$neutral', '$root']),
+								$neutral: withRootValue(colorValues.$neutral, 'mid'),
 							},
 						];
-					}),
+					},
+					),
 				),
 			},
 		]),
@@ -164,27 +183,10 @@ export function createPrimitives<
 		if (!color || typeof color !== 'object') {
 			continue;
 		}
-
-		const colorLevelKeys = Object.keys(color).filter(
-			(key) => key !== '$neutral' && key !== '$root',
-		);
-		const rootColorKey =
-			('mid' in color ? 'mid' : colorLevelKeys[Math.floor(colorLevelKeys.length / 2)]) ??
-			colorLevelKeys[0];
-		if (rootColorKey) {
-			color.$root = color[rootColorKey];
-		}
-
+		assignRootTokenAlias(color, 'mid', ['$neutral', '$root']);
 		const neutral = color.$neutral;
 		if (neutral && typeof neutral === 'object') {
-			const neutralKeys = Object.keys(neutral).filter((key) => key !== '$root');
-			const rootNeutralKey =
-				('mid' in neutral ?
-					'mid'
-				:	neutralKeys[Math.floor(neutralKeys.length / 2)]) ?? neutralKeys[0];
-			if (rootNeutralKey) {
-				neutral.$root = neutral[rootNeutralKey];
-			}
+			assignRootTokenAlias(neutral, 'mid');
 		}
 	}
 
@@ -212,8 +214,7 @@ export function createPrimitives<
 			}),
 		}),
 	);
-	($typographyProps as any).$root =
-		($typographyProps as any)[typographyWithRoot.defaultLevel];
+	assignRootTokenAlias($typographyProps as any, typographyWithRoot.defaultLevel);
 
 	const $spacingProps = convertStructure(
 		spacingWithRoot.levels,
@@ -226,7 +227,7 @@ export function createPrimitives<
 				tag: 's',
 			}),
 	);
-	($spacingProps as any).$root = ($spacingProps as any)[spacingWithRoot.defaultLevel];
+	assignRootTokenAlias($spacingProps as any, spacingWithRoot.defaultLevel);
 
 	const $shadowProps = convertStructure(
 		shadowsWithRoot.levels,
@@ -239,7 +240,7 @@ export function createPrimitives<
 				tag: '🌫️',
 			}),
 	);
-	($shadowProps as any).$root = ($shadowProps as any)[shadowsWithRoot.defaultLevel];
+	assignRootTokenAlias($shadowProps as any, shadowsWithRoot.defaultLevel);
 
 	const globals: GlobalConfig = {
 		...defaultGlobals,

@@ -137,6 +137,8 @@ export function createArborModeValues<
 	// FIXME: user-facing typing for this is good, but internally something is
 	// broken...
 	const mainColor: any = config.primitives.$tokens.colors[config.mainColor];
+	const spacingRoot = (config.primitives.$tokens.spacing as any).$root;
+	const shadowRoot = (config.primitives.$tokens.shadows as any).$root;
 
 	return {
 		colors: {
@@ -184,7 +186,7 @@ export function createArborModeValues<
 		},
 		density: 1,
 		spacing: {
-			$root: derive`calc(${(config.primitives.$tokens.spacing as any).$root} / ${arborModeSchema.$tokens.density})`,
+			$root: derive`calc(${spacingRoot} / ${arborModeSchema.$tokens.density})`,
 			xs: derive`calc(${config.primitives.$tokens.spacing.xs} / ${arborModeSchema.$tokens.density})`,
 			sm: derive`calc(${config.primitives.$tokens.spacing.sm} / ${arborModeSchema.$tokens.density})`,
 			md: derive`calc(${config.primitives.$tokens.spacing.md} / ${arborModeSchema.$tokens.density})`,
@@ -212,7 +214,7 @@ export function createArborModeValues<
 			},
 		},
 		borderRadius: {
-			$root: derive`calc(${$globalProps.roundness} * ${(config.primitives.$tokens.spacing as any).$root} / ${arborModeSchema.$tokens.density})`,
+			$root: derive`calc(${$globalProps.roundness} * ${spacingRoot} / ${arborModeSchema.$tokens.density})`,
 			sm: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.md} / ${arborModeSchema.$tokens.density})`,
 			md: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.lg} / ${arborModeSchema.$tokens.density})`,
 			lg: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.xl} / ${arborModeSchema.$tokens.density})`,
@@ -224,7 +226,7 @@ export function createArborModeValues<
 			lg: '2',
 		},
 		shadow: {
-			$root: derive`${(config.primitives.$tokens.shadows as any).$root.x} ${(config.primitives.$tokens.shadows as any).$root.y} ${(config.primitives.$tokens.shadows as any).$root.blur} ${(config.primitives.$tokens.shadows as any).$root.spread} ${(config.primitives.$tokens.shadows as any).$root.color}`,
+			$root: derive`${shadowRoot.x} ${shadowRoot.y} ${shadowRoot.blur} ${shadowRoot.spread} ${shadowRoot.color}`,
 			color: derive`${arborModeSchema.$tokens.colors.neutral.heavier}`,
 			sm: createShadowIntentLevel(config.primitives, 'sm'),
 			md: createShadowIntentLevel(config.primitives, 'md'),
