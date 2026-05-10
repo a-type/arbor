@@ -190,6 +190,10 @@ See: [packages/colors/](packages/colors)
 2. Run `pnpm run demo` in `packages/classes` and check the generated CSS in demo app
 3. Demo app runs on http://localhost:5174
 
+## Process
+
+- When working from a promt file, once the work is complete, clean up the prompt file and any other notes or comments that aren't relevant to the final state of the project.
+
 ## Environment
 
 - **Node**: 22+
