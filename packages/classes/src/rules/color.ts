@@ -6,6 +6,16 @@ import { colorAlters, colorAltersMatch } from '../util/alters.js';
 import { parseColor } from '../util/color.js';
 import { themeOrLiteral } from '../util/themeOrLiteral.js';
 
+const laterals = {
+	fg: $systemProps.fg.applied.var,
+	bg: $systemProps.bg.applied.var,
+	fill: $systemProps.fill.applied.var,
+	stroke: $systemProps.stroke.applied.var,
+	accent: $systemProps.accent.applied.var,
+	ring: $systemProps.ring.applied.var,
+	shadow: $systemProps.dynamic.shadowColor.var,
+};
+
 function makeColorSystemRules({
 	target,
 	shorthands,
@@ -26,11 +36,18 @@ function makeColorSystemRules({
 				const split = color.split('/');
 				const baseColor = split[0];
 				const opacityPart = split[1];
-				const [value] = themeOrLiteral(baseColor, theme, {
+
+				let [value] = themeOrLiteral(baseColor, theme, {
 					startFrom: 'color',
 					trySuffixes: suffixes,
 				});
-				if (!value) return;
+				if (!value) {
+					if (baseColor in laterals) {
+						value = laterals[baseColor as keyof typeof laterals];
+					} else {
+						return;
+					}
+				}
 				const restoredOpacity = opacityPart ? `${value}/${opacityPart}` : value;
 				const parsed = parseColor(restoredOpacity);
 				if (!parsed) return;

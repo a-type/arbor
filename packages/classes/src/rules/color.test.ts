@@ -98,6 +98,15 @@ describe('bg color', () => {
 		});
 	});
 
+	it('copies other color targets', async () => {
+		await testRules(colorRules, 'bg-fg', {
+			'background-color': $systemProps.bg.applied.var,
+			[$systemProps.bg.applied.name]: $systemProps.fg.applied.var,
+			[$systemProps.bg.opacity.name]: '1',
+			[$systemProps.bg.contrast.name]: $systemProps.fg.applied.var,
+		});
+	});
+
 	it('handles nested mode tokens without suffixes', async () => {
 		await testRules(colorRules, 'bg-surface-primary', {
 			'background-color': $systemProps.bg.applied.var,
