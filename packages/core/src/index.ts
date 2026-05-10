@@ -1,4 +1,5 @@
 export {
+	$globalProps,
 	$systemProps,
 	createGlobals,
 	defaultGlobals,

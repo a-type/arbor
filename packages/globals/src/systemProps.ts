@@ -1,4 +1,5 @@
 import { createToken } from '@arbor-css/tokens';
+import { $globalProps } from './globalProps.js';
 
 export const $labelProps = {
 	mode: createToken('ℹ️-mode', { type: 'string' }),
@@ -46,6 +47,9 @@ export const $systemProps = {
 	dynamic: $dynamicProps,
 	// scheme-related properties
 	scheme: $schemeProps,
+	// user-configured global properties which influence many
+	// things.
+	globals: $globalProps,
 
 	// System color tokens are well-known properties you can
 	// assign colors to which are used by util classes for
