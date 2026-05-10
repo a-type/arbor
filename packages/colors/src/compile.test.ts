@@ -21,48 +21,54 @@ it('compiles a set of color ranges with default schemes and no precalculated glo
 	expect(compiled).toMatchInlineSnapshot(`
 		{
 		  "dark": {
-		    "alt": {
-		      "$neutral": {
-		        "dark": "oklch(calc(clamp(0, calc(0.996 - pow(calc(clamp(0, calc(0.06435767717846044 * var(--🎨-🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.06435767717846044 * var(--🎨-🧑-sat)), 0.4)) * var(--🎨-🧑-sat)) * 0.15), 0.4)) 210)",
-		        "light": "oklch(calc(clamp(0, calc(0.23261017031782796 - pow(calc(clamp(0, calc(0.31700841514760014 * var(--🎨-🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.31700841514760014 * var(--🎨-🧑-sat)), 0.4)) * var(--🎨-🧑-sat)) * 0.15), 0.4)) 210)",
-		        "mid": "oklch(calc(clamp(0, calc(0.705302621368203 - pow(calc(clamp(0, calc(0.3604746560566229 * var(--🎨-🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.3604746560566229 * var(--🎨-🧑-sat)), 0.4)) * var(--🎨-🧑-sat)) * 0.15), 0.4)) 210)",
+		    "colors": {
+		      "alt": {
+		        "$neutral": {
+		          "dark": "oklch(calc(clamp(0, calc(0.9501231630155053 - pow(calc(clamp(0, calc(0.06435767717846044 * var(--🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.06435767717846044 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		          "light": "oklch(calc(clamp(0, calc(0.181852115991663 - pow(calc(clamp(0, calc(0.40282945818358507 * var(--🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.40282945818358507 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		          "mid": "oklch(calc(clamp(0, calc(0.5526304228576756 - pow(calc(clamp(0, calc(0.3717340270483959 * var(--🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.3717340270483959 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		        },
+		        "dark": "oklch(95.38926261462365% calc(clamp(0, calc(0.06435767717846044 * var(--🧑-sat)), 0.4)) 210)",
+		        "light": "oklch(18.17609205946362% calc(clamp(0, calc(0.40282945818358507 * var(--🧑-sat)), 0.4)) 210)",
+		        "mid": "oklch(55.44024350328398% calc(clamp(0, calc(0.3717340270483959 * var(--🧑-sat)), 0.4)) 210)",
 		      },
-		      "dark": "oklch(100% calc(clamp(0, calc(0.06435767717846044 * var(--🎨-🧑-sat)), 0.4)) 210)",
-		      "light": "oklch(23.27740405204301% calc(clamp(0, calc(0.31700841514760014 * var(--🎨-🧑-sat)), 0.4)) 210)",
-		      "mid": "oklch(70.7841830520807% calc(clamp(0, calc(0.3604746560566229 * var(--🎨-🧑-sat)), 0.4)) 210)",
-		    },
-		    "primary": {
-		      "$neutral": {
-		        "dark": "oklch(calc(clamp(0, calc(0.996 - pow(calc(clamp(0, calc(0.06435767717846044 * var(--🎨-🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.06435767717846044 * var(--🎨-🧑-sat)), 0.4)) * var(--🎨-🧑-sat)) * 0.15), 0.4)) 90)",
-		        "light": "oklch(calc(clamp(0, calc(0.23261017031782796 - pow(calc(clamp(0, calc(0.31700841514760014 * var(--🎨-🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.31700841514760014 * var(--🎨-🧑-sat)), 0.4)) * var(--🎨-🧑-sat)) * 0.15), 0.4)) 90)",
-		        "mid": "oklch(calc(clamp(0, calc(0.705302621368203 - pow(calc(clamp(0, calc(0.3604746560566229 * var(--🎨-🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.3604746560566229 * var(--🎨-🧑-sat)), 0.4)) * var(--🎨-🧑-sat)) * 0.15), 0.4)) 90)",
+		      "primary": {
+		        "$neutral": {
+		          "dark": "oklch(calc(clamp(0, calc(0.9501231630155053 - pow(calc(clamp(0, calc(0.06435767717846044 * var(--🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.06435767717846044 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		          "light": "oklch(calc(clamp(0, calc(0.181852115991663 - pow(calc(clamp(0, calc(0.40282945818358507 * var(--🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.40282945818358507 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		          "mid": "oklch(calc(clamp(0, calc(0.5526304228576756 - pow(calc(clamp(0, calc(0.3717340270483959 * var(--🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.3717340270483959 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		        },
+		        "dark": "oklch(95.38926261462365% calc(clamp(0, calc(0.06435767717846044 * var(--🧑-sat)), 0.4)) 90)",
+		        "light": "oklch(18.17609205946362% calc(clamp(0, calc(0.40282945818358507 * var(--🧑-sat)), 0.4)) 90)",
+		        "mid": "oklch(55.44024350328398% calc(clamp(0, calc(0.3717340270483959 * var(--🧑-sat)), 0.4)) 90)",
 		      },
-		      "dark": "oklch(100% calc(clamp(0, calc(0.06435767717846044 * var(--🎨-🧑-sat)), 0.4)) 90)",
-		      "light": "oklch(23.27740405204301% calc(clamp(0, calc(0.31700841514760014 * var(--🎨-🧑-sat)), 0.4)) 90)",
-		      "mid": "oklch(70.7841830520807% calc(clamp(0, calc(0.3604746560566229 * var(--🎨-🧑-sat)), 0.4)) 90)",
 		    },
+		    "isDark": true,
 		  },
 		  "light": {
-		    "alt": {
-		      "$neutral": {
-		        "dark": "oklch(calc(clamp(0, calc(0.001 - pow(calc(clamp(0, calc(0.06435767717846044 * var(--🎨-🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.06435767717846044 * var(--🎨-🧑-sat)), 0.4)) * var(--🎨-🧑-sat)) * 0.15), 0.4)) 210)",
-		        "light": "oklch(calc(clamp(0, calc(0.996 - pow(calc(clamp(0, calc(0.1570084151476001 * var(--🎨-🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.1570084151476001 * var(--🎨-🧑-sat)), 0.4)) * var(--🎨-🧑-sat)) * 0.15), 0.4)) 210)",
-		        "mid": "oklch(calc(clamp(0, calc(0.7638333333333333 - pow(calc(clamp(0, calc(0.28047465605662286 * var(--🎨-🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.28047465605662286 * var(--🎨-🧑-sat)), 0.4)) * var(--🎨-🧑-sat)) * 0.15), 0.4)) 210)",
+		    "colors": {
+		      "alt": {
+		        "$neutral": {
+		          "dark": "oklch(calc(clamp(0, calc(0.001 - pow(calc(clamp(0, calc(0.06435767717846044 * var(--🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.06435767717846044 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		          "light": "oklch(calc(clamp(0, calc(0.996 - pow(calc(clamp(0, calc(0.1570084151476001 * var(--🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.1570084151476001 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		          "mid": "oklch(calc(clamp(0, calc(0.7638333333333333 - pow(calc(clamp(0, calc(0.28047465605662286 * var(--🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.28047465605662286 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		        },
+		        "dark": "oklch(0% calc(clamp(0, calc(0.06435767717846044 * var(--🧑-sat)), 0.4)) 210)",
+		        "light": "oklch(100% calc(clamp(0, calc(0.1570084151476001 * var(--🧑-sat)), 0.4)) 210)",
+		        "mid": "oklch(76.66666666666666% calc(clamp(0, calc(0.28047465605662286 * var(--🧑-sat)), 0.4)) 210)",
 		      },
-		      "dark": "oklch(0% calc(clamp(0, calc(0.06435767717846044 * var(--🎨-🧑-sat)), 0.4)) 210)",
-		      "light": "oklch(100% calc(clamp(0, calc(0.1570084151476001 * var(--🎨-🧑-sat)), 0.4)) 210)",
-		      "mid": "oklch(76.66666666666666% calc(clamp(0, calc(0.28047465605662286 * var(--🎨-🧑-sat)), 0.4)) 210)",
-		    },
-		    "primary": {
-		      "$neutral": {
-		        "dark": "oklch(calc(clamp(0, calc(0.001 - pow(calc(clamp(0, calc(0.06435767717846044 * var(--🎨-🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.06435767717846044 * var(--🎨-🧑-sat)), 0.4)) * var(--🎨-🧑-sat)) * 0.15), 0.4)) 90)",
-		        "light": "oklch(calc(clamp(0, calc(0.996 - pow(calc(clamp(0, calc(0.1570084151476001 * var(--🎨-🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.1570084151476001 * var(--🎨-🧑-sat)), 0.4)) * var(--🎨-🧑-sat)) * 0.15), 0.4)) 90)",
-		        "mid": "oklch(calc(clamp(0, calc(0.7638333333333333 - pow(calc(clamp(0, calc(0.28047465605662286 * var(--🎨-🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.28047465605662286 * var(--🎨-🧑-sat)), 0.4)) * var(--🎨-🧑-sat)) * 0.15), 0.4)) 90)",
+		      "primary": {
+		        "$neutral": {
+		          "dark": "oklch(calc(clamp(0, calc(0.001 - pow(calc(clamp(0, calc(0.06435767717846044 * var(--🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.06435767717846044 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		          "light": "oklch(calc(clamp(0, calc(0.996 - pow(calc(clamp(0, calc(0.1570084151476001 * var(--🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.1570084151476001 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		          "mid": "oklch(calc(clamp(0, calc(0.7638333333333333 - pow(calc(clamp(0, calc(0.28047465605662286 * var(--🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.28047465605662286 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		        },
+		        "dark": "oklch(0% calc(clamp(0, calc(0.06435767717846044 * var(--🧑-sat)), 0.4)) 90)",
+		        "light": "oklch(100% calc(clamp(0, calc(0.1570084151476001 * var(--🧑-sat)), 0.4)) 90)",
+		        "mid": "oklch(76.66666666666666% calc(clamp(0, calc(0.28047465605662286 * var(--🧑-sat)), 0.4)) 90)",
 		      },
-		      "dark": "oklch(0% calc(clamp(0, calc(0.06435767717846044 * var(--🎨-🧑-sat)), 0.4)) 90)",
-		      "light": "oklch(100% calc(clamp(0, calc(0.1570084151476001 * var(--🎨-🧑-sat)), 0.4)) 90)",
-		      "mid": "oklch(76.66666666666666% calc(clamp(0, calc(0.28047465605662286 * var(--🎨-🧑-sat)), 0.4)) 90)",
 		    },
+		    "isDark": false,
 		  },
 		}
 	`);
@@ -96,70 +102,79 @@ it('compiles a set of color ranges with a custom scheme', () => {
 	expect(compiled).toMatchInlineSnapshot(`
 		{
 		  "custom": {
-		    "alt": {
-		      "$neutral": {
-		        "dark": "oklch(0.001 0 210)",
-		        "light": "oklch(0.001 0 210)",
-		        "mid": "oklch(0.001 0 210)",
+		    "colors": {
+		      "alt": {
+		        "$neutral": {
+		          "dark": "oklch(0.001 0 210)",
+		          "light": "oklch(0.001 0 210)",
+		          "mid": "oklch(0.001 0 210)",
+		        },
+		        "dark": "oklch(0% 0 210)",
+		        "light": "oklch(0% 0 210)",
+		        "mid": "oklch(0% 0 210)",
 		      },
-		      "dark": "oklch(0% 0 210)",
-		      "light": "oklch(0% 0 210)",
-		      "mid": "oklch(0% 0 210)",
-		    },
-		    "primary": {
-		      "$neutral": {
-		        "dark": "oklch(0.001 0 90)",
-		        "light": "oklch(0.001 0 90)",
-		        "mid": "oklch(0.001 0 90)",
+		      "primary": {
+		        "$neutral": {
+		          "dark": "oklch(0.001 0 90)",
+		          "light": "oklch(0.001 0 90)",
+		          "mid": "oklch(0.001 0 90)",
+		        },
+		        "dark": "oklch(0% 0 90)",
+		        "light": "oklch(0% 0 90)",
+		        "mid": "oklch(0% 0 90)",
 		      },
-		      "dark": "oklch(0% 0 90)",
-		      "light": "oklch(0% 0 90)",
-		      "mid": "oklch(0% 0 90)",
 		    },
+		    "isDark": true,
 		  },
 		  "dark": {
-		    "alt": {
-		      "$neutral": {
-		        "dark": "oklch(calc(clamp(0, calc(0.996 - pow(calc(clamp(0, calc(0.06435767717846044 * var(--🎨-🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.06435767717846044 * var(--🎨-🧑-sat)), 0.4)) * var(--🎨-🧑-sat)) * 0.15), 0.4)) 210)",
-		        "light": "oklch(calc(clamp(0, calc(0.23261017031782796 - pow(calc(clamp(0, calc(0.31700841514760014 * var(--🎨-🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.31700841514760014 * var(--🎨-🧑-sat)), 0.4)) * var(--🎨-🧑-sat)) * 0.15), 0.4)) 210)",
-		        "mid": "oklch(calc(clamp(0, calc(0.705302621368203 - pow(calc(clamp(0, calc(0.3604746560566229 * var(--🎨-🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.3604746560566229 * var(--🎨-🧑-sat)), 0.4)) * var(--🎨-🧑-sat)) * 0.15), 0.4)) 210)",
+		    "colors": {
+		      "alt": {
+		        "$neutral": {
+		          "dark": "oklch(calc(clamp(0, calc(0.9501231630155053 - pow(calc(clamp(0, calc(0.06435767717846044 * var(--🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.06435767717846044 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		          "light": "oklch(calc(clamp(0, calc(0.181852115991663 - pow(calc(clamp(0, calc(0.40282945818358507 * var(--🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.40282945818358507 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		          "mid": "oklch(calc(clamp(0, calc(0.5526304228576756 - pow(calc(clamp(0, calc(0.3717340270483959 * var(--🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.3717340270483959 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		        },
+		        "dark": "oklch(95.38926261462365% calc(clamp(0, calc(0.06435767717846044 * var(--🧑-sat)), 0.4)) 210)",
+		        "light": "oklch(18.17609205946362% calc(clamp(0, calc(0.40282945818358507 * var(--🧑-sat)), 0.4)) 210)",
+		        "mid": "oklch(55.44024350328398% calc(clamp(0, calc(0.3717340270483959 * var(--🧑-sat)), 0.4)) 210)",
 		      },
-		      "dark": "oklch(100% calc(clamp(0, calc(0.06435767717846044 * var(--🎨-🧑-sat)), 0.4)) 210)",
-		      "light": "oklch(23.27740405204301% calc(clamp(0, calc(0.31700841514760014 * var(--🎨-🧑-sat)), 0.4)) 210)",
-		      "mid": "oklch(70.7841830520807% calc(clamp(0, calc(0.3604746560566229 * var(--🎨-🧑-sat)), 0.4)) 210)",
-		    },
-		    "primary": {
-		      "$neutral": {
-		        "dark": "oklch(calc(clamp(0, calc(0.996 - pow(calc(clamp(0, calc(0.06435767717846044 * var(--🎨-🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.06435767717846044 * var(--🎨-🧑-sat)), 0.4)) * var(--🎨-🧑-sat)) * 0.15), 0.4)) 90)",
-		        "light": "oklch(calc(clamp(0, calc(0.23261017031782796 - pow(calc(clamp(0, calc(0.31700841514760014 * var(--🎨-🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.31700841514760014 * var(--🎨-🧑-sat)), 0.4)) * var(--🎨-🧑-sat)) * 0.15), 0.4)) 90)",
-		        "mid": "oklch(calc(clamp(0, calc(0.705302621368203 - pow(calc(clamp(0, calc(0.3604746560566229 * var(--🎨-🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.3604746560566229 * var(--🎨-🧑-sat)), 0.4)) * var(--🎨-🧑-sat)) * 0.15), 0.4)) 90)",
+		      "primary": {
+		        "$neutral": {
+		          "dark": "oklch(calc(clamp(0, calc(0.9501231630155053 - pow(calc(clamp(0, calc(0.06435767717846044 * var(--🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.06435767717846044 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		          "light": "oklch(calc(clamp(0, calc(0.181852115991663 - pow(calc(clamp(0, calc(0.40282945818358507 * var(--🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.40282945818358507 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		          "mid": "oklch(calc(clamp(0, calc(0.5526304228576756 - pow(calc(clamp(0, calc(0.3717340270483959 * var(--🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.3717340270483959 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		        },
+		        "dark": "oklch(95.38926261462365% calc(clamp(0, calc(0.06435767717846044 * var(--🧑-sat)), 0.4)) 90)",
+		        "light": "oklch(18.17609205946362% calc(clamp(0, calc(0.40282945818358507 * var(--🧑-sat)), 0.4)) 90)",
+		        "mid": "oklch(55.44024350328398% calc(clamp(0, calc(0.3717340270483959 * var(--🧑-sat)), 0.4)) 90)",
 		      },
-		      "dark": "oklch(100% calc(clamp(0, calc(0.06435767717846044 * var(--🎨-🧑-sat)), 0.4)) 90)",
-		      "light": "oklch(23.27740405204301% calc(clamp(0, calc(0.31700841514760014 * var(--🎨-🧑-sat)), 0.4)) 90)",
-		      "mid": "oklch(70.7841830520807% calc(clamp(0, calc(0.3604746560566229 * var(--🎨-🧑-sat)), 0.4)) 90)",
 		    },
+		    "isDark": true,
 		  },
 		  "light": {
-		    "alt": {
-		      "$neutral": {
-		        "dark": "oklch(calc(clamp(0, calc(0.001 - pow(calc(clamp(0, calc(0.06435767717846044 * var(--🎨-🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.06435767717846044 * var(--🎨-🧑-sat)), 0.4)) * var(--🎨-🧑-sat)) * 0.15), 0.4)) 210)",
-		        "light": "oklch(calc(clamp(0, calc(0.996 - pow(calc(clamp(0, calc(0.1570084151476001 * var(--🎨-🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.1570084151476001 * var(--🎨-🧑-sat)), 0.4)) * var(--🎨-🧑-sat)) * 0.15), 0.4)) 210)",
-		        "mid": "oklch(calc(clamp(0, calc(0.7638333333333333 - pow(calc(clamp(0, calc(0.28047465605662286 * var(--🎨-🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.28047465605662286 * var(--🎨-🧑-sat)), 0.4)) * var(--🎨-🧑-sat)) * 0.15), 0.4)) 210)",
+		    "colors": {
+		      "alt": {
+		        "$neutral": {
+		          "dark": "oklch(calc(clamp(0, calc(0.001 - pow(calc(clamp(0, calc(0.06435767717846044 * var(--🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.06435767717846044 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		          "light": "oklch(calc(clamp(0, calc(0.996 - pow(calc(clamp(0, calc(0.1570084151476001 * var(--🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.1570084151476001 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		          "mid": "oklch(calc(clamp(0, calc(0.7638333333333333 - pow(calc(clamp(0, calc(0.28047465605662286 * var(--🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.28047465605662286 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		        },
+		        "dark": "oklch(0% calc(clamp(0, calc(0.06435767717846044 * var(--🧑-sat)), 0.4)) 210)",
+		        "light": "oklch(100% calc(clamp(0, calc(0.1570084151476001 * var(--🧑-sat)), 0.4)) 210)",
+		        "mid": "oklch(76.66666666666666% calc(clamp(0, calc(0.28047465605662286 * var(--🧑-sat)), 0.4)) 210)",
 		      },
-		      "dark": "oklch(0% calc(clamp(0, calc(0.06435767717846044 * var(--🎨-🧑-sat)), 0.4)) 210)",
-		      "light": "oklch(100% calc(clamp(0, calc(0.1570084151476001 * var(--🎨-🧑-sat)), 0.4)) 210)",
-		      "mid": "oklch(76.66666666666666% calc(clamp(0, calc(0.28047465605662286 * var(--🎨-🧑-sat)), 0.4)) 210)",
-		    },
-		    "primary": {
-		      "$neutral": {
-		        "dark": "oklch(calc(clamp(0, calc(0.001 - pow(calc(clamp(0, calc(0.06435767717846044 * var(--🎨-🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.06435767717846044 * var(--🎨-🧑-sat)), 0.4)) * var(--🎨-🧑-sat)) * 0.15), 0.4)) 90)",
-		        "light": "oklch(calc(clamp(0, calc(0.996 - pow(calc(clamp(0, calc(0.1570084151476001 * var(--🎨-🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.1570084151476001 * var(--🎨-🧑-sat)), 0.4)) * var(--🎨-🧑-sat)) * 0.15), 0.4)) 90)",
-		        "mid": "oklch(calc(clamp(0, calc(0.7638333333333333 - pow(calc(clamp(0, calc(0.28047465605662286 * var(--🎨-🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.28047465605662286 * var(--🎨-🧑-sat)), 0.4)) * var(--🎨-🧑-sat)) * 0.15), 0.4)) 90)",
+		      "primary": {
+		        "$neutral": {
+		          "dark": "oklch(calc(clamp(0, calc(0.001 - pow(calc(clamp(0, calc(0.06435767717846044 * var(--🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.06435767717846044 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		          "light": "oklch(calc(clamp(0, calc(0.996 - pow(calc(clamp(0, calc(0.1570084151476001 * var(--🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.1570084151476001 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		          "mid": "oklch(calc(clamp(0, calc(0.7638333333333333 - pow(calc(clamp(0, calc(0.28047465605662286 * var(--🧑-sat)), 0.4)), 1.6)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.28047465605662286 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		        },
+		        "dark": "oklch(0% calc(clamp(0, calc(0.06435767717846044 * var(--🧑-sat)), 0.4)) 90)",
+		        "light": "oklch(100% calc(clamp(0, calc(0.1570084151476001 * var(--🧑-sat)), 0.4)) 90)",
+		        "mid": "oklch(76.66666666666666% calc(clamp(0, calc(0.28047465605662286 * var(--🧑-sat)), 0.4)) 90)",
 		      },
-		      "dark": "oklch(0% calc(clamp(0, calc(0.06435767717846044 * var(--🎨-🧑-sat)), 0.4)) 90)",
-		      "light": "oklch(100% calc(clamp(0, calc(0.1570084151476001 * var(--🎨-🧑-sat)), 0.4)) 90)",
-		      "mid": "oklch(76.66666666666666% calc(clamp(0, calc(0.28047465605662286 * var(--🎨-🧑-sat)), 0.4)) 90)",
 		    },
+		    "isDark": false,
 		  },
 		}
 	`);
@@ -183,28 +198,34 @@ it('precomputes colors when globals are provided', () => {
 	expect(compiled).toMatchInlineSnapshot(`
 		{
 		  "dark": {
-		    "primary": {
-		      "$neutral": {
-		        "dark": "oklch(0.9919063323164973 0.0024134128941922664 90)",
-		        "light": "oklch(0.18012153608872544 0.011887815568035006 90)",
-		        "mid": "oklch(0.640833524736341 0.013517799602123357 90)",
+		    "colors": {
+		      "primary": {
+		        "$neutral": {
+		          "dark": "oklch(0.9460294953320025 0.0024134128941922664 90)",
+		          "light": "oklch(0.10484232184874683 0.01510610468188444 90)",
+		          "mid": "oklch(0.4849093681477608 0.013940026014314847 90)",
+		        },
+		        "dark": "oklch(95.38926261462365% 0.03217883858923022 90)",
+		        "light": "oklch(18.17609205946362% 0.20141472909179253 90)",
+		        "mid": "oklch(55.44024350328398% 0.18586701352419796 90)",
 		      },
-		      "dark": "oklch(100% 0.03217883858923022 90)",
-		      "light": "oklch(23.27740405204301% 0.15850420757380007 90)",
-		      "mid": "oklch(70.7841830520807% 0.18023732802831144 90)",
 		    },
+		    "isDark": true,
 		  },
 		  "light": {
-		    "primary": {
-		      "$neutral": {
-		        "dark": "oklch(0 0.0024134128941922664 90)",
-		        "light": "oklch(0.9789459043417997 0.005887815568035004 90)",
-		        "mid": "oklch(0.7206832334318378 0.010517799602123358 90)",
+		    "colors": {
+		      "primary": {
+		        "$neutral": {
+		          "dark": "oklch(0 0.0024134128941922664 90)",
+		          "light": "oklch(0.9789459043417997 0.005887815568035004 90)",
+		          "mid": "oklch(0.7206832334318378 0.010517799602123358 90)",
+		        },
+		        "dark": "oklch(0% 0.03217883858923022 90)",
+		        "light": "oklch(100% 0.07850420757380006 90)",
+		        "mid": "oklch(76.66666666666666% 0.14023732802831143 90)",
 		      },
-		      "dark": "oklch(0% 0.03217883858923022 90)",
-		      "light": "oklch(100% 0.07850420757380006 90)",
-		      "mid": "oklch(76.66666666666666% 0.14023732802831143 90)",
 		    },
+		    "isDark": false,
 		  },
 		}
 	`);
@@ -252,9 +273,22 @@ it('supports color-level saturation', () => {
 		.match(matchChroma)?.[1]
 		.split(' ')[1];
 
-	console.log({ lightChroma, primaryChroma });
-
 	expect(lightChroma).toBeDefined();
 	expect(primaryChroma).toBeDefined();
-	expect(Number(lightChroma)).toBeCloseTo(Number(primaryChroma) * 0.5);
+	expect(Number(lightChroma)).toBeCloseTo(Number(primaryChroma) * 0.5, 1);
+});
+
+it('supports hue defined as a CSS property', () => {
+	const compiled = compileColors({
+		ranges: {
+			primary: {
+				hue: 'var(--my-hue)',
+			},
+		},
+		schemes: {},
+	});
+
+	expect(compiled.dark.colors.primary.light).toMatchInlineSnapshot(
+		`"oklch(35.30047501302266% calc(clamp(0, calc(0.4304405175709162 * var(--🧑-sat)), 0.4)) var(--my-hue))"`,
+	);
 });

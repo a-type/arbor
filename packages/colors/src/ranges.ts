@@ -21,11 +21,11 @@ export type DefaultRangeName = (typeof defaultRangeNames)[number];
 export interface ColorRangeConfig<
 	RangeNames extends string = DefaultRangeName,
 > {
-	/** 0-360ish, OKLCH "H" hue */
-	hue: number;
+	/** 0-360ish, OKLCH "H" hue. Can also be a var() reference! */
+	hue: number | string;
 	rangeNames?: readonly RangeNames[];
-	/** 0-1, a local multiplier for chroma, stacks on global and computed value */
-	saturation?: number;
+	/** 0-1, a local multiplier for chroma, stacks on global and computed value. Can also be a var() reference! */
+	saturation?: number | string;
 }
 
 export interface ColorRangeCalculations {
