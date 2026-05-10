@@ -137,8 +137,8 @@ export function createArborModeValues<
 	// FIXME: user-facing typing for this is good, but internally something is
 	// broken...
 	const mainColor: any = config.primitives.$tokens.colors[config.mainColor];
-	const spacingRoot = (config.primitives.$tokens.spacing as any).$root;
-	const shadowRoot = (config.primitives.$tokens.shadows as any).$root;
+	const spacingRoot = config.primitives.$tokens.spacing.$root;
+	const shadowRoot = config.primitives.$tokens.shadows.$root;
 
 	return {
 		colors: {

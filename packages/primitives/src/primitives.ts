@@ -84,91 +84,48 @@ export function createPrimitives<
 	TOtherTokens
 > {
 	const { colors, defaultScheme, globals: userGlobals } = config;
-	const getRootKey = (keys: string[], preferredKey = 'mid') =>
-		(() => {
-			if (!keys.length) {
-				throw new Error('Cannot derive $root from an empty token/value level');
-			}
-			return (
-				(keys.includes(preferredKey) ?
-					preferredKey
-				:	keys[Math.floor(keys.length / 2)]) ?? keys[0]
-			);
-		})();
-	const withRootValue = (
-		values: Record<string, any>,
-		preferredKey = 'mid',
-		excludeKeys: string[] = ['$root'],
-	) => {
-		const keys = Object.keys(values).filter((key) => !excludeKeys.includes(key));
-		const rootKey = getRootKey(keys, preferredKey);
-		return {
-			...values,
-			$root: values[rootKey],
-		};
-	};
-	const assignRootTokenAlias = (
-		tokens: Record<string, any>,
-		preferredKey = 'mid',
-		excludeKeys: string[] = ['$root'],
-	) => {
-		const keys = Object.keys(tokens).filter((key) => !excludeKeys.includes(key));
-		const rootKey = getRootKey(keys, preferredKey);
-		tokens.$root = tokens[rootKey];
-	};
-	const colorsWithRoot = Object.fromEntries(
-		Object.entries(colors).map(([schemeName, scheme]) => [
-			schemeName,
-			{
-				...scheme,
-				colors: Object.fromEntries(
-					Object.entries(
-						(scheme as { colors: Record<string, Record<string, any>> }).colors,
-					).map(([colorName, color]) => {
-						const colorValues = color as Record<string, any>;
-
-						return [
-							colorName,
-							{
-								...withRootValue(colorValues, 'mid', ['$neutral', '$root']),
-								$neutral: withRootValue(colorValues.$neutral, 'mid'),
-							},
-						];
-					},
-					),
-				),
-			},
-		]),
-	) as unknown as TCompiledColors;
-	const typographyWithRoot = {
-		...config.typography,
-		levels: {
-			...config.typography.levels,
-			$root: config.typography.levels[config.typography.defaultLevel],
-		},
-	} as TCompiledTypography;
-	const spacingWithRoot = {
-		...config.spacing,
-		levels: {
-			...config.spacing.levels,
-			$root: config.spacing.levels[config.spacing.defaultLevel],
-		},
-	} as TCompiledSpacing;
-	const shadowsWithRoot = {
-		...config.shadows,
-		levels: {
-			...config.shadows.levels,
-			$root: config.shadows.levels[config.shadows.defaultLevel],
-		},
-	} as TCompiledShadows;
-
-	const arbitraryScheme = Object.values(colorsWithRoot)[0];
+	const arbitraryScheme = Object.values(colors)[0];
 	if (!arbitraryScheme) {
 		throw new Error('At least one color scheme must be defined in primitives');
 	}
+	const withoutRoot = <T extends Record<string, any>>(value: T) => {
+		const output = { ...value };
+		delete output.$root;
+		return output;
+	};
+	const getKeyForRootValue = (
+		values: Record<string, string>,
+		rootValue: string,
+	) => {
+		const rootEntry = Object.entries(values).find(([key, value]) => {
+			return key !== '$root' && value === rootValue;
+		});
+		if (!rootEntry) {
+			throw new Error('Unable to resolve $root key for compiled color range');
+		}
+		return rootEntry[0];
+	};
+	const colorsWithoutRoot = Object.fromEntries(
+		Object.entries(arbitraryScheme.colors).map(([colorName, color]) => {
+			const colorValues = color as Record<string, any>;
+			const neutral = colorValues.$neutral as Record<string, any>;
+
+			return [
+				colorName,
+				{
+					...withoutRoot(colorValues),
+					$neutral: withoutRoot(neutral),
+				},
+			];
+		}),
+	);
+	const spacingLevelsWithoutRoot = withoutRoot(config.spacing.levels);
+	const typographyLevelsWithoutRoot = withoutRoot(config.typography.levels);
+	const shadowLevelsWithoutRoot = withoutRoot(config.shadows.levels);
+
 	// TODO: validate all scheme shapes are the same...
 	const $colorProps = convertStructure(
-		arbitraryScheme.colors,
+		colorsWithoutRoot,
 		(item) => typeof item === 'string',
 		(_, path) =>
 			createToken(path.join('-'), {
@@ -179,19 +136,19 @@ export function createPrimitives<
 			}),
 	);
 	for (const colorName in $colorProps) {
-		const color = ($colorProps as any)[colorName];
-		if (!color || typeof color !== 'object') {
-			continue;
-		}
-		assignRootTokenAlias(color, 'mid', ['$neutral', '$root']);
-		const neutral = color.$neutral;
-		if (neutral && typeof neutral === 'object') {
-			assignRootTokenAlias(neutral, 'mid');
-		}
+		const colorTokens = ($colorProps as Record<string, any>)[colorName];
+		const colorValues = (arbitraryScheme.colors as Record<string, any>)[colorName];
+		const colorRootKey = getKeyForRootValue(colorValues, colorValues.$root);
+		colorTokens.$root = colorTokens[colorRootKey];
+
+		const neutralTokens = colorTokens.$neutral as Record<string, any>;
+		const neutralValues = colorValues.$neutral as Record<string, any>;
+		const neutralRootKey = getKeyForRootValue(neutralValues, neutralValues.$root);
+		neutralTokens.$root = neutralTokens[neutralRootKey];
 	}
 
 	const $typographyProps = convertStructure(
-		typographyWithRoot.levels,
+		typographyLevelsWithoutRoot,
 		isTypographyLevel,
 		(_, path) => ({
 			size: createToken(`typography-${path.join('-')}-size`, {
@@ -214,10 +171,12 @@ export function createPrimitives<
 			}),
 		}),
 	);
-	assignRootTokenAlias($typographyProps as any, typographyWithRoot.defaultLevel);
+	($typographyProps as Record<string, any>).$root = (
+		$typographyProps as Record<string, any>
+	)[config.typography.defaultLevel];
 
 	const $spacingProps = convertStructure(
-		spacingWithRoot.levels,
+		spacingLevelsWithoutRoot,
 		(value): value is string | number =>
 			typeof value === 'string' || typeof value === 'number',
 		(_, path) =>
@@ -227,10 +186,12 @@ export function createPrimitives<
 				tag: 's',
 			}),
 	);
-	assignRootTokenAlias($spacingProps as any, spacingWithRoot.defaultLevel);
+	($spacingProps as Record<string, any>).$root = (
+		$spacingProps as Record<string, any>
+	)[config.spacing.defaultLevel];
 
 	const $shadowProps = convertStructure(
-		shadowsWithRoot.levels,
+		shadowLevelsWithoutRoot,
 		(value): value is string | number =>
 			typeof value === 'string' || typeof value === 'number',
 		(_, path) =>
@@ -240,7 +201,9 @@ export function createPrimitives<
 				tag: '🌫️',
 			}),
 	);
-	assignRootTokenAlias($shadowProps as any, shadowsWithRoot.defaultLevel);
+	($shadowProps as Record<string, any>).$root = (
+		$shadowProps as Record<string, any>
+	)[config.shadows.defaultLevel];
 
 	const globals: GlobalConfig = {
 		...defaultGlobals,
@@ -257,10 +220,10 @@ export function createPrimitives<
 		defaultScheme: defaultScheme ?? defaultDefaultScheme,
 		schemeTags,
 		globals,
-		colors: colorsWithRoot,
-		typography: typographyWithRoot,
-		spacing: spacingWithRoot,
-		shadows: shadowsWithRoot,
+		colors,
+		typography: config.typography,
+		spacing: config.spacing,
+		shadows: config.shadows,
 		$tokens: {
 			...(config.misc ?? ({} as TOtherTokens)),
 			colors: $colorProps,

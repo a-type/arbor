@@ -32,6 +32,8 @@ export interface CompiledShadows<
 	defaultLevel: TShadowLevel;
 	levels: {
 		[K in TShadowLevel]: CompiledShadowLevel;
+	} & {
+		$root: CompiledShadowLevel;
 	};
 }
 
@@ -109,10 +111,14 @@ export function compileShadows<
 		},
 		{} as Record<TShadowLevel, CompiledShadowLevel>,
 	) as CompiledShadows<TShadowLevel>['levels'];
+	const defaultLevel =
+		config.defaultLevel ?? (levelNames[baseIndex] as TShadowLevel);
 
 	return {
-		defaultLevel:
-			config.defaultLevel ?? (levelNames[baseIndex] as TShadowLevel),
-		levels,
+		defaultLevel,
+		levels: {
+			...levels,
+			$root: levels[defaultLevel],
+		},
 	};
 }

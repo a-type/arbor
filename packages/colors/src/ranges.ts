@@ -59,10 +59,14 @@ export type UncompiledColorRange<
 	TRangeConfig extends ColorRangeConfig<string>,
 > = {
 	[K in InferRangeNames<TRangeConfig>]: ColorRangeItem;
+} & {
+	$root: ColorRangeItem;
 };
 export type CompiledColorRange<TRangeConfig extends ColorRangeConfig<string>> =
 	{
 		[K in InferRangeNames<TRangeConfig>]: string;
+	} & {
+		$root: string;
 	};
 
 export function createColorRange<RangeNames extends string = DefaultRangeName>(
@@ -72,8 +76,11 @@ export function createColorRange<RangeNames extends string = DefaultRangeName>(
 	const { hue: sourceHue, rangeNames = defaultRangeNames } = config;
 	const { lightness, chroma } = calcs;
 	const size = rangeNames.length;
+	const rootName =
+		rangeNames.find((name) => name === 'mid') ??
+		rangeNames[Math.floor(size / 2)];
 
-	return rangeNames.reduce(
+	const range = rangeNames.reduce(
 		(acc, name, i) => {
 			const equation = oklchBuilder(($) => ({
 				l: $.clamp(
@@ -98,7 +105,11 @@ export function createColorRange<RangeNames extends string = DefaultRangeName>(
 			return acc;
 		},
 		{} as Record<RangeNames, ColorRangeItem>,
-	) as any;
+	) as UncompiledColorRange<ColorRangeConfig<RangeNames>>;
+
+	range.$root = (range as Record<string, ColorRangeItem>)[rootName as string];
+
+	return range as any;
 }
 
 function presetLightnessRange({

@@ -39,6 +39,8 @@ export interface CompiledSpacing<
 	defaultLevel: TSpacingLevel;
 	levels: {
 		[K in TSpacingLevel]: string | number;
+	} & {
+		$root: string | number;
 	};
 }
 
@@ -76,10 +78,14 @@ export function compileSpacing<
 		},
 		{} as Record<TSpacingLevel, string>,
 	) as CompiledSpacing<TSpacingLevel>['levels'];
+	const defaultLevel =
+		config.defaultLevel ?? (levelNames[baseIndex] as TSpacingLevel);
 
 	return {
-		defaultLevel:
-			config.defaultLevel ?? (levelNames[baseIndex] as TSpacingLevel),
-		levels,
+		defaultLevel,
+		levels: {
+			...levels,
+			$root: levels[defaultLevel],
+		},
 	};
 }
