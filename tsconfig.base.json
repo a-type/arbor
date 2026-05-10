@@ -12,7 +12,7 @@
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
 		"composite": true,
-		"customConditions": ["development"]
+		"customConditions": []
 	},
 	"include": [],
 	"references": []

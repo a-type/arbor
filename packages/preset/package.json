@@ -13,14 +13,12 @@
 	],
 	"exports": {
 		".": {
-			"development": "./src/index.ts",
 			"import": "./dist/index.js",
 			"node": "./dist/index.js",
 			"types": "./dist/index.d.ts",
 			"default": "./dist/index.js"
 		},
 		"./config": {
-			"development": "./src/config.ts",
 			"import": "./dist/config.js",
 			"node": "./dist/config.js",
 			"types": "./dist/config.d.ts",

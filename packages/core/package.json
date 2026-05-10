@@ -13,14 +13,12 @@
 	],
 	"exports": {
 		".": {
-			"development": "./src/index.ts",
 			"import": "./dist/index.js",
 			"node": "./dist/index.js",
 			"types": "./dist/index.d.ts",
 			"default": "./dist/index.js"
 		},
 		"./runtime": {
-			"development": "./src/runtime/index.ts",
 			"import": "./dist/runtime/index.js",
 			"node": "./dist/runtime/index.js",
 			"types": "./dist/runtime/index.d.ts",
