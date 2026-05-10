@@ -1,6 +1,9 @@
 import { presetArbor } from '@arbor-css/classes';
+import { globSync } from 'node:fs';
 import { defineConfig, presetIcons } from 'unocss';
 import { arbor } from './arbor.js';
+
+const deps = ['./arbor.ts', ...globSync('../packages/*/dist/**/*.{js,jsx}')];
 
 export default defineConfig({
 	presets: [
@@ -47,5 +50,5 @@ export default defineConfig({
 			`,
 		},
 	],
-	configDeps: ['./arbor.ts', '../packages/classes/src'],
+	configDeps: deps,
 });
