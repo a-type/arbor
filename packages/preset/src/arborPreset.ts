@@ -33,6 +33,7 @@ const shadowIntents = {
 export const arborModeSchema = createModeSchema({
 	colors: {
 		main: {
+			$root: 'color',
 			paper: 'color',
 			wash: 'color',
 			lighter: 'color',
@@ -43,6 +44,7 @@ export const arborModeSchema = createModeSchema({
 			ink: 'color',
 		},
 		neutral: {
+			$root: 'color',
 			paper: 'color',
 			wash: 'color',
 			lighter: 'color',
@@ -75,6 +77,7 @@ export const arborModeSchema = createModeSchema({
 	// density
 	density: 'other',
 	spacing: {
+		$root: 'spacing',
 		xs: 'spacing',
 		sm: 'spacing',
 		md: 'spacing',
@@ -84,16 +87,19 @@ export const arborModeSchema = createModeSchema({
 
 	// other cosmetics
 	borderWidth: {
+		$root: 'border-width',
 		sm: 'border-width',
 		md: 'border-width',
 		lg: 'border-width',
 	},
 	borderRadius: {
+		$root: 'border-radius',
 		sm: 'border-radius',
 		md: 'border-radius',
 		lg: 'border-radius',
 	},
 	shadow: {
+		$root: 'shadow',
 		color: 'color',
 		sm: shadowIntents,
 		md: shadowIntents,
@@ -178,6 +184,7 @@ export function createArborModeValues<
 		},
 		density: 1,
 		spacing: {
+			$root: derive`calc(${(config.primitives.$tokens.spacing as any).$root} / ${arborModeSchema.$tokens.density})`,
 			xs: derive`calc(${config.primitives.$tokens.spacing.xs} / ${arborModeSchema.$tokens.density})`,
 			sm: derive`calc(${config.primitives.$tokens.spacing.sm} / ${arborModeSchema.$tokens.density})`,
 			md: derive`calc(${config.primitives.$tokens.spacing.md} / ${arborModeSchema.$tokens.density})`,
@@ -205,16 +212,19 @@ export function createArborModeValues<
 			},
 		},
 		borderRadius: {
+			$root: derive`calc(${$globalProps.roundness} * ${(config.primitives.$tokens.spacing as any).$root} / ${arborModeSchema.$tokens.density})`,
 			sm: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.md} / ${arborModeSchema.$tokens.density})`,
 			md: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.lg} / ${arborModeSchema.$tokens.density})`,
 			lg: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.xl} / ${arborModeSchema.$tokens.density})`,
 		},
 		borderWidth: {
+			$root: '1',
 			sm: '1',
 			md: '1',
 			lg: '2',
 		},
 		shadow: {
+			$root: derive`${(config.primitives.$tokens.shadows as any).$root.x} ${(config.primitives.$tokens.shadows as any).$root.y} ${(config.primitives.$tokens.shadows as any).$root.blur} ${(config.primitives.$tokens.shadows as any).$root.spread} ${(config.primitives.$tokens.shadows as any).$root.color}`,
 			color: derive`${arborModeSchema.$tokens.colors.neutral.heavier}`,
 			sm: createShadowIntentLevel(config.primitives, 'sm'),
 			md: createShadowIntentLevel(config.primitives, 'md'),
