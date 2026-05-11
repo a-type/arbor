@@ -50,12 +50,12 @@ export type ArborPresetInstance<
 	withMode: <TName extends string>(
 		name: TName,
 		mode: DeepPartial<ModeValues<ArborModeSchema['definition']>>,
-	) => ArborPreset<
-		ArborModeSchema['definition'],
+	) => ArborPresetInstance<
+		TRanges,
+		TSchemes,
 		TModes & {
 			[K in TName]: PartialModeInstance<ArborModeSchema['definition']>;
-		},
-		CompiledColors<TRanges, TSchemes>
+		}
 	>;
 };
 

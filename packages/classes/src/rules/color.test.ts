@@ -131,3 +131,13 @@ describe('bg color', () => {
 		});
 	});
 });
+
+describe('ring color', () => {
+	it('copies other color targets', async () => {
+		await testRules(colorRules, 'ring-bg', {
+			[$systemProps.ring.target.name]: $systemProps.ring.applied.var,
+			[$systemProps.ring.applied.name]: $systemProps.bg.applied.var,
+			[$systemProps.ring.opacity.name]: '1',
+		});
+	});
+});
