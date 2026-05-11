@@ -49,7 +49,7 @@ export type ArborPresetInstance<
 > & {
 	withMode: <TName extends string>(
 		name: TName,
-		mode: DeepPartial<ModeValues<ArborModeSchema['definition']>>,
+		mode: () => DeepPartial<ModeValues<ArborModeSchema['definition']>>,
 	) => ArborPresetInstance<
 		TRanges,
 		TSchemes,
@@ -116,7 +116,7 @@ export function createArborPreset<
 		modes,
 		primitives,
 		withMode(name, mode) {
-			modes[name] = arborModeSchema.createPartial(name, mode);
+			modes[name] = arborModeSchema.createPartial(name, mode());
 			return this as any;
 		},
 	};
