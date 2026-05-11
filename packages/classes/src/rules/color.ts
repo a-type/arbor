@@ -6,7 +6,7 @@ import { colorAlters, colorAltersMatch } from '../util/alters.js';
 import { parseColor } from '../util/color.js';
 import { themeOrLiteral } from '../util/themeOrLiteral.js';
 
-const laterals = {
+export const laterals = {
 	fg: $systemProps.fg.applied.var,
 	bg: $systemProps.bg.applied.var,
 	fill: $systemProps.fill.applied.var,

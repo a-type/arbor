@@ -89,6 +89,15 @@ describe('border color', () => {
 			[$systemProps.borderColor['block-start'].opacity.name]: '1',
 		});
 	});
+	it('copies another color target', async () => {
+		await testRules(borderRules, 'border-bg', {
+			'border-color': $systemProps.borderColor[''].applied.varFallback(
+				$systemProps.borderColor[''].applied.var,
+			),
+			[$systemProps.borderColor[''].applied.name]: $systemProps.bg.applied.var,
+			[$systemProps.borderColor[''].opacity.name]: '1',
+		});
+	});
 
 	describe('lighten/darken', () => {
 		it('lightens a color', async () => {

@@ -7,6 +7,7 @@ import { dashConcat } from '../util/concat.js';
 import { directionMapEntries, globalKeywords } from '../util/mappings.js';
 import { dirRegex } from '../util/matchers.js';
 import { themeOrLiteral } from '../util/themeOrLiteral.js';
+import { laterals } from './color.js';
 
 const borderStyles = [
 	'solid',
@@ -82,11 +83,17 @@ const borderColorRules: Rule<Theme>[] = directionMapEntries.flatMap(
 					const split = color.split('/');
 					const baseColor = split[0];
 					const opacityPart = split[1];
-					const [value] = themeOrLiteral(baseColor, theme, {
+					let [value] = themeOrLiteral(baseColor, theme, {
 						startFrom: 'color',
 						trySuffixes: ['color', 'border', 'border-color'],
 					});
-					if (!value) return;
+					if (!value) {
+						if (baseColor in laterals) {
+							value = laterals[baseColor as keyof typeof laterals];
+						} else {
+							return;
+						}
+					}
 					const restoredOpacity =
 						opacityPart ? `${value}/${opacityPart}` : value;
 					const parsed = parseColor(restoredOpacity);
