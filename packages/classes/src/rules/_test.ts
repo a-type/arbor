@@ -1,15 +1,17 @@
 import { CSSEntry, CSSObject, DynamicRule, Rule } from 'unocss';
 import { expect } from 'vitest';
-import { testTheme as theme } from '../_test.js';
+import { testArbor, testTheme as theme } from '../_test.js';
 import { Theme } from '../theme/types.js';
+import { createRules } from './index.js';
 
 type RuleResult = ReturnType<DynamicRule[1]>;
 
 export async function testRules(
-	rules: Rule<Theme>[],
 	className: string,
 	output: Record<string, string> | null,
+	onlyRules?: Rule<any>[],
 ) {
+	const rules = onlyRules ?? createRules(testArbor);
 	let match: { rule: Rule<Theme>; result: RuleResult } | null = null;
 	for (const rule of rules.toReversed()) {
 		// only dynamic rules are supported

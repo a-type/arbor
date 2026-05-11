@@ -111,11 +111,13 @@ export const borderRules: Rule<Theme>[] = [
 **Testing pattern** (see [packages/classes/src/rules/border.test.ts](packages/classes/src/rules/border.test.ts)):
 
 ```typescript
-await testRules(borderRules, 'border-color-primary', {
+await testRules('border-color-primary', {
 	'border-color': 'var(--arbor-color-primary)',
 	[colorVar.name]: 'oklch(0.5 0.1 240)',
 });
 ```
+
+This matches the input utility class against all rules defined in the system and compares it to the expected output as a second parameter.
 
 ### Configuration & Theming
 

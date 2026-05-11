@@ -7,7 +7,7 @@ import { colorRules } from './color.js';
 
 describe('fg color', () => {
 	it('matches colors from theme', async () => {
-		await testRules(colorRules, 'color-main-mid', {
+		await testRules('color-main-mid', {
 			color: $systemProps.fg.applied.var,
 			[$systemProps.fg.applied.name]:
 				testBaseMode.schema.$tokens.colors.main.mid.var,
@@ -15,49 +15,49 @@ describe('fg color', () => {
 		});
 	});
 	it('matches literal colors', async () => {
-		await testRules(colorRules, 'color-[red]', {
+		await testRules('color-[red]', {
 			color: $systemProps.fg.applied.var,
 			[$systemProps.fg.applied.name]: 'red',
 			[$systemProps.fg.opacity.name]: '1',
 		});
 	});
 	it('matches bracketed colors', async () => {
-		await testRules(colorRules, 'color-[rgba(255,0,0,0.5)]', {
+		await testRules('color-[rgba(255,0,0,0.5)]', {
 			color: $systemProps.fg.applied.var,
 			[$systemProps.fg.applied.name]: 'rgba(255,0,0,0.5)',
 			[$systemProps.fg.opacity.name]: '1',
 		});
 	});
 	it('maps color with opacity to system props', async () => {
-		await testRules(colorRules, 'color-[red]/50', {
+		await testRules('color-[red]/50', {
 			color: `rgb(from ${$systemProps.fg.applied.var} r g b / ${$systemProps.fg.opacity.var})`,
 			[$systemProps.fg.applied.name]: 'red',
 			[$systemProps.fg.opacity.name]: '0.5',
 		});
 	});
 	it('maps color without opacity to system props', async () => {
-		await testRules(colorRules, 'color-[red]', {
+		await testRules('color-[red]', {
 			color: $systemProps.fg.applied.var,
 			[$systemProps.fg.applied.name]: 'red',
 			[$systemProps.fg.opacity.name]: '1',
 		});
 	});
 	it('handles inherit keyword', async () => {
-		await testRules(colorRules, 'color-inherit', {
+		await testRules('color-inherit', {
 			color: $systemProps.fg.applied.var,
 			[$systemProps.fg.applied.name]: 'unset',
 			[$systemProps.fg.opacity.name]: '1',
 		});
 	});
 	it('handles inherit with opacity', async () => {
-		await testRules(colorRules, 'color-inherit/50', {
+		await testRules('color-inherit/50', {
 			color: `rgb(from ${$systemProps.fg.applied.var} r g b / ${$systemProps.fg.opacity.var})`,
 			[$systemProps.fg.applied.name]: 'unset',
 			[$systemProps.fg.opacity.name]: '0.5',
 		});
 	});
 	it('handles mode theme tokens without extraneous bits', async () => {
-		await testRules(colorRules, 'color-action-primary', {
+		await testRules('color-action-primary', {
 			color: $systemProps.fg.applied.var,
 			[$systemProps.fg.applied.name]:
 				testBaseMode.schema.$tokens.action.primary.color.fg.var,
@@ -65,12 +65,12 @@ describe('fg color', () => {
 		});
 	});
 	it('doesnt just toss anything in there, it only matches theme tokens if no brackets', async () => {
-		await testRules(colorRules, 'color-foo', null);
+		await testRules('color-foo', null, colorRules);
 	});
 
 	describe('lighten and darken', () => {
 		it('lightens a color', async () => {
-			await testRules(colorRules, 'color-lighten-2', {
+			await testRules('color-lighten-2', {
 				color: colorAlters.lighten(
 					$systemProps.fg.applied.varFallback('currentColor'),
 					'2',
@@ -78,7 +78,7 @@ describe('fg color', () => {
 			});
 		});
 		it('darkens a color', async () => {
-			await testRules(colorRules, 'color-darken-2', {
+			await testRules('color-darken-2', {
 				color: colorAlters.darken(
 					$systemProps.fg.applied.varFallback('currentColor'),
 					'2',
@@ -90,7 +90,7 @@ describe('fg color', () => {
 
 describe('bg color', () => {
 	it('maps color to system props, includes contrast prop', async () => {
-		await testRules(colorRules, 'bg-[red]', {
+		await testRules('bg-[red]', {
 			'background-color': $systemProps.bg.applied.var,
 			[$systemProps.bg.applied.name]: 'red',
 			[$systemProps.bg.opacity.name]: '1',
@@ -99,7 +99,7 @@ describe('bg color', () => {
 	});
 
 	it('copies other color targets', async () => {
-		await testRules(colorRules, 'bg-fg', {
+		await testRules('bg-fg', {
 			'background-color': $systemProps.bg.applied.var,
 			[$systemProps.bg.applied.name]: $systemProps.fg.applied.var,
 			[$systemProps.bg.opacity.name]: '1',
@@ -108,7 +108,7 @@ describe('bg color', () => {
 	});
 
 	it('handles nested mode tokens without suffixes', async () => {
-		await testRules(colorRules, 'bg-surface-primary', {
+		await testRules('bg-surface-primary', {
 			'background-color': $systemProps.bg.applied.var,
 			[$systemProps.bg.applied.name]:
 				testBaseMode.schema.$tokens.surface.primary.color.bg.var,
@@ -119,7 +119,7 @@ describe('bg color', () => {
 	});
 
 	it('lightens a background color along with contrast prop', async () => {
-		await testRules(colorRules, 'bg-lighten-2', {
+		await testRules('bg-lighten-2', {
 			'background-color': colorAlters.lighten(
 				$systemProps.bg.applied.varFallback('currentColor'),
 				'2',
@@ -134,7 +134,7 @@ describe('bg color', () => {
 
 describe('ring color', () => {
 	it('copies other color targets', async () => {
-		await testRules(colorRules, 'ring-bg', {
+		await testRules('ring-bg', {
 			[$systemProps.ring.target.name]: $systemProps.ring.applied.var,
 			[$systemProps.ring.applied.name]: $systemProps.bg.applied.var,
 			[$systemProps.ring.opacity.name]: '1',
