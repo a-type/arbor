@@ -6,7 +6,8 @@
 	"private": true,
 	"scripts": {
 		"dev": "pnpm run -r --parallel dev",
-		"bump": "bumpp -r"
+		"bump": "bumpp -r",
+		"build": "pnpm run -r build"
 	},
 	"keywords": [],
 	"author": "",

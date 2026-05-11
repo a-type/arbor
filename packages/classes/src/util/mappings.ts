@@ -26,7 +26,9 @@ export const directionMap = {
 	'block-end': ['block-end'],
 	'inline-start': ['inline-start'],
 	'inline-end': ['inline-end'],
-	// border-radius specific
+} as const;
+// border-radius specific
+export const cornerMap = {
 	bl: ['bottom-left'],
 	br: ['bottom-right'],
 	tl: ['top-left'],
@@ -39,3 +41,5 @@ export const directionMapEntries = Object.entries(directionMap).sort((a, b) => {
 	return b[0].length - a[0].length;
 });
 export type DirectionMapKey = keyof typeof directionMap;
+export const cornerMapEntries = Object.entries(cornerMap);
+export type CornerMapKey = keyof typeof cornerMap;

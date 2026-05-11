@@ -60,7 +60,7 @@ describe('fg color', () => {
 		await testRules(colorRules, 'color-action-primary', {
 			color: $systemProps.fg.applied.var,
 			[$systemProps.fg.applied.name]:
-				testBaseMode.schema.$tokens.action.primary.fg.var,
+				testBaseMode.schema.$tokens.action.primary.color.fg.var,
 			[$systemProps.fg.opacity.name]: '1',
 		});
 	});
@@ -111,10 +111,10 @@ describe('bg color', () => {
 		await testRules(colorRules, 'bg-surface-primary', {
 			'background-color': $systemProps.bg.applied.var,
 			[$systemProps.bg.applied.name]:
-				testBaseMode.schema.$tokens.surface.primary.bg.var,
+				testBaseMode.schema.$tokens.surface.primary.color.bg.var,
 			[$systemProps.bg.opacity.name]: '1',
 			[$systemProps.bg.contrast.name]:
-				testBaseMode.schema.$tokens.surface.primary.bg.var,
+				testBaseMode.schema.$tokens.surface.primary.color.bg.var,
 		});
 	});
 

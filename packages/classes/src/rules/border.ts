@@ -4,7 +4,11 @@ import { Theme } from '../theme/types.js';
 import { colorAlters, colorAltersMatch } from '../util/alters.js';
 import { parseColor } from '../util/color.js';
 import { dashConcat } from '../util/concat.js';
-import { directionMapEntries, globalKeywords } from '../util/mappings.js';
+import {
+	cornerMapEntries,
+	directionMapEntries,
+	globalKeywords,
+} from '../util/mappings.js';
 import { dirRegex } from '../util/matchers.js';
 import { themeOrLiteral } from '../util/themeOrLiteral.js';
 import { laterals } from './color.js';
@@ -50,26 +54,27 @@ const borderWidthRules: Rule<Theme>[] = directionMapEntries.flatMap(
 	},
 );
 
-const borderRadiusRules: Rule<Theme>[] = directionMapEntries.flatMap(
-	([dirSuffix, dirs]) => {
-		const pattern = `^(?:rounded|rd)${dirRegex(dirSuffix)}(?:-(.+))?$`;
-		return [
-			[
-				new RegExp(pattern),
-				([, size], { theme }) => {
-					const [value] = themeOrLiteral(size, theme, {
-						startFrom: 'border-radius',
-						trySuffixes: ['radius', 'r'],
-					});
-					if (!value) return;
-					return Object.fromEntries(
-						dirs.map((dir) => [`${dashConcat('border', dir)}-radius`, value]),
-					);
-				},
-			] satisfies Rule<Theme>,
-		];
-	},
-);
+const borderRadiusRules: Rule<Theme>[] = [
+	...directionMapEntries,
+	...cornerMapEntries,
+].flatMap(([dirSuffix, dirs]) => {
+	const pattern = `^(?:rounded|rd)${dirRegex(dirSuffix)}(?:-(.+))?$`;
+	return [
+		[
+			new RegExp(pattern),
+			([, size], { theme }) => {
+				const [value] = themeOrLiteral(size, theme, {
+					startFrom: 'border-radius',
+					trySuffixes: ['radius', 'r'],
+				});
+				if (!value) return;
+				return Object.fromEntries(
+					dirs.map((dir) => [`${dashConcat('border', dir)}-radius`, value]),
+				);
+			},
+		] satisfies Rule<Theme>,
+	];
+});
 
 const borderColorRules: Rule<Theme>[] = directionMapEntries.flatMap(
 	([dirSuffix, dirs]) => {
