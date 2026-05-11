@@ -46,7 +46,7 @@ jobs:
 
       - name: Build
         working-directory: docs
-        run: pnpm run build
+        run: pnpm run --filter @arbor-css/docs... build
         env:
           SITE: ${{ steps.pages.outputs.origin }}
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
