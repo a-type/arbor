@@ -49,7 +49,13 @@ export type ArborPresetInstance<
 > & {
 	withMode: <TName extends string>(
 		name: TName,
-		mode: () => DeepPartial<ModeValues<ArborModeSchema['definition']>>,
+		mode: (
+			preset: ArborPreset<
+				ArborModeSchema['definition'],
+				TModes,
+				CompiledColors<TRanges, TSchemes>
+			>,
+		) => DeepPartial<ModeValues<ArborModeSchema['definition']>>,
 	) => ArborPresetInstance<
 		TRanges,
 		TSchemes,
@@ -112,12 +118,16 @@ export function createArborPreset<
 		base: baseMode,
 	};
 
-	return {
+	const preset = {
 		modes,
 		primitives,
+	};
+
+	return {
+		...preset,
 		withMode(name, mode) {
-			modes[name] = arborModeSchema.createPartial(name, mode());
-			return this as any;
+			modes[name] = arborModeSchema.createPartial(name, mode(preset));
+			return preset as any;
 		},
 	};
 }
