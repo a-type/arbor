@@ -45,10 +45,10 @@ function Button({
 			{...props}
 			className={clsx(
 				'px-action py-action rd-sm b-solid text-secondary leading-[1]',
-				'cursor-pointer transition-color',
+				'cursor-pointer transition-color transition-shadow',
 				'transition-all',
 				{
-					'bg-action-primary b-action-primary b color-contrast shadow-md shadow-main-ink disabled:(bg-desaturate-2)':
+					'bg-action-primary b-action-primary b color-contrast shadow-sm shadow-main-ink disabled:(bg-desaturate-2)':
 						level === 'primary',
 					'bg-action-secondary b-action-secondary b color-contrast shadow-sm disabled:(bg-lighten-1 color-lighten-5)':
 						level === 'secondary',
@@ -56,6 +56,7 @@ function Button({
 						level === 'ambient',
 				},
 				'hover:bg-darken-1 active:bg-darken-2 focus-visible:bg-lighten-1',
+				'hover:(ring-[4px] ring-bg ring-darken-1)',
 			)}
 		>
 			{children}
