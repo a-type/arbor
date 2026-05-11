@@ -4,6 +4,7 @@ import { Rule, symbols } from 'unocss';
 import { Theme } from '../theme/types.js';
 import { colorAlters, colorAltersMatch } from '../util/alters.js';
 import { parseColor } from '../util/color.js';
+import { isNumericLiteral, isNumericUnitLiteral } from '../util/tests.js';
 import { themeOrLiteral } from '../util/themeOrLiteral.js';
 
 export const laterals = {
@@ -37,7 +38,7 @@ function makeColorSystemRules({
 				const baseColor = split[0];
 				const opacityPart = split[1];
 
-				let [value] = themeOrLiteral(baseColor, theme, {
+				let [value, { source }] = themeOrLiteral(baseColor, theme, {
 					startFrom: 'color',
 					trySuffixes: suffixes,
 					type: 'color',
@@ -48,6 +49,10 @@ function makeColorSystemRules({
 					} else {
 						return;
 					}
+				}
+				if (isNumericLiteral(value) || isNumericUnitLiteral(value)) {
+					// probably not meant for us...
+					return;
 				}
 				const restoredOpacity = opacityPart ? `${value}/${opacityPart}` : value;
 				const parsed = parseColor(restoredOpacity);
