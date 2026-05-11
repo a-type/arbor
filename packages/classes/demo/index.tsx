@@ -19,7 +19,7 @@ function Box({
 }) {
 	return (
 		<div
-			className={clsx('p-md rd-md flex flex-col gap-sm', {
+			className={clsx('p-md rd flex flex-col gap-sm', {
 				'bg-surface-primary color-surface-primary border-surface-primary':
 					level === 'primary',
 				'bg-surface-secondary color-surface-secondary border-surface-secondary':
@@ -46,6 +46,7 @@ function Button({
 			className={clsx(
 				'px-md py-sm rd-sm b b-solid',
 				'cursor-pointer transition-color',
+				'transition-all',
 				{
 					'bg-action-primary b-action-primary color-contrast shadow-md shadow-main-ink shadow-reverse shadow-none disabled:(bg-desaturate-2)':
 						level === 'primary',

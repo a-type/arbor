@@ -51,7 +51,7 @@ const borderWidthRules: Rule<Theme>[] = directionMapEntries.flatMap(
 
 const borderRadiusRules: Rule<Theme>[] = directionMapEntries.flatMap(
 	([dirSuffix, dirs]) => {
-		const pattern = `^(?:rounded|rd)${dirRegex(dirSuffix)}-(.+)$`;
+		const pattern = `^(?:rounded|rd)${dirRegex(dirSuffix)}(?:-(.+))?$`;
 		return [
 			[
 				new RegExp(pattern),

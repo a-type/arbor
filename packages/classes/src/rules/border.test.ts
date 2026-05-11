@@ -147,4 +147,10 @@ describe('border radius', () => {
 			'border-radius': testBaseMode.schema.$tokens.borderRadius.md.var,
 		});
 	});
+
+	it('matches default radius', async () => {
+		await testRules(borderRules, 'rd', {
+			'border-radius': testBaseMode.schema.$tokens.borderRadius.$root.var,
+		});
+	});
 });

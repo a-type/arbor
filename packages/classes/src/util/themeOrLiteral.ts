@@ -19,7 +19,16 @@ export function getFromTheme(
 		const lookFor = dashConcat(startFrom, value, suffix);
 		const themeValue = getByConcatKey(theme, lookFor, '-');
 		if (themeValue) {
-			return themeValue;
+			if (typeof themeValue === 'object' && !!themeValue) {
+				if ('' in themeValue) {
+					return themeValue[''];
+				}
+				if ('$root' in themeValue) {
+					return themeValue.$root;
+				}
+			} else {
+				return themeValue;
+			}
 		}
 	}
 }
@@ -38,6 +47,7 @@ export function themeOrLiteral(
 	string | undefined,
 	{ source: 'theme' | 'bracket' | 'global' | 'unmatched' },
 ] {
+	value ??= '';
 	const bracketedValue = h.bracket.bracketOfColor(value);
 	if (bracketedValue) {
 		return [bracketedValue, { source: 'bracket' }];

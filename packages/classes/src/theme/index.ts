@@ -1,6 +1,6 @@
 import { ArborPreset, isToken, Token } from '@arbor-css/core';
 import { toFlatKeys } from '@arbor-css/util';
-import { Theme as MiniTheme, ThemeAnimation } from '@unocss/preset-mini';
+import { Theme as MiniTheme, theme, ThemeAnimation } from '@unocss/preset-mini';
 import { Theme } from './types.js';
 
 const extraWords = [
@@ -35,12 +35,13 @@ function processKey(key: string, extraWords: string[]) {
 		key = key.replaceAll(new RegExp(`^${word}-`, 'g'), '');
 		key = key.replaceAll(new RegExp(`-${word}$`, 'g'), '');
 	}
+	key = key.replaceAll('$root', '');
 	key = key
 		.replaceAll(/^-+/g, '')
 		.replaceAll(/-+$/g, '')
 		.replaceAll(/-+/g, '-');
 
-	return key.replaceAll(/-\$root/g, '');
+	return key;
 }
 
 export interface ThemeConfig {
@@ -69,6 +70,9 @@ export const defaultThemeConfig: ThemeConfig = {
 
 // keep preset-mini happy with an empty theme shape since we rely on lots of their rules still
 const emptyMini: MiniTheme = {
+	// these are actually useful
+	transitionProperty: theme.transitionProperty,
+	easing: theme.easing,
 	accentColor: {},
 	animation: {},
 	aria: {},
@@ -85,7 +89,6 @@ const emptyMini: MiniTheme = {
 	data: {},
 	dropShadow: {},
 	duration: {},
-	easing: {},
 	fontFamily: {},
 	fontSize: {},
 	fontWeight: {},
@@ -109,7 +112,6 @@ const emptyMini: MiniTheme = {
 	ringWidth: {},
 	shadowColor: {},
 	textColor: {},
-	transitionProperty: {},
 	width: {},
 	zIndex: {},
 	verticalBreakpoints: {},
@@ -123,6 +125,26 @@ const emptyMini: MiniTheme = {
 	textShadow: {},
 	textStrokeWidth: {},
 	wordSpacing: {},
+};
+
+const baseValues: Partial<Theme> = {
+	spacing: {
+		none: '0',
+	},
+	'border-radius': {
+		none: '0',
+	},
+	'border-width': {
+		none: '0',
+	},
+	'line-height': {
+		none: '0',
+		normal: 'normal',
+	},
+	size: {
+		none: '0',
+		full: '100%',
+	},
 };
 
 export function createTheme(
@@ -141,7 +163,7 @@ export function createTheme(
 	);
 
 	// split into theme categories
-	const theme: Partial<Theme> = {};
+	const theme: Partial<Theme> = { ...baseValues };
 
 	for (const rawKey in flatPrimitiveTokens) {
 		const token = flatPrimitiveTokens[rawKey];
