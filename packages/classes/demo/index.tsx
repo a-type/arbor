@@ -44,7 +44,7 @@ function Button({
 		<button
 			{...props}
 			className={clsx(
-				'px-md py-sm rd-sm b b-solid',
+				'px-action py-action rd-sm b b-solid',
 				'cursor-pointer transition-color',
 				'transition-all',
 				{

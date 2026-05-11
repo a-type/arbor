@@ -28,6 +28,11 @@ const extraWords = [
 	'offsetY',
 	'blur',
 	'spread',
+	'padding',
+	'margin',
+	'spacing',
+	'space',
+	'gap',
 ];
 function processKey(key: string, extraWords: string[]) {
 	for (const word of extraWords) {

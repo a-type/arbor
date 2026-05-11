@@ -26,6 +26,11 @@ export const directionMap = {
 	'block-end': ['block-end'],
 	'inline-start': ['inline-start'],
 	'inline-end': ['inline-end'],
+	// border-radius specific
+	bl: ['bottom-left'],
+	br: ['bottom-right'],
+	tl: ['top-left'],
+	tr: ['top-right'],
 } as const;
 export const directionMapEntries = Object.entries(directionMap).sort((a, b) => {
 	// "" should be first, so it doesn't interfere with more specific matches
@@ -33,3 +38,4 @@ export const directionMapEntries = Object.entries(directionMap).sort((a, b) => {
 	if (b[0] === '') return 1;
 	return b[0].length - a[0].length;
 });
+export type DirectionMapKey = keyof typeof directionMap;

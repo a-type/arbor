@@ -1,7 +1,11 @@
 import { Rule } from 'unocss';
 import { Theme } from '../theme/types.js';
 import { dashConcat } from '../util/concat.js';
-import { directionMapEntries } from '../util/mappings.js';
+import {
+	directionMap,
+	directionMapEntries,
+	DirectionMapKey,
+} from '../util/mappings.js';
 import { dirRegex } from '../util/matchers.js';
 import { themeOrLiteral } from '../util/themeOrLiteral.js';
 
@@ -16,6 +20,29 @@ function makeSpacingRules(
 			([, size], { theme }) => {
 				const [value] = themeOrLiteral(size, theme, {
 					startFrom: themeKey,
+					trySuffixes: [
+						'spacing',
+						'space',
+						's',
+						'p',
+						'm',
+						(
+							directionMap[dirSuffix as DirectionMapKey].some((d) =>
+								d.includes('inline'),
+							)
+						) ?
+							['inline', 'horizontal', 'x']
+						:	undefined,
+						(
+							directionMap[dirSuffix as DirectionMapKey].some((d) =>
+								d.includes('block'),
+							)
+						) ?
+							['block', 'vertical', 'y']
+						:	undefined,
+					]
+						.flat()
+						.filter(Boolean) as string[],
 				});
 				if (!value) return;
 				return Object.fromEntries(

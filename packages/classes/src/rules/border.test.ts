@@ -162,4 +162,15 @@ describe('border radius', () => {
 			'border-radius': testBaseMode.schema.$tokens.borderRadius.$root.var,
 		});
 	});
+
+	it('matches directions', async () => {
+		await testRules(borderRules, 'rd-t-md', {
+			'border-block-start-radius':
+				testBaseMode.schema.$tokens.borderRadius.md.var,
+		});
+		await testRules(borderRules, 'rd-bl-md', {
+			'border-bottom-left-radius':
+				testBaseMode.schema.$tokens.borderRadius.md.var,
+		});
+	});
 });

@@ -15,6 +15,24 @@ describe('padding', () => {
 			padding: '10px',
 		});
 	});
+
+	it('supports directional rules', async () => {
+		await testRules(spacingRules, 'pt-lg', {
+			'padding-block-start': testBaseMode.schema.$tokens.spacing.lg.var,
+		});
+		await testRules(spacingRules, 'px-lg', {
+			'padding-inline': testBaseMode.schema.$tokens.spacing.lg.var,
+		});
+	});
+
+	it('matches directional suffixed padding values', async () => {
+		await testRules(spacingRules, 'px-action', {
+			'padding-inline': testBaseMode.schema.$tokens.action.padding.inline.var,
+		});
+		await testRules(spacingRules, 'py-action', {
+			'padding-block': testBaseMode.schema.$tokens.action.padding.block.var,
+		});
+	});
 });
 
 describe('gap', () => {
