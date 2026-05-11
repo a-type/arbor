@@ -29,7 +29,7 @@ const borderStyles = [
 
 const borderWidthRules: Rule<Theme>[] = directionMapEntries.flatMap(
 	([dirSuffix, dirs]) => {
-		const pattern = `^(?:border|b)${dirRegex(dirSuffix)}-(.+)$`;
+		const pattern = `^(?:border|b)${dirRegex(dirSuffix)}(?:-(.+))?$`;
 		return [
 			[
 				new RegExp(pattern),
@@ -91,6 +91,7 @@ const borderColorRules: Rule<Theme>[] = directionMapEntries.flatMap(
 					let [value] = themeOrLiteral(baseColor, theme, {
 						startFrom: 'color',
 						trySuffixes: ['color', 'border', 'border-color'],
+						type: 'color',
 					});
 					if (!value) {
 						if (baseColor in laterals) {

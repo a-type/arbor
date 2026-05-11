@@ -44,15 +44,15 @@ function Button({
 		<button
 			{...props}
 			className={clsx(
-				'px-action py-action rd-sm b b-solid',
+				'px-action py-action rd-sm b-solid',
 				'cursor-pointer transition-color',
 				'transition-all',
 				{
-					'bg-action-primary b-action-primary color-contrast shadow-md shadow-main-ink shadow-reverse shadow-none disabled:(bg-desaturate-2)':
+					'bg-action-primary b-action-primary b color-contrast shadow-md shadow-main-ink shadow-reverse shadow-none disabled:(bg-desaturate-2)':
 						level === 'primary',
-					'bg-action-secondary b-action-secondary color-contrast shadow-sm disabled:(bg-lighten-1 color-lighten-5)':
+					'bg-action-secondary b-action-secondary b color-contrast shadow-sm disabled:(bg-lighten-1 color-lighten-5)':
 						level === 'secondary',
-					'bg-transparent hover:bg-inherit b-action-ambient color-action-ambient disabled:(color-lighten-5)':
+					'bg-transparent hover:bg-inherit hover:b-action-secondary b-transparent b-sm color-action-ambient disabled:(color-lighten-5)':
 						level === 'ambient',
 				},
 				'hover:bg-darken-1 active:bg-darken-2 focus-visible:bg-lighten-1',

@@ -10,6 +10,7 @@ export interface GlobalConfig {
 	shadowBlur: number;
 	arrowWidth: string;
 	arrowHeight: string;
+	borderWidth: string;
 }
 
 export const defaultGlobals: GlobalConfig = {
@@ -22,6 +23,7 @@ export const defaultGlobals: GlobalConfig = {
 	shadowBlur: 0.5,
 	arrowWidth: '1rem',
 	arrowHeight: '0.5rem',
+	borderWidth: '1px',
 };
 
 export const $globalProps: GlobalConfigProps = {
@@ -50,6 +52,9 @@ export const $globalProps: GlobalConfigProps = {
 		type: 'length',
 	}),
 	arrowHeight: createToken('🧑-arrow-height', {
+		type: 'length',
+	}),
+	borderWidth: createToken('🧑-border-width', {
 		type: 'length',
 	}),
 };

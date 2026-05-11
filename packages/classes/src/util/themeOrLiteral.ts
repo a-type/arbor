@@ -39,9 +39,11 @@ export function themeOrLiteral(
 	{
 		startFrom,
 		trySuffixes,
+		type,
 	}: {
 		startFrom?: keyof Theme | (string & {});
 		trySuffixes?: string[];
+		type?: 'color' | 'other';
 	},
 ): [
 	string | undefined,
@@ -52,7 +54,10 @@ export function themeOrLiteral(
 	if (bracketedValue) {
 		return [bracketedValue, { source: 'bracket' }];
 	}
-	if (globalKeywords.includes(value) || value === 'transparent') {
+	if (
+		globalKeywords.includes(value) ||
+		(type === 'color' && value === 'transparent')
+	) {
 		return [value, { source: 'global' }];
 	}
 	const fromTheme = getFromTheme(value, theme, { startFrom, trySuffixes });

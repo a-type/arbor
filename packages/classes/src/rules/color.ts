@@ -40,6 +40,7 @@ function makeColorSystemRules({
 				let [value] = themeOrLiteral(baseColor, theme, {
 					startFrom: 'color',
 					trySuffixes: suffixes,
+					type: 'color',
 				});
 				if (!value) {
 					if (baseColor in laterals) {

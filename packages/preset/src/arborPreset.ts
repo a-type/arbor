@@ -264,10 +264,10 @@ export function createArborModeValues<
 			lg: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.xl} / ${arborModeSchema.$tokens.density})`,
 		},
 		borderWidth: {
-			$root: '1',
-			sm: '1',
-			md: '1',
-			lg: '2',
+			$root: derive`${$globalProps.borderWidth}`,
+			sm: derive`calc(max(1px, ${$globalProps.borderWidth} / 2))`,
+			md: derive`${$globalProps.borderWidth}`,
+			lg: derive`calc(${$globalProps.borderWidth} * 2)`,
 		},
 		shadow: {
 			$root: derive`${shadowRoot.x} ${shadowRoot.y} ${shadowRoot.blur} ${shadowRoot.spread} ${shadowRoot.color}`,
