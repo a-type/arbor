@@ -77,6 +77,9 @@ export const defaultThemeConfig: ThemeConfig = {
 const emptyMini: MiniTheme = {
 	// these are actually useful
 	transitionProperty: theme.transitionProperty,
+	lineHeight: {
+		1: '1',
+	},
 	easing: theme.easing,
 	accentColor: {},
 	animation: {},
@@ -106,7 +109,6 @@ const emptyMini: MiniTheme = {
 	height: {},
 	inlineSize: {},
 	letterSpacing: {},
-	lineHeight: {},
 	lineWidth: {},
 	maxBlockSize: {},
 	maxHeight: {},

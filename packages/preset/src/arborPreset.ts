@@ -191,8 +191,8 @@ export function createArborModeValues<
 		},
 		action: {
 			padding: {
-				block: derive`calc(${config.primitives.$tokens.spacing.sm} / ${arborModeSchema.$tokens.density})`,
-				inline: derive`calc(${config.primitives.$tokens.spacing.md} / ${arborModeSchema.$tokens.density})`,
+				block: derive`calc(${config.primitives.$tokens.spacing.md} / ${arborModeSchema.$tokens.density})`,
+				inline: derive`calc((${config.primitives.$tokens.spacing.md} + ${$globalProps.roundness} * ${config.primitives.$tokens.spacing.sm}) / ${arborModeSchema.$tokens.density})`,
 			},
 			primary: {
 				color: {
@@ -225,7 +225,7 @@ export function createArborModeValues<
 
 			padding: {
 				block: derive`calc(${config.primitives.$tokens.spacing.sm} / ${arborModeSchema.$tokens.density})`,
-				inline: derive`calc(${config.primitives.$tokens.spacing.sm} / ${arborModeSchema.$tokens.density})`,
+				inline: derive`calc((${config.primitives.$tokens.spacing.sm} + ${$globalProps.roundness} * ${config.primitives.$tokens.spacing.xs}) / ${arborModeSchema.$tokens.density})`,
 			},
 		},
 		density: 1,
@@ -258,10 +258,10 @@ export function createArborModeValues<
 			},
 		},
 		borderRadius: {
-			$root: derive`calc(${$globalProps.roundness} * ${spacingRoot} / ${arborModeSchema.$tokens.density})`,
-			sm: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.md} / ${arborModeSchema.$tokens.density})`,
-			md: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.lg} / ${arborModeSchema.$tokens.density})`,
-			lg: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.xl} / ${arborModeSchema.$tokens.density})`,
+			$root: derive`calc(${$globalProps.roundness} * ${spacingRoot} * 2 / ${arborModeSchema.$tokens.density})`,
+			sm: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.md} * 2 / ${arborModeSchema.$tokens.density})`,
+			md: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.lg} * 2 / ${arborModeSchema.$tokens.density})`,
+			lg: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.xl} * 2 / ${arborModeSchema.$tokens.density})`,
 		},
 		borderWidth: {
 			$root: derive`${$globalProps.borderWidth}`,
