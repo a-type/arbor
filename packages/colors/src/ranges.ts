@@ -24,6 +24,7 @@ export interface ColorRangeConfig<
 	/** 0-360ish, OKLCH "H" hue. Can also be a var() reference! */
 	hue: number | string;
 	rangeNames?: readonly RangeNames[];
+	defaultLevel?: RangeNames;
 	/** 0-1, a local multiplier for chroma, stacks on global and computed value. Can also be a var() reference! */
 	saturation?: number | string;
 }
@@ -73,10 +74,15 @@ export function createColorRange<RangeNames extends string = DefaultRangeName>(
 	config: ColorRangeConfig<RangeNames>,
 	calcs: ColorRangeCalculations,
 ): UncompiledColorRange<ColorRangeConfig<RangeNames>> {
-	const { hue: sourceHue, rangeNames = defaultRangeNames } = config;
+	const {
+		hue: sourceHue,
+		rangeNames = defaultRangeNames,
+		defaultLevel,
+	} = config;
 	const { lightness, chroma } = calcs;
 	const size = rangeNames.length;
 	const rootName =
+		rangeNames.find((name) => name === defaultLevel) ??
 		rangeNames.find((name) => name === 'mid') ??
 		rangeNames[Math.floor(size / 2)];
 

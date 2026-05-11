@@ -1,6 +1,6 @@
 import { ColorRangeItem, CompiledColors } from '@arbor-css/colors';
 import { defaultGlobals, GlobalConfig } from '@arbor-css/globals';
-import { CompiledShadows } from '@arbor-css/shadows';
+import { CompiledShadows, isCompiledShadowLevel } from '@arbor-css/shadows';
 import { CompiledSpacing } from '@arbor-css/spacing';
 import { createToken, Token, TokenSchema } from '@arbor-css/tokens';
 import { CompiledTypography, isTypographyLevel } from '@arbor-css/typography';
@@ -135,20 +135,45 @@ export function createPrimitives<
 			createToken(`spacing-${path.join('-')}`, {
 				type: 'length',
 				purpose: 'spacing',
-				tag: 's',
+				tag: '📏',
 			}),
 	);
 
 	const $shadowProps = convertStructure(
 		config.shadows.levels,
-		(value): value is string | number =>
-			typeof value === 'string' || typeof value === 'number',
-		(_, path) =>
-			createToken(`shadow-${path.join('-')}`, {
-				type: '*',
-				purpose: 'shadow',
+		isCompiledShadowLevel,
+		(_, path) => ({
+			x: createToken(`shadow-${path.join('-')}-x`, {
+				type: 'length',
+				purpose: 'shadow-x',
+				group: path.join('-'),
 				tag: '🌫️',
 			}),
+			y: createToken(`shadow-${path.join('-')}-y`, {
+				type: 'length',
+				purpose: 'shadow-y',
+				group: path.join('-'),
+				tag: '🌫️',
+			}),
+			blur: createToken(`shadow-${path.join('-')}-blur`, {
+				type: 'length',
+				purpose: 'shadow-blur',
+				group: path.join('-'),
+				tag: '🌫️',
+			}),
+			spread: createToken(`shadow-${path.join('-')}-spread`, {
+				type: 'length',
+				purpose: 'shadow-spread',
+				group: path.join('-'),
+				tag: '🌫️',
+			}),
+			color: createToken(`shadow-${path.join('-')}-color`, {
+				type: 'color',
+				purpose: 'shadow-color',
+				group: path.join('-'),
+				tag: '🌫️',
+			}),
+		}),
 	);
 
 	const globals: GlobalConfig = {

@@ -26,6 +26,16 @@ export interface CompiledShadowLevel {
 	color: string;
 }
 
+export function isCompiledShadowLevel(
+	value: any,
+): value is CompiledShadowLevel {
+	return (
+		value &&
+		typeof value === 'object' &&
+		['x', 'y', 'blur', 'spread', 'color'].every((prop) => prop in value)
+	);
+}
+
 export interface CompiledShadows<
 	TShadowLevel extends string = DefaultShadowLevel,
 > {

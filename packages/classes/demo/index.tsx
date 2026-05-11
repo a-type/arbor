@@ -65,7 +65,7 @@ function Button({
 function Input({ placeholder }: { placeholder?: string }) {
 	return (
 		<input
-			className={clsx('px-md py-sm rd-sm b b-solid b-control-default')}
+			className={clsx('px-md py-sm rd-sm b b-solid b-control')}
 			placeholder={placeholder}
 		/>
 	);
@@ -110,7 +110,7 @@ export default function Demo() {
 							'bg-neutral-wash',
 							'bg-neutral-lighter',
 							'bg-neutral-light',
-							'bg-neutral-mid',
+							'bg-neutral',
 							'bg-neutral-heavy',
 							'bg-neutral-heavier',
 							'bg-neutral-ink',
@@ -124,7 +124,7 @@ export default function Demo() {
 							'bg-main-wash',
 							'bg-main-lighter',
 							'bg-main-light',
-							'bg-main-mid',
+							'bg-main',
 							'bg-main-heavy',
 							'bg-main-heavier',
 							'bg-main-ink',
