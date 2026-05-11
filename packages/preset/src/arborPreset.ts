@@ -141,10 +141,10 @@ function createShadowIntentLevel(
 		y: derive`${primitives.$tokens.shadows[size].y}`,
 		blur: derive`${primitives.$tokens.shadows[size].blur}`,
 		spread: derive`${primitives.$tokens.shadows[size].spread}`,
-		color: derive`${{
+		color: derive`oklch(from ${{
 			value: arborModeSchema.$tokens.shadow.color,
 			fallback: primitives.$tokens.shadows[size].color,
-		}}`,
+		}} l c h / 15%)`,
 		compiled: derive`${arborModeSchema.$tokens.shadow[size].x} ${arborModeSchema.$tokens.shadow[size].y} ${arborModeSchema.$tokens.shadow[size].blur} ${arborModeSchema.$tokens.shadow[size].spread} ${arborModeSchema.$tokens.shadow[size].color}`,
 	} satisfies ModeValues<typeof shadowIntents>;
 }
