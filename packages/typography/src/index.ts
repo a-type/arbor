@@ -22,6 +22,8 @@ export interface CompiledTypography<
 	defaultLevel: TLevels;
 	levels: {
 		[K in TLevels]: TypographyLevel;
+	} & {
+		$root: TypographyLevel;
 	};
 }
 
@@ -91,10 +93,14 @@ export function compileTypography<
 		},
 		{} as Record<TLevels, TypographyLevel>,
 	) as CompiledTypography<TLevels>['levels'];
+	const defaultLevel = config.defaultLevel ?? (levelNames[baseIndex] as TLevels);
 
 	return {
-		defaultLevel: config.defaultLevel ?? (levelNames[baseIndex] as TLevels),
-		levels,
+		defaultLevel,
+		levels: {
+			...levels,
+			$root: levels[defaultLevel],
+		},
 	};
 }
 

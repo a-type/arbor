@@ -29,7 +29,7 @@ const extraWords = [
 	'blur',
 	'spread',
 ];
-function removeExtraWords(key: string, extraWords: string[]) {
+function processKey(key: string, extraWords: string[]) {
 	for (const word of extraWords) {
 		key = key.replaceAll(new RegExp(`-${word}-`, 'g'), '-');
 		key = key.replaceAll(new RegExp(`^${word}-`, 'g'), '');
@@ -39,7 +39,8 @@ function removeExtraWords(key: string, extraWords: string[]) {
 		.replaceAll(/^-+/g, '')
 		.replaceAll(/-+$/g, '')
 		.replaceAll(/-+/g, '-');
-	return key;
+
+	return key.replaceAll(/-\$root/g, '');
 }
 
 export interface ThemeConfig {
@@ -144,7 +145,7 @@ export function createTheme(
 
 	for (const rawKey in flatPrimitiveTokens) {
 		const token = flatPrimitiveTokens[rawKey];
-		const key = `_${removeExtraWords(rawKey, extraWords)}`;
+		const key = `_${processKey(rawKey, extraWords)}`;
 		const themeCategory = token.purpose;
 		if (!theme[themeCategory]) {
 			theme[themeCategory] = {};
@@ -153,7 +154,7 @@ export function createTheme(
 	}
 	for (const rawKey in flatModeTokens) {
 		const token = flatModeTokens[rawKey];
-		const key = removeExtraWords(rawKey, extraWords);
+		const key = processKey(rawKey, extraWords);
 		const themeCategory = token.purpose;
 		if (!theme[themeCategory]) {
 			theme[themeCategory] = {};

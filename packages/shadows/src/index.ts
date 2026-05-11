@@ -26,12 +26,24 @@ export interface CompiledShadowLevel {
 	color: string;
 }
 
+export function isCompiledShadowLevel(
+	value: any,
+): value is CompiledShadowLevel {
+	return (
+		value &&
+		typeof value === 'object' &&
+		['x', 'y', 'blur', 'spread', 'color'].every((prop) => prop in value)
+	);
+}
+
 export interface CompiledShadows<
 	TShadowLevel extends string = DefaultShadowLevel,
 > {
 	defaultLevel: TShadowLevel;
 	levels: {
 		[K in TShadowLevel]: CompiledShadowLevel;
+	} & {
+		$root: CompiledShadowLevel;
 	};
 }
 
@@ -109,10 +121,14 @@ export function compileShadows<
 		},
 		{} as Record<TShadowLevel, CompiledShadowLevel>,
 	) as CompiledShadows<TShadowLevel>['levels'];
+	const defaultLevel =
+		config.defaultLevel ?? (levelNames[baseIndex] as TShadowLevel);
 
 	return {
-		defaultLevel:
-			config.defaultLevel ?? (levelNames[baseIndex] as TShadowLevel),
-		levels,
+		defaultLevel,
+		levels: {
+			...levels,
+			$root: levels[defaultLevel],
+		},
 	};
 }

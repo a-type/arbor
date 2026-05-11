@@ -24,6 +24,7 @@ export interface ColorRangeConfig<
 	/** 0-360ish, OKLCH "H" hue. Can also be a var() reference! */
 	hue: number | string;
 	rangeNames?: readonly RangeNames[];
+	defaultLevel?: RangeNames;
 	/** 0-1, a local multiplier for chroma, stacks on global and computed value. Can also be a var() reference! */
 	saturation?: number | string;
 }
@@ -59,21 +60,33 @@ export type UncompiledColorRange<
 	TRangeConfig extends ColorRangeConfig<string>,
 > = {
 	[K in InferRangeNames<TRangeConfig>]: ColorRangeItem;
+} & {
+	$root: ColorRangeItem;
 };
 export type CompiledColorRange<TRangeConfig extends ColorRangeConfig<string>> =
 	{
 		[K in InferRangeNames<TRangeConfig>]: string;
+	} & {
+		$root: string;
 	};
 
 export function createColorRange<RangeNames extends string = DefaultRangeName>(
 	config: ColorRangeConfig<RangeNames>,
 	calcs: ColorRangeCalculations,
 ): UncompiledColorRange<ColorRangeConfig<RangeNames>> {
-	const { hue: sourceHue, rangeNames = defaultRangeNames } = config;
+	const {
+		hue: sourceHue,
+		rangeNames = defaultRangeNames,
+		defaultLevel,
+	} = config;
 	const { lightness, chroma } = calcs;
 	const size = rangeNames.length;
+	const rootName =
+		rangeNames.find((name) => name === defaultLevel) ??
+		rangeNames.find((name) => name === 'mid') ??
+		rangeNames[Math.floor(size / 2)];
 
-	return rangeNames.reduce(
+	const range = rangeNames.reduce(
 		(acc, name, i) => {
 			const equation = oklchBuilder(($) => ({
 				l: $.clamp(
@@ -98,7 +111,11 @@ export function createColorRange<RangeNames extends string = DefaultRangeName>(
 			return acc;
 		},
 		{} as Record<RangeNames, ColorRangeItem>,
-	) as any;
+	) as UncompiledColorRange<ColorRangeConfig<RangeNames>>;
+
+	range.$root = (range as Record<string, ColorRangeItem>)[rootName as string];
+
+	return range as any;
 }
 
 function presetLightnessRange({
