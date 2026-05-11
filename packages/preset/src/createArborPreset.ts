@@ -123,11 +123,10 @@ export function createArborPreset<
 		primitives,
 	};
 
-	return {
-		...preset,
-		withMode(name, mode) {
-			modes[name] = arborModeSchema.createPartial(name, mode(preset));
-			return preset as any;
-		},
+	(preset as any).withMode = (name: string, mode: any) => {
+		modes[name] = arborModeSchema.createPartial(name, mode(preset));
+		return preset as any;
 	};
+
+	return preset as ArborPresetInstance<TRanges, TSchemes>;
 }
