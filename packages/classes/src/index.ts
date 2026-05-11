@@ -29,6 +29,11 @@ export function presetArbor(
 		extractorDefault: extractorArbitraryVariants(),
 		preflights: [
 			{
+				getCSS() {
+					return `@layer arbor-preflights arbor-base;`;
+				},
+			},
+			{
 				layer: 'preflights',
 				getCSS({ generator }) {
 					let entries = Object.entries({
@@ -50,7 +55,9 @@ export function presetArbor(
 						let css = entriesToCss(entries);
 						css = css.replace(/--un-/g, `--🍂-`);
 						const roots = ['*,::before,::after', '::backdrop'];
-						return roots.map((root) => `${root}{${css}}`).join('');
+						const content = roots.map((root) => `${root}{${css}}`).join('');
+
+						return `@layer arbor-preflights {${content}}`;
 					}
 				},
 			},
