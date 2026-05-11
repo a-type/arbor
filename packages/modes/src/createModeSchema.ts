@@ -10,7 +10,14 @@ export type ModeSchemaProperty =
 	  };
 
 export type ModeSchemaLevel = {
-	[Key: string]: ModeSchemaProperty | ModeSchemaLevel;
+	/**
+	 * Special key: creates a token at the current group path without appending
+	 * a `-$root` segment. For example, `{ colors: { main: { $root: 'color', mid: 'color' } } }`
+	 * generates `--Ⓜ️-colors-main` (for `$root`) and `--Ⓜ️-colors-main-mid` (for `mid`).
+	 * Optional at any level.
+	 */
+	$root?: ModeSchemaProperty;
+	[Key: string]: ModeSchemaProperty | ModeSchemaLevel | undefined;
 };
 export type ModeSchema<TSchema extends ModeSchemaLevel = ModeSchemaLevel> = {
 	definition: TSchema;
@@ -107,8 +114,8 @@ export function isModeValue(value: any): value is ModeValue {
 	);
 }
 export type ModeValues<T extends ModeSchemaLevel> = {
-	[P in keyof T]: T[P] extends ModeSchemaProperty ? ModeValue
-	: T[P] extends ModeSchemaLevel ? ModeValues<T[P]>
+	[P in keyof T]: NonNullable<T[P]> extends ModeSchemaProperty ? ModeValue
+	: NonNullable<T[P]> extends ModeSchemaLevel ? ModeValues<NonNullable<T[P]>>
 	: never;
 };
 
@@ -131,8 +138,8 @@ export type PartialModeInstance<T extends ModeSchemaLevel> = Omit<
 type AsPropertyDefinitions<T> =
 	T extends object ?
 		{
-			[P in keyof T]: T[P] extends string ? Token
-			: T[P] extends object ? AsPropertyDefinitions<T[P]>
+			[P in keyof T]: NonNullable<T[P]> extends string ? Token
+			: NonNullable<T[P]> extends object ? AsPropertyDefinitions<NonNullable<T[P]>>
 			: never;
 		}
 	:	never;
@@ -148,6 +155,17 @@ function createModeTokens<T extends ModeSchemaLevel>(
 		const propsLevel: any = {};
 		for (const key in schemaLevel) {
 			const value = schemaLevel[key];
+			if (key === '$root') {
+				// $root generates a token at the current group path (no segment appended)
+				if (isModeSchemaProperty(value)) {
+					propsLevel.$root = getModeSchemaPropertyAsPropertyDefinition(
+						propPrefix,
+						value,
+						propPrefix,
+					);
+				}
+				continue;
+			}
 			const currentPrefix = `${propPrefix}-${key.toLowerCase()}`;
 			if (isModeSchemaProperty(value)) {
 				const propertyDefinition = getModeSchemaPropertyAsPropertyDefinition(
