@@ -247,13 +247,13 @@ export function createArborModeValues<
 				font: 'sans-serif',
 			},
 			secondary: {
-				size: derive`calc(${config.primitives.$tokens.typography.md.size} / ${arborModeSchema.$tokens.density})`,
+				size: derive`calc(max(${config.primitives.$tokens.typography.xs.size}, ${config.primitives.$tokens.typography.md.size} / ${arborModeSchema.$tokens.density}))`,
 				weight: config.primitives.$tokens.typography.md.weight,
 				lineHeight: config.primitives.$tokens.typography.md.lineHeight,
 				font: 'sans-serif',
 			},
 			ambient: {
-				size: derive`calc(${config.primitives.$tokens.typography.sm.size} / ${arborModeSchema.$tokens.density})`,
+				size: derive`calc(max(${config.primitives.$tokens.typography.xs.size}, ${config.primitives.$tokens.typography.sm.size} / ${arborModeSchema.$tokens.density}))`,
 				weight: config.primitives.$tokens.typography.sm.weight,
 				lineHeight: config.primitives.$tokens.typography.sm.lineHeight,
 				font: 'sans-serif',
