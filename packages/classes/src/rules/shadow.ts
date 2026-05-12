@@ -1,6 +1,7 @@
 import { $systemProps } from '@arbor-css/core';
 import type { Rule } from '@unocss/core';
 import { colorableShadows } from '@unocss/preset-mini/utils';
+import { $classesProps } from '../properties.js';
 import { Theme } from '../theme/types.js';
 import { h } from '../util/h.js';
 import { getFromTheme } from '../util/themeOrLiteral.js';
@@ -13,12 +14,11 @@ export const shadowRules: Rule<Theme>[] = [
 			const asLiteral = h.bracket(size);
 			if (asLiteral) {
 				return {
-					'--🍂-shadow': colorableShadows(
+					[$classesProps.shadow.shadow.name]: colorableShadows(
 						asLiteral,
 						$systemProps.dynamic.shadowColor.name,
 					).join(','),
-					'box-shadow':
-						'var(--🍂-ring-offset-shadow), var(--🍂-ring-shadow), var(--🍂-shadow)',
+					'box-shadow': `${$classesProps.ring.offsetShadow.var}, ${$classesProps.ring.shadow.var}, ${$classesProps.shadow.shadow.var}`,
 				};
 			}
 
@@ -48,14 +48,13 @@ export const shadowRules: Rule<Theme>[] = [
 			}
 
 			const shadowValue = colorableShadows(
-				`var(--🍂-shadow-inset) calc(${x ?? '0'} * ${$systemProps.dynamic.shadowReverse.var}) calc(${y ?? '0'} * ${$systemProps.dynamic.shadowReverse.var}) ${blur} ${spread} ${color}`,
+				`${$classesProps.shadow.inset.var} calc(${x ?? '0'} * ${$systemProps.dynamic.shadowReverse.var}) calc(${y ?? '0'} * ${$systemProps.dynamic.shadowReverse.var}) ${blur} ${spread} ${color}`,
 				$systemProps.dynamic.shadowColor.name,
 			).join(',');
 
 			return {
-				'--🍂-shadow': shadowValue,
-				'box-shadow':
-					'var(--🍂-ring-offset-shadow), var(--🍂-ring-shadow), var(--🍂-shadow)',
+				[$classesProps.shadow.shadow.name]: shadowValue,
+				'box-shadow': `${$classesProps.ring.offsetShadow.var}, ${$classesProps.ring.shadow.var}, ${$classesProps.shadow.shadow.var}`,
 			};
 		},
 		{
@@ -72,7 +71,7 @@ export const shadowRules: Rule<Theme>[] = [
 	[
 		/^shadow-none$/,
 		() => ({
-			'--🍂-shadow': '0 0 rgb(0 0 0 / 0)',
+			[$classesProps.shadow.shadow.name]: '0 0 rgb(0 0 0 / 0)',
 		}),
 	],
 	// text shadow sizes

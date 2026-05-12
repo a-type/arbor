@@ -25,7 +25,15 @@ function makeColorSystemRules({
 }: {
 	target: string;
 	shorthands: string[];
-	systemProp: 'fg' | 'bg' | 'fill' | 'stroke' | 'accent' | 'ring' | 'shadow';
+	systemProp:
+		| 'fg'
+		| 'bg'
+		| 'fill'
+		| 'stroke'
+		| 'accent'
+		| 'ring'
+		| 'ringOffset'
+		| 'shadow';
 	suffixes?: string[];
 }): Rule<Theme>[] {
 	return [
@@ -99,7 +107,7 @@ function makeColorSystemRules({
 				return result;
 			},
 			{
-				autocomplete: `(${shorthands.join('|')})-(l|lighten|d|darken)-<number>`,
+				autocomplete: `(${shorthands.join('|')})-${colorAltersMatch}-<number>`,
 			},
 		],
 	];
@@ -148,6 +156,12 @@ export const colorRules: Rule<Theme>[] = [
 		suffixes: ['shadow', 'color', 'shadow-color'],
 		systemProp: 'shadow',
 	}),
+	...makeColorSystemRules({
+		target: $systemProps.ringOffset.target.name,
+		shorthands: ['ring-offset'],
+		suffixes: ['ring-offset', 'color'],
+		systemProp: 'ring',
+	}),
 	// placeholder requires special handling for the pseudo-element
 	[
 		/^placeholder-(.*)$/,
@@ -185,7 +199,7 @@ export const colorRules: Rule<Theme>[] = [
 			};
 		},
 		{
-			autocomplete: 'placeholder-(l|lighten|d|darken)-<number>',
+			autocomplete: `placeholder-${colorAltersMatch}-<number>`,
 		},
 	],
 

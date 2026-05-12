@@ -6,10 +6,9 @@ import { stuckVariant } from './stuck.js';
 export const variants = [
 	...(baseVariants({
 		arbitraryVariants: true,
-		variablePrefix: '🍂',
+		variablePrefix: '🤵',
 	}) as any),
 	stuckVariant,
-	// variantContainerQuery,
 	variantInert,
 	...modeVariants,
 ];

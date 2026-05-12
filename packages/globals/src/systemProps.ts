@@ -80,6 +80,13 @@ export const $systemProps = {
 			inherits: false,
 		}),
 	},
+	ringOffset: {
+		...makeSystemColorTokens('ring-offset'),
+		target: createToken(`💲-ring-offset-target`, {
+			type: 'color',
+			inherits: false,
+		}),
+	},
 	placeholder: makeSystemColorTokens('placeholder'),
 	accent: makeSystemColorTokens('accent'),
 	fill: makeSystemColorTokens('fill'),

@@ -1,5 +1,6 @@
 import { ArborPreset } from '@arbor-css/core';
 import { Rule } from 'unocss';
+import { $classesProps } from '../properties.js';
 
 // TODO: disable automatic root generation and make these act as on-demands?
 export const createModeRules = (preset: ArborPreset<any, any>): Rule[] => [
@@ -8,7 +9,7 @@ export const createModeRules = (preset: ArborPreset<any, any>): Rule[] => [
 		([, value]) => {
 			const mode = preset.modes[value];
 			if (!mode) return;
-			return { '--🍂-mode': value };
+			return { [$classesProps.mode.name]: value };
 		},
 		{
 			autocomplete: Object.keys(preset.modes).map((mode) => `@mode-${mode}`),
@@ -19,7 +20,7 @@ export const createModeRules = (preset: ArborPreset<any, any>): Rule[] => [
 		([, value]) => {
 			const scheme = preset.primitives.colors[value];
 			if (!scheme) return;
-			return { '--🍂-scheme': value };
+			return { [$classesProps.scheme.name]: value };
 		},
 		{
 			autocomplete: Object.keys(preset.primitives.colors).map(

@@ -1,4 +1,8 @@
-import { ArborPreset, generateStylesheet } from '@arbor-css/core';
+import {
+	ArborPreset,
+	flattenToPropsList,
+	generateStylesheet,
+} from '@arbor-css/core';
 import { extractorArbitraryVariants } from '@unocss/extractor-arbitrary-variants';
 import {
 	boxShadowsBase,
@@ -6,6 +10,7 @@ import {
 	transformBase,
 } from '@unocss/preset-mini/rules';
 import { entriesToCss, Preset, transformerVariantGroup } from 'unocss';
+import { $classesProps } from './properties.js';
 import { createRules } from './rules/index.js';
 import { createTheme, ThemeConfig } from './theme/index.js';
 import { variants } from './variants/index.js';
@@ -33,6 +38,7 @@ export function presetArbor(
 					return `@layer arbor-preflights arbor-base;`;
 				},
 			},
+			// preset-mini props
 			{
 				layer: 'preflights',
 				getCSS({ generator }) {
@@ -53,12 +59,20 @@ export function presetArbor(
 
 					if (entries.length > 0) {
 						let css = entriesToCss(entries);
-						css = css.replace(/--un-/g, `--🍂-`);
+						css = css.replace(/--un-/g, `--🤵-`);
 						const roots = ['*,::before,::after', '::backdrop'];
 						const content = roots.map((root) => `${root}{${css}}`).join('');
 
 						return `@layer arbor-preflights {${content}}`;
 					}
+				},
+			},
+			{
+				layer: 'preflights',
+				getCSS({ generator }) {
+					return flattenToPropsList($classesProps)
+						.map((prop) => prop.definition)
+						.join('\n');
 				},
 			},
 			{
@@ -70,3 +84,5 @@ export function presetArbor(
 		],
 	};
 }
+
+export { $classesProps } from './properties.js';

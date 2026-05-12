@@ -1,5 +1,6 @@
 import { $systemProps } from '@arbor-css/globals';
 import type { CSSObject, Rule, RuleContext } from '@unocss/core';
+import { $classesProps } from '../properties.js';
 import { Theme } from '../theme/types.js';
 import { h } from '../util/h.js';
 import { themeOrLiteral } from '../util/themeOrLiteral.js';
@@ -15,12 +16,12 @@ export const ringRules: Rule<Theme>[] = [
 			});
 			if (value) {
 				return {
-					'--🍂-ring-width': value,
-					'--🍂-ring-offset-shadow':
-						'var(--🍂-ring-inset) 0 0 0 var(--🍂-ring-offset-width) var(--🍂-ring-offset-color)',
-					'--🍂-ring-shadow': `var(--🍂-ring-inset) 0 0 0 calc(var(--🍂-ring-width) + var(--🍂-ring-offset-width)) ${$systemProps.ring.target.var}`,
-					'box-shadow':
-						'var(--🍂-ring-offset-shadow), var(--🍂-ring-shadow), var(--🍂-shadow)',
+					[$classesProps.ring.width.name]: value,
+					[$classesProps.ring.offsetShadow.name]:
+						`${$classesProps.ring.inset.var} 0 0 0 ${$classesProps.ring.offsetWidth.var} ${$systemProps.ringOffset.target.varFallback($classesProps.ring.offsetColor.var)}`,
+					[$classesProps.ring.shadow.name]:
+						`${$classesProps.ring.inset.var} 0 0 0 calc(${$classesProps.ring.width.var} + ${$classesProps.ring.offsetWidth.var}) ${$systemProps.ring.target.varFallback($classesProps.ring.color.var)}`,
+					'box-shadow': `${$classesProps.ring.offsetShadow.var}, ${$classesProps.ring.shadow.var}, ${$classesProps.shadow.shadow.var}`,
 				};
 			}
 		},
@@ -35,11 +36,12 @@ export const ringRules: Rule<Theme>[] = [
 	],
 
 	// offset size
-	['ring-offset', { '--🍂-ring-offset-width': '1px' }],
+	['ring-offset', { [$classesProps.ring.offsetWidth.name]: '1px' }],
 	[
 		/^ring-offset-(?:width-|size-)?(.+)$/,
 		([, d], { theme }) => ({
-			'--🍂-ring-offset-width': theme.lineWidth?.[d] ?? h.bracket.cssvar.px(d),
+			[$classesProps.ring.offsetWidth.name]:
+				theme.lineWidth?.[d] ?? h.bracket.cssvar.px(d),
 		}),
 		{ autocomplete: 'ring-offset-(width|size)-$lineWidth' },
 	],
@@ -47,12 +49,15 @@ export const ringRules: Rule<Theme>[] = [
 	// TODO: what is "ring offset color..."
 
 	// style
-	['ring-inset', { '--🍂-ring-inset': 'inset' }],
+	['ring-inset', { [$classesProps.ring.inset.name]: 'inset' }],
 ];
 
 function handleWidth(
 	[, b]: string[],
 	{ theme }: RuleContext<Theme>,
 ): CSSObject {
-	return { '--🍂-ring-width': theme.ringWidth?.[b] ?? h.bracket.cssvar.px(b) };
+	return {
+		[$classesProps.ring.width.name]:
+			theme.ringWidth?.[b] ?? h.bracket.cssvar.px(b),
+	};
 }
