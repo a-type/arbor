@@ -1,6 +1,6 @@
 {
 	"name": "@arbor-css/util",
-	"version": "0.0.31",
+	"version": "0.0.32",
 	"type": "module",
 	"publishConfig": {
 		"access": "public"
