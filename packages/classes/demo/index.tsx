@@ -181,6 +181,11 @@ export default function Demo() {
 					<Input placeholder="Input" />
 				</Box>
 			</div>
+			<div className="flex flex-col gap-md">
+				<span className="text-primary">Primary Text</span>
+				<span className="text-secondary">Secondary Text</span>
+				<span className="text-ambient">Ambient Text</span>
+			</div>
 		</SchemeSwitcher>
 	);
 }

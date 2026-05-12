@@ -46,6 +46,8 @@ export type TypographyConfig<TLevels extends string = DefaultTypographyLevel> =
 		levels?: Record<TLevels, Partial<TypographyLevel>>;
 		defaultLevel?: TLevels;
 		globals?: Partial<GlobalConfig>;
+		minSize?: string;
+		maxSize?: string;
 	};
 
 export function compileTypography<
@@ -76,7 +78,13 @@ export function compileTypography<
 			const levelConfig = config.levels?.[nameCast] ?? {};
 			acc[nameCast] = {
 				size: printComputationResult(
-					computeEquation(typographySizeEquation(i - baseIndex), evalContext),
+					computeEquation(
+						typographySizeEquation(i - baseIndex, {
+							min: config.minSize,
+							max: config.maxSize,
+						}),
+						evalContext,
+					),
 				),
 				weight: printComputationResult(
 					computeEquation(typographyWeightEquation(i - baseIndex), evalContext),
@@ -93,7 +101,8 @@ export function compileTypography<
 		},
 		{} as Record<TLevels, TypographyLevel>,
 	) as CompiledTypography<TLevels>['levels'];
-	const defaultLevel = config.defaultLevel ?? (levelNames[baseIndex] as TLevels);
+	const defaultLevel =
+		config.defaultLevel ?? (levelNames[baseIndex] as TLevels);
 
 	return {
 		defaultLevel,
@@ -104,9 +113,19 @@ export function compileTypography<
 	};
 }
 
-const typographySizeEquation = (step: number) =>
-	$.multiply($.literal('1rem'), $.fn('pow', $.literal(1.25), $.literal(step)));
-
+const typographySizeEquation = (
+	step: number,
+	{ min = '0.875rem', max = '3rem' }: { min?: string; max?: string },
+) =>
+	$.fn(
+		'clamp',
+		$.literal(min),
+		$.multiply(
+			$.literal('1rem'),
+			$.fn('pow', $.literal(1.125), $.literal(step)),
+		),
+		$.literal(max),
+	);
 const typographyWeightEquation = (step: number) =>
 	$.add($.literal(400), $.multiply($.literal(25), $.literal(step)));
 

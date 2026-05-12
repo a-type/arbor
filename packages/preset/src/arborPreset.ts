@@ -115,9 +115,11 @@ export const arborModeSchema = createModeSchema({
 	},
 	borderRadius: {
 		$root: 'border-radius',
+		xs: 'border-radius',
 		sm: 'border-radius',
 		md: 'border-radius',
 		lg: 'border-radius',
+		xl: 'border-radius',
 	},
 	shadow: {
 		$root: 'shadow',
@@ -259,9 +261,11 @@ export function createArborModeValues<
 		},
 		borderRadius: {
 			$root: derive`calc(${$globalProps.roundness} * ${spacingRoot} * 2 / ${arborModeSchema.$tokens.density})`,
+			xs: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.xs} * 2 / ${arborModeSchema.$tokens.density})`,
 			sm: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.md} * 2 / ${arborModeSchema.$tokens.density})`,
 			md: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.lg} * 2 / ${arborModeSchema.$tokens.density})`,
 			lg: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.xl} * 2 / ${arborModeSchema.$tokens.density})`,
+			xl: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.xl} * 4 / ${arborModeSchema.$tokens.density})`,
 		},
 		borderWidth: {
 			$root: derive`${$globalProps.borderWidth}`,
