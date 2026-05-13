@@ -8,7 +8,7 @@ describe('getFromTheme', () => {
 				'': 'root value',
 			},
 		};
-		const result = getFromTheme('foo', theme as any, { startFrom: 'foo' });
+		const result = getFromTheme('foo', theme as any, {});
 		expect(result).toBe('root value');
 	});
 });

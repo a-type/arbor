@@ -1,6 +1,86 @@
 import { createToken } from '@arbor-css/preset';
 
 export const $classesProps = {
+	transform: {
+		rotate: createToken('🤵-rotate', {
+			type: 'angle',
+			fallback: '0deg',
+			forceDefinition: true,
+			inherits: false,
+		}),
+		rotateX: createToken('🤵-rotate-x', {
+			type: 'angle',
+			fallback: '0deg',
+			forceDefinition: true,
+			inherits: false,
+		}),
+		rotateY: createToken('🤵-rotate-y', {
+			type: 'angle',
+			fallback: '0deg',
+			forceDefinition: true,
+			inherits: false,
+		}),
+		rotateZ: createToken('🤵-rotate-z', {
+			type: 'angle',
+			fallback: '0deg',
+			forceDefinition: true,
+			inherits: false,
+		}),
+		scaleX: createToken('🤵-scale-x', {
+			type: 'number',
+			fallback: '1',
+			forceDefinition: true,
+			inherits: false,
+		}),
+		scaleY: createToken('🤵-scale-y', {
+			type: 'number',
+			fallback: '1',
+			forceDefinition: true,
+			inherits: false,
+		}),
+		scaleZ: createToken('🤵-scale-z', {
+			type: 'number',
+			fallback: '1',
+			forceDefinition: true,
+			inherits: false,
+		}),
+		skewX: createToken('🤵-skew-x', {
+			type: 'angle',
+			fallback: '0deg',
+			forceDefinition: true,
+			inherits: false,
+		}),
+		skewY: createToken('🤵-skew-y', {
+			type: 'angle',
+			fallback: '0deg',
+			forceDefinition: true,
+			inherits: false,
+		}),
+		translateX: createToken('🤵-translate-x', {
+			type: 'length-percentage',
+			fallback: '0',
+			forceDefinition: true,
+			inherits: false,
+		}),
+		translateY: createToken('🤵-translate-y', {
+			type: 'length-percentage',
+			fallback: '0',
+			forceDefinition: true,
+			inherits: false,
+		}),
+		translateZ: createToken('🤵-translate-z', {
+			type: 'length-percentage',
+			fallback: '0',
+			forceDefinition: true,
+			inherits: false,
+		}),
+		perspective: createToken('🤵-perspective', {
+			type: '*',
+			fallback: '',
+			forceDefinition: true,
+			inherits: false,
+		}),
+	},
 	ring: {
 		color: createToken('🤵-ring-color', {
 			type: 'color',

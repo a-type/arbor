@@ -11,6 +11,7 @@ import { ringRules } from './ring.js';
 import { shadowRules } from './shadow.js';
 import { spacingRules } from './spacing.js';
 import { touchActionRules } from './touchAction.js';
+import { transforms } from './transform.js';
 import { typographyRules } from './typography.js';
 
 export const createRules = (preset: ArborPreset<any, any>): Rule<Theme>[] => [
@@ -24,5 +25,6 @@ export const createRules = (preset: ArborPreset<any, any>): Rule<Theme>[] => [
 	...typographyRules,
 	...arrowRules,
 	...clipPathRules,
+	...transforms,
 	...touchActionRules,
 ];
