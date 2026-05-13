@@ -46,7 +46,7 @@ export const ringRules: Rule<Theme>[] = [
 		{ autocomplete: 'ring-offset-(width|size)-$lineWidth' },
 	],
 
-	// TODO: what is "ring offset color..."
+	// ring offset color handled in color rules
 
 	// style
 	['ring-inset', { [$classesProps.ring.inset.name]: 'inset' }],
