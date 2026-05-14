@@ -66,12 +66,10 @@ export const $systemProps = {
 	},
 	borderColor: {
 		'': makeSystemColorTokens('borderColor-all'),
-		block: makeSystemColorTokens('borderColor-block'),
-		inline: makeSystemColorTokens('borderColor-inline'),
-		'block-start': makeSystemColorTokens('borderColor-block-start'),
-		'inline-end': makeSystemColorTokens('borderColor-inline-end'),
-		'block-end': makeSystemColorTokens('borderColor-block-end'),
-		'inline-start': makeSystemColorTokens('borderColor-inline-start'),
+		bottom: makeSystemColorTokens('borderColor-bottom'),
+		top: makeSystemColorTokens('borderColor-top'),
+		left: makeSystemColorTokens('borderColor-left'),
+		right: makeSystemColorTokens('borderColor-right'),
 	},
 	ring: {
 		...makeSystemColorTokens('ring'),

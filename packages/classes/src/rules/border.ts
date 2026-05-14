@@ -8,6 +8,7 @@ import {
 	cornerMapEntries,
 	directionMapEntries,
 	globalKeywords,
+	sideMapEntries,
 } from '../util/mappings.js';
 import { dirRegex } from '../util/matchers.js';
 import { themeOrLiteral } from '../util/themeOrLiteral.js';
@@ -27,7 +28,7 @@ const borderStyles = [
 	...globalKeywords,
 ];
 
-const borderWidthRules: Rule<Theme>[] = directionMapEntries.flatMap(
+const borderWidthRules: Rule<Theme>[] = sideMapEntries.flatMap(
 	([dirSuffix, dirs]) => {
 		const pattern = `^(?:border|b)${dirRegex(dirSuffix)}(?:-(.+))?$`;
 		return [
@@ -54,29 +55,28 @@ const borderWidthRules: Rule<Theme>[] = directionMapEntries.flatMap(
 	},
 );
 
-const borderRadiusRules: Rule<Theme>[] = [
-	...directionMapEntries,
-	...cornerMapEntries,
-].flatMap(([dirSuffix, dirs]) => {
-	const pattern = `^(?:rounded|rd)${dirRegex(dirSuffix)}(?:-(.+))?$`;
-	return [
-		[
-			new RegExp(pattern),
-			([, size], { theme }) => {
-				const [value] = themeOrLiteral(size, theme, {
-					startFrom: 'border-radius',
-					trySuffixes: ['radius', 'r'],
-				});
-				if (!value) return;
-				return Object.fromEntries(
-					dirs.map((dir) => [`${dashConcat('border', dir)}-radius`, value]),
-				);
-			},
-		] satisfies Rule<Theme>,
-	];
-});
+const borderRadiusRules: Rule<Theme>[] = cornerMapEntries.flatMap(
+	([dirSuffix, dirs]) => {
+		const pattern = `^(?:rounded|rd)${dirRegex(dirSuffix)}(?:-(.+))?$`;
+		return [
+			[
+				new RegExp(pattern),
+				([, size], { theme }) => {
+					const [value] = themeOrLiteral(size, theme, {
+						startFrom: 'border-radius',
+						trySuffixes: ['radius', 'r'],
+					});
+					if (!value) return;
+					return Object.fromEntries(
+						dirs.map((dir) => [`${dashConcat('border', dir)}-radius`, value]),
+					);
+				},
+			] satisfies Rule<Theme>,
+		];
+	},
+);
 
-const borderColorRules: Rule<Theme>[] = directionMapEntries.flatMap(
+const borderColorRules: Rule<Theme>[] = sideMapEntries.flatMap(
 	([dirSuffix, dirs]) => {
 		return [
 			// Rule to apply a color
@@ -108,7 +108,8 @@ const borderColorRules: Rule<Theme>[] = directionMapEntries.flatMap(
 					// Maps input color to a system prop associated with direction,
 					// then applies that prop.
 
-					return dirs.flatMap<CSSObject>((dir) => {
+					return dirs.flatMap<CSSObject>((d) => {
+						const dir = d as '' | 'top' | 'right' | 'bottom' | 'left';
 						const systemPropWithFallback = $systemProps.borderColor[
 							dir
 						].applied.varFallback($systemProps.borderColor[''].applied.var);
@@ -136,9 +137,9 @@ const borderColorRules: Rule<Theme>[] = directionMapEntries.flatMap(
 				([, method, steps]) => {
 					return dirs.flatMap<CSSObject>((dir) => ({
 						[`${dashConcat('border', dir)}-color`]: colorAlters[method](
-							$systemProps.borderColor[dir].applied.varFallback(
-								$systemProps.borderColor[''].applied.var,
-							),
+							$systemProps.borderColor[
+								dir as '' | 'top' | 'right' | 'bottom' | 'left'
+							].applied.varFallback($systemProps.borderColor[''].applied.var),
 							steps,
 						),
 					}));

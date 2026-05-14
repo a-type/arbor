@@ -58,34 +58,32 @@ describe('border color', () => {
 	});
 	it('maps literal color with opacity on directional rules', async () => {
 		await testRules('border-t-[red]/50', {
-			'border-block-start-color': `rgb(from ${$systemProps.borderColor[
-				'block-start'
-			].applied.varFallback(
+			'border-top-color': `rgb(from ${$systemProps.borderColor.top.applied.varFallback(
 				$systemProps.borderColor[''].applied.var,
-			)} / ${$systemProps.borderColor['block-start'].opacity.varFallback(
+			)} / ${$systemProps.borderColor.top.opacity.varFallback(
 				$systemProps.borderColor[''].opacity.var,
 			)})`,
-			[$systemProps.borderColor['block-start'].applied.name]: 'red',
-			[$systemProps.borderColor['block-start'].opacity.name]: '0.5',
+			[$systemProps.borderColor.top.applied.name]: 'red',
+			[$systemProps.borderColor.top.opacity.name]: '0.5',
 		});
 	});
 	it('maps literal color without opacity on directional rules', async () => {
 		await testRules('border-t-[red]', {
-			'border-block-start-color': $systemProps.borderColor[
-				'block-start'
-			].applied.varFallback($systemProps.borderColor[''].applied.var),
-			[$systemProps.borderColor['block-start'].applied.name]: 'red',
-			[$systemProps.borderColor['block-start'].opacity.name]: '1',
+			'border-top-color': $systemProps.borderColor.top.applied.varFallback(
+				$systemProps.borderColor[''].applied.var,
+			),
+			[$systemProps.borderColor.top.applied.name]: 'red',
+			[$systemProps.borderColor.top.opacity.name]: '1',
 		});
 	});
 	it('maps color without opacity to system props on directional rules with suffixes', async () => {
 		await testRules('border-t-main-mid', {
-			'border-block-start-color': $systemProps.borderColor[
-				'block-start'
-			].applied.varFallback($systemProps.borderColor[''].applied.var),
-			[$systemProps.borderColor['block-start'].applied.name]:
+			'border-top-color': $systemProps.borderColor.top.applied.varFallback(
+				$systemProps.borderColor[''].applied.var,
+			),
+			[$systemProps.borderColor.top.applied.name]:
 				testBaseMode.schema.$tokens.colors.main.mid.var,
-			[$systemProps.borderColor['block-start'].opacity.name]: '1',
+			[$systemProps.borderColor.top.opacity.name]: '1',
 		});
 	});
 	it('copies another color target', async () => {
@@ -121,8 +119,8 @@ describe('border color', () => {
 		});
 		it('lightens a directional color', async () => {
 			await testRules('border-t-lighten-2', {
-				'border-block-start-color': colorAlters.lighten(
-					$systemProps.borderColor['block-start'].applied.varFallback(
+				'border-top-color': colorAlters.lighten(
+					$systemProps.borderColor.top.applied.varFallback(
 						$systemProps.borderColor[''].applied.var,
 					),
 					'2',
@@ -135,8 +133,7 @@ describe('border color', () => {
 describe('border width', () => {
 	it('matches border widths from theme', async () => {
 		await testRules('b-t-lg', {
-			'border-block-start-width':
-				testBaseMode.schema.$tokens.borderWidth.lg.var,
+			'border-top-width': testBaseMode.schema.$tokens.borderWidth.lg.var,
 		});
 	});
 });
@@ -160,11 +157,18 @@ describe('border radius', () => {
 		await testRules('rd', {
 			'border-radius': testBaseMode.schema.$tokens.borderRadius.$root.var,
 		});
+		await testRules('rd-t', {
+			'border-top-left-radius':
+				testBaseMode.schema.$tokens.borderRadius.$root.var,
+			'border-top-right-radius':
+				testBaseMode.schema.$tokens.borderRadius.$root.var,
+		});
 	});
 
 	it('matches directions', async () => {
 		await testRules('rd-t-md', {
-			'border-block-start-radius':
+			'border-top-left-radius': testBaseMode.schema.$tokens.borderRadius.md.var,
+			'border-top-right-radius':
 				testBaseMode.schema.$tokens.borderRadius.md.var,
 		});
 		await testRules('rd-bl-md', {
