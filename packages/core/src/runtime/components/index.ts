@@ -8,3 +8,4 @@ import './TokenShadowValuePreview.js';
 import './TokenSizeValuePreview.js';
 import './TokenValuePreview.js';
 import './TokenValues.js';
+export { ArborElement } from './BaseElement.js';

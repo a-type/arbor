@@ -110,11 +110,9 @@ export default function Demo() {
 						{[
 							'bg-neutral-paper',
 							'bg-neutral-wash',
-							'bg-neutral-lighter',
 							'bg-neutral-light',
 							'bg-neutral',
 							'bg-neutral-heavy',
-							'bg-neutral-heavier',
 							'bg-neutral-ink',
 						].map((className) => (
 							<div className={clsx(className, 'flex-1 h-16')} />
@@ -124,11 +122,9 @@ export default function Demo() {
 						{[
 							'bg-main-paper',
 							'bg-main-wash',
-							'bg-main-lighter',
 							'bg-main-light',
 							'bg-main',
 							'bg-main-heavy',
-							'bg-main-heavier',
 							'bg-main-ink',
 						].map((className) => (
 							<div className={clsx(className, 'flex-1 h-16')} />

@@ -9,7 +9,7 @@ const preset = createArborPreset({
 		mainColor: 'brand',
 		ranges: {
 			brand: {
-				hue: 200,
+				hue: 95,
 			},
 		},
 	},

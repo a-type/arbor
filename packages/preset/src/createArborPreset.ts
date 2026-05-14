@@ -2,6 +2,8 @@ import {
 	ColorRangeConfig,
 	compileColors,
 	CompiledColors,
+	defaultDarkScheme,
+	defaultLightScheme,
 	SchemeDefinition,
 } from '@arbor-css/colors';
 import { createGlobals, GlobalConfig } from '@arbor-css/globals';
@@ -63,14 +65,29 @@ export type ArborPresetInstance<
 			[K in TName]: PartialModeInstance<ArborModeSchema['definition']>;
 		}
 	>;
+	meta: {
+		config: CreateArborPresetConfig<TRanges, TSchemes>;
+	};
 };
 
 export function createArborPreset<
 	TRanges extends Record<string, ColorRangeConfig<any>>,
 	TSchemes extends Record<string, SchemeDefinition> = Record<string, never>,
 >(
-	config: CreateArborPresetConfig<TRanges, TSchemes>,
+	inputConfig: CreateArborPresetConfig<TRanges, TSchemes>,
 ): ArborPresetInstance<TRanges, TSchemes> {
+	const config: CreateArborPresetConfig<TRanges, TSchemes> = {
+		...inputConfig,
+		colors: {
+			...inputConfig.colors,
+			schemes: {
+				light: defaultLightScheme,
+				dark: defaultDarkScheme,
+				...inputConfig.colors.schemes,
+			} as any,
+		},
+	};
+
 	const globals = createGlobals(config.globals ?? {});
 
 	const colors = compileColors({
@@ -126,6 +143,9 @@ export function createArborPreset<
 	(preset as any).withMode = (name: string, mode: any) => {
 		modes[name] = arborModeSchema.createPartial(name, mode(preset));
 		return preset as any;
+	};
+	(preset as any).meta = {
+		config,
 	};
 
 	return preset as ArborPresetInstance<TRanges, TSchemes>;

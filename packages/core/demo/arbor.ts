@@ -5,7 +5,7 @@ export const arbor = createArborPreset({
 	colors: {
 		ranges: {
 			primary: {
-				hue: 98,
+				hue: 90.8,
 			},
 			alt: {
 				hue: 210,
@@ -25,36 +25,39 @@ export const arbor = createArborPreset({
 		roundness: 0.5,
 		baseSpacingSize: '8px',
 	},
-});
-
-arbor.addMode('alt', {
-	colors: {
-		main: arbor.primitives.$tokens.colors.alt,
-		neutral: arbor.primitives.$tokens.colors.alt.$neutral,
-	},
-	control: {
-		border: arbor.primitives.$tokens.colors.alt.heavy.var,
-		bg: arbor.primitives.$tokens.colors.alt.wash.var,
-	},
-});
-
-arbor.addMode('greenButtons', {
-	action: {
-		primary: {
-			bg: arbor.primitives.$tokens.colors.green.mid.var,
-			fg: arbor.primitives.$tokens.colors.green.ink.var,
-			border: arbor.primitives.$tokens.colors.green.heavy.var,
+})
+	.withMode('alt', (preset) => ({
+		colors: {
+			main: preset.primitives.$tokens.colors.alt,
+			neutral: preset.primitives.$tokens.colors.alt.$neutral,
 		},
-		secondary: {
-			bg: arbor.primitives.$tokens.colors.green.lighter.var,
-			fg: arbor.primitives.$tokens.colors.green.heavier.var,
-			border: arbor.primitives.$tokens.colors.green.heavy.var,
+		control: {
+			color: {
+				border: preset.primitives.$tokens.colors.alt.heavy.var,
+				bg: preset.primitives.$tokens.colors.alt.wash.var,
+			},
 		},
-	},
-});
-
-arbor.addMode('dense', {
-	density: 2,
-});
+	}))
+	.withMode('greenButtons', (preset) => ({
+		action: {
+			primary: {
+				color: {
+					bg: preset.primitives.$tokens.colors.green.mid.var,
+					fg: preset.primitives.$tokens.colors.green.ink.var,
+					border: preset.primitives.$tokens.colors.green.heavy.var,
+				},
+			},
+			secondary: {
+				color: {
+					bg: preset.primitives.$tokens.colors.green.light.var,
+					fg: preset.primitives.$tokens.colors.green.heavy.var,
+					border: preset.primitives.$tokens.colors.green.heavy.var,
+				},
+			},
+		},
+	}))
+	.withMode('dense', () => ({
+		density: 2,
+	}));
 
 export default arbor;

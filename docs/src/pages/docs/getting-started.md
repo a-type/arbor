@@ -71,11 +71,9 @@ Out of the box, Arbor has some opinions about what the shades of these ranges sh
 
 - `paper`: Nearly colorless, a neutral surface value
 - `wash`: Enough to notice against paper, but still very light
-- `lighter`: Getting into the "color" area. Low contrast with paper, but clearly meaningful.
 - `light`: A clear hue which stands out, but doesn't demand attention.
 - `mid`: Now this is our color! Great for primary eye-catchers.
 - `heavy`: Has a good contrast with `paper`, a bit less attention-grabbing, moving toward 'borders and text' kind of space.
-- `heavier`: Quite high contrast but still noticeably colorful, a good choice for foregrounds on bold surfaces.
 - `ink`: Paper's complement, this is a high-contrast value meant for text and other neutral foreground material.
 
 This may not look like color palettes you've used before. Particularly the "heavy" nomenclature. Arbor uses these "brightness-neutral" terms because it maps these color values to both light and dark schemes using the same name. I chose names which I felt were more aligned to the user's perception of a value, not its proximity to white or black, so that "lighter" or "heavy" can mean a dark color in light scheme or a bright color in dark scheme without contradictions.

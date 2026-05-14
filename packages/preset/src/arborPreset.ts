@@ -41,22 +41,18 @@ export const arborModeSchema = createModeSchema({
 			$root: 'color',
 			paper: 'color',
 			wash: 'color',
-			lighter: 'color',
 			light: 'color',
 			mid: 'color',
 			heavy: 'color',
-			heavier: 'color',
 			ink: 'color',
 		},
 		neutral: {
 			$root: 'color',
 			paper: 'color',
 			wash: 'color',
-			lighter: 'color',
 			light: 'color',
 			mid: 'color',
 			heavy: 'color',
-			heavier: 'color',
 			ink: 'color',
 		},
 	},
@@ -171,14 +167,14 @@ export function createArborModeValues<
 		surface: {
 			primary: {
 				color: {
-					bg: derive`${arborModeSchema.$tokens.colors.main.lighter}`,
+					bg: derive`${arborModeSchema.$tokens.colors.main.wash}`,
 					fg: derive`${arborModeSchema.$tokens.colors.main.ink}`,
 					border: derive`${arborModeSchema.$tokens.colors.main.heavy}`,
 				},
 			},
 			secondary: {
 				color: {
-					bg: derive`${arborModeSchema.$tokens.colors.main.wash}`,
+					bg: derive`${arborModeSchema.$tokens.colors.main.paper}`,
 					fg: derive`${arborModeSchema.$tokens.colors.neutral.ink}`,
 					border: derive`${arborModeSchema.$tokens.colors.main.ink}`,
 				},
@@ -205,14 +201,14 @@ export function createArborModeValues<
 			},
 			secondary: {
 				color: {
-					bg: derive`${arborModeSchema.$tokens.colors.neutral.wash}`,
-					fg: derive`${arborModeSchema.$tokens.colors.neutral.heavier}`,
+					bg: derive`${arborModeSchema.$tokens.colors.neutral.paper}`,
+					fg: derive`${arborModeSchema.$tokens.colors.neutral.heavy}`,
 					border: derive`${arborModeSchema.$tokens.colors.neutral.heavy}`,
 				},
 			},
 			ambient: {
 				color: {
-					bg: derive`${arborModeSchema.$tokens.colors.main.lighter}`,
+					bg: derive`${arborModeSchema.$tokens.colors.main.light}`,
 					fg: derive`${arborModeSchema.$tokens.colors.main.ink}`,
 					border: 'transparent',
 				},
@@ -275,7 +271,7 @@ export function createArborModeValues<
 		},
 		shadow: {
 			$root: derive`${shadowRoot.x} ${shadowRoot.y} ${shadowRoot.blur} ${shadowRoot.spread} ${shadowRoot.color}`,
-			color: derive`${arborModeSchema.$tokens.colors.neutral.heavier}`,
+			color: derive`${arborModeSchema.$tokens.colors.neutral.heavy}`,
 			sm: createShadowIntentLevel(config.primitives, 'sm'),
 			md: createShadowIntentLevel(config.primitives, 'md'),
 			lg: createShadowIntentLevel(config.primitives, 'lg'),
