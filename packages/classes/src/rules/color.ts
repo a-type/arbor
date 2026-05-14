@@ -1,9 +1,10 @@
 import { getContrastColor } from '@arbor-css/colors';
-import { $systemProps } from '@arbor-css/core';
+import { $systemProps, resolveTokenReferences } from '@arbor-css/core';
 import { Rule, symbols } from 'unocss';
 import { Theme } from '../theme/types.js';
 import { colorAlters, colorAltersMatch } from '../util/alters.js';
 import { parseColor } from '../util/color.js';
+import { customPropertyRe } from '../util/regex.js';
 import { isNumericLiteral, isNumericUnitLiteral } from '../util/tests.js';
 import { themeOrLiteral } from '../util/themeOrLiteral.js';
 
@@ -66,13 +67,29 @@ function makeColorSystemRules({
 				const parsed = parseColor(restoredOpacity);
 				if (!parsed) return;
 
+				let comment = '';
+				if (source === 'theme') {
+					// try adding an evaluated color comment to the end
+					const preset = theme.meta.preset;
+					const matchedPropertyName = customPropertyRe.exec(value)?.[1];
+					if (preset && matchedPropertyName) {
+						const resolved = resolveTokenReferences(
+							preset,
+							matchedPropertyName,
+						);
+						if (resolved) {
+							comment = ` /* ${resolved} */`;
+						}
+					}
+				}
+
 				const result = {
 					[target]:
 						parsed.opacity ?
 							`rgb(from ${$systemProps[systemProp].applied.var} r g b / ${$systemProps[systemProp].opacity.var})`
 						:	$systemProps[systemProp].applied.var,
 					[$systemProps[systemProp].applied.name]:
-						parsed.color === 'inherit' ? 'unset' : parsed.color,
+						parsed.color === 'inherit' ? 'unset' : parsed.color + comment,
 					[$systemProps[systemProp].opacity.name]: parsed.opacity || '1',
 				};
 

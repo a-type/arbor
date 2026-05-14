@@ -1,5 +1,5 @@
 import { $systemProps } from '@arbor-css/core';
-import { describe, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { testBaseMode } from '../_test.js';
 import { colorAlters } from '../util/alters.js';
 import { testRules } from './_test.js';
@@ -9,8 +9,9 @@ describe('fg color', () => {
 	it('matches colors from theme', async () => {
 		await testRules('color-main-mid', {
 			color: $systemProps.fg.applied.var,
-			[$systemProps.fg.applied.name]:
+			[$systemProps.fg.applied.name]: expect.stringContaining(
 				testBaseMode.schema.$tokens.colors.main.mid.var,
+			),
 			[$systemProps.fg.opacity.name]: '1',
 		});
 	});
@@ -59,8 +60,9 @@ describe('fg color', () => {
 	it('handles mode theme tokens without extraneous bits', async () => {
 		await testRules('color-action-primary', {
 			color: $systemProps.fg.applied.var,
-			[$systemProps.fg.applied.name]:
+			[$systemProps.fg.applied.name]: expect.stringContaining(
 				testBaseMode.schema.$tokens.action.primary.color.fg.var,
+			),
 			[$systemProps.fg.opacity.name]: '1',
 		});
 	});
@@ -110,8 +112,9 @@ describe('bg color', () => {
 	it('handles nested mode tokens without suffixes', async () => {
 		await testRules('bg-surface-primary', {
 			'background-color': $systemProps.bg.applied.var,
-			[$systemProps.bg.applied.name]:
+			[$systemProps.bg.applied.name]: expect.stringContaining(
 				testBaseMode.schema.$tokens.surface.primary.color.bg.var,
+			),
 			[$systemProps.bg.opacity.name]: '1',
 			[$systemProps.bg.contrast.name]:
 				testBaseMode.schema.$tokens.surface.primary.color.bg.var,

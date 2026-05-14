@@ -1,4 +1,4 @@
-import { TokenPurpose } from '@arbor-css/core';
+import { ArborPreset, TokenPurpose } from '@arbor-css/core';
 import { Theme as MiniTheme, ThemeAnimation } from '@unocss/preset-mini';
 
 export type Theme = {
@@ -9,6 +9,10 @@ export type Theme = {
 	containers: Record<string, string>;
 	animation: ThemeAnimation;
 	easing: MiniTheme['easing'];
+
+	meta: {
+		preset: ArborPreset<any, any>;
+	};
 } & {
 	[K in string]: any;
 };

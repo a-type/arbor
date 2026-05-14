@@ -14,3 +14,4 @@ export {
 export * from '@arbor-css/preset/config';
 export * from '@arbor-css/tokens';
 export { generateStylesheet } from './stylesheet/generateStylesheet.js';
+export { resolveTokenReferences } from './util/resolveTokenReferences.js';

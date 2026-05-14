@@ -16,3 +16,4 @@ export const unitOnlyMap: Record<string, number> = {
 export const bracketTypeRe =
 	/^\[(color|image|length|size|position|quoted|string):/i;
 export const splitComma = /,(?![^()]*\))/g;
+export const customPropertyRe = /(--[^,)\]]+)/u;

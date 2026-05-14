@@ -170,7 +170,12 @@ export function createTheme(
 	);
 
 	// split into theme categories
-	const theme: Partial<Theme> = { ...baseValues };
+	const theme: Partial<Theme> = {
+		...baseValues,
+		meta: {
+			preset: arbor,
+		},
+	};
 
 	for (const rawKey in flatPrimitiveTokens) {
 		const token = flatPrimitiveTokens[rawKey];
