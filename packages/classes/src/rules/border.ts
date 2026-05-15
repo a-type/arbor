@@ -72,7 +72,8 @@ const borderRadiusRules: Rule<Theme>[] = cornerMapEntries.flatMap(
 					);
 				},
 			] satisfies Rule<Theme>,
-		];
+			[/^(?:rounded|rd)-full$/, () => ({ 'border-radius': '99999px' })],
+		] satisfies Rule<Theme>[];
 	},
 );
 
