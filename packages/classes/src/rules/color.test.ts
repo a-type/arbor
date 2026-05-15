@@ -10,7 +10,7 @@ describe('fg color', () => {
 		await testRules('color-main-mid', {
 			color: $systemProps.fg.applied.var,
 			[$systemProps.fg.applied.name]: expect.stringContaining(
-				testBaseMode.schema.$tokens.colors.main.mid.var,
+				testBaseMode.schema.$tokens.color.main.mid.var,
 			),
 			[$systemProps.fg.opacity.name]: '1',
 		});

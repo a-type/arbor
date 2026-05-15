@@ -12,7 +12,7 @@ describe('border color', () => {
 				$systemProps.borderColor[''].applied.var,
 			),
 			[$systemProps.borderColor[''].applied.name]:
-				testBaseMode.schema.$tokens.colors.main.mid.var,
+				testBaseMode.schema.$tokens.color.main.mid.var,
 			[$systemProps.borderColor[''].opacity.name]: '1',
 		});
 	});
@@ -82,7 +82,7 @@ describe('border color', () => {
 				$systemProps.borderColor[''].applied.var,
 			),
 			[$systemProps.borderColor.top.applied.name]:
-				testBaseMode.schema.$tokens.colors.main.mid.var,
+				testBaseMode.schema.$tokens.color.main.mid.var,
 			[$systemProps.borderColor.top.opacity.name]: '1',
 		});
 	});

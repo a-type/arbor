@@ -32,6 +32,12 @@ describe('padding', () => {
 			'padding-block': testBaseMode.schema.$tokens.action.padding.block.var,
 		});
 	});
+
+	it('matches combined block/inline paddings from mode when using non-directional shorthand', async () => {
+		await testRules('p-action', {
+			padding: `${testBaseMode.schema.$tokens.action.padding.block.var} ${testBaseMode.schema.$tokens.action.padding.inline.var}`,
+		});
+	});
 });
 
 describe('gap', () => {

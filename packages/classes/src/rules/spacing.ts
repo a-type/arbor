@@ -18,7 +18,7 @@ function makeSpacingRules(
 		return [
 			new RegExp(`^${shorthand}${dirRegex(dirSuffix)}-(.+)$`),
 			([, size], { theme }) => {
-				const [value] = themeOrLiteral(size, theme, {
+				let [value] = themeOrLiteral(size, theme, {
 					startFrom: themeKey,
 					trySuffixes: [
 						'spacing',
@@ -44,7 +44,23 @@ function makeSpacingRules(
 						.flat()
 						.filter(Boolean) as string[],
 				});
-				if (!value) return;
+				if (!value) {
+					// if this is a non-directional rule, try looking for a combination of
+					// block and inline values in the theme (e.g. for "p-action", look for "action.padding.block" and "action.padding.inline")
+					if (!dirSuffix) {
+						const blockValue = themeOrLiteral(`${size}-block`, theme, {
+							startFrom: themeKey,
+							trySuffixes: ['padding', 'space', 's', 'p', 'm'],
+						})[0];
+						const inlineValue = themeOrLiteral(`${size}-inline`, theme, {
+							startFrom: themeKey,
+							trySuffixes: ['padding', 'space', 's', 'p', 'm'],
+						})[0];
+						if (blockValue && inlineValue) {
+							value = `${blockValue} ${inlineValue}`;
+						}
+					}
+				}
 				return Object.fromEntries(
 					cssProps.map((prop) => [dashConcat(cssPropGroup, prop), value]),
 				);

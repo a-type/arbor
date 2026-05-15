@@ -35,7 +35,7 @@ it('resolves mode token values', () => {
 	expect(
 		resolveTokenReferences(
 			preset,
-			preset.modes.base.schema.$tokens.colors.main.$root.name,
+			preset.modes.base.schema.$tokens.color.main.$root.name,
 		),
 	).toBe('oklch(90% 0.15000000000000002 0)');
 });

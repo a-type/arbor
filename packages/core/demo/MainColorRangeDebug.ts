@@ -48,7 +48,7 @@ class MainColorRangeDebug extends ArborElement {
 			<style>
 				.range {
 					display: flex;
-					color: ${arbor.modes.base.schema.$tokens.colors.neutral.ink.var};
+					color: ${arbor.modes.base.schema.$tokens.color.neutral.ink.var};
 				}
 				.color-swatch {
 					position: relative;

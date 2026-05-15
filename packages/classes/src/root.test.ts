@@ -10,17 +10,19 @@ describe('preset $root mappings', () => {
 		expect(testArbor.primitives.colors.light.colors.brand.$neutral.$root).toBe(
 			testArbor.primitives.colors.light.colors.brand.$neutral.mid,
 		);
-		expect(testBaseMode.values.colors.main.$root).toBe(
+		expect(testBaseMode.values.color.main.$root).toBe(
 			testArbor.primitives.$tokens.colors.brand.$root,
 		);
-		expect(testBaseMode.values.colors.neutral.$root).toBe(
+		expect(testBaseMode.values.color.neutral.$root).toBe(
 			testArbor.primitives.$tokens.colors.brand.$neutral.$root,
 		);
 	});
 
 	it('maps default scale values to mode $root tokens', () => {
 		expect(testArbor.primitives.spacing.levels.$root).toBe(
-			testArbor.primitives.spacing.levels[testArbor.primitives.spacing.defaultLevel],
+			testArbor.primitives.spacing.levels[
+				testArbor.primitives.spacing.defaultLevel
+			],
 		);
 		expect(testArbor.primitives.typography.levels.$root).toEqual(
 			testArbor.primitives.typography.levels[
@@ -28,7 +30,9 @@ describe('preset $root mappings', () => {
 			],
 		);
 		expect(testArbor.primitives.shadows.levels.$root).toEqual(
-			testArbor.primitives.shadows.levels[testArbor.primitives.shadows.defaultLevel],
+			testArbor.primitives.shadows.levels[
+				testArbor.primitives.shadows.defaultLevel
+			],
 		);
 
 		const css = modeToCss(testBaseMode, testBaseMode);

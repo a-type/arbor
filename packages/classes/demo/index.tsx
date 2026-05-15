@@ -19,7 +19,7 @@ function Box({
 }) {
 	return (
 		<div
-			className={clsx('p-md rd flex flex-col gap-sm', {
+			className={clsx('p-surface rd-surface flex flex-col gap-sm', {
 				'bg-surface-primary color-surface-primary border-surface-primary':
 					level === 'primary',
 				'bg-surface-secondary color-surface-secondary border-surface-secondary':
@@ -44,7 +44,7 @@ function Button({
 		<button
 			{...props}
 			className={clsx(
-				'px-action py-action rd-sm b-solid text-secondary leading-[1]',
+				'p-action rd-action b-solid text-secondary leading-[1]',
 				'cursor-pointer transition-color transition-shadow',
 				'transition-all',
 				{
@@ -68,7 +68,7 @@ function Button({
 function Input({ placeholder }: { placeholder?: string }) {
 	return (
 		<input
-			className={clsx('px-control py-control rd-sm b b-solid b-control')}
+			className={clsx('p-control rd-control b b-solid b-control')}
 			placeholder={placeholder}
 		/>
 	);

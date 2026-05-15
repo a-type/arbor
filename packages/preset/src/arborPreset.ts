@@ -36,7 +36,7 @@ const shadowIntents = {
 } satisfies ModeSchemaLevel;
 
 export const arborModeSchema = createModeSchema({
-	colors: {
+	color: {
 		main: {
 			$root: 'color',
 			paper: 'color',
@@ -60,6 +60,8 @@ export const arborModeSchema = createModeSchema({
 	// intents
 	action: {
 		padding: boxIntents,
+		roundness: 'other',
+		borderRadius: 'border-radius',
 		primary: {
 			color: colorIntents,
 		},
@@ -71,10 +73,15 @@ export const arborModeSchema = createModeSchema({
 		},
 	},
 	control: {
-		color: colorIntents,
 		padding: boxIntents,
+		roundness: 'other',
+		borderRadius: 'border-radius',
+		color: colorIntents,
 	},
 	surface: {
+		padding: boxIntents,
+		roundness: 'other',
+		borderRadius: 'border-radius',
 		primary: {
 			color: colorIntents,
 		},
@@ -160,70 +167,79 @@ export function createArborModeValues<
 	const shadowRoot = config.primitives.$tokens.shadows.$root;
 
 	return {
-		colors: {
+		color: {
 			main: mainColor,
 			neutral: mainColor.$neutral,
 		},
 		surface: {
+			padding: {
+				block: derive`calc(${arborModeSchema.$tokens.spacing.lg} * max(1, ${arborModeSchema.$tokens.surface.roundness} * ${$globalProps.roundness}))`,
+				inline: derive`calc(${arborModeSchema.$tokens.spacing.lg} * max(1, ${arborModeSchema.$tokens.surface.roundness} * ${$globalProps.roundness}))`,
+			},
+			roundness: 1,
+			borderRadius: derive`calc(${arborModeSchema.$tokens.borderRadius.md} * ${arborModeSchema.$tokens.surface.roundness})`,
 			primary: {
 				color: {
-					bg: derive`${arborModeSchema.$tokens.colors.main.wash}`,
-					fg: derive`${arborModeSchema.$tokens.colors.main.ink}`,
-					border: derive`${arborModeSchema.$tokens.colors.main.heavy}`,
+					bg: derive`${arborModeSchema.$tokens.color.main.wash}`,
+					fg: derive`${arborModeSchema.$tokens.color.main.ink}`,
+					border: derive`${arborModeSchema.$tokens.color.main.heavy}`,
 				},
 			},
 			secondary: {
 				color: {
-					bg: derive`${arborModeSchema.$tokens.colors.main.paper}`,
-					fg: derive`${arborModeSchema.$tokens.colors.neutral.ink}`,
-					border: derive`${arborModeSchema.$tokens.colors.main.ink}`,
+					bg: derive`${arborModeSchema.$tokens.color.main.paper}`,
+					fg: derive`${arborModeSchema.$tokens.color.neutral.ink}`,
+					border: derive`${arborModeSchema.$tokens.color.main.ink}`,
 				},
 			},
 			ambient: {
 				color: {
-					bg: derive`${arborModeSchema.$tokens.colors.neutral.paper}`,
-					fg: derive`${arborModeSchema.$tokens.colors.neutral.ink}`,
-					border: derive`${arborModeSchema.$tokens.colors.neutral.heavy}`,
+					bg: derive`${arborModeSchema.$tokens.color.neutral.paper}`,
+					fg: derive`${arborModeSchema.$tokens.color.neutral.ink}`,
+					border: derive`${arborModeSchema.$tokens.color.neutral.heavy}`,
 				},
 			},
 		},
 		action: {
 			padding: {
 				block: derive`calc(${config.primitives.$tokens.spacing.md} / ${arborModeSchema.$tokens.density})`,
-				inline: derive`calc((${config.primitives.$tokens.spacing.md} + ${$globalProps.roundness} * ${config.primitives.$tokens.spacing.sm}) / ${arborModeSchema.$tokens.density})`,
+				inline: derive`calc((${config.primitives.$tokens.spacing.lg} + ${$globalProps.roundness} * ${config.primitives.$tokens.spacing.sm}) / ${arborModeSchema.$tokens.density})`,
 			},
+			roundness: 1,
+			borderRadius: derive`calc(${arborModeSchema.$tokens.borderRadius.sm} * ${arborModeSchema.$tokens.action.roundness})`,
 			primary: {
 				color: {
-					bg: derive`${arborModeSchema.$tokens.colors.main.mid}`,
-					fg: derive`${arborModeSchema.$tokens.colors.main.ink}`,
-					border: derive`${arborModeSchema.$tokens.colors.main.heavy}`,
+					bg: derive`${arborModeSchema.$tokens.color.main.mid}`,
+					fg: derive`${arborModeSchema.$tokens.color.main.ink}`,
+					border: derive`${arborModeSchema.$tokens.color.main.heavy}`,
 				},
 			},
 			secondary: {
 				color: {
-					bg: derive`${arborModeSchema.$tokens.colors.neutral.paper}`,
-					fg: derive`${arborModeSchema.$tokens.colors.neutral.heavy}`,
-					border: derive`${arborModeSchema.$tokens.colors.neutral.heavy}`,
+					bg: derive`${arborModeSchema.$tokens.color.neutral.paper}`,
+					fg: derive`${arborModeSchema.$tokens.color.neutral.heavy}`,
+					border: derive`${arborModeSchema.$tokens.color.neutral.heavy}`,
 				},
 			},
 			ambient: {
 				color: {
-					bg: derive`${arborModeSchema.$tokens.colors.main.light}`,
-					fg: derive`${arborModeSchema.$tokens.colors.main.ink}`,
+					bg: derive`${arborModeSchema.$tokens.color.main.light}`,
+					fg: derive`${arborModeSchema.$tokens.color.main.ink}`,
 					border: 'transparent',
 				},
 			},
 		},
 		control: {
-			color: {
-				bg: derive`${arborModeSchema.$tokens.colors.neutral.paper}`,
-				fg: derive`${arborModeSchema.$tokens.colors.neutral.ink}`,
-				border: derive`${arborModeSchema.$tokens.colors.neutral.heavy}`,
-			},
-
 			padding: {
 				block: derive`calc(${config.primitives.$tokens.spacing.sm} / ${arborModeSchema.$tokens.density})`,
 				inline: derive`calc((${config.primitives.$tokens.spacing.sm} + ${$globalProps.roundness} * ${config.primitives.$tokens.spacing.xs}) / ${arborModeSchema.$tokens.density})`,
+			},
+			roundness: 1,
+			borderRadius: derive`calc(${arborModeSchema.$tokens.borderRadius.sm} * ${arborModeSchema.$tokens.control.roundness})`,
+			color: {
+				bg: derive`${arborModeSchema.$tokens.color.neutral.paper}`,
+				fg: derive`${arborModeSchema.$tokens.color.neutral.ink}`,
+				border: derive`${arborModeSchema.$tokens.color.neutral.heavy}`,
 			},
 		},
 		density: 1,
@@ -257,11 +273,11 @@ export function createArborModeValues<
 		},
 		borderRadius: {
 			$root: derive`calc(${$globalProps.roundness} * ${spacingRoot} * 2 / ${arborModeSchema.$tokens.density})`,
-			xs: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.xs} * 2 / ${arborModeSchema.$tokens.density})`,
-			sm: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.md} * 2 / ${arborModeSchema.$tokens.density})`,
-			md: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.lg} * 2 / ${arborModeSchema.$tokens.density})`,
-			lg: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.xl} * 2 / ${arborModeSchema.$tokens.density})`,
-			xl: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.xl} * 4 / ${arborModeSchema.$tokens.density})`,
+			xs: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.xs} / ${arborModeSchema.$tokens.density})`,
+			sm: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.md} / ${arborModeSchema.$tokens.density})`,
+			md: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.lg} / ${arborModeSchema.$tokens.density})`,
+			lg: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.xl} / ${arborModeSchema.$tokens.density})`,
+			xl: derive`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing['2xl']} / ${arborModeSchema.$tokens.density})`,
 		},
 		borderWidth: {
 			$root: derive`${$globalProps.borderWidth}`,
@@ -271,7 +287,7 @@ export function createArborModeValues<
 		},
 		shadow: {
 			$root: derive`${shadowRoot.x} ${shadowRoot.y} ${shadowRoot.blur} ${shadowRoot.spread} ${shadowRoot.color}`,
-			color: derive`${arborModeSchema.$tokens.colors.neutral.heavy}`,
+			color: derive`${arborModeSchema.$tokens.color.neutral.heavy}`,
 			sm: createShadowIntentLevel(config.primitives, 'sm'),
 			md: createShadowIntentLevel(config.primitives, 'md'),
 			lg: createShadowIntentLevel(config.primitives, 'lg'),
