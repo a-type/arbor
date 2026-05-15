@@ -127,57 +127,11 @@ export function createColorRange<RangeNames extends string = DefaultRangeName>(
 	return range as any;
 }
 
-function presetLightnessRange({
-	dir = 1,
-	base = 0.1,
-	waveScale = 1.2,
-	waveOffset = 0,
-	grade = 1,
-	waveMultiplier = 0.5,
-} = {}) {
-	return function ($: CalcOperations, step: number, rangeSize: number) {
-		const inverseStep = rangeSize - step;
-		const stepToUse = dir > 0 ? step : inverseStep;
-		// inverse cosine curve
-		const curve = $.subtract(
-			$.literal(1),
-			$.multiply(
-				$.add(
-					$.fn(
-						'cos',
-						$.add(
-							$.literal((stepToUse / rangeSize) * (Math.PI * waveScale)),
-							$.literal(waveOffset),
-						),
-					),
-					$.literal(1),
-				),
-				$.literal(waveMultiplier),
-			),
-		);
-
-		const baseSlope = $.multiply(
-			$.literal(base),
-			$.literal(grade),
-			$.literal(stepToUse / rangeSize),
-		);
-
-		return $.add(baseSlope, curve);
-	};
-}
-
-// n        wash               light                          mid           dark                          ink
-// light scheme
-// l 90%   +(10%*1=10%)=100%   +(10%*0.5=5%)=95%             +0=90%        -(70%*0.35=24.5%)=65.5%       -(70%*1=70%)=20%
-// c      (0.5*(75%-55%))=10%  (0.5*(75%-(55%*0.75))=16.875%  0.5*75%=37.5%   (0.5*(75%-(20%*0.5)))=32.5% (0.5*(75%-(20%*1)))=27.5%
-// dark scheme
-// l 60%   -(38%*1=38%)=22%      -(38%*0.5=19%)=41%             +0=60%         +(70%*0.35=24.5%)=84.5%      +(70%=70%)=100%
-// c      (0.5*(80%+(-40%)))=20% (0.5*(80%+(-40%*0.75)))=25% (0.5*80%)=40% (0.5*(80%-(-30%*0.5)))=32.5%  (0.5*(80%-(-30%*1)))=25%
-
 function lightnessEq(config: {
 	rangeDown: number;
 	rangeUp: number;
 	baseline: number;
+	midpointDifferentiation?: number;
 }) {
 	return (
 		$: CalcOperations,
@@ -189,7 +143,9 @@ function lightnessEq(config: {
 	) => {
 		const rangeDir = step < midpoint ? -1 : 1;
 		const rangeMax = step < midpoint ? midpoint : rangeSize - midpoint - 1;
-		const rangeProgress = Math.abs(step - midpoint) / rangeMax;
+		const rangeProgress =
+			(Math.abs(step - midpoint) / rangeMax) **
+			(config.midpointDifferentiation ?? 1.2);
 		return $.add(
 			$.literal(config.baseline),
 			$.multiply(
@@ -205,6 +161,7 @@ function chromaEq(config: {
 	rangeDown: number;
 	rangeUp: number;
 	baseline: number;
+	midpointDifferentiation?: number;
 }) {
 	return (
 		$: CalcOperations,
@@ -216,7 +173,9 @@ function chromaEq(config: {
 	) => {
 		const rangeDir = step < midpoint ? -1 : 1;
 		const rangeMax = step < midpoint ? midpoint : rangeSize - midpoint - 1;
-		const rangeProgress = Math.abs(step - midpoint) / rangeMax;
+		const rangeProgress =
+			(Math.abs(step - midpoint) / rangeMax) **
+			(config.midpointDifferentiation ?? 1.2);
 		return $.add(
 			$.literal(config.baseline),
 			$.multiply(
@@ -235,13 +194,13 @@ export function createColorLightModeRange(
 	},
 ) {
 	const lightness = lightnessEq({
-		rangeUp: 0.1,
+		rangeUp: 0.3,
 		rangeDown: 0.7,
 		baseline: 0.9,
 	});
 	const chroma = chromaEq({
 		baseline: 0.75,
-		rangeUp: -0.55,
+		rangeUp: -0.65,
 		rangeDown: 0.2,
 	});
 	return createColorRange(config, {
@@ -277,17 +236,10 @@ export function createNeutralDerivedRange(
 ): UncompiledColorRange<ColorRangeConfig<string>> {
 	function lightness($: CalcOperations, source: OklchColorEquation) {
 		const sourceLAsZeroToOne = $.divide(source.l, $.literal('100%'));
-		const fromL = $.add(
+		return $.subtract(
 			sourceLAsZeroToOne,
-			$.multiply(
-				$.divide(
-					$.subtract(sourceLAsZeroToOne, $.literal('0.2')),
-					$.literal('0.2'),
-				),
-				$.literal('-0.001'),
-			),
+			$.fn('pow', source.c, $.literal(1.7)),
 		);
-		return $.subtract(fromL, $.fn('pow', source.c, $.literal(1.6)));
 	}
 	function chroma($: CalcOperations, source: OklchColorEquation) {
 		return $.multiply(
