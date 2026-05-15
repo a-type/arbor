@@ -98,6 +98,10 @@ function makeSystemColorTokens(name: string) {
 			type: 'color',
 			inherits: true,
 		}),
+		final: createToken(`💲-${name}-final`, {
+			type: 'color',
+			inherits: false,
+		}),
 		opacity: createToken(`💲-${name}-op`, {
 			type: 'number',
 			inherits: false,

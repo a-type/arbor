@@ -9,12 +9,24 @@ import { isNumericLiteral, isNumericUnitLiteral } from '../util/tests.js';
 import { themeOrLiteral } from '../util/themeOrLiteral.js';
 
 export const laterals = {
-	fg: $systemProps.fg.applied.varFallback('currentColor'),
-	bg: $systemProps.bg.applied.varFallback($systemProps.scheme.trueLight.var),
-	fill: $systemProps.fill.applied.varFallback('currentColor'),
-	stroke: $systemProps.stroke.applied.varFallback('currentColor'),
-	accent: $systemProps.accent.applied.varFallback('currentColor'),
-	ring: $systemProps.ring.applied.varFallback('currentColor'),
+	fg: $systemProps.fg.final.varFallback(
+		$systemProps.fg.applied.varFallback('currentColor'),
+	),
+	bg: $systemProps.bg.final.varFallback(
+		$systemProps.bg.applied.varFallback($systemProps.scheme.trueLight.var),
+	),
+	fill: $systemProps.fill.final.varFallback(
+		$systemProps.fill.applied.varFallback('currentColor'),
+	),
+	stroke: $systemProps.stroke.final.varFallback(
+		$systemProps.stroke.applied.varFallback('currentColor'),
+	),
+	accent: $systemProps.accent.final.varFallback(
+		$systemProps.accent.applied.varFallback('currentColor'),
+	),
+	ring: $systemProps.ring.final.varFallback(
+		$systemProps.ring.applied.varFallback('currentColor'),
+	),
 	shadow: $systemProps.dynamic.shadowColor.varFallback('currentColor'),
 };
 
@@ -86,10 +98,12 @@ function makeColorSystemRules({
 				const result = {
 					[target]:
 						parsed.opacity ?
-							`rgb(from ${$systemProps[systemProp].applied.var} r g b / ${$systemProps[systemProp].opacity.var})`
-						:	$systemProps[systemProp].applied.var,
+							`rgb(from ${$systemProps[systemProp].final.var} r g b / ${$systemProps[systemProp].opacity.var})`
+						:	$systemProps[systemProp].final.var,
 					[$systemProps[systemProp].applied.name]:
 						parsed.color === 'inherit' ? 'unset' : parsed.color + comment,
+					[$systemProps[systemProp].final.name]:
+						$systemProps[systemProp].applied.var,
 					[$systemProps[systemProp].opacity.name]: parsed.opacity || '1',
 				};
 
@@ -114,7 +128,7 @@ function makeColorSystemRules({
 					step,
 				);
 				const result = {
-					[target]: color,
+					[$systemProps[systemProp].final.name]: color,
 				};
 
 				if (systemProp === 'bg') {

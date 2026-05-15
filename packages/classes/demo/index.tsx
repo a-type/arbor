@@ -52,11 +52,12 @@ function Button({
 						level === 'primary',
 					'bg-action-secondary b-action-secondary b color-contrast shadow-sm disabled:(bg-lighten-1 color-lighten-5)':
 						level === 'secondary',
-					'bg-transparent hover:bg-inherit hover:b-action-secondary b-transparent b-sm color-action-ambient disabled:(color-lighten-5)':
+					'bg-transparent hover:bg-inherit b-transparent b-sm color-action-ambient disabled:(color-lighten-5)':
 						level === 'ambient',
 				},
 				'hover:bg-darken-1 active:bg-darken-2 focus-visible:bg-lighten-1',
-				'hover:(ring-[4px] ring-bg ring-darken-1)',
+				'disabled:(ring-none shadow-none)',
+				'hover:(ring-[4px] ring-bg)',
 			)}
 		>
 			{children}
@@ -133,6 +134,7 @@ export default function Demo() {
 					</div>
 
 					<div className="flex flex-row">
+						<div className="bg-main-light flex-1 h-16" />
 						{[
 							'bg-lighten-3',
 							'bg-lighten-2',
@@ -144,6 +146,7 @@ export default function Demo() {
 						].map((className) => (
 							<div className={clsx(className, 'bg-main-mid flex-1 h-16')} />
 						))}
+						<div className="bg-main-heavy flex-1 h-16" />
 					</div>
 				</div>
 				<Box level="primary">
