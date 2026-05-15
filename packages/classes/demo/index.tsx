@@ -104,6 +104,7 @@ function Row({ children }: { children: ReactNode }) {
 export default function Demo() {
 	return (
 		<SchemeSwitcher>
+			<div className="w-full h-32px bg-gradient-to-r from-main-wash to-main-heavy" />
 			<div className="p-lg flex flex-col gap-lg">
 				<div>
 					<div className="flex flex-row">

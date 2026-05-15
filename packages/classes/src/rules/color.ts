@@ -9,13 +9,13 @@ import { isNumericLiteral, isNumericUnitLiteral } from '../util/tests.js';
 import { themeOrLiteral } from '../util/themeOrLiteral.js';
 
 export const laterals = {
-	fg: $systemProps.fg.applied.var,
-	bg: $systemProps.bg.applied.var,
-	fill: $systemProps.fill.applied.var,
-	stroke: $systemProps.stroke.applied.var,
-	accent: $systemProps.accent.applied.var,
-	ring: $systemProps.ring.applied.var,
-	shadow: $systemProps.dynamic.shadowColor.var,
+	fg: $systemProps.fg.applied.varFallback('currentColor'),
+	bg: $systemProps.bg.applied.varFallback($systemProps.scheme.trueLight.var),
+	fill: $systemProps.fill.applied.varFallback('currentColor'),
+	stroke: $systemProps.stroke.applied.varFallback('currentColor'),
+	accent: $systemProps.accent.applied.varFallback('currentColor'),
+	ring: $systemProps.ring.applied.varFallback('currentColor'),
+	shadow: $systemProps.dynamic.shadowColor.varFallback('currentColor'),
 };
 
 function makeColorSystemRules({

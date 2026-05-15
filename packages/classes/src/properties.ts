@@ -139,6 +139,18 @@ export const $classesProps = {
 			inherits: false,
 		}),
 	},
+	background: {
+		gradient: createToken('🤵-background-gradient', {}),
+		gradientFromPosition: createToken(
+			'🤵-background-gradient-from-position',
+			{},
+		),
+		gradientFrom: createToken('🤵-background-gradient-from', {}),
+		gradientViaPosition: createToken('🤵-background-gradient-via-position', {}),
+		gradientVia: createToken('🤵-background-gradient-via', {}),
+		gradientToPosition: createToken('🤵-background-gradient-to-position', {}),
+		gradientTo: createToken('🤵-background-gradient-to', {}),
+	},
 	mode: createToken('🤵-mode', {}),
 	scheme: createToken('🤵-scheme', {}),
 };
