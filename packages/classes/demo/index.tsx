@@ -52,7 +52,7 @@ function Button({
 						level === 'primary',
 					'bg-action-secondary b-action-secondary b color-contrast shadow-sm disabled:(bg-lighten-1 color-lighten-5)':
 						level === 'secondary',
-					'bg-transparent hover:bg-inherit b-transparent b-sm color-action-ambient disabled:(color-lighten-5)':
+					'bg-transparent hover:bg-inherit b-transparent b-sm color-contrast disabled:(color-lighten-5)':
 						level === 'ambient',
 				},
 				'hover:bg-darken-1 active:bg-darken-2 focus-visible:bg-lighten-1',

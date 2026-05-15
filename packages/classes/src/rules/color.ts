@@ -101,7 +101,9 @@ function makeColorSystemRules({
 							`rgb(from ${$systemProps[systemProp].final.var} r g b / ${$systemProps[systemProp].opacity.var})`
 						:	$systemProps[systemProp].final.var,
 					[$systemProps[systemProp].applied.name]:
-						parsed.color === 'inherit' ? 'unset' : parsed.color + comment,
+						parsed.color === 'inherit' || parsed.color === 'transparent' ?
+							'unset'
+						:	parsed.color + comment,
 					[$systemProps[systemProp].final.name]:
 						$systemProps[systemProp].applied.var,
 					[$systemProps[systemProp].opacity.name]: parsed.opacity || '1',
