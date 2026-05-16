@@ -18,11 +18,11 @@ const defaultSpacingEquation = (step: number) =>
 		// calculate rem value of the spacing relative to the
 		// font size.
 		$.divide(
-			$.literal($globalProps.baseSpacingSize.var),
-			$.literal($globalProps.baseFontSize.var),
+			$.val($globalProps.baseSpacingSize.var),
+			$.val($globalProps.baseFontSize.var),
 		),
-		$.literal('1rem'),
-		$.fn('pow', $.literal(1.5), $.literal(step)),
+		$.val('1rem'),
+		$.fn('pow', $.val(1.5), $.val(step)),
 	);
 
 export interface SpacingConfig<

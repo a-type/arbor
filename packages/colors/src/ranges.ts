@@ -96,23 +96,22 @@ export function createColorRange<RangeNames extends string = DefaultRangeName>(
 					$.castPercentage(
 						lightness($, { step: i, rangeSize: size, midpoint }),
 					),
-					$.literal('0%'),
-					$.literal('100%'),
+					$.val('0%'),
+					$.val('100%'),
 				),
 				c: $.clamp(
 					$.multiply(
-						$.literal(config.saturation ?? 1),
-						$.literal('0.4'),
+						$.val(config.saturation ?? 1),
+						$.val('0.4'),
 						chroma($, { step: i, rangeSize: size, midpoint }),
-						$.literal($globalProps.saturation.var),
+						$.val($globalProps.saturation.var),
 					),
-					$.literal('0'),
-					$.literal('0.4'),
+					$.val('0'),
+					$.val('0.4'),
 				),
 				h: $.multiply(
-					$.literal(`${sourceHue}`),
-					calcs.hue?.($, { step: i, rangeSize: size, midpoint }) ??
-						$.literal(1),
+					$.val(`${sourceHue}`),
+					calcs.hue?.($, { step: i, rangeSize: size, midpoint }) ?? $.val(1),
 				),
 			}));
 
@@ -147,11 +146,11 @@ function lightnessEq(config: {
 			(Math.abs(step - midpoint) / rangeMax) **
 			(config.midpointDifferentiation ?? 1.2);
 		return $.add(
-			$.literal(config.baseline),
+			$.val(config.baseline),
 			$.multiply(
-				$.literal(rangeDir),
-				$.literal(rangeProgress),
-				$.literal(step < midpoint ? config.rangeDown : config.rangeUp),
+				$.val(rangeDir),
+				$.val(rangeProgress),
+				$.val(step < midpoint ? config.rangeDown : config.rangeUp),
 			),
 		);
 	};
@@ -177,11 +176,11 @@ function chromaEq(config: {
 			(Math.abs(step - midpoint) / rangeMax) **
 			(config.midpointDifferentiation ?? 1.2);
 		return $.add(
-			$.literal(config.baseline),
+			$.val(config.baseline),
 			$.multiply(
-				$.literal(rangeDir),
-				$.literal(rangeProgress),
-				$.literal(step < midpoint ? config.rangeDown : config.rangeUp),
+				$.val(rangeDir),
+				$.val(rangeProgress),
+				$.val(step < midpoint ? config.rangeDown : config.rangeUp),
 			),
 		);
 	};
@@ -235,17 +234,14 @@ export function createNeutralDerivedRange(
 	sourceRange: UncompiledColorRange<ColorRangeConfig<string>>,
 ): UncompiledColorRange<ColorRangeConfig<string>> {
 	function lightness($: CalcOperations, source: OklchColorEquation) {
-		const sourceLAsZeroToOne = $.divide(source.l, $.literal('100%'));
-		return $.subtract(
-			sourceLAsZeroToOne,
-			$.fn('pow', source.c, $.literal(1.7)),
-		);
+		const sourceLAsZeroToOne = $.divide(source.l, $.val('100%'));
+		return $.subtract(sourceLAsZeroToOne, $.fn('pow', source.c, $.val(1.7)));
 	}
 	function chroma($: CalcOperations, source: OklchColorEquation) {
 		return $.multiply(
 			source.c,
-			$.literal($globalProps.saturation.var),
-			$.literal('0.15'),
+			$.val($globalProps.saturation.var),
+			$.val('0.15'),
 		);
 	}
 
@@ -254,8 +250,8 @@ export function createNeutralDerivedRange(
 			const sourceEquation =
 				sourceRange[sourceName as keyof typeof sourceRange].equation;
 			const equation = oklchBuilder(($) => ({
-				l: $.clamp(lightness($, sourceEquation), $.literal(0), $.literal(1)),
-				c: $.clamp(chroma($, sourceEquation), $.literal(0), $.literal(0.4)),
+				l: $.clamp(lightness($, sourceEquation), $.val(0), $.val(1)),
+				c: $.clamp(chroma($, sourceEquation), $.val(0), $.val(0.4)),
 				h: sourceEquation.h,
 			}));
 			return [

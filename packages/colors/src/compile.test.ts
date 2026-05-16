@@ -99,8 +99,8 @@ it('compiles a set of color ranges with a custom scheme', () => {
 				tag: '👌',
 				getColorRange: (config) =>
 					createColorRange(config, {
-						lightness: ($) => $.literal('0'),
-						chroma: ($) => $.literal('0'),
+						lightness: ($) => $.val('0'),
+						chroma: ($) => $.val('0'),
 					}),
 				isDark: true,
 			},

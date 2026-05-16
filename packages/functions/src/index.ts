@@ -3,9 +3,9 @@ import {
 	CalcOperations,
 	computeEquation,
 	type Equation,
-	LiteralOperation,
 	printComputationResult,
 	printEquation,
+	TokenOperation,
 } from '@arbor-css/calc';
 import { Token } from '@arbor-css/tokens';
 
@@ -54,7 +54,7 @@ export function createFunction<TParams extends Token[] = Token[]>(
 		 * Provide the definition of the function, using calc tools to construct
 		 * an equation. The incoming parameters are already wrapped with literal()
 		 */
-		definition: ($: CalcOperations, ...params: LiteralOperation[]) => Equation;
+		definition: ($: CalcOperations, ...params: TokenOperation[]) => Equation;
 	},
 ) {
 	const cssName = `${FUNCTION_PREFIX}${name}`;
@@ -67,7 +67,7 @@ export function createFunction<TParams extends Token[] = Token[]>(
 		})
 		.join(', ');
 
-	const equation = definition($, ...parameters.map((p) => $.literal(p)));
+	const equation = definition($, ...parameters.map((p) => $.token(p)));
 	const body = printEquation(equation);
 	const cssDefinition = `@function ${cssName}(${paramsList}) { result: ${body}; }`;
 

@@ -119,19 +119,16 @@ const typographySizeEquation = (
 ) =>
 	$.fn(
 		'clamp',
-		$.literal(min),
-		$.multiply(
-			$.literal('1rem'),
-			$.fn('pow', $.literal(1.125), $.literal(step)),
-		),
-		$.literal(max),
+		$.val(min),
+		$.multiply($.val('1rem'), $.fn('pow', $.val(1.125), $.val(step))),
+		$.val(max),
 	);
 const typographyWeightEquation = (step: number) =>
-	$.add($.literal(400), $.multiply($.literal(25), $.literal(step)));
+	$.add($.val(400), $.multiply($.val(25), $.val(step)));
 
 const typographyLineHeightEquation = (step: number) =>
 	$.clamp(
-		$.subtract($.literal(1.5), $.multiply($.literal(0.05), $.literal(step))),
-		$.literal(1.1),
-		$.literal(1.5),
+		$.subtract($.val(1.5), $.multiply($.val(0.05), $.val(step))),
+		$.val(1.1),
+		$.val(1.5),
 	);

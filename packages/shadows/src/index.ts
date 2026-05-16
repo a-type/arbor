@@ -47,23 +47,20 @@ export interface CompiledShadows<
 	};
 }
 
-const defaultShadowXEquation = (step: number) => $.literal(`0px`);
+const defaultShadowXEquation = (step: number) => $.val(`0px`);
 const defaultShadowYEquation = (step: number) =>
-	$.multiply($.literal('1px'), $.fn('pow', $.literal(2), $.literal(step - 1)));
+	$.multiply($.val('1px'), $.fn('pow', $.val(2), $.val(step - 1)));
 const defaultShadowBlurEquation = (step: number) =>
 	$.multiply(
-		$.literal($globalProps.shadowBlur.varFallback('0.5')),
-		$.literal($globalProps.baseSpacingSize.varFallback('0.5rem')),
-		$.literal(0.25),
-		$.fn('pow', $.literal(2), $.literal(step - 1)),
+		$.val($globalProps.shadowBlur.varFallback('0.5')),
+		$.val($globalProps.baseSpacingSize.varFallback('0.5rem')),
+		$.val(0.25),
+		$.fn('pow', $.val(2), $.val(step - 1)),
 	);
 const defaultShadowSpreadEquation = (step: number) =>
-	$.multiply(
-		$.literal($globalProps.shadowSpread.varFallback('1')),
-		$.literal('1px'),
-	);
+	$.multiply($.val($globalProps.shadowSpread.varFallback('1')), $.val('1px'));
 const defaultShadowColorEquation = (step: number) =>
-	$.literal(
+	$.val(
 		$dynamicProps.shadowColor.varFallback($globalProps.defaultShadowColor.var),
 	);
 

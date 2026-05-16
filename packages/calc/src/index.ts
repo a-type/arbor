@@ -80,7 +80,7 @@ export interface TokenOperation extends BaseOperation {
 }
 
 export const $ = {
-	literal: (value: string | number): LiteralOperation => {
+	val: (value: string | number): LiteralOperation => {
 		if (typeof value === 'string' || typeof value === 'number') {
 			return { type: 'literal', value, tokens: [] };
 		}

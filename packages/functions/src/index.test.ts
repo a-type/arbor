@@ -7,7 +7,7 @@ describe('createFunction', () => {
 	it('sets the CSS name with -- prefix', () => {
 		const fn = createFunction('my-func', {
 			parameters: [],
-			definition: ($) => $.literal(0),
+			definition: ($) => $.val(0),
 		});
 		expect(fn.name).toBe('--my-func');
 	});
@@ -62,7 +62,7 @@ describe('createFunction', () => {
 		it('generates @function with no parameters', () => {
 			const fn = createFunction('pi', {
 				parameters: [],
-				definition: ($) => $.literal('PI'),
+				definition: ($) => $.val('PI'),
 			});
 			expect(fn.definition).toBe('@function --pi() { result: PI; }');
 		});
@@ -122,7 +122,7 @@ describe('createFunction', () => {
 		it('resolves a constant equation with no params', () => {
 			const fn = createFunction('answer', {
 				parameters: [],
-				definition: ($) => $.multiply($.literal(6), $.literal(7)),
+				definition: ($) => $.multiply($.val(6), $.val(7)),
 			});
 			expect(fn.compute({})).toBe('42');
 		});
@@ -132,7 +132,7 @@ describe('createFunction', () => {
 		it('equation can be printed independently', () => {
 			const fn = createFunction('test', {
 				parameters: [createToken('x')],
-				definition: ($, x) => $.multiply(x, $.literal(2)),
+				definition: ($, x) => $.multiply(x, $.val(2)),
 			});
 			expect(printEquation(fn.equation)).toBe('(var(--x) * 2)');
 		});
@@ -143,7 +143,7 @@ describe('isFunction', () => {
 	it('returns true for a created function', () => {
 		const fn = createFunction('test', {
 			parameters: [],
-			definition: ($) => $.literal(0),
+			definition: ($) => $.val(0),
 		});
 		expect(isFunction(fn)).toBe(true);
 	});

@@ -6,9 +6,9 @@ export const contrastScheme = createScheme({
 	getColorRange: (config) =>
 		createColorRange(config, {
 			lightness: ($, { step, rangeSize }) => {
-				return $.literal(step > Math.ceil(rangeSize / 4) ? '1' : '0');
+				return $.val(step > Math.ceil(rangeSize / 4) ? '1' : '0');
 			},
 			chroma: ($, { step, rangeSize }) =>
-				$.multiply($.literal('0.1'), $.literal(rangeSize - step)),
+				$.multiply($.val('0.1'), $.val(rangeSize - step)),
 		}),
 });

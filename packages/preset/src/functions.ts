@@ -1,4 +1,4 @@
-import { $, LiteralOperation } from '@arbor-css/calc';
+import { $, Equation } from '@arbor-css/calc';
 import { createFunction } from '@arbor-css/functions';
 import { $systemProps } from '@arbor-css/globals';
 import { createToken } from '@arbor-css/tokens';
@@ -10,20 +10,20 @@ function lightDarkAlterations({
 }: {
 	light: number;
 	dark: number;
-	step: LiteralOperation;
+	step: Equation;
 }) {
 	return $.add(
-		$.literal(1),
+		$.val(1),
 		$.multiply(
 			step,
 			$.add(
 				$.multiply(
-					$.token($systemProps.scheme.whenLight, $.literal(1)),
-					$.literal(light),
+					$.token($systemProps.scheme.whenLight, $.val(1)),
+					$.val(light),
 				),
 				$.multiply(
-					$.token($systemProps.scheme.whenDark, $.literal(0)),
-					$.literal(dark),
+					$.token($systemProps.scheme.whenDark, $.val(0)),
+					$.val(dark),
 				),
 			),
 		),
@@ -43,16 +43,16 @@ export const lightenColor = createFunction('lighten-color', {
 			parts: [
 				// l = (1 + (scheme(light) * 0.02 + scheme(dark) * -0.07) * step) * l
 				$.multiply(
-					$.literal('l'),
+					$.val('l'),
 					lightDarkAlterations({ light: 0.02, dark: -0.07, step }),
 				),
 				// c = (1 + (scheme(light) * -0.1 + scheme(dark) * -0.03) * step) * c
 				$.multiply(
-					$.literal('c'),
+					$.val('c'),
 					lightDarkAlterations({ light: -0.1, dark: -0.03, step }),
 				),
 				// h = h (no change)
-				$.literal('h'),
+				$.val('h'),
 			],
 		}),
 });
@@ -70,16 +70,16 @@ export const darkenColor = createFunction('darken-color', {
 			parts: [
 				// l = (1 + (scheme(light) * -0.02 + scheme(dark) * 0.12) * step) * l
 				$.multiply(
-					$.literal('l'),
+					$.val('l'),
 					lightDarkAlterations({ light: -0.02, dark: 0.12, step }),
 				),
 				// c = (1 + (scheme(light) * 0.01 + scheme(dark) * -0.09) * step) * c
 				$.multiply(
-					$.literal('c'),
+					$.val('c'),
 					lightDarkAlterations({ light: 0.01, dark: -0.09, step }),
 				),
 				// h = h (no change)
-				$.literal('h'),
+				$.val('h'),
 			],
 		}),
 });
