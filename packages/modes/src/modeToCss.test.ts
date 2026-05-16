@@ -126,3 +126,25 @@ it('partial mode override of $root maps correctly', () => {
 	expect(css).toContain('--Ⓜ️-colors-main: oklch(0.7 0.2 30)');
 	expect(css).not.toContain('--Ⓜ️-colors-main-mid');
 });
+
+it('throws with full token chain for circular derived dependencies', () => {
+	const circularSchema = createModeSchema({
+		value: 'color',
+		derived: {
+			a: 'color',
+			b: 'color',
+		},
+	});
+
+	const circularBase = circularSchema.createBase({
+		value: 'red',
+		derived: {
+			a: derive`color-mix(in hsl, ${circularSchema.$tokens.derived.b}, white)`,
+			b: derive`color-mix(in hsl, ${circularSchema.$tokens.derived.a}, black)`,
+		},
+	});
+
+	expect(() => modeToCss(circularBase, circularBase)).toThrowError(
+		/Circular dependency detected in mode base: .*--Ⓜ️-derived-a.*->.*--Ⓜ️-derived-b.*->.*--Ⓜ️-derived-a/,
+	);
+});

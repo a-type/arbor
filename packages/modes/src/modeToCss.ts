@@ -21,14 +21,16 @@ import { isTrackedValue } from './tracking.js';
 function getBaseModeDependents(
 	baseMode: ModeInstance<any>,
 	token: Token,
-	seen: Set<Token> = new Set(),
+	visiting: string[] = [],
 ): Record<string, string> {
-	if (seen.has(token)) {
+	const cycleStart = visiting.findIndex((name) => name === token.name);
+	if (cycleStart !== -1) {
+		const cycleChain = [...visiting.slice(cycleStart), token.name].join(' -> ');
 		throw new Error(
-			`Circular dependency detected for token ${token.name} in mode ${baseMode.config.name}`,
+			`Circular dependency detected in mode ${baseMode.config.name}: ${cycleChain}`,
 		);
 	}
-	seen.add(token);
+	const nextVisiting = [...visiting, token.name];
 	const dependents: Record<string, string> = {};
 	const flatBase = toFlatKeys(baseMode.values, isModeValue, { separator: '-' });
 	const flatTokens = toFlatKeys<Token>(baseMode.schema.$tokens, isToken, {
@@ -39,14 +41,15 @@ function getBaseModeDependents(
 		if (isTrackedValue(value)) {
 			if (value.dependencies.some((dep) => dep.name === token.name)) {
 				const tokenForKey = flatTokens[key];
+				if (!tokenForKey) {
+					continue;
+				}
 				dependents[tokenForKey.name] = value.value;
 				// recurse to find any values that depend on this dependent as well
-				if (tokenForKey) {
-					Object.assign(
-						dependents,
-						getBaseModeDependents(baseMode, tokenForKey, seen),
-					);
-				}
+				Object.assign(
+					dependents,
+					getBaseModeDependents(baseMode, tokenForKey, nextVisiting),
+				);
 			}
 		}
 	}

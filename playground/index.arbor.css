@@ -1,9 +1,32 @@
-.surface-primary {
-	background: $.surface.primary.color.bg;
+.surface {
+	padding: $.surface.padding;
+	border-radius: $.surface.borderRadius;
+
+	&[data-emphasis='primary'] {
+		background: $.surface.primary.color.bg;
+		color: $.surface.primary.color.fg;
+	}
+	&[data-emphasis='secondary'] {
+		background: $.surface.secondary.color.bg;
+		color: $.surface.secondary.color.fg;
+	}
+	&[data-emphasis='ambient'] {
+		background: $.surface.ambient.color.bg;
+		color: $.surface.ambient.color.fg;
+	}
 }
 
-.button-primary {
-	background: $.action.primary.color.bg;
-	color: $.action.primary.color.text;
-	padding: $.action.primary.padding.block $.button.primary.padding.inline;
+.button {
+	padding: $.action.padding;
+	border-radius: $.action.borderRadius;
+	border: 1px solid transparent;
+	font-size: $.text.secondary.size;
+	font-weight: $.text.secondary.weight;
+	line-height: $.text.secondary.lineHeight;
+
+	&[data-emphasis='primary'] {
+		background: $.action.primary.color.bg;
+		color: $.action.primary.color.fg;
+		border-color: $.action.primary.color.border;
+	}
 }

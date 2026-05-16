@@ -9,15 +9,17 @@
 	</head>
 	<body>
 		<h1 class="title">Arbor CSS Playground</h1>
-		<div class="surface-primary">
-			<button class="button-primary">Primary Button</button>
-			<button class="button-secondary">Secondary Button</button>
-			<button class="button-ambient">Ambient Button</button>
+		<div class="surface" data-emphasis="primary">
+			<button class="button" data-emphasis="primary">Primary Button</button>
+			<button class="button" data-emphasis="secondary">Secondary Button</button>
+			<button class="button" data-emphasis="ambient">Ambient Button</button>
 		</div>
-		<div class="surface-primary @mode-success">
-			<button class="button-primary">Primary Button</button>
-			<button class="button-secondary">Secondary Button</button>
-			<button class="button-ambient">Ambient Button</button>
+		<div class="surface" data-emphasis="primary" data-mode-success>
+			<button class="button" data-emphasis="primary">Primary Button</button>
+			<button class="button" data-emphasis="secondary">Secondary Button</button>
+			<button class="button" data-emphasis="ambient">Ambient Button</button>
 		</div>
+
+		<script type="module" src="/main.js"></script>
 	</body>
 </html>

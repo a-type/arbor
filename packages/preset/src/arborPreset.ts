@@ -15,6 +15,7 @@ const colorIntents = {
 } satisfies ModeSchemaLevel;
 
 const boxIntents = {
+	$root: 'other',
 	inline: 'spacing',
 	block: 'spacing',
 } satisfies ModeSchemaLevel;
@@ -173,6 +174,7 @@ export function createArborModeValues<
 		},
 		surface: {
 			padding: {
+				$root: derive`${arborModeSchema.$tokens.surface.padding.block} ${arborModeSchema.$tokens.surface.padding.inline}`,
 				block: derive`calc(${arborModeSchema.$tokens.spacing.lg} * max(1, ${arborModeSchema.$tokens.surface.roundness} * ${$globalProps.roundness}))`,
 				inline: derive`calc(${arborModeSchema.$tokens.spacing.lg} * max(1, ${arborModeSchema.$tokens.surface.roundness} * ${$globalProps.roundness}))`,
 			},
@@ -202,6 +204,7 @@ export function createArborModeValues<
 		},
 		action: {
 			padding: {
+				$root: derive`${arborModeSchema.$tokens.action.padding.block} ${arborModeSchema.$tokens.action.padding.inline}`,
 				block: derive`calc(${config.primitives.$tokens.spacing.md} / ${arborModeSchema.$tokens.density})`,
 				inline: derive`calc((${config.primitives.$tokens.spacing.lg} + ${$globalProps.roundness} * ${config.primitives.$tokens.spacing.sm}) / ${arborModeSchema.$tokens.density})`,
 			},
@@ -231,6 +234,7 @@ export function createArborModeValues<
 		},
 		control: {
 			padding: {
+				$root: derive`${arborModeSchema.$tokens.control.padding.block} ${arborModeSchema.$tokens.control.padding.inline}`,
 				block: derive`calc(${config.primitives.$tokens.spacing.sm} / ${arborModeSchema.$tokens.density})`,
 				inline: derive`calc((${config.primitives.$tokens.spacing.sm} + ${$globalProps.roundness} * ${config.primitives.$tokens.spacing.xs}) / ${arborModeSchema.$tokens.density})`,
 			},
