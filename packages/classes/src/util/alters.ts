@@ -33,7 +33,7 @@ export function darken(base: string, level: string) {
 		value: 'l',
 		step: level,
 		lightStep: -2,
-		darkStep: 6,
+		darkStep: 12,
 	})} ${tweak({
 		value: 'c',
 		step: level,
