@@ -69,6 +69,12 @@ export const shadowRules: Rule<Theme>[] = [
 		}),
 	],
 	[
+		/^shadow-reverse-off$/,
+		() => ({
+			[$systemProps.dynamic.shadowReverse.name]: '1',
+		}),
+	],
+	[
 		/^shadow-none$/,
 		() => ({
 			[$classesProps.shadow.shadow.name]: '0 0 rgb(0 0 0 / 0)',
