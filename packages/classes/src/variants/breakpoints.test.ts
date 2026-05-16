@@ -8,3 +8,10 @@ it('matches theme breakpoints', async () => {
 		parentOrder: expect.anything(),
 	});
 });
+
+it('matches theme breakpoints with glt syntax', async () => {
+	await testVariants(variants, 'lt-sm:bg-[red]', 'bg-[red]', {
+		parent: '@media (max-width: 639.9px)',
+		parentOrder: expect.anything(),
+	});
+});

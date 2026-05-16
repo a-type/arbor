@@ -45,8 +45,7 @@ function Button({
 			{...props}
 			className={clsx(
 				'p-action rd-action b-solid text-secondary leading-[1]',
-				'cursor-pointer transition-color transition-shadow',
-				'transition-all',
+				'cursor-pointer transition-all',
 				{
 					'bg-action-primary b-action-primary b color-contrast shadow-md disabled:(bg-desaturate-2)':
 						level === 'primary',

@@ -11,6 +11,7 @@ import {
 } from '@unocss/preset-mini/rules';
 import { entriesToCss, Preset, transformerVariantGroup } from 'unocss';
 import { $classesProps } from './properties.js';
+import { backdropFilterBase, filterBase } from './rules/filters.js';
 import { createRules } from './rules/index.js';
 import { createTheme, ThemeConfig } from './theme/index.js';
 import { variants } from './variants/index.js';
@@ -46,6 +47,8 @@ export function presetArbor(
 						...transformBase,
 						...boxShadowsBase,
 						...ringBase,
+						...backdropFilterBase,
+						...filterBase,
 					});
 					if (options?.preflight === 'on-demand') {
 						const keys = new Set(

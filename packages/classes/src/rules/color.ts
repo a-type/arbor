@@ -1,11 +1,9 @@
 import { getContrastColor } from '@arbor-css/colors';
-import { $systemProps, resolveTokenReferences } from '@arbor-css/core';
+import { $systemProps } from '@arbor-css/core';
 import { Rule, symbols } from 'unocss';
 import { Theme } from '../theme/types.js';
 import { colorAlters, colorAltersMatch } from '../util/alters.js';
-import { parseColor } from '../util/color.js';
-import { customPropertyRe } from '../util/regex.js';
-import { isNumericLiteral, isNumericUnitLiteral } from '../util/tests.js';
+import { parseColor, resolveColor } from '../util/color.js';
 import { themeOrLiteral } from '../util/themeOrLiteral.js';
 
 export const laterals = {
@@ -53,67 +51,30 @@ function makeColorSystemRules({
 		[
 			new RegExp(`^(?:${shorthands.join('|')})-(.*)$`),
 			([, color], { theme }) => {
-				// pre-splitting opacity and restoring it later allows
-				// supporting [color]/50 syntax while detecting the color portion
-				const split = color.split('/');
-				const baseColor = split[0];
-				const opacityPart = split[1];
-
-				let [value, { source }] = themeOrLiteral(baseColor, theme, {
-					startFrom: 'color',
-					trySuffixes: suffixes,
-					type: 'color',
+				const resolved = resolveColor(color, theme, {
+					suffixes,
 				});
-				if (!value) {
-					if (baseColor in laterals) {
-						value = laterals[baseColor as keyof typeof laterals];
-					} else {
-						return;
-					}
-				}
-				if (isNumericLiteral(value) || isNumericUnitLiteral(value)) {
-					// probably not meant for us...
-					return;
-				}
-				const restoredOpacity = opacityPart ? `${value}/${opacityPart}` : value;
-				const parsed = parseColor(restoredOpacity);
-				if (!parsed) return;
-
-				let comment = '';
-				if (source === 'theme') {
-					// try adding an evaluated color comment to the end
-					const preset = theme.meta.preset;
-					const matchedPropertyName = customPropertyRe.exec(value)?.[1];
-					if (preset && matchedPropertyName) {
-						const resolved = resolveTokenReferences(
-							preset,
-							matchedPropertyName,
-						);
-						if (resolved) {
-							comment = ` /* ${resolved} */`;
-						}
-					}
-				}
+				if (!resolved) return;
 
 				const result = {
 					[target]:
-						parsed.opacity ?
+						resolved.opacity ?
 							`rgb(from ${$systemProps[systemProp].final.var} r g b / ${$systemProps[systemProp].opacity.var})`
 						:	$systemProps[systemProp].final.var,
 					[$systemProps[systemProp].applied.name]:
-						parsed.color === 'inherit' || parsed.color === 'transparent' ?
+						resolved.color === 'inherit' || resolved.color === 'transparent' ?
 							'unset'
-						:	parsed.color + comment,
+						:	resolved.color + resolved.comment,
 					[$systemProps[systemProp].final.name]:
 						$systemProps[systemProp].applied.var,
-					[$systemProps[systemProp].opacity.name]: parsed.opacity || '1',
+					[$systemProps[systemProp].opacity.name]: resolved.opacity || '1',
 				};
 
 				if (systemProp === 'bg') {
 					result[$systemProps.bg.contrast.name] =
-						parsed.color === 'inherit' || parsed.color === 'transparent' ?
+						resolved.color === 'inherit' || resolved.color === 'transparent' ?
 							'unset'
-						:	parsed.color;
+						:	resolved.color;
 				}
 
 				return result;
