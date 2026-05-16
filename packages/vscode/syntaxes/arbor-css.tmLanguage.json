@@ -3,10 +3,7 @@
 	"name": "Arbor CSS",
 	"scopeName": "source.arbor-css",
 	"fileTypes": ["arbor.css"],
-	"patterns": [
-		{ "include": "#token-ref" },
-		{ "include": "source.css" }
-	],
+	"patterns": [{ "include": "#token-ref" }, { "include": "source.css" }],
 	"repository": {
 		"token-ref": {
 			"patterns": [

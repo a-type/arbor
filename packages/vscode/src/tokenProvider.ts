@@ -46,7 +46,9 @@ export class TokenProvider {
 
 		this.preset = preset;
 		this.tokenMap = buildTokenMap(preset);
-		console.log(`[arbor-css] Loaded config from ${this.configPath} (${this.tokenMap.size} tokens)`);
+		console.log(
+			`[arbor-css] Loaded config from ${this.configPath} (${this.tokenMap.size} tokens)`,
+		);
 		this.onChangeEmitter.fire();
 	}
 
@@ -68,7 +70,9 @@ export class TokenProvider {
 	}
 
 	/** Returns all next-level segments for a given dot-path prefix */
-	getCompletionSegments(prefix: string): Array<{ segment: string; isLeaf: boolean }> {
+	getCompletionSegments(
+		prefix: string,
+	): Array<{ segment: string; isLeaf: boolean }> {
 		const results = new Map<string, boolean>();
 		const searchPrefix = prefix ? prefix + '.' : '';
 
@@ -84,7 +88,10 @@ export class TokenProvider {
 			}
 		}
 
-		return Array.from(results.entries()).map(([segment, isLeaf]) => ({ segment, isLeaf }));
+		return Array.from(results.entries()).map(([segment, isLeaf]) => ({
+			segment,
+			isLeaf,
+		}));
 	}
 
 	dispose(): void {

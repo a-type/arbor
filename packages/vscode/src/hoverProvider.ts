@@ -1,5 +1,5 @@
-import * as vscode from 'vscode';
 import { resolveTokenReferences } from '@arbor-css/core';
+import * as vscode from 'vscode';
 import type { TokenProvider } from './tokenProvider.js';
 
 /** Matches a complete `$.token.path` reference */
@@ -35,12 +35,7 @@ export class ArborHoverProvider implements vscode.HoverProvider {
 			const path = match[1];
 			const entry = tokenMap.get(path);
 
-			const range = new vscode.Range(
-				position.line,
-				start,
-				position.line,
-				end,
-			);
+			const range = new vscode.Range(position.line, start, position.line, end);
 
 			if (!entry) {
 				return new vscode.Hover(
@@ -60,7 +55,9 @@ export class ArborHoverProvider implements vscode.HoverProvider {
 				const resolved = resolveTokenReferences(preset, entry.name);
 				if (resolved) {
 					if (OKLCH_RE.test(resolved)) {
-						md.appendMarkdown(`\n\n${makeColorSwatch(resolved)} \`${resolved}\``);
+						md.appendMarkdown(
+							`\n\n${makeColorSwatch(resolved)} \`${resolved}\``,
+						);
 					} else {
 						md.appendMarkdown(`\n\n**Color value:** \`${resolved}\``);
 					}

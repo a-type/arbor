@@ -11,7 +11,9 @@ export class ArborCompletionProvider implements vscode.CompletionItemProvider {
 		document: vscode.TextDocument,
 		position: vscode.Position,
 	): vscode.CompletionItem[] | undefined {
-		const linePrefix = document.lineAt(position).text.slice(0, position.character);
+		const linePrefix = document
+			.lineAt(position)
+			.text.slice(0, position.character);
 		const match = TOKEN_START_RE.exec(linePrefix);
 		if (!match) return undefined;
 
@@ -19,7 +21,8 @@ export class ArborCompletionProvider implements vscode.CompletionItemProvider {
 		// Remove the trailing segment being typed (we complete the next segment)
 		const lastDot = currentPath.lastIndexOf('.');
 		const prefix = lastDot >= 0 ? currentPath.slice(0, lastDot) : '';
-		const partialSegment = lastDot >= 0 ? currentPath.slice(lastDot + 1) : currentPath;
+		const partialSegment =
+			lastDot >= 0 ? currentPath.slice(lastDot + 1) : currentPath;
 
 		const segments = this.tokenProvider.getCompletionSegments(prefix);
 		if (!segments.length) return undefined;
@@ -30,13 +33,14 @@ export class ArborCompletionProvider implements vscode.CompletionItemProvider {
 			)
 			.map(({ segment, isLeaf }) => {
 				const fullPath = prefix ? `${prefix}.${segment}` : segment;
-				const tokenEntry = isLeaf ? this.tokenProvider.getTokenMap().get(fullPath) : undefined;
+				const tokenEntry =
+					isLeaf ? this.tokenProvider.getTokenMap().get(fullPath) : undefined;
 
 				const item = new vscode.CompletionItem(
 					segment,
-					isLeaf
-						? vscode.CompletionItemKind.Variable
-						: vscode.CompletionItemKind.Module,
+					isLeaf ?
+						vscode.CompletionItemKind.Variable
+					:	vscode.CompletionItemKind.Module,
 				);
 
 				if (tokenEntry) {

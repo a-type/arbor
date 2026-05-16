@@ -40,14 +40,17 @@ export function transform(
 		root.walkDecls((decl) => {
 			if (!decl.value.includes('$.')) return;
 
-			const resolvedValue = decl.value.replace(TOKEN_PATTERN, (match, path: string) => {
-				const entry = tokenMap!.get(path);
-				if (!entry) {
-					warnings.push(`Unknown token reference: $.${path}`);
-					return match;
-				}
-				return entry.cssVar;
-			});
+			const resolvedValue = decl.value.replace(
+				TOKEN_PATTERN,
+				(match, path: string) => {
+					const entry = tokenMap!.get(path);
+					if (!entry) {
+						warnings.push(`Unknown token reference: $.${path}`);
+						return match;
+					}
+					return entry.cssVar;
+				},
+			);
 
 			const colorEntry = COLOR_PROP_ENTRIES[decl.prop];
 			if (colorEntry && isSingleVar(resolvedValue)) {

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
-import { TokenProvider } from './tokenProvider.js';
 import { ArborCompletionProvider } from './completionProvider.js';
 import { ArborHoverProvider } from './hoverProvider.js';
+import { TokenProvider } from './tokenProvider.js';
 
 const ARBOR_CSS_LANG = 'arbor-css';
 
