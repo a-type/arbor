@@ -1,0 +1,38 @@
+{
+	"name": "@arbor-css/functions",
+	"version": "0.0.50",
+	"type": "module",
+	"publishConfig": {
+		"access": "public"
+	},
+	"repository": {
+		"url": "https://github.com/a-type/arbor"
+	},
+	"files": [
+		"dist"
+	],
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"node": "./dist/index.js",
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
+	"sideEffects": false,
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsc -w --preserveWatchOutput",
+		"test": "vitest",
+		"test:ci": "vitest --run",
+		"prepublishOnly": "pnpm build"
+	},
+	"devDependencies": {
+		"typescript": "catalog:",
+		"vitest": "catalog:",
+		"vite": "catalog:"
+	},
+	"dependencies": {
+		"@arbor-css/calc": "workspace:*"
+	}
+}
