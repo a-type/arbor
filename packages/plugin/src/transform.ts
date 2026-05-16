@@ -1,7 +1,6 @@
-import { generateStylesheet } from '@arbor-css/core';
+import { generateStylesheet, Token } from '@arbor-css/core';
 import postcss from 'postcss';
 import { COLOR_PROP_ENTRIES } from './colorSystemProps.js';
-import type { TokenMap } from './tokenMap.js';
 
 const TOKEN_PATTERN = /\$\.([\w.]+)/g;
 const ARBOR_IMPORT_RE = /^['"]arbor:css['"]$/;
@@ -19,7 +18,7 @@ const ARBOR_IMPORT_RE = /^['"]arbor:css['"]$/;
  */
 export function transform(
 	cssSource: string,
-	tokenMap: TokenMap | null,
+	tokenMap: Map<string, Token> | null,
 	preset: any | null = null,
 ): TransformResult {
 	const warnings: string[] = [];
@@ -48,7 +47,7 @@ export function transform(
 						warnings.push(`Unknown token reference: $.${path}`);
 						return match;
 					}
-					return entry.cssVar;
+					return entry.var;
 				},
 			);
 

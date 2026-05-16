@@ -47,8 +47,7 @@ export class ArborHoverProvider implements vscode.HoverProvider {
 			const md = new vscode.MarkdownString();
 			md.supportHtml = true;
 			md.appendMarkdown(`**Arbor token** \`$.${path}\`\n\n`);
-			md.appendMarkdown(`**Resolves to:** \`${entry.cssVar}\`\n\n`);
-			md.appendMarkdown(`**Custom property:** \`${entry.name}\`\n\n`);
+			md.appendMarkdown(`**CSS property:** \`${entry.name}\`\n\n`);
 			md.appendMarkdown(`**Purpose:** ${entry.purpose}`);
 
 			if (entry.purpose === 'color' && preset) {

@@ -1,17 +1,9 @@
+import { getStructuredTokensMap, Token } from '@arbor-css/core';
 import * as vscode from 'vscode';
 import { findConfigFile, loadConfigFile } from './configLoader.js';
 
-export interface TokenEntry {
-	/** e.g. `var(--Ⓜ️-color-main-mid)` */
-	cssVar: string;
-	/** e.g. `--Ⓜ️-color-main-mid` */
-	name: string;
-	/** Token purpose for type info and color detection */
-	purpose: string;
-}
-
 /** Flat map from dot-path to token entry */
-export type TokenMap = Map<string, TokenEntry>;
+export type TokenMap = Map<string, Token>;
 
 /**
  * Manages loading, caching, and watching of the user's Arbor config file.
@@ -45,7 +37,7 @@ export class TokenProvider {
 		if (!preset) return;
 
 		this.preset = preset;
-		this.tokenMap = buildTokenMap(preset);
+		this.tokenMap = getStructuredTokensMap(preset, { delimiter: '.' });
 		console.log(
 			`[arbor-css] Loaded config from ${this.configPath} (${this.tokenMap.size} tokens)`,
 		);
@@ -97,40 +89,5 @@ export class TokenProvider {
 	dispose(): void {
 		this.watcher?.dispose();
 		this.onChangeEmitter.dispose();
-	}
-}
-
-function buildTokenMap(preset: any): TokenMap {
-	const map: TokenMap = new Map();
-
-	const modeTokens = preset?.modes?.base?.schema?.$tokens;
-	if (modeTokens) walkTokenTree(modeTokens, '', map);
-
-	const primitiveTokens = preset?.primitives?.$tokens;
-	if (primitiveTokens) walkTokenTree(primitiveTokens, 'primitives', map);
-
-	return map;
-}
-
-function isToken(value: any): boolean {
-	return typeof value === 'object' && value !== null && '@@TOKEN@@' in value;
-}
-
-function walkTokenTree(node: any, prefix: string, map: TokenMap): void {
-	if (typeof node !== 'object' || node === null) return;
-	for (const key of Object.keys(node)) {
-		const value = node[key];
-		const currentPath = prefix ? `${prefix}.${key}` : key;
-		if (isToken(value)) {
-			const entry: TokenEntry = {
-				cssVar: value.var ?? '',
-				name: value.name ?? '',
-				purpose: value.purpose ?? 'other',
-			};
-			map.set(currentPath, entry);
-			if (key === '$root' && prefix) map.set(prefix, entry);
-		} else if (typeof value === 'object' && value !== null) {
-			walkTokenTree(value, currentPath, map);
-		}
 	}
 }

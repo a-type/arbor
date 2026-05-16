@@ -44,10 +44,10 @@ export class ArborCompletionProvider implements vscode.CompletionItemProvider {
 				);
 
 				if (tokenEntry) {
-					item.detail = tokenEntry.cssVar;
+					item.detail = tokenEntry.var;
 					item.documentation = new vscode.MarkdownString(
 						[
-							`**CSS custom property:** \`${tokenEntry.name}\``,
+							`**CSS property:** \`${tokenEntry.name}\``,
 							`**Purpose:** ${tokenEntry.purpose}`,
 						].join('\n\n'),
 					);

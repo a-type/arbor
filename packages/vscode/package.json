@@ -43,6 +43,7 @@
 	},
 	"scripts": {
 		"compile": "node esbuild.mjs",
+		"build": "pnpm compile && pnpm vsce:package",
 		"watch": "node esbuild.mjs --watch",
 		"vsce:package": "vsce package --no-dependencies",
 		"prepublishOnly": "pnpm compile"

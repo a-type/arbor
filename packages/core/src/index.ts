@@ -13,5 +13,6 @@ export {
 } from '@arbor-css/preset';
 export * from '@arbor-css/preset/config';
 export * from '@arbor-css/tokens';
+export * from './getStructuredTokensMap.js';
 export { generateStylesheet } from './stylesheet/generateStylesheet.js';
 export { resolveTokenReferences } from './util/resolveTokenReferences.js';
