@@ -106,6 +106,7 @@ export function rem(str: string) {
 }
 
 export function px(str: string) {
+	if (!str) return;
 	if (unitOnlyRE.test(str)) return `${unitOnlyMap[str]}${str}`;
 	const match = str.match(numberWithUnitRE);
 	if (!match) return;
