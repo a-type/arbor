@@ -94,11 +94,11 @@ export const $systemProps = {
 
 function makeSystemColorTokens(name: string) {
 	return {
-		applied: createToken(`💲-${name}`, {
+		applied: createToken(`💲-${name}-applied`, {
 			type: 'color',
 			inherits: true,
 		}),
-		final: createToken(`💲-${name}-final`, {
+		$root: createToken(`💲-${name}`, {
 			type: 'color',
 			inherits: false,
 		}),

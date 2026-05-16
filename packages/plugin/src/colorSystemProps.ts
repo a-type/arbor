@@ -22,39 +22,39 @@ export interface ColorPropEntry {
 export const COLOR_PROP_ENTRIES: Record<string, ColorPropEntry> = {
 	color: {
 		applied: $systemProps.fg.applied.name,
-		final: $systemProps.fg.final.name,
+		final: $systemProps.fg.$root.name,
 		opacity: $systemProps.fg.opacity.name,
 	},
 	'background-color': {
 		applied: $systemProps.bg.applied.name,
-		final: $systemProps.bg.final.name,
+		final: $systemProps.bg.$root.name,
 		opacity: $systemProps.bg.opacity.name,
 		extras: [{ prop: $systemProps.bg.contrast.name, value: 'applied' }],
 	},
 	background: {
 		applied: $systemProps.bg.applied.name,
-		final: $systemProps.bg.final.name,
+		final: $systemProps.bg.$root.name,
 		opacity: $systemProps.bg.opacity.name,
 		extras: [{ prop: $systemProps.bg.contrast.name, value: 'applied' }],
 	},
 	'border-color': {
 		applied: $systemProps.borderColor[''].applied.name,
-		final: $systemProps.borderColor[''].final.name,
+		final: $systemProps.borderColor[''].$root.name,
 		opacity: $systemProps.borderColor[''].opacity.name,
 	},
 	fill: {
 		applied: $systemProps.fill.applied.name,
-		final: $systemProps.fill.final.name,
+		final: $systemProps.fill.$root.name,
 		opacity: $systemProps.fill.opacity.name,
 	},
 	stroke: {
 		applied: $systemProps.stroke.applied.name,
-		final: $systemProps.stroke.final.name,
+		final: $systemProps.stroke.$root.name,
 		opacity: $systemProps.stroke.opacity.name,
 	},
 	'accent-color': {
 		applied: $systemProps.accent.applied.name,
-		final: $systemProps.accent.final.name,
+		final: $systemProps.accent.$root.name,
 		opacity: $systemProps.accent.opacity.name,
 	},
 };

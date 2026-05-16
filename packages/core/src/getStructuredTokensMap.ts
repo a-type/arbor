@@ -29,11 +29,6 @@ export function getStructuredTokensMap(
 	// System tokens - we only expose the "final" tokens
 	walkTokenTree($systemProps, 'system', map, {
 		delimiter,
-		// TODO: better way to mark these - add .metadata to Token?
-		filter: (token) => token.name.endsWith('final'),
-		getKey: (_, key) => {
-			return key === 'final' ? '' : key;
-		}, // omit "final" from the path since it's redundant
 	});
 
 	return map;
@@ -50,7 +45,7 @@ function walkTokenTree(
 	},
 ): void {
 	if (typeof node !== 'object' || node === null) return;
-	const { delimiter = '.', filter, getKey = (token, key) => key } = options;
+	const { delimiter = '.', filter, getKey = (_, key) => key } = options;
 
 	for (const rawKey of Object.keys(node)) {
 		const value = node[rawKey];
