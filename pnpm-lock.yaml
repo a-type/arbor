@@ -259,6 +259,9 @@ importers:
       '@arbor-css/calc':
         specifier: workspace:*
         version: link:../calc
+      '@arbor-css/tokens':
+        specifier: workspace:*
+        version: link:../tokens
     devDependencies:
       typescript:
         specifier: 'catalog:'

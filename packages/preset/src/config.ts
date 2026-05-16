@@ -7,7 +7,6 @@ import {
 import { Primitives } from '@arbor-css/primitives';
 import { CompiledShadows } from '@arbor-css/shadows';
 import { CompiledSpacing } from '@arbor-css/spacing';
-import { TokenSchema } from '@arbor-css/tokens';
 import { CompiledTypography } from '@arbor-css/typography';
 
 export interface ArborPreset<
@@ -17,15 +16,8 @@ export interface ArborPreset<
 	TTypography extends CompiledTypography<any> = CompiledTypography<any>,
 	TSpacing extends CompiledSpacing<any> = CompiledSpacing<any>,
 	TShadows extends CompiledShadows<any> = CompiledShadows<any>,
-	TOtherTokens extends TokenSchema = TokenSchema,
 > {
-	primitives: Primitives<
-		TCompiledColors,
-		TTypography,
-		TSpacing,
-		TShadows,
-		TOtherTokens
-	>;
+	primitives: Primitives<TCompiledColors, TTypography, TSpacing, TShadows>;
 	modes: {
 		base: ModeInstance<TModeShape>;
 	} & TModes;
@@ -38,7 +30,6 @@ export function definePreset<
 	TTypography extends CompiledTypography<any>,
 	TSpacing extends CompiledSpacing<any>,
 	TShadows extends CompiledShadows<any>,
-	TOtherTokens extends TokenSchema = TokenSchema,
 >(
 	config: ArborPreset<
 		TModeShape,
@@ -46,8 +37,7 @@ export function definePreset<
 		TCompiledColors,
 		TTypography,
 		TSpacing,
-		TShadows,
-		TOtherTokens
+		TShadows
 	>,
 ): ArborPreset<
 	TModeShape,
@@ -55,8 +45,7 @@ export function definePreset<
 	TCompiledColors,
 	TTypography,
 	TSpacing,
-	TShadows,
-	TOtherTokens
+	TShadows
 > {
 	return config;
 }

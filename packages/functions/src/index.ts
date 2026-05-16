@@ -1,9 +1,12 @@
 import {
+	$,
 	computeEquation,
 	type Equation,
+	LiteralOperation,
 	printComputationResult,
 	printEquation,
 } from '@arbor-css/calc';
+import { Token } from '@arbor-css/tokens';
 
 export const FUNCTION_PREFIX = '--';
 
@@ -21,33 +24,36 @@ const FUNCTION_BRAND = '@@FUNCTION@@';
 /**
  * Creates a CSS custom function definition with runtime compute capability.
  *
- * The equation should reference parameters using CSS variable syntax, e.g.
- * `$.literal('var(--param-name)')`. At runtime, `compute()` resolves those
- * variables from the provided parameter values.
- *
  * @example
  * const spacing = createFunction('spacing-scale', {
  *   description: 'Scales a base spacing value by a multiplier',
  *   parameters: [
- *     { name: 'base', type: 'length' },
- *     { name: 'scale', type: 'number' },
+ *     createToken('base', { name: 'base', type: 'length' }),
+ *     createToken('scale', { name: 'scale', type: 'number' }),
  *   ],
- *   definition: $.multiply($.literal('var(--base)'), $.literal('var(--scale)')),
+ *   definition: (base, scale) => $.multiply(base, scale),
  * });
  *
  * spacing.definition // @function --spacing-scale(--base <length>, --scale <number>) { result: (var(--base) * var(--scale)); }
  * spacing.compute({ base: '8px', scale: 2 }) // 'calc(var(--base) * 2)' or '16px'
  */
-export function createFunction(
+export function createFunction<TParams extends Token[] = Token[]>(
 	name: string,
 	{
 		description,
 		parameters,
-		definition: equation,
+		definition,
 	}: {
 		description?: string;
-		parameters: ParameterSchema[];
-		definition: Equation;
+		/**
+		 * Define tokens to represent each function parameter.
+		 */
+		parameters: TParams;
+		/**
+		 * Provide the definition of the function, using calc tools to construct
+		 * an equation. The incoming parameters are already wrapped with literal()
+		 */
+		definition: (...params: LiteralOperation[]) => Equation;
 	},
 ) {
 	const cssName = `${FUNCTION_PREFIX}${name}`;
@@ -56,10 +62,11 @@ export function createFunction(
 		.map((p) => {
 			const type = p.type ?? '*';
 			const typeAnnotation = type === '*' ? '' : ` <${type}>`;
-			return `--${p.name}${typeAnnotation}`;
+			return `${p.name}${typeAnnotation}`;
 		})
 		.join(', ');
 
+	const equation = definition(...parameters.map((p) => $.literal(p)));
 	const body = printEquation(equation);
 	const cssDefinition = `@function ${cssName}(${paramsList}) { result: ${body}; }`;
 

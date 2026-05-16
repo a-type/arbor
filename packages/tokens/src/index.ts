@@ -156,7 +156,7 @@ export function createToken(
 		 * skip generating an @property
 		 */
 		forceDefinition?: boolean;
-	},
+	} = {},
 ) {
 	const escapedName = name.replaceAll('$', '');
 	const taggedName = tag ? `${tag}-${escapedName}` : escapedName;

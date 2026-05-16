@@ -1,3 +1,5 @@
+import { isToken, Token } from '@arbor-css/tokens';
+
 export interface CalcEvaluationContext {
 	propertyValues: Record<string, string | undefined>;
 	/** Prevents the baking of known literals into calculations. */
@@ -16,49 +18,52 @@ export type OperationTree =
 	| FunctionCallOperation
 	| ConcatenateOperation;
 
-interface AddOperation {
+export interface AddOperation {
 	type: 'add';
 	values: Equation[];
 }
-interface SubtractOperation {
+export interface SubtractOperation {
 	type: 'subtract';
 	values: Equation[];
 }
-interface MultiplyOperation {
+export interface MultiplyOperation {
 	type: 'multiply';
 	values: Equation[];
 }
-interface DivideOperation {
+export interface DivideOperation {
 	type: 'divide';
 	values: [Equation, Equation];
 }
-interface LiteralOperation {
+export interface LiteralOperation {
 	type: 'literal';
 	value: string | number;
 }
-interface ClampOperation {
+export interface ClampOperation {
 	type: 'clamp';
 	values: Equation[];
 }
-interface CastOperation {
+export interface CastOperation {
 	type: 'cast';
 	value: Equation;
 	unit: '%' | '';
 }
-interface FunctionCallOperation {
+export interface FunctionCallOperation {
 	type: 'function';
 	name: string;
 	args: Equation[];
 }
 /** Not strictly calc(), but useful for constructing non-numeric outputs... */
-interface ConcatenateOperation {
+export interface ConcatenateOperation {
 	type: 'concatenate';
 	separator: string;
 	values: Equation[];
 }
 
 export const $ = {
-	literal: (value: string | number): LiteralOperation => {
+	literal: (value: string | number | Token): LiteralOperation => {
+		if (isToken(value)) {
+			return { type: 'literal', value: value.var };
+		}
 		if (typeof value === 'string' || typeof value === 'number') {
 			return { type: 'literal', value };
 		}

@@ -2,7 +2,7 @@ import { ColorRangeItem, CompiledColors } from '@arbor-css/colors';
 import { defaultGlobals, GlobalConfig } from '@arbor-css/globals';
 import { CompiledShadows, isCompiledShadowLevel } from '@arbor-css/shadows';
 import { CompiledSpacing } from '@arbor-css/spacing';
-import { createToken, Token, TokenSchema } from '@arbor-css/tokens';
+import { createToken, Token } from '@arbor-css/tokens';
 import { CompiledTypography, isTypographyLevel } from '@arbor-css/typography';
 import { convertStructure } from '@arbor-css/util';
 
@@ -13,13 +13,11 @@ export interface PrimitivesConfig<
 	TCompiledTypography extends CompiledTypography<any>,
 	TCompiledSpacing extends CompiledSpacing<any>,
 	TCompiledShadows extends CompiledShadows<any>,
-	TOtherTokens extends TokenSchema = TokenSchema,
 > {
 	colors: TCompiledColors;
 	typography: TCompiledTypography;
 	spacing: TCompiledSpacing;
 	shadows: TCompiledShadows;
-	misc?: TOtherTokens;
 	defaultScheme?: keyof TCompiledColors;
 	schemeTags?: Record<string, string>;
 	globals?: Partial<GlobalConfig>;
@@ -40,7 +38,6 @@ export type Primitives<
 	TCompiledTypography extends CompiledTypography = CompiledTypography,
 	TCompiledSpacing extends CompiledSpacing = CompiledSpacing,
 	TCompiledShadows extends CompiledShadows = CompiledShadows,
-	TOtherTokens extends TokenSchema = TokenSchema,
 > = {
 	/**
 	 * A map of color values, keyed by scheme name.
@@ -59,7 +56,7 @@ export type Primitives<
 		typography: LiteralsToTokens<TCompiledTypography['levels']>;
 		spacing: LiteralsToTokens<TCompiledSpacing['levels']>;
 		shadows: LiteralsToTokens<TCompiledShadows['levels']>;
-	} & TOtherTokens;
+	};
 };
 
 export function createPrimitives<
@@ -67,21 +64,18 @@ export function createPrimitives<
 	TCompiledTypography extends CompiledTypography,
 	TCompiledSpacing extends CompiledSpacing,
 	TCompiledShadows extends CompiledShadows,
-	TOtherTokens extends TokenSchema,
 >(
 	config: PrimitivesConfig<
 		TCompiledColors,
 		TCompiledTypography,
 		TCompiledSpacing,
-		TCompiledShadows,
-		TOtherTokens
+		TCompiledShadows
 	>,
 ): Primitives<
 	TCompiledColors,
 	TCompiledTypography,
 	TCompiledSpacing,
-	TCompiledShadows,
-	TOtherTokens
+	TCompiledShadows
 > {
 	const { colors, defaultScheme, globals: userGlobals } = config;
 	const arbitraryScheme = Object.values(colors)[0];
@@ -196,7 +190,6 @@ export function createPrimitives<
 		spacing: config.spacing,
 		shadows: config.shadows,
 		$tokens: {
-			...(config.misc ?? ({} as TOtherTokens)),
 			colors: $colorProps,
 			typography: $typographyProps,
 			spacing: $spacingProps,
