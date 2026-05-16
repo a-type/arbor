@@ -121,6 +121,12 @@ export const scrollBehaviors: Rule[] = [
 	...makeGlobalStaticRules('scroll', 'scroll-behavior'),
 ];
 
+export const isolation: Rule[] = [
+	['isolate', { isolation: 'isolate' }],
+	['isolation-auto', { isolation: 'auto' }],
+	...makeGlobalStaticRules('isolation', 'isolation'),
+];
+
 export const behaviorRules = [
 	...listStyle,
 	...accents,
@@ -128,4 +134,5 @@ export const behaviorRules = [
 	...imageRenderings,
 	...overscrolls,
 	...scrollBehaviors,
+	...isolation,
 ];

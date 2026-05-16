@@ -2,6 +2,7 @@ import { ArborPreset } from '@arbor-css/core';
 import { rules as miniRules, rings } from '@unocss/preset-mini/rules';
 import { Rule } from 'unocss';
 import { Theme } from '../theme/types.js';
+import { animations } from './animation.js';
 import { arrowRules } from './arrow.js';
 import { backgroundStyles } from './background.js';
 import { behaviorRules } from './behaviors.js';
@@ -24,6 +25,7 @@ const baseRules = miniRules.filter((rule) => !excludeRules.has(rule));
 
 export const createRules = (preset: ArborPreset<any, any>): Rule<Theme>[] => [
 	...(baseRules as any),
+	...animations,
 	...behaviorRules,
 	...filters,
 	...backgroundStyles,
