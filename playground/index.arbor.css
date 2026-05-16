@@ -1,0 +1,9 @@
+.surface-primary {
+	background: $.surface.primary.color.bg;
+}
+
+.button-primary {
+	background: $.action.primary.color.bg;
+	color: $.action.primary.color.text;
+	padding: $.action.primary.padding.block $.button.primary.padding.inline;
+}

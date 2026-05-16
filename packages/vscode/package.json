@@ -1,0 +1,61 @@
+{
+	"name": "arbor-css-vscode",
+	"type": "module",
+	"displayName": "Arbor CSS",
+	"description": "Language support for .arbor.css files — token autocomplete, hover previews, and syntax highlighting",
+	"version": "0.0.1",
+	"publisher": "a-type",
+	"engines": {
+		"vscode": "^1.90.0"
+	},
+	"repository": {
+		"url": "https://github.com/a-type/arbor"
+	},
+	"categories": [
+		"Programming Languages",
+		"Other"
+	],
+	"main": "./dist/extension.mjs",
+	"contributes": {
+		"languages": [
+			{
+				"id": "arbor-css",
+				"aliases": [
+					"Arbor CSS",
+					"arbor-css"
+				],
+				"extensions": [
+					".arbor.css"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "arbor-css",
+				"scopeName": "source.arbor-css",
+				"path": "./syntaxes/arbor-css.tmLanguage.json",
+				"embeddedLanguages": {
+					"source.css": "css"
+				}
+			}
+		]
+	},
+	"scripts": {
+		"compile": "node esbuild.mjs",
+		"watch": "node esbuild.mjs --watch",
+		"vsce:package": "vsce package --no-dependencies",
+		"prepublishOnly": "pnpm compile"
+	},
+	"dependencies": {
+		"escalade": "^3.2.0",
+		"jiti": "^2.7.0"
+	},
+	"devDependencies": {
+		"@types/node": "^25.8.0",
+		"@types/vscode": "^1.90.0",
+		"@vscode/vsce": "^3.9.1",
+		"esbuild": "^0.28.0",
+		"typescript": "catalog:"
+	}
+}

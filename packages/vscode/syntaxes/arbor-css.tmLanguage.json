@@ -1,0 +1,25 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Arbor CSS",
+	"scopeName": "source.arbor-css",
+	"fileTypes": ["arbor.css"],
+	"patterns": [
+		{ "include": "#token-ref" },
+		{ "include": "source.css" }
+	],
+	"repository": {
+		"token-ref": {
+			"patterns": [
+				{
+					"comment": "Full token reference like $.color.main.mid or $.primitives.spacing.md",
+					"match": "(\\$)(\\.)([\\w][\\w.]*)",
+					"captures": {
+						"1": { "name": "keyword.operator.token-ref.arbor-css" },
+						"2": { "name": "punctuation.accessor.arbor-css" },
+						"3": { "name": "variable.other.token-path.arbor-css" }
+					}
+				}
+			]
+		}
+	}
+}

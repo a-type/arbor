@@ -1,0 +1,43 @@
+{
+	"name": "@arbor-css/plugin",
+	"version": "0.0.50",
+	"type": "module",
+	"publishConfig": {
+		"access": "public"
+	},
+	"repository": {
+		"url": "https://github.com/a-type/arbor"
+	},
+	"files": [
+		"dist"
+	],
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"node": "./dist/index.js",
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
+	"sideEffects": false,
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsc -w --preserveWatchOutput",
+		"prepublishOnly": "pnpm build"
+	},
+	"dependencies": {
+		"@arbor-css/core": "workspace:*",
+		"@arbor-css/tokens": "workspace:*",
+		"@arbor-css/globals": "workspace:*",
+		"escalade": "^3.2.0",
+		"jiti": "^2.4.2",
+		"postcss": "^8.5.4",
+		"unplugin": "^2.3.5"
+	},
+	"devDependencies": {
+		"typescript": "catalog:"
+	},
+	"peerDependencies": {
+		"@arbor-css/core": "*"
+	}
+}

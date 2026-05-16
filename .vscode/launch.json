@@ -7,6 +7,24 @@
 			"request": "launch",
 			"type": "node-terminal",
 			"cwd": "${workspaceFolder}/docs"
+		},
+		{
+			"name": "Run Extension",
+			"type": "extensionHost",
+			"request": "launch",
+			"args": ["--extensionDevelopmentPath=${workspaceFolder}/packages/vscode"],
+			"outFiles": ["${workspaceFolder}/packages/vscode/dist/**/*.mjs"],
+			"preLaunchTask": "Compile: Arbor CSS Extension",
+			"sourceMaps": true
+		},
+		{
+			"name": "Run Extension (watch)",
+			"type": "extensionHost",
+			"request": "launch",
+			"args": ["--extensionDevelopmentPath=${workspaceFolder}/packages/vscode"],
+			"outFiles": ["${workspaceFolder}/packages/vscode/dist/**/*.mjs"],
+			"preLaunchTask": "Watch: Arbor CSS Extension",
+			"sourceMaps": true
 		}
 	]
 }

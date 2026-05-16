@@ -16,6 +16,61 @@
 			"problemMatcher": [],
 			"label": "npm: dev - docs",
 			"detail": "astro dev"
+		},
+		{
+			"label": "Watch: Arbor CSS Extension",
+			"type": "shell",
+			"command": "node esbuild.mjs --watch",
+			"options": {
+				"cwd": "${workspaceFolder}/packages/vscode"
+			},
+			"group": "build",
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated",
+				"label": "esbuild watch"
+			},
+			"isBackground": true,
+			"problemMatcher": {
+				"owner": "esbuild",
+				"pattern": {
+					"regexp": "^(.*):(\\d+):(\\d+): (error|warning): (.*)$",
+					"file": 1,
+					"line": 2,
+					"column": 3,
+					"severity": 4,
+					"message": 5
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "^Watching",
+					"endsPattern": "^Build complete"
+				}
+			}
+		},
+		{
+			"label": "Compile: Arbor CSS Extension",
+			"type": "shell",
+			"command": "node esbuild.mjs",
+			"options": {
+				"cwd": "${workspaceFolder}/packages/vscode"
+			},
+			"group": "build",
+			"presentation": {
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": {
+				"owner": "esbuild",
+				"pattern": {
+					"regexp": "^(.*):(\\d+):(\\d+): (error|warning): (.*)$",
+					"file": 1,
+					"line": 2,
+					"column": 3,
+					"severity": 4,
+					"message": 5
+				}
+			}
 		}
 	]
 }

@@ -1,0 +1,18 @@
+{
+	"name": "@arbor-css/playground",
+	"private": true,
+	"version": "0.0.0",
+	"scripts": {
+		"dev": "vite --port 5222",
+		"build": "vite build",
+		"preview": "vite preview"
+	},
+	"dependencies": {
+		"@arbor-css/core": "workspace:^",
+		"@arbor-css/plugin": "workspace:^"
+	},
+	"devDependencies": {
+		"vite": "^7.2.6",
+		"typescript": "catalog:"
+	}
+}

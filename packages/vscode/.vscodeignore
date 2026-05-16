@@ -1,0 +1,7 @@
+dist
+node_modules
+.vscode-test
+*.vsix
+src
+tsconfig.json
+esbuild.mjs
