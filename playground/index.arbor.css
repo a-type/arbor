@@ -1,3 +1,12 @@
+:root {
+	$.system.ring: 0 0 0 0 transparent;
+}
+
+body {
+	background: $.color.main.paper;
+	color: $.color.neutral.ink;
+}
+
 .surface {
 	padding: $.surface.padding;
 	border-radius: $.surface.borderRadius;
@@ -26,6 +35,8 @@ button {
 	line-height: 1;
 	transition: all 0.2s ease;
 	cursor: pointer;
+	box-shadow: $.system.ring, $.system.shadow;
+	$.system.shadow: $.shadow.sm.compiled;
 
 	&[data-emphasis='primary'] {
 		background: $.action.primary.color.bg;
@@ -41,19 +52,27 @@ button {
 		background: $.action.ambient.color.bg;
 		color: $.action.ambient.color.fg;
 		border-color: $.action.ambient.color.border;
+		$.system.shadow: 0 0 0 0 transparent;
 
 		&:hover,
 		&:focus {
-			background: inherit;
-			background: oklch(from $.system.bg calc(l * 0.9) c h / 1);
+			$.system.bg.applied: inherit;
 		}
 	}
 
+	&:hover {
+		$.system.bg: oklch(from $.system.bg.applied calc(l * 0.98) c h / 1);
+		$.system.ring: 0 0 0 6px $.system.bg;
+	}
+	&:active {
+		$.system.bg: oklch(from $.system.bg.applied calc(l * 0.94) c h / 1);
+	}
 	&:focus {
 		outline: none;
 	}
 	&:focus-visible {
-		box-shadow: 0 0 0 6px $.system.bg;
+		$.system.bg: oklch(from $.system.bg.applied calc(l * 1.1) c h / 1);
+		$.system.ring: 0 0 0 2px $.color.main.ink;
 	}
 }
 
