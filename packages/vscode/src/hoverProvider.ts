@@ -5,6 +5,15 @@ import type { TokenProvider } from './tokenProvider.js';
 /** Matches a complete `$.token.path` reference */
 const TOKEN_RE = /\$\.([\w.]+)/g;
 
+/**
+ * Returns true if the given character index is on the property side of a CSS declaration
+ * (i.e., before the first `:` on the line).
+ */
+function isPropertySide(line: string, charIndex: number): boolean {
+	const colonIndex = line.indexOf(':');
+	return colonIndex === -1 || charIndex < colonIndex;
+}
+
 /** Matches an OKLCH color value */
 const OKLCH_RE = /^oklch\(/i;
 
@@ -36,6 +45,7 @@ export class ArborHoverProvider implements vscode.HoverProvider {
 			const entry = tokenMap.get(path);
 
 			const range = new vscode.Range(position.line, start, position.line, end);
+			const onPropertySide = isPropertySide(line, start);
 
 			if (!entry) {
 				return new vscode.Hover(
@@ -47,8 +57,11 @@ export class ArborHoverProvider implements vscode.HoverProvider {
 			const md = new vscode.MarkdownString();
 			md.supportHtml = true;
 			md.appendMarkdown(`**Arbor token** \`$.${path}\`\n\n`);
-			md.appendMarkdown(`**Resolves to:** \`${entry.cssVar}\`\n\n`);
-			md.appendMarkdown(`**Custom property:** \`${entry.name}\`\n\n`);
+			if (onPropertySide) {
+				md.appendMarkdown(`**Assigns CSS variable:** \`${entry.name}\`\n\n`);
+			} else {
+				md.appendMarkdown(`**CSS property:** \`${entry.name}\`\n\n`);
+			}
 			md.appendMarkdown(`**Purpose:** ${entry.purpose}`);
 
 			if (entry.purpose === 'color' && preset) {

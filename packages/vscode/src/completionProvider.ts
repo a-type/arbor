@@ -1,8 +1,20 @@
 import * as vscode from 'vscode';
 import type { TokenProvider } from './tokenProvider.js';
 
-/** Matches `$.` (possibly with partial path) in CSS property values */
+/** Matches `$.` (possibly with partial path) in CSS property names or values */
 const TOKEN_START_RE = /\$\.([\w.]*)$/;
+
+/**
+ * Returns true if the cursor is on the property side of a declaration
+ * (i.e., the `$.token.path` appears before any `:` on the line).
+ */
+function isPropertySideContext(
+	linePrefix: string,
+	matchStart: number,
+): boolean {
+	const precedingText = linePrefix.slice(0, matchStart);
+	return !precedingText.includes(':');
+}
 
 export class ArborCompletionProvider implements vscode.CompletionItemProvider {
 	constructor(private readonly tokenProvider: TokenProvider) {}
@@ -18,6 +30,8 @@ export class ArborCompletionProvider implements vscode.CompletionItemProvider {
 		if (!match) return undefined;
 
 		const currentPath = match[1]; // everything typed after `$.`
+		const matchStart = linePrefix.length - match[0].length;
+		const onPropertySide = isPropertySideContext(linePrefix, matchStart);
 		// Remove the trailing segment being typed (we complete the next segment)
 		const lastDot = currentPath.lastIndexOf('.');
 		const prefix = lastDot >= 0 ? currentPath.slice(0, lastDot) : '';
@@ -44,10 +58,12 @@ export class ArborCompletionProvider implements vscode.CompletionItemProvider {
 				);
 
 				if (tokenEntry) {
-					item.detail = tokenEntry.cssVar;
+					item.detail = onPropertySide ? tokenEntry.name : tokenEntry.var;
 					item.documentation = new vscode.MarkdownString(
 						[
-							`**CSS custom property:** \`${tokenEntry.name}\``,
+							onPropertySide ?
+								`**Assigns CSS variable:** \`${tokenEntry.name}\``
+							:	`**CSS property:** \`${tokenEntry.name}\``,
 							`**Purpose:** ${tokenEntry.purpose}`,
 						].join('\n\n'),
 					);

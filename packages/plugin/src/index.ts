@@ -1,7 +1,8 @@
+import { getStructuredTokensMap } from '@arbor-css/core';
+import { Token } from '@arbor-css/tokens';
 import { dirname } from 'path';
 import { createUnplugin } from 'unplugin';
 import { loadConfig } from './loadConfig.js';
-import { buildTokenMap, type TokenMap } from './tokenMap.js';
 import { transform } from './transform.js';
 
 export interface ArborPluginOptions {
@@ -21,7 +22,7 @@ const ARBOR_CSS_RE = /\.arbor\.css(\?.*)?$/;
 const ANY_CSS_RE = /\.css(\?.*)?$/;
 
 interface CachedConfig {
-	tokenMap: TokenMap;
+	tokenMap: Map<string, Token>;
 	preset: any;
 }
 
@@ -39,7 +40,9 @@ export const ArborPlugin = createUnplugin(
 			const cached = configCache.get(loaded.configPath);
 			if (cached) return cached;
 
-			const tokenMap = buildTokenMap(loaded.preset);
+			const tokenMap = getStructuredTokensMap(loaded.preset, {
+				delimiter: '.',
+			});
 			const entry: CachedConfig = { tokenMap, preset: loaded.preset };
 			configCache.set(loaded.configPath, entry);
 			console.log(

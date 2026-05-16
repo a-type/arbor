@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { ArborCompletionProvider } from './completionProvider.js';
+import { ArborDiagnosticProvider } from './diagnosticProvider.js';
 import { ArborHoverProvider } from './hoverProvider.js';
 import { TokenProvider } from './tokenProvider.js';
 

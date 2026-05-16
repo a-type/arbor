@@ -1,3 +1,4 @@
+import { $systemProps, ArborPreset, flattenToPropsList } from '@arbor-css/core';
 import { isToken, type Token } from '@arbor-css/tokens';
 
 export interface TokenMapEntry {
@@ -18,7 +19,7 @@ export type TokenMap = Map<string, TokenMapEntry>;
  * Mode tokens are registered under their plain path (e.g. "color.main.mid").
  * Primitive tokens are registered under "primitives.x.y" (e.g. "primitives.spacing.md").
  */
-export function buildTokenMap(preset: any): TokenMap {
+export function buildTokenMap(preset: ArborPreset<any, any>): TokenMap {
 	const map: TokenMap = new Map();
 
 	// Mode tokens from base mode schema
@@ -31,6 +32,21 @@ export function buildTokenMap(preset: any): TokenMap {
 	const primitiveTokens = preset?.primitives?.$tokens;
 	if (primitiveTokens) {
 		walkTokenTree(primitiveTokens, 'primitives', map);
+	}
+
+	// System tokens from $systemProps - "final" tokens are also made available
+	// for cross-property references: e.g. "$.system.color.fg" references the "final"
+	// token for the foreground color, and can be used to set the value of another
+	// property like border-color.
+	const systemFinalProps = flattenToPropsList($systemProps).filter((prop) =>
+		prop.name.endsWith('final'),
+	);
+	for (const prop of systemFinalProps) {
+		map.set(`system.${prop.name}`, {
+			cssVar: prop.var,
+			name: prop.name,
+			purpose: prop.purpose,
+		});
 	}
 
 	return map;

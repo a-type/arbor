@@ -20,10 +20,12 @@
 button {
 	padding: $.action.padding;
 	border-radius: $.action.borderRadius;
-	border: 1px solid transparent;
+	border: 1px solid $.system.fg;
 	font-size: $.text.secondary.size;
 	font-weight: $.text.secondary.weight;
 	line-height: 1;
+	transition: all 0.2s ease;
+	cursor: pointer;
 
 	&[data-emphasis='primary'] {
 		background: $.action.primary.color.bg;
@@ -39,6 +41,19 @@ button {
 		background: $.action.ambient.color.bg;
 		color: $.action.ambient.color.fg;
 		border-color: $.action.ambient.color.border;
+
+		&:hover,
+		&:focus {
+			background: inherit;
+			background: oklch(from $.system.bg calc(l * 0.8) c h / 1);
+		}
+	}
+
+	&:focus {
+		outline: none;
+	}
+	&:focus-visible {
+		box-shadow: 0 0 0 6px $.system.bg;
 	}
 }
 
