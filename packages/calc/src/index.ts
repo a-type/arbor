@@ -16,7 +16,10 @@ export type OperationTree =
 	| ClampOperation
 	| CastOperation
 	| FunctionCallOperation
-	| ConcatenateOperation;
+	| ConcatenateOperation
+	| ColorOperation;
+
+export type CalcOperation = OperationTree;
 
 export interface AddOperation {
 	type: 'add';
@@ -58,6 +61,13 @@ export interface ConcatenateOperation {
 	separator: string;
 	values: Equation[];
 }
+export interface ColorOperation {
+	type: 'color';
+	space: string;
+	from?: Equation;
+	parts: Equation[];
+	opacity?: Equation;
+}
 
 export const $ = {
 	literal: (value: string | number | Token): LiteralOperation => {
@@ -92,6 +102,9 @@ export const $ = {
 	},
 	concat: (values: Equation[], sep = ' '): ConcatenateOperation => {
 		return { type: 'concatenate', values, separator: sep };
+	},
+	color: (params: Omit<ColorOperation, 'type'>): ColorOperation => {
+		return { type: 'color', ...params };
 	},
 };
 export type CalcOperations = typeof $;
@@ -129,6 +142,12 @@ export function printEquation(equation: Equation): string {
 			return equation.values
 				.map((v) => printEquation(v))
 				.join(equation.separator);
+		case 'color':
+			const fromPart =
+				equation.from ? `from ${printEquation(equation.from)} ` : '';
+			const opacityPart =
+				equation.opacity ? ` / ${printEquation(equation.opacity)}` : '';
+			return `${equation.space}(${fromPart}${equation.parts.map((v) => printEquation(v)).join(' ')}${opacityPart})`;
 		default:
 			throw new Error(`Unknown equation type: ${(equation as any).type}`);
 	}
@@ -538,6 +557,10 @@ export function computeEquation(
 				type: 'concatenated',
 				value: concatenatedValues.join(equation.separator),
 			};
+		case 'color':
+			// color computations are not supported at runtime (beyond simple var() passthroughs)
+			const colorString = printEquation(equation);
+			return { type: 'calc', value: colorString };
 		default:
 			throw new Error(`Unknown equation type: ${(equation as any).type}`);
 	}

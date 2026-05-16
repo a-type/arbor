@@ -1,5 +1,6 @@
 import {
 	$,
+	CalcOperations,
 	computeEquation,
 	type Equation,
 	LiteralOperation,
@@ -53,7 +54,7 @@ export function createFunction<TParams extends Token[] = Token[]>(
 		 * Provide the definition of the function, using calc tools to construct
 		 * an equation. The incoming parameters are already wrapped with literal()
 		 */
-		definition: (...params: LiteralOperation[]) => Equation;
+		definition: ($: CalcOperations, ...params: LiteralOperation[]) => Equation;
 	},
 ) {
 	const cssName = `${FUNCTION_PREFIX}${name}`;
@@ -66,7 +67,7 @@ export function createFunction<TParams extends Token[] = Token[]>(
 		})
 		.join(', ');
 
-	const equation = definition(...parameters.map((p) => $.literal(p)));
+	const equation = definition($, ...parameters.map((p) => $.literal(p)));
 	const body = printEquation(equation);
 	const cssDefinition = `@function ${cssName}(${paramsList}) { result: ${body}; }`;
 

@@ -195,9 +195,15 @@ importers:
 
   packages/core:
     dependencies:
+      '@arbor-css/calc':
+        specifier: workspace:*
+        version: link:../calc
       '@arbor-css/colors':
         specifier: workspace:*
         version: link:../colors
+      '@arbor-css/functions':
+        specifier: workspace:*
+        version: link:../functions
       '@arbor-css/globals':
         specifier: workspace:*
         version: link:../globals
@@ -335,9 +341,15 @@ importers:
 
   packages/preset:
     dependencies:
+      '@arbor-css/calc':
+        specifier: workspace:*
+        version: link:../calc
       '@arbor-css/colors':
         specifier: workspace:*
         version: link:../colors
+      '@arbor-css/functions':
+        specifier: workspace:*
+        version: link:../functions
       '@arbor-css/globals':
         specifier: workspace:*
         version: link:../globals

@@ -1,4 +1,5 @@
 import { CompiledColors } from '@arbor-css/colors';
+import { ArborFunction } from '@arbor-css/functions';
 import {
 	ModeInstance,
 	ModeSchemaLevel,
@@ -16,11 +17,13 @@ export interface ArborPreset<
 	TTypography extends CompiledTypography<any> = CompiledTypography<any>,
 	TSpacing extends CompiledSpacing<any> = CompiledSpacing<any>,
 	TShadows extends CompiledShadows<any> = CompiledShadows<any>,
+	TFunctions extends ArborFunction[] = ArborFunction[],
 > {
 	primitives: Primitives<TCompiledColors, TTypography, TSpacing, TShadows>;
 	modes: {
 		base: ModeInstance<TModeShape>;
 	} & TModes;
+	functions: TFunctions;
 }
 
 export function definePreset<
@@ -30,6 +33,7 @@ export function definePreset<
 	TTypography extends CompiledTypography<any>,
 	TSpacing extends CompiledSpacing<any>,
 	TShadows extends CompiledShadows<any>,
+	TFunctions extends ArborFunction[],
 >(
 	config: ArborPreset<
 		TModeShape,
@@ -37,7 +41,8 @@ export function definePreset<
 		TCompiledColors,
 		TTypography,
 		TSpacing,
-		TShadows
+		TShadows,
+		TFunctions
 	>,
 ): ArborPreset<
 	TModeShape,
@@ -45,7 +50,8 @@ export function definePreset<
 	TCompiledColors,
 	TTypography,
 	TSpacing,
-	TShadows
+	TShadows,
+	TFunctions
 > {
 	return config;
 }

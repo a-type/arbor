@@ -6,6 +6,7 @@ import {
 	defaultLightScheme,
 	SchemeDefinition,
 } from '@arbor-css/colors';
+import { ArborFunction } from '@arbor-css/functions';
 import { createGlobals, GlobalConfig } from '@arbor-css/globals';
 import { ModeValues, PartialModeInstance } from '@arbor-css/modes';
 import { createPrimitives } from '@arbor-css/primitives';
@@ -19,6 +20,7 @@ import {
 	createArborModeValues,
 } from './arborPreset.js';
 import { ArborPreset } from './config.js';
+import { presetFunctions } from './functions.js';
 
 export interface CreateArborPresetConfig<
 	TRanges extends Record<string, ColorRangeConfig<any>>,
@@ -36,6 +38,7 @@ export interface CreateArborPresetConfig<
 	spacing?: Omit<SpacingConfig, 'globals'>;
 	shadows?: Omit<ShadowConfig, 'globals'>;
 	baseMode?: DeepPartial<ModeValues<(typeof arborModeSchema)['definition']>>;
+	functions?: ArborFunction[];
 }
 
 export type ArborPresetInstance<
@@ -136,9 +139,12 @@ export function createArborPreset<
 		base: baseMode,
 	};
 
-	const preset = {
+	const functions = [...presetFunctions, ...(config.functions ?? [])];
+
+	const preset: ArborPreset<any, any> = {
 		modes,
 		primitives,
+		functions,
 	};
 
 	(preset as any).withMode = (name: string, mode: any) => {

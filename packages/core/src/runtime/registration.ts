@@ -1,10 +1,10 @@
-import { ArborConfig } from '../config.js';
+import { ArborPreset } from '@arbor-css/preset/config';
 import { generateStylesheet } from '../stylesheet/generateStylesheet.js';
 
-let config: ArborConfig<any> | undefined = undefined;
+let config: ArborPreset<any, any> | undefined = undefined;
 let styleSheet: CSSStyleSheet | undefined = undefined;
 
-export function getConfig(): ArborConfig<any> {
+export function getConfig(): ArborPreset<any, any> {
 	if (!config) {
 		throw new Error(
 			'Arbor configuration has not been set. Please call connect() first.',
@@ -22,7 +22,7 @@ export function getStyleSheet(): CSSStyleSheet {
 	return styleSheet;
 }
 
-export function connect(arbor: ArborConfig<any>) {
+export function connect(arbor: ArborPreset<any, any>) {
 	config = arbor;
 	// by turning off layers, we make the generated CSS take precedence over any existing pregenerated stylesheet.
 	const styles = generateStylesheet(config, { layer: false });

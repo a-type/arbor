@@ -1,22 +1,23 @@
 import { CompiledColors } from '@arbor-css/colors';
+import { ArborFunction } from '@arbor-css/functions';
 import { $globalProps, $systemProps } from '@arbor-css/globals';
 import {
 	flattenToPropsList,
 	ModeSchemaLevel,
 	modeToCss,
+	PartialModeInstance,
 } from '@arbor-css/modes';
+import { ArborPreset } from '@arbor-css/preset/config';
 import { CompiledShadows } from '@arbor-css/shadows';
 import { CompiledSpacing } from '@arbor-css/spacing';
 import {
 	createToken,
 	isToken,
 	selfReferencedProps,
-	TokenSchema,
 	tokenSchemaToList,
 } from '@arbor-css/tokens';
 import { CompiledTypography } from '@arbor-css/typography';
 import { convertStructure } from '@arbor-css/util';
-import { ArborConfig } from '../config.js';
 import { flattenAndApplyTokenValues } from '../util/flattenAndApplyTokenValues.js';
 import { formatObjectToCss } from '../util/formatObjectToCss.js';
 import { printTokens } from '../util/printTokens.js';
@@ -25,19 +26,21 @@ const noPreference = `, (prefers-color-scheme: no-preference)`;
 
 export function generateStylesheet<
 	TModeShape extends ModeSchemaLevel,
+	TModes extends Record<string, PartialModeInstance<TModeShape>>,
 	TCompiledColors extends CompiledColors<any, any>,
 	TTypography extends CompiledTypography<any>,
 	TSpacing extends CompiledSpacing<any>,
 	TShadows extends CompiledShadows<any>,
-	TOtherTokens extends TokenSchema,
+	TFunctions extends ArborFunction[],
 >(
-	config: ArborConfig<
+	config: ArborPreset<
 		TModeShape,
+		TModes,
 		TCompiledColors,
 		TTypography,
 		TSpacing,
 		TShadows,
-		TOtherTokens
+		TFunctions
 	>,
 	{
 		layer: cascadeLayerName = 'arbor',
@@ -153,11 +156,23 @@ ${modeName === 'base' ? ':root, :root [class^="\\@scheme-"], ' : ''}${modeToCss(
 	})
 	.join('\n\n')}
 
+/* Function definitions */
+${config.functions
+	.map((fn) => fn.definition)
+	.filter(Boolean)
+	.join('\n\n')}
+
 /* Custom properties for each primitive color */
-${allColorTokens.map((token) => token.definition).join('\n')}
+${allColorTokens
+	.map((token) => token.definition)
+	.filter(Boolean)
+	.join('\n')}
 
 /* Custom properties for each mode property */
-${allModeProps.map((PROP) => PROP.definition).join('\n\n')}
+${allModeProps
+	.map((PROP) => PROP.definition)
+	.filter(Boolean)
+	.join('\n\n')}
 
 ${cascadeLayerName ? `}` : ''}
 `.trim();

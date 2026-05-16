@@ -43,6 +43,8 @@
 		"@arbor-css/spacing": "workspace:*",
 		"@arbor-css/tokens": "workspace:*",
 		"@arbor-css/typography": "workspace:*",
-		"@arbor-css/util": "workspace:*"
+		"@arbor-css/util": "workspace:*",
+		"@arbor-css/functions": "workspace:*",
+		"@arbor-css/calc": "workspace:*"
 	}
 }
