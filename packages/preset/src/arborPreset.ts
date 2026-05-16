@@ -180,14 +180,14 @@ export function createArborModeValues<
 			borderRadius: derive`calc(${arborModeSchema.$tokens.borderRadius.md} * ${arborModeSchema.$tokens.surface.roundness})`,
 			primary: {
 				color: {
-					bg: derive`${arborModeSchema.$tokens.color.main.wash}`,
+					bg: derive`${arborModeSchema.$tokens.color.main.light}`,
 					fg: derive`${arborModeSchema.$tokens.color.main.ink}`,
 					border: derive`${arborModeSchema.$tokens.color.main.heavy}`,
 				},
 			},
 			secondary: {
 				color: {
-					bg: derive`${arborModeSchema.$tokens.color.main.paper}`,
+					bg: derive`${arborModeSchema.$tokens.color.main.wash}`,
 					fg: derive`${arborModeSchema.$tokens.color.neutral.ink}`,
 					border: derive`${arborModeSchema.$tokens.color.main.ink}`,
 				},

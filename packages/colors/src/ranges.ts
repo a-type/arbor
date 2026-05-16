@@ -200,7 +200,7 @@ export function createColorLightModeRange(
 	});
 	const chroma = chromaEq({
 		baseline: 0.75,
-		rangeUp: -0.7,
+		rangeUp: -0.68,
 		rangeDown: 0.2,
 	});
 	return createColorRange(config, {
