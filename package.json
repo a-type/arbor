@@ -1,6 +1,6 @@
 {
 	"name": "arbor-css",
-	"version": "0.0.44",
+	"version": "0.0.45",
 	"description": "",
 	"main": "index.js",
 	"private": true,
