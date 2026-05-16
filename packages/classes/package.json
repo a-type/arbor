@@ -1,6 +1,6 @@
 {
 	"name": "@arbor-css/classes",
-	"version": "0.0.47",
+	"version": "0.0.48",
 	"type": "module",
 	"publishConfig": {
 		"access": "public"
