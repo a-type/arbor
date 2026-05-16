@@ -19,6 +19,7 @@ export type TokenMap = Map<string, TokenEntry>;
  */
 export class TokenProvider {
 	private tokenMap: TokenMap = new Map();
+	private preset: any = null;
 	private configPath: string | null = null;
 	private watcher: vscode.FileSystemWatcher | null = null;
 	private onChangeEmitter = new vscode.EventEmitter<void>();
@@ -43,6 +44,7 @@ export class TokenProvider {
 		const preset = await loadConfigFile(this.configPath);
 		if (!preset) return;
 
+		this.preset = preset;
 		this.tokenMap = buildTokenMap(preset);
 		console.log(`[arbor-css] Loaded config from ${this.configPath} (${this.tokenMap.size} tokens)`);
 		this.onChangeEmitter.fire();
@@ -59,6 +61,10 @@ export class TokenProvider {
 
 	getTokenMap(): TokenMap {
 		return this.tokenMap;
+	}
+
+	getPreset(): any {
+		return this.preset;
 	}
 
 	/** Returns all next-level segments for a given dot-path prefix */

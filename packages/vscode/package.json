@@ -48,6 +48,7 @@
 		"prepublishOnly": "pnpm compile"
 	},
 	"dependencies": {
+		"@arbor-css/core": "workspace:*",
 		"escalade": "^3.2.0",
 		"jiti": "^2.7.0"
 	},
