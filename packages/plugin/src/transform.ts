@@ -37,6 +37,19 @@ export function transform(
 	// Replace $.token.path references and inject color system props
 	if (tokenMap) {
 		root.walkDecls((decl) => {
+			// Handle left-hand side token assignment: `$.token.path: value` → `--token-name: value`
+			if (decl.prop.includes('$.')) {
+				const propMatch = /^\$\.([\w.]+)$/.exec(decl.prop.trim());
+				if (propMatch) {
+					const entry = tokenMap!.get(propMatch[1]);
+					if (!entry) {
+						warnings.push(`Unknown token reference: $.${propMatch[1]}`);
+					} else {
+						decl.prop = entry.name;
+					}
+				}
+			}
+
 			if (!decl.value.includes('$.')) return;
 
 			const resolvedValue = decl.value.replace(
