@@ -18,11 +18,11 @@ function lightDarkAlterations({
 			step,
 			$.add(
 				$.multiply(
-					$.literal($systemProps.scheme.whenLight.varFallback(1)),
+					$.token($systemProps.scheme.whenLight, $.literal(1)),
 					$.literal(light),
 				),
 				$.multiply(
-					$.literal($systemProps.scheme.whenDark.varFallback(0)),
+					$.token($systemProps.scheme.whenDark, $.literal(0)),
 					$.literal(dark),
 				),
 			),

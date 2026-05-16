@@ -26,7 +26,8 @@
 		"prepublishOnly": "pnpm build"
 	},
 	"devDependencies": {
-		"typescript": "catalog:"
+		"typescript": "catalog:",
+		"vitest": "catalog:"
 	},
 	"dependencies": {
 		"@arbor-css/tokens": "workspace:*"

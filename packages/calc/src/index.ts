@@ -1,4 +1,4 @@
-import { isToken, Token } from '@arbor-css/tokens';
+import { Token } from '@arbor-css/tokens';
 
 export interface CalcEvaluationContext {
 	propertyValues: Record<string, string | undefined>;
@@ -17,94 +17,134 @@ export type OperationTree =
 	| CastOperation
 	| FunctionCallOperation
 	| ConcatenateOperation
-	| ColorOperation;
+	| ColorOperation
+	| TokenOperation;
 
-export type CalcOperation = OperationTree;
+export interface BaseOperation {
+	// tracks tokens referenced in this node and children.
+	// this list at the root node is all the dependencies of the equation
+	tokens: Token[];
+}
 
-export interface AddOperation {
+export interface AddOperation extends BaseOperation {
 	type: 'add';
 	values: Equation[];
 }
-export interface SubtractOperation {
+export interface SubtractOperation extends BaseOperation {
 	type: 'subtract';
 	values: Equation[];
 }
-export interface MultiplyOperation {
+export interface MultiplyOperation extends BaseOperation {
 	type: 'multiply';
 	values: Equation[];
 }
-export interface DivideOperation {
+export interface DivideOperation extends BaseOperation {
 	type: 'divide';
 	values: [Equation, Equation];
 }
-export interface LiteralOperation {
+export interface LiteralOperation extends BaseOperation {
 	type: 'literal';
 	value: string | number;
 }
-export interface ClampOperation {
+export interface ClampOperation extends BaseOperation {
 	type: 'clamp';
 	values: Equation[];
 }
-export interface CastOperation {
+export interface CastOperation extends BaseOperation {
 	type: 'cast';
 	value: Equation;
 	unit: '%' | '';
 }
-export interface FunctionCallOperation {
+export interface FunctionCallOperation extends BaseOperation {
 	type: 'function';
 	name: string;
 	args: Equation[];
 }
 /** Not strictly calc(), but useful for constructing non-numeric outputs... */
-export interface ConcatenateOperation {
+export interface ConcatenateOperation extends BaseOperation {
 	type: 'concatenate';
 	separator: string;
 	values: Equation[];
 }
-export interface ColorOperation {
+export interface ColorOperation extends BaseOperation {
 	type: 'color';
 	space: string;
 	from?: Equation;
 	parts: Equation[];
 	opacity?: Equation;
 }
+export interface TokenOperation extends BaseOperation {
+	type: 'token';
+	value: Token;
+	fallback?: Equation;
+}
 
 export const $ = {
-	literal: (value: string | number | Token): LiteralOperation => {
-		if (isToken(value)) {
-			return { type: 'literal', value: value.var };
-		}
+	literal: (value: string | number): LiteralOperation => {
 		if (typeof value === 'string' || typeof value === 'number') {
-			return { type: 'literal', value };
+			return { type: 'literal', value, tokens: [] };
 		}
-		return { type: 'literal', value };
+		return { type: 'literal', value, tokens: [] };
+	},
+	token: (value: Token, fallback?: Equation): TokenOperation => {
+		return { type: 'token', value, fallback, tokens: [value] };
 	},
 	add: (...values: Equation[]): AddOperation => {
-		return { type: 'add', values };
+		return { type: 'add', values, tokens: values.flatMap((v) => v.tokens) };
 	},
 	subtract: (...values: Equation[]): SubtractOperation => {
-		return { type: 'subtract', values };
+		return {
+			type: 'subtract',
+			values,
+			tokens: values.flatMap((v) => v.tokens),
+		};
 	},
 	multiply: (...values: Equation[]): MultiplyOperation => {
-		return { type: 'multiply', values };
+		return {
+			type: 'multiply',
+			values,
+			tokens: values.flatMap((v) => v.tokens),
+		};
 	},
 	divide: (numerator: Equation, denominator: Equation): DivideOperation => {
-		return { type: 'divide', values: [numerator, denominator] };
+		return {
+			type: 'divide',
+			values: [numerator, denominator],
+			tokens: [numerator, denominator].flatMap((v) => v.tokens),
+		};
 	},
 	clamp: (equation: Equation, min: Equation, max: Equation): Equation => {
-		return { type: 'clamp', values: [min, equation, max] };
+		return {
+			type: 'clamp',
+			values: [min, equation, max],
+			tokens: [min, equation, max].flatMap((v) => v.tokens),
+		};
 	},
 	castPercentage: (value: Equation): Equation => {
-		return { type: 'cast', value, unit: '%' };
+		return { type: 'cast', value, unit: '%', tokens: value.tokens };
 	},
 	fn: (name: string, ...args: Equation[]): FunctionCallOperation => {
-		return { type: 'function', name, args };
+		return {
+			type: 'function',
+			name,
+			args,
+			tokens: args.flatMap((v) => v.tokens),
+		};
 	},
 	concat: (values: Equation[], sep = ' '): ConcatenateOperation => {
-		return { type: 'concatenate', values, separator: sep };
+		return {
+			type: 'concatenate',
+			values,
+			separator: sep,
+			tokens: values.flatMap((v) => v.tokens),
+		};
 	},
-	color: (params: Omit<ColorOperation, 'type'>): ColorOperation => {
-		return { type: 'color', ...params };
+	color: (params: Omit<ColorOperation, 'type' | 'tokens'>): ColorOperation => {
+		return {
+			type: 'color',
+			...params,
+			tokens: params.parts.flatMap((v) => v.tokens),
+		};
 	},
 };
 export type CalcOperations = typeof $;
@@ -113,6 +153,10 @@ export function printEquation(equation: Equation): string {
 	switch (equation.type) {
 		case 'literal':
 			return equation.value.toString();
+		case 'token':
+			if (equation.fallback)
+				return equation.value.varFallback(printEquation(equation.fallback));
+			return equation.value.var;
 		case 'add':
 			return `(${equation.values.map((v) => printEquation(v)).join(' + ')})`;
 		case 'subtract':
@@ -505,6 +549,22 @@ export function computeEquation(
 	switch (equation.type) {
 		case 'literal':
 			return evaluateLiteral(equation.value.toString(), context);
+		case 'token':
+			const evaluated = evaluateLiteral(equation.value.var, context);
+			if (evaluated.type === 'numeric') {
+				return evaluated;
+			}
+			if (equation.fallback) {
+				// token value is not known at runtime, so we compute the fallback and inline it too
+				const computedFallback = computeEquation(equation.fallback, context);
+				return {
+					type: 'calc',
+					value: `var(${equation.value.name}, ${printComputationResult(
+						computedFallback,
+					)})`,
+				};
+			}
+			return evaluated;
 		case 'add':
 			return equation.values.reduce<ComputationResult>(
 				(sum, v) => add(sum, computeEquation(v, context)),
