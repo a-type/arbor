@@ -13,6 +13,10 @@ arbor-css (pnpm monorepo)
 ├── packages/
 │   ├── core/          # Main library where most concepts come together: create primitives, modes and generate CSS from them
 │   ├── classes/       # Utility class system built on UnoCSS. Turns the config from `core` into on-demand utility classes.
+│   ├── preset/        # The "Arbor preset" — a ready-to-use collection of primitives, schemes, and mode schema bundled together. Also re-exports everything needed to define an arbor.config.ts.
+│   ├── primitives/    # Assembles compiled colors, typography, spacing, and shadows into a typed token tree used by `preset` and `core`
+│   ├── plugin/        # Bundler plugin (Vite/Rollup/webpack via unplugin). Transforms `.arbor.css` files and resolves `$.token.path` references and `@import 'arbor:css'` to generated CSS at build time.
+│   ├── vscode/        # VS Code extension. Provides syntax highlighting, token autocomplete, and hover previews for `.arbor.css` files.
 │   ├── tokens/        # Design Token abstraction that captures intent/usage and can write to various CSS representations (name, var, property definition)
 │   ├── modes/         # Defines Mode schemas
 │   ├── globals/       # Defines common global user configuration
@@ -74,11 +78,44 @@ Modes have a wide variety of uses. Here are some examples:
 
 See: [packages/modes](packages/modes)
 
+#### Preset
+
+`preset` is the standard entry point for end-users defining an `arbor.config.ts`. It bundles the Arbor default mode schema, default color schemes (light/dark), and a `createArborPreset()` helper that accepts user configuration (color ranges, typography, spacing, shadows, modes) and returns a fully typed preset object consumed by `core`, `classes`, and `plugin`.
+
+See: [packages/preset](packages/preset)
+
+#### Bundler Plugin
+
+`plugin` is a framework-agnostic bundler plugin built on [unplugin](https://github.com/unjs/unplugin), supporting Vite, Rollup, and webpack. It performs two transforms at build time:
+
+1. **`.arbor.css` files** — resolves `$.token.path` shorthand references (e.g. `$.color.primary`) into their CSS `var(--arbor-...)` equivalents and injects any required system property declarations.
+2. **Any CSS file with `@import 'arbor:css'`** — expands that import into the full generated Arbor stylesheet for the project.
+
+The plugin walks upward from each file to find the nearest `arbor.config.ts` and caches the resolved token map per config file.
+
+See: [packages/plugin](packages/plugin)
+
+#### VS Code Extension
+
+`vscode` is a VS Code extension (`arbor-css-vscode`) that adds IDE support for `.arbor.css` files:
+
+- **Syntax highlighting** via a TextMate grammar (`.arbor.css` is treated as CSS with embedded `$.token.path` expressions)
+- **Token autocomplete** — triggered on `.` inside `$` expressions, pulling completions from the project's `arbor.config.ts`
+- **Hover previews** — shows the resolved CSS variable name and value for a token reference under the cursor
+
+The extension loads the config using the same `jiti`-based loader as the bundler plugin.
+
+See: [packages/vscode](packages/vscode)
+
 ### Dependency Flow
 
 `classes` depends on `core` to define the global CSS tokens, primitives, modes, and other values needed to define util classes.
 
 `core` depends on most other things: `tokens` to define and interpret design tokens, `globals` to declare what things a user can tweak, `modes` to declare what a mode is and how it becomes CSS and tokens, and `colors`, `shadows`, `typography`, `spacing` to generate primitives for the "arbor preset."
+
+`preset` depends on `primitives`, `colors`, `typography`, `spacing`, `shadows`, `modes`, `globals`, and `tokens` — it is the high-level assembly point for a complete Arbor configuration.
+
+`plugin` and `vscode` depend on `core` (and `preset` transitively) to load and interpret an `arbor.config.ts` at tooling time.
 
 ## Development Patterns
 
