@@ -46,6 +46,9 @@ export function activate(context: vscode.ExtensionContext): void {
 		),
 	);
 
+	// Diagnostic provider — red underlines for unknown tokens
+	new ArborDiagnosticProvider(tokenProvider).register(context);
+
 	// Refresh completions when config changes
 	context.subscriptions.push(
 		tokenProvider.onDidChange(() => {
