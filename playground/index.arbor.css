@@ -16,17 +16,64 @@
 	}
 }
 
-.button {
+.button,
+button {
 	padding: $.action.padding;
 	border-radius: $.action.borderRadius;
 	border: 1px solid transparent;
 	font-size: $.text.secondary.size;
 	font-weight: $.text.secondary.weight;
-	line-height: $.text.secondary.lineHeight;
+	line-height: 1;
 
 	&[data-emphasis='primary'] {
 		background: $.action.primary.color.bg;
 		color: $.action.primary.color.fg;
 		border-color: $.action.primary.color.border;
 	}
+	&[data-emphasis='secondary'] {
+		background: $.action.secondary.color.bg;
+		color: $.action.secondary.color.fg;
+		border-color: $.action.secondary.color.border;
+	}
+	&[data-emphasis='ambient'] {
+		background: $.action.ambient.color.bg;
+		color: $.action.ambient.color.fg;
+		border-color: $.action.ambient.color.border;
+	}
+}
+
+.input,
+input {
+	padding: $.control.padding;
+	border-radius: $.control.borderRadius;
+	border: 1px solid $.control.color.border;
+	font-size: $.text.secondary.size;
+	font-weight: $.text.secondary.weight;
+	line-height: $.text.secondary.lineHeight;
+	background: $.control.color.bg;
+	color: $.control.color.fg;
+}
+
+.title,
+h1 {
+	font-size: $.text.primary.size;
+	font-weight: $.text.primary.weight;
+	line-height: $.text.primary.lineHeight;
+	font-family: $.text.primary.font;
+}
+
+.p,
+p {
+	font-size: $.text.secondary.size;
+	font-weight: $.text.secondary.weight;
+	line-height: $.text.secondary.lineHeight;
+	font-family: $.text.secondary.font;
+}
+
+.caption,
+small {
+	font-size: $.text.ambient.size;
+	font-weight: $.text.ambient.weight;
+	line-height: $.text.ambient.lineHeight;
+	font-family: $.text.ambient.font;
 }
