@@ -220,7 +220,7 @@ export function createArborModeValues<
 			secondary: {
 				color: {
 					bg: derive`${arborModeSchema.$tokens.color.neutral.paper}`,
-					fg: derive`${arborModeSchema.$tokens.color.neutral.heavy}`,
+					fg: derive`${arborModeSchema.$tokens.color.neutral.ink}`,
 					border: derive`${arborModeSchema.$tokens.color.neutral.heavy}`,
 				},
 			},

@@ -45,7 +45,7 @@ button {
 		&:hover,
 		&:focus {
 			background: inherit;
-			background: oklch(from $.system.bg calc(l * 0.8) c h / 1);
+			background: oklch(from $.system.bg calc(l * 0.9) c h / 1);
 		}
 	}
 
