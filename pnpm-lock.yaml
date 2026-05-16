@@ -312,6 +312,9 @@ importers:
       '@arbor-css/typography':
         specifier: workspace:*
         version: link:../typography
+      '@arbor-css/util':
+        specifier: workspace:*
+        version: link:../util
     devDependencies:
       typescript:
         specifier: 'catalog:'

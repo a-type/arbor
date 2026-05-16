@@ -7,11 +7,12 @@ import {
 	SchemeDefinition,
 } from '@arbor-css/colors';
 import { createGlobals, GlobalConfig } from '@arbor-css/globals';
-import { DeepPartial, ModeValues, PartialModeInstance } from '@arbor-css/modes';
+import { ModeValues, PartialModeInstance } from '@arbor-css/modes';
 import { createPrimitives } from '@arbor-css/primitives';
 import { compileShadows, ShadowConfig } from '@arbor-css/shadows';
 import { compileSpacing, SpacingConfig } from '@arbor-css/spacing';
 import { compileTypography, TypographyConfig } from '@arbor-css/typography';
+import { deepMerge, DeepPartial } from '@arbor-css/util';
 import {
 	ArborModeSchema,
 	arborModeSchema,
@@ -34,7 +35,7 @@ export interface CreateArborPresetConfig<
 	typography?: Omit<TypographyConfig, 'globals'>;
 	spacing?: Omit<SpacingConfig, 'globals'>;
 	shadows?: Omit<ShadowConfig, 'globals'>;
-	baseMode?: Partial<ModeValues<(typeof arborModeSchema)['definition']>>;
+	baseMode?: DeepPartial<ModeValues<(typeof arborModeSchema)['definition']>>;
 }
 
 export type ArborPresetInstance<
@@ -121,13 +122,13 @@ export function createArborPreset<
 		schemeTags: config.colors.schemeTags,
 	});
 
-	const baseModeValues = {
-		...createArborModeValues({
+	const baseModeValues: ModeValues<ArborModeSchema['definition']> = deepMerge(
+		createArborModeValues({
 			mainColor: config.colors.mainColor as any,
 			primitives,
 		}),
-		...config.baseMode,
-	};
+		config.baseMode ?? {},
+	);
 
 	const baseMode = arborModeSchema.createBase(baseModeValues);
 

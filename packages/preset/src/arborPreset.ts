@@ -159,7 +159,7 @@ export function createArborModeValues<
 >(config: {
 	mainColor: keyof TCompiledColors[keyof TCompiledColors]['colors'];
 	primitives: Primitives<TCompiledColors>;
-}) {
+}): ModeValues<ArborModeSchema['definition']> {
 	// FIXME: user-facing typing for this is good, but internally something is
 	// broken...
 	const mainColor: any = config.primitives.$tokens.colors[config.mainColor];

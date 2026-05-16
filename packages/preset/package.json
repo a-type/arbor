@@ -42,6 +42,7 @@
 		"@arbor-css/shadows": "workspace:*",
 		"@arbor-css/spacing": "workspace:*",
 		"@arbor-css/tokens": "workspace:*",
-		"@arbor-css/typography": "workspace:*"
+		"@arbor-css/typography": "workspace:*",
+		"@arbor-css/util": "workspace:*"
 	}
 }
