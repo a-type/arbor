@@ -74,7 +74,7 @@ describe('createFunction', () => {
 					createToken('min', { type: 'number' }),
 					createToken('max', { type: 'number' }),
 				],
-				definition: ($, value, min, max) => $.clamp(value, min, max),
+				definition: ($, value, min, max) => $.fn('clamp', min, value, max),
 			});
 			expect(fn.definition).toBe(
 				'@function --clamped(--value <number>, --min <number>, --max <number>) { result: clamp(var(--min), var(--value), var(--max)); }',

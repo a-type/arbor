@@ -24,10 +24,10 @@ it('compiles a set of color ranges with default schemes and no precalculated glo
 		    "colors": {
 		      "alt": {
 		        "$neutral": {
-		          "$root": "oklch(calc(clamp(0, calc(0.6 - pow(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
-		          "dark": "oklch(calc(clamp(0, calc(1 - pow(calc(clamp(0, calc(0.16800000000000004 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.16800000000000004 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
-		          "light": "oklch(calc(clamp(0, calc(0.21999999999999997 - pow(calc(clamp(0, calc(0.040000000000000036 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.040000000000000036 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
-		          "mid": "oklch(calc(clamp(0, calc(0.6 - pow(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		          "$root": "oklch(calc(clamp(0, calc(0.6 - calc(pow(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		          "dark": "oklch(calc(clamp(0, calc(1 - calc(pow(calc(clamp(0, calc(0.16800000000000004 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.16800000000000004 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		          "light": "oklch(calc(clamp(0, calc(0.21999999999999997 - calc(pow(calc(clamp(0, calc(0.040000000000000036 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.040000000000000036 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		          "mid": "oklch(calc(clamp(0, calc(0.6 - calc(pow(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
 		        },
 		        "$root": "oklch(60% calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)) 210)",
 		        "dark": "oklch(100% calc(clamp(0, calc(0.16800000000000004 * var(--🧑-sat)), 0.4)) 210)",
@@ -36,10 +36,10 @@ it('compiles a set of color ranges with default schemes and no precalculated glo
 		      },
 		      "primary": {
 		        "$neutral": {
-		          "$root": "oklch(calc(clamp(0, calc(0.6 - pow(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
-		          "dark": "oklch(calc(clamp(0, calc(1 - pow(calc(clamp(0, calc(0.16800000000000004 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.16800000000000004 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
-		          "light": "oklch(calc(clamp(0, calc(0.21999999999999997 - pow(calc(clamp(0, calc(0.040000000000000036 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.040000000000000036 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
-		          "mid": "oklch(calc(clamp(0, calc(0.6 - pow(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		          "$root": "oklch(calc(clamp(0, calc(0.6 - calc(pow(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		          "dark": "oklch(calc(clamp(0, calc(1 - calc(pow(calc(clamp(0, calc(0.16800000000000004 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.16800000000000004 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		          "light": "oklch(calc(clamp(0, calc(0.21999999999999997 - calc(pow(calc(clamp(0, calc(0.040000000000000036 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.040000000000000036 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		          "mid": "oklch(calc(clamp(0, calc(0.6 - calc(pow(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
 		        },
 		        "$root": "oklch(60% calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)) 90)",
 		        "dark": "oklch(100% calc(clamp(0, calc(0.16800000000000004 * var(--🧑-sat)), 0.4)) 90)",
@@ -53,10 +53,10 @@ it('compiles a set of color ranges with default schemes and no precalculated glo
 		    "colors": {
 		      "alt": {
 		        "$neutral": {
-		          "$root": "oklch(calc(clamp(0, calc(0.9 - pow(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
-		          "dark": "oklch(calc(clamp(0, calc(0.20000000000000007 - pow(calc(clamp(0, calc(0.22000000000000003 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.22000000000000003 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
-		          "light": "oklch(calc(clamp(0, calc(1 - pow(calc(clamp(0, calc(0.020000000000000018 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.020000000000000018 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
-		          "mid": "oklch(calc(clamp(0, calc(0.9 - pow(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		          "$root": "oklch(calc(clamp(0, calc(0.9 - calc(pow(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		          "dark": "oklch(calc(clamp(0, calc(0.20000000000000007 - calc(pow(calc(clamp(0, calc(0.22000000000000003 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.22000000000000003 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		          "light": "oklch(calc(clamp(0, calc(1 - calc(pow(calc(clamp(0, calc(0.020000000000000018 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.020000000000000018 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		          "mid": "oklch(calc(clamp(0, calc(0.9 - calc(pow(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
 		        },
 		        "$root": "oklch(90% calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)) 210)",
 		        "dark": "oklch(20.000000000000007% calc(clamp(0, calc(0.22000000000000003 * var(--🧑-sat)), 0.4)) 210)",
@@ -65,10 +65,10 @@ it('compiles a set of color ranges with default schemes and no precalculated glo
 		      },
 		      "primary": {
 		        "$neutral": {
-		          "$root": "oklch(calc(clamp(0, calc(0.9 - pow(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
-		          "dark": "oklch(calc(clamp(0, calc(0.20000000000000007 - pow(calc(clamp(0, calc(0.22000000000000003 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.22000000000000003 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
-		          "light": "oklch(calc(clamp(0, calc(1 - pow(calc(clamp(0, calc(0.020000000000000018 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.020000000000000018 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
-		          "mid": "oklch(calc(clamp(0, calc(0.9 - pow(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		          "$root": "oklch(calc(clamp(0, calc(0.9 - calc(pow(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		          "dark": "oklch(calc(clamp(0, calc(0.20000000000000007 - calc(pow(calc(clamp(0, calc(0.22000000000000003 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.22000000000000003 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		          "light": "oklch(calc(clamp(0, calc(1 - calc(pow(calc(clamp(0, calc(0.020000000000000018 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.020000000000000018 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		          "mid": "oklch(calc(clamp(0, calc(0.9 - calc(pow(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
 		        },
 		        "$root": "oklch(90% calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)) 90)",
 		        "dark": "oklch(20.000000000000007% calc(clamp(0, calc(0.22000000000000003 * var(--🧑-sat)), 0.4)) 90)",
@@ -142,10 +142,10 @@ it('compiles a set of color ranges with a custom scheme', () => {
 		    "colors": {
 		      "alt": {
 		        "$neutral": {
-		          "$root": "oklch(calc(clamp(0, calc(0.6 - pow(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
-		          "dark": "oklch(calc(clamp(0, calc(1 - pow(calc(clamp(0, calc(0.16800000000000004 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.16800000000000004 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
-		          "light": "oklch(calc(clamp(0, calc(0.21999999999999997 - pow(calc(clamp(0, calc(0.040000000000000036 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.040000000000000036 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
-		          "mid": "oklch(calc(clamp(0, calc(0.6 - pow(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		          "$root": "oklch(calc(clamp(0, calc(0.6 - calc(pow(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		          "dark": "oklch(calc(clamp(0, calc(1 - calc(pow(calc(clamp(0, calc(0.16800000000000004 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.16800000000000004 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		          "light": "oklch(calc(clamp(0, calc(0.21999999999999997 - calc(pow(calc(clamp(0, calc(0.040000000000000036 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.040000000000000036 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		          "mid": "oklch(calc(clamp(0, calc(0.6 - calc(pow(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
 		        },
 		        "$root": "oklch(60% calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)) 210)",
 		        "dark": "oklch(100% calc(clamp(0, calc(0.16800000000000004 * var(--🧑-sat)), 0.4)) 210)",
@@ -154,10 +154,10 @@ it('compiles a set of color ranges with a custom scheme', () => {
 		      },
 		      "primary": {
 		        "$neutral": {
-		          "$root": "oklch(calc(clamp(0, calc(0.6 - pow(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
-		          "dark": "oklch(calc(clamp(0, calc(1 - pow(calc(clamp(0, calc(0.16800000000000004 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.16800000000000004 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
-		          "light": "oklch(calc(clamp(0, calc(0.21999999999999997 - pow(calc(clamp(0, calc(0.040000000000000036 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.040000000000000036 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
-		          "mid": "oklch(calc(clamp(0, calc(0.6 - pow(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		          "$root": "oklch(calc(clamp(0, calc(0.6 - calc(pow(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		          "dark": "oklch(calc(clamp(0, calc(1 - calc(pow(calc(clamp(0, calc(0.16800000000000004 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.16800000000000004 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		          "light": "oklch(calc(clamp(0, calc(0.21999999999999997 - calc(pow(calc(clamp(0, calc(0.040000000000000036 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.040000000000000036 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		          "mid": "oklch(calc(clamp(0, calc(0.6 - calc(pow(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
 		        },
 		        "$root": "oklch(60% calc(clamp(0, calc(0.32000000000000006 * var(--🧑-sat)), 0.4)) 90)",
 		        "dark": "oklch(100% calc(clamp(0, calc(0.16800000000000004 * var(--🧑-sat)), 0.4)) 90)",
@@ -171,10 +171,10 @@ it('compiles a set of color ranges with a custom scheme', () => {
 		    "colors": {
 		      "alt": {
 		        "$neutral": {
-		          "$root": "oklch(calc(clamp(0, calc(0.9 - pow(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
-		          "dark": "oklch(calc(clamp(0, calc(0.20000000000000007 - pow(calc(clamp(0, calc(0.22000000000000003 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.22000000000000003 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
-		          "light": "oklch(calc(clamp(0, calc(1 - pow(calc(clamp(0, calc(0.020000000000000018 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.020000000000000018 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
-		          "mid": "oklch(calc(clamp(0, calc(0.9 - pow(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		          "$root": "oklch(calc(clamp(0, calc(0.9 - calc(pow(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		          "dark": "oklch(calc(clamp(0, calc(0.20000000000000007 - calc(pow(calc(clamp(0, calc(0.22000000000000003 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.22000000000000003 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		          "light": "oklch(calc(clamp(0, calc(1 - calc(pow(calc(clamp(0, calc(0.020000000000000018 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.020000000000000018 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
+		          "mid": "oklch(calc(clamp(0, calc(0.9 - calc(pow(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 210)",
 		        },
 		        "$root": "oklch(90% calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)) 210)",
 		        "dark": "oklch(20.000000000000007% calc(clamp(0, calc(0.22000000000000003 * var(--🧑-sat)), 0.4)) 210)",
@@ -183,10 +183,10 @@ it('compiles a set of color ranges with a custom scheme', () => {
 		      },
 		      "primary": {
 		        "$neutral": {
-		          "$root": "oklch(calc(clamp(0, calc(0.9 - pow(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
-		          "dark": "oklch(calc(clamp(0, calc(0.20000000000000007 - pow(calc(clamp(0, calc(0.22000000000000003 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.22000000000000003 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
-		          "light": "oklch(calc(clamp(0, calc(1 - pow(calc(clamp(0, calc(0.020000000000000018 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.020000000000000018 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
-		          "mid": "oklch(calc(clamp(0, calc(0.9 - pow(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)), 1.7)), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		          "$root": "oklch(calc(clamp(0, calc(0.9 - calc(pow(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		          "dark": "oklch(calc(clamp(0, calc(0.20000000000000007 - calc(pow(calc(clamp(0, calc(0.22000000000000003 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.22000000000000003 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		          "light": "oklch(calc(clamp(0, calc(1 - calc(pow(calc(clamp(0, calc(0.020000000000000018 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.020000000000000018 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
+		          "mid": "oklch(calc(clamp(0, calc(0.9 - calc(pow(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)), 1.7))), 1)) calc(clamp(0, calc(calc(calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)) * var(--🧑-sat)) * 0.15), 0.4)) 90)",
 		        },
 		        "$root": "oklch(90% calc(clamp(0, calc(0.30000000000000004 * var(--🧑-sat)), 0.4)) 90)",
 		        "dark": "oklch(20.000000000000007% calc(clamp(0, calc(0.22000000000000003 * var(--🧑-sat)), 0.4)) 90)",
