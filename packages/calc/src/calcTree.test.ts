@@ -1,11 +1,9 @@
 import { createToken } from '@arbor-css/tokens';
 import { describe, expect, it } from 'vitest';
-import { $, computeEquation, printEquation } from './index.js';
-import { calc } from './parseCalc.js';
+import { $, computeEquation, printEquation } from './calcTree.js';
 
 const tokenA = createToken('foo');
 const tokenB = createToken('bar');
-const tokenC = createToken('baz');
 
 describe('calc printEquation', () => {
 	it('should print a simple literal equation', () => {
@@ -55,6 +53,15 @@ describe('calc computeEquation', () => {
 		});
 		expect(result).toEqual({ value: 'var(--foo, 10px)', type: 'calc' });
 	});
+
+	it('supports grouping with parentheses', () => {
+		const equation = $.multiply(
+			$.group($.add($.val('1%'), $.val('10%'))),
+			$.val('5%'),
+		);
+		const result = computeEquation(equation, { propertyValues: {} });
+		expect(result).toEqual({ value: 0.55, unit: '%', type: 'numeric' });
+	});
 });
 
 describe('token tracking', () => {
@@ -69,36 +76,5 @@ describe('token tracking', () => {
 			$.multiply($.token(tokenB), $.val('2')),
 		);
 		expect(equation.tokens).toEqual([tokenA, tokenB]);
-	});
-});
-
-describe('calc tuple interpolation', () => {
-	it('parses a [Token, Token] tuple into $.token(first, $.token(second))', () => {
-		const eq = calc`${[tokenA, tokenB]}`;
-		expect(eq).toEqual($.token(tokenA, $.token(tokenB)));
-	});
-
-	it('parses a [Token, [Token, Token]] tuple recursively', () => {
-		const eq = calc`${[tokenA, [tokenB, tokenC]]}`;
-		expect(eq).toEqual($.token(tokenA, $.token(tokenB, $.token(tokenC))));
-	});
-
-	it('prints a tuple interpolation with nested fallbacks', () => {
-		const eq = calc`${[tokenA, tokenB]}`;
-		expect(printEquation(eq)).toBe(
-			tokenA.varFallback(tokenB.var),
-		);
-	});
-
-	it('prints deeply nested tuple fallbacks', () => {
-		const eq = calc`${[tokenA, [tokenB, tokenC]]}`;
-		expect(printEquation(eq)).toBe(
-			tokenA.varFallback(tokenB.varFallback(tokenC.var)),
-		);
-	});
-
-	it('tracks all tokens from a tuple interpolation', () => {
-		const eq = calc`${[tokenA, [tokenB, tokenC]]}`;
-		expect(eq.tokens).toEqual([tokenA, tokenB, tokenC]);
 	});
 });
