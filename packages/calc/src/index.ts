@@ -17,7 +17,8 @@ export type OperationTree =
 	| FunctionCallOperation
 	| ConcatenateOperation
 	| ColorOperation
-	| TokenOperation;
+	| TokenOperation
+	| GroupOperation;
 
 export interface BaseOperation {
 	// tracks tokens referenced in this node and children.
@@ -72,6 +73,13 @@ export interface TokenOperation extends BaseOperation {
 	type: 'token';
 	value: Token;
 	fallback?: Equation;
+}
+/**
+ * Wraps in parentheses.
+ */
+export interface GroupOperation extends BaseOperation {
+	type: 'group';
+	value: Equation;
 }
 
 export const $ = {
@@ -134,6 +142,9 @@ export const $ = {
 			tokens: params.parts.flatMap((v) => v.tokens),
 		};
 	},
+	group: (value: Equation): GroupOperation => {
+		return { type: 'group', value, tokens: value.tokens };
+	},
 };
 export type CalcOperations = typeof $;
 
@@ -171,6 +182,8 @@ export function printEquation(equation: Equation): string {
 			const opacityPart =
 				equation.opacity ? ` / ${printEquation(equation.opacity)}` : '';
 			return `${equation.space}(${fromPart}${equation.parts.map((v) => printEquation(v)).join(' ')}${opacityPart})`;
+		case 'group':
+			return `(${printEquation(equation.value)})`;
 		default:
 			throw new Error(`Unknown equation type: ${(equation as any).type}`);
 	}
@@ -180,7 +193,7 @@ export type ComputationResult =
 	| {
 			type: 'numeric';
 			value: number;
-			unit: '%' | '';
+			unit: '%' | string;
 	  }
 	| {
 			type: 'calc';
@@ -258,10 +271,10 @@ function multiply(
 	if (b.type === 'numeric' && b.value === 0) {
 		return { type: 'numeric', value: 0, unit: b.unit };
 	}
-	if (a.type === 'numeric' && a.value === 1) {
+	if (a.type === 'numeric' && a.unit === '' && a.value === 1) {
 		return b;
 	}
-	if (b.type === 'numeric' && b.value === 1) {
+	if (b.type === 'numeric' && b.unit === '' && b.value === 1) {
 		return a;
 	}
 	if (a.type === 'numeric' && a.unit === '%' && a.value === 100) {
@@ -279,10 +292,16 @@ function multiply(
 			)})`,
 		};
 	}
-	if (a.unit === '%' && b.unit === '%') {
+	// now a.unit === b.unit.
+	if (a.unit !== b.unit) {
+		throw new Error(
+			`Invalid state: units should have been checked to be the same at this point, but got ${a.unit} and ${b.unit}`,
+		);
+	}
+	const unit = a.unit;
+	if (unit === '%') {
 		return { type: 'numeric', value: (a.value * b.value) / 100, unit: '%' };
 	}
-	const unit = a.unit === '%' || b.unit === '%' ? '%' : '';
 	return { type: 'numeric', value: a.value * b.value, unit };
 }
 
@@ -299,7 +318,7 @@ function divide(a: ComputationResult, b: ComputationResult): ComputationResult {
 	if (a.type === 'numeric' && a.value === 0) {
 		return { type: 'numeric', value: 0, unit: a.unit };
 	}
-	if (b.type === 'numeric' && b.value === 1) {
+	if (b.type === 'numeric' && b.value === 1 && b.unit === '') {
 		return a;
 	}
 	if (a.type === 'calc' || b.type === 'calc' || a.unit !== b.unit) {
@@ -310,14 +329,19 @@ function divide(a: ComputationResult, b: ComputationResult): ComputationResult {
 			)})`,
 		};
 	}
-	if (a.unit === '%' && b.unit === '%') {
+	if (a.unit !== b.unit) {
+		throw new Error(
+			`Invalid state: units should have been checked to be the same at this point, but got ${a.unit} and ${b.unit}`,
+		);
+	}
+	const unit = a.unit;
+	if (unit === '%') {
 		return { type: 'numeric', value: a.value / b.value, unit: '' };
 	}
-	const unit = a.unit === '%' && b.unit === '' ? '%' : '';
 	return { type: 'numeric', value: a.value / b.value, unit };
 }
 
-function cast(value: ComputationResult, unit: '%' | ''): ComputationResult {
+function cast(value: ComputationResult, unit: '%' | string): ComputationResult {
 	if (value.type === 'concatenated') {
 		return {
 			type: 'concatenated',
@@ -477,7 +501,28 @@ export function printComputationResult(result: ComputationResult): string {
 	if (result.type === 'concatenated') {
 		return result.value;
 	}
-	return result.unit === '%' ? `${result.value}%` : `${result.value}`;
+	return `${result.value}${result.unit}`;
+}
+
+function parseLiteralToNumeric(literal: string): ComputationResult | null {
+	if (literal.endsWith('%')) {
+		const asNumber = Number(literal.slice(0, -1));
+		if (isNaN(asNumber)) {
+			return null;
+		}
+		return { type: 'numeric', value: asNumber, unit: '%' };
+	} else {
+		const match = literal.match(/^(-?\d*\.?\d+)([a-zA-Z]*)$/);
+		if (!match) {
+			return null;
+		}
+		const [, numberPart, unitPart] = match;
+		const asNumber = Number(numberPart);
+		if (isNaN(asNumber)) {
+			return null;
+		}
+		return { type: 'numeric', value: asNumber, unit: unitPart };
+	}
 }
 
 function evaluateLiteral(
@@ -495,18 +540,12 @@ function evaluateLiteral(
 		}
 	} else if (literal === 'PI') {
 		return { type: 'numeric', value: Math.PI, unit: '' };
-	} else if (literal.endsWith('%')) {
-		const asNumber = Number(literal.slice(0, -1));
-		if (isNaN(asNumber)) {
-			throw new Error(`Literal value did not evaluate to a number: ${literal}`);
-		}
-		return { type: 'numeric', value: asNumber, unit: '%' };
 	} else {
-		const asNumber = Number(literal);
-		if (isNaN(asNumber)) {
-			return { type: 'calc', value: literal };
+		const parsed = parseLiteralToNumeric(literal);
+		if (parsed) {
+			return parsed;
 		}
-		return { type: 'numeric', value: asNumber, unit: '' };
+		return { type: 'calc', value: literal };
 	}
 }
 
@@ -586,6 +625,8 @@ export function computeEquation(
 			// color computations are not supported at runtime (beyond simple var() passthroughs)
 			const colorString = printEquation(equation);
 			return { type: 'calc', value: colorString };
+		case 'group':
+			return computeEquation(equation.value, context);
 		default:
 			throw new Error(`Unknown equation type: ${(equation as any).type}`);
 	}

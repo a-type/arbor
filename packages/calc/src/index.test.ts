@@ -30,21 +30,21 @@ describe('calc printEquation', () => {
 describe('calc computeEquation', () => {
 	it('should compute a simple literal equation', () => {
 		const result = computeEquation($.val('10px'), { propertyValues: {} });
-		expect(result).toEqual({ value: '10px', type: 'calc' });
+		expect(result).toEqual({ value: 10, type: 'numeric', unit: 'px' });
 	});
 
 	it('should compute a simple addition equation', () => {
 		const result = computeEquation($.add($.val('10px'), $.val('5px')), {
 			propertyValues: {},
 		});
-		expect(result).toEqual({ value: '15px', type: 'calc' });
+		expect(result).toEqual({ value: 15, type: 'numeric', unit: 'px' });
 	});
 
 	it('should compute a token reference', () => {
 		const result = computeEquation($.token(tokenA), {
 			propertyValues: { [tokenA.name]: '20px' },
 		});
-		expect(result).toEqual({ value: '20px', type: 'calc' });
+		expect(result).toEqual({ value: 20, type: 'numeric', unit: 'px' });
 	});
 
 	it('should compute a token with a fallback', () => {
@@ -52,6 +52,15 @@ describe('calc computeEquation', () => {
 			propertyValues: {},
 		});
 		expect(result).toEqual({ value: 'var(--foo, 10px)', type: 'calc' });
+	});
+
+	it('supports grouping with parentheses', () => {
+		const equation = $.multiply(
+			$.group($.add($.val('1%'), $.val('10%'))),
+			$.val('5%'),
+		);
+		const result = computeEquation(equation, { propertyValues: {} });
+		expect(result).toEqual({ value: 0.55, unit: '%', type: 'numeric' });
 	});
 });
 
