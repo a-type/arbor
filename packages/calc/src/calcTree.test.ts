@@ -62,6 +62,12 @@ describe('calc computeEquation', () => {
 		const result = computeEquation(equation, { propertyValues: {} });
 		expect(result).toEqual({ value: 0.55, unit: '%', type: 'numeric' });
 	});
+
+	it('supports multiplying against scalars', () => {
+		const equation = $.multiply($.val('5'), $.val('10px'));
+		const result = computeEquation(equation, { propertyValues: {} });
+		expect(result).toEqual({ value: 50, unit: 'px', type: 'numeric' });
+	});
 });
 
 describe('token tracking', () => {

@@ -144,7 +144,7 @@ it('throws with full token chain for circular derived dependencies', () => {
 		},
 	});
 
-	expect(() => modeToCss(circularBase, circularBase)).toThrowError(
+	expect(() => modeToCss(circularBase, circularBase)).toThrow(
 		/Circular dependency detected in mode base: .*--Ⓜ️-derived-a.*->.*--Ⓜ️-derived-b.*->.*--Ⓜ️-derived-a/,
 	);
 });

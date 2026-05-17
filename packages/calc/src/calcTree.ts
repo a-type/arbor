@@ -284,6 +284,20 @@ function multiply(
 	if (b.type === 'numeric' && b.value === 0) {
 		return { type: 'numeric', value: 0, unit: b.unit };
 	}
+	if (b.type === 'numeric' && a.type === 'numeric' && a.unit === '') {
+		return {
+			type: 'numeric',
+			value: b.value * a.value,
+			unit: b.unit,
+		};
+	}
+	if (a.type === 'numeric' && b.type === 'numeric' && b.unit === '') {
+		return {
+			type: 'numeric',
+			value: a.value * b.value,
+			unit: a.unit,
+		};
+	}
 	if (a.type === 'numeric' && a.unit === '' && a.value === 1) {
 		return b;
 	}
@@ -358,7 +372,7 @@ function cast(value: ComputationResult, unit: '%' | string): ComputationResult {
 	if (value.type === 'concatenated') {
 		return {
 			type: 'concatenated',
-			value: `(${printComputationResult(value)} * ${
+			value: `calc((${printComputationResult(value)}) * ${
 				unit === '%' ? '100%' : '1'
 			})`,
 		};

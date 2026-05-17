@@ -347,28 +347,6 @@ function interpolationToEquation(
 	);
 }
 
-// ─── Helper: strip outer calc() wrapper ─────────────────────────────────────
-
-function stripCalcWrapper(input: string): string {
-	if (!/^calc\s*\(/i.test(input)) return input;
-	const openIdx = input.indexOf('(');
-	let depth = 0;
-	for (let i = openIdx; i < input.length; i++) {
-		if (input[i] === '(') depth++;
-		else if (input[i] === ')') {
-			depth--;
-			if (depth === 0) {
-				// Only strip if the matching ')' is the very last character
-				if (i === input.length - 1) {
-					return input.slice(openIdx + 1, i).trim();
-				}
-				break;
-			}
-		}
-	}
-	return input;
-}
-
 // ─── Public API ─────────────────────────────────────────────────────────────
 
 /**
@@ -410,8 +388,6 @@ export function css(
 	if (input.length === 0) {
 		throw new SyntaxError('css: expression must not be empty');
 	}
-
-	input = stripCalcWrapper(input);
 
 	const lexTokens = tokenize(input);
 	return new Parser(lexTokens, values, true).parse();

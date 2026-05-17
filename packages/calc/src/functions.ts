@@ -6,7 +6,7 @@ function numericToNumber(value: {
 	unit: string;
 }): number {
 	if (value.unit === '%') {
-		return value.value / 100;
+		return value.value;
 	}
 	return value.value;
 }

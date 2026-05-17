@@ -194,6 +194,18 @@ describe('css template — functions', () => {
 			),
 		);
 	});
+
+	it('parses an oklch color with all features', () => {
+		const eq = css`oklch(from ${tokenA} calc(l * 1.5) calc(c * 0.5) h / 30%)`;
+		expect(printEquation(eq)).toBe(
+			`oklch(from ${tokenA.var} calc((l * 1.5)) calc((c * 0.5)) h / 30%)`,
+		);
+	});
+
+	it('parses an oklch color with minimal features', () => {
+		const eq = css`oklch(from red l c h / 10%)`;
+		expect(printEquation(eq)).toBe(`oklch(from red l c h / 10%)`);
+	});
 });
 
 // ─── Error cases ─────────────────────────────────────────────────────────────
@@ -220,6 +232,10 @@ describe('css template — space-separated concatenation', () => {
 			${tokenA} ${tokenB}
 		`;
 		expect(printEquation(eq)).toBe(`${tokenA.var} ${tokenB.var}`);
+		expect(computeEquation(eq, { propertyValues: {} })).toEqual({
+			type: 'concatenated',
+			value: `${tokenA.var} ${tokenB.var}`,
+		});
 	});
 
 	it('handles multiple token interpolations separated by spaces', () => {
