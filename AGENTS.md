@@ -31,12 +31,15 @@ arbor-css (pnpm monorepo)
 
 ## Development Commands
 
+If you're working on a worktree, remember to install dependencies before trying to build or run tests.
+
 | Command               | Purpose                                                |
 | --------------------- | ------------------------------------------------------ |
+| `pnpm i`              | Install dependencies                                   |
 | `pnpm run dev`        | Start all dev servers (tsc -w + astro dev in parallel) |
 | `pnpm run -r test`    | Run vitest in watch mode across all packages           |
 | `pnpm run -r test:ci` | Run tests once (CI mode)                               |
-| `pnpm run -r build`   | Build all packages with TypeScript                     |
+| `pnpm build`          | Build all packages with TypeScript                     |
 
 **Development servers**:
 
