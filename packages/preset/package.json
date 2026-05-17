@@ -29,10 +29,13 @@
 	"scripts": {
 		"build": "tsc",
 		"dev": "tsc -w --preserveWatchOutput",
-		"prepublishOnly": "pnpm build"
+		"prepublishOnly": "pnpm build",
+		"test": "vitest",
+		"test:ci": "vitest --run"
 	},
 	"devDependencies": {
-		"typescript": "catalog:"
+		"typescript": "catalog:",
+		"vitest": "catalog:"
 	},
 	"dependencies": {
 		"@arbor-css/colors": "workspace:*",
