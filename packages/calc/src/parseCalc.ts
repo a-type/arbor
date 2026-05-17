@@ -130,9 +130,15 @@ class Parser {
 	constructor(
 		private readonly tokens: LexToken[],
 		private readonly interpolations: CalcInterpolation[],
+		/** When true, allows space-separated concatenation at the top level and
+		 * within function arguments. Used by the `css` tagged template. */
+		private readonly cssMode: boolean = false,
 	) {}
 
 	parse(): Equation {
+		if (this.cssMode) {
+			return this.parseCssExpr();
+		}
 		const result = this.parseAddSub();
 		const remaining = this.peek();
 		if (remaining.kind !== 'eof') {
@@ -159,6 +165,44 @@ class Parser {
 			);
 		}
 		return tok;
+	}
+
+	// ── CSS-mode helpers ─────────────────────────────────────────────────────
+
+	/**
+	 * In CSS mode, returns true when the current token can start a space-
+	 * separated continuation (i.e. it is not an arithmetic operator, comma,
+	 * closing paren, or end of input).
+	 */
+	private isCssConcatContinuation(): boolean {
+		const kind = this.peek().kind;
+		return (
+			kind !== 'eof' &&
+			kind !== 'comma' &&
+			kind !== 'rparen' &&
+			kind !== 'plus' &&
+			kind !== 'minus' &&
+			kind !== 'star' &&
+			kind !== 'slash'
+		);
+	}
+
+	/**
+	 * Parses one CSS value expression.  Like {@link parseAddSub} but in CSS
+	 * mode, any non-operator primaries that follow are collected into a
+	 * space-separated {@link ConcatenateOperation} node.  This lets the parser
+	 * handle things like `in hsl` inside `color-mix(in hsl, …)` and top-level
+	 * multi-value shorthands like `${py} ${px}`.
+	 */
+	private parseCssExpr(): Equation {
+		const first = this.parseAddSub();
+		if (!this.cssMode || !this.isCssConcatContinuation()) return first;
+
+		const parts: Equation[] = [first];
+		while (this.isCssConcatContinuation()) {
+			parts.push(this.parseAddSub());
+		}
+		return $.concat(parts, ' ');
 	}
 
 	// expr := addSub
@@ -268,7 +312,7 @@ class Parser {
 		const args: Equation[] = [];
 
 		while (this.peek().kind !== 'rparen' && this.peek().kind !== 'eof') {
-			args.push(this.parseAddSub());
+			args.push(this.cssMode ? this.parseCssExpr() : this.parseAddSub());
 			if (this.peek().kind === 'comma') this.consume();
 		}
 
@@ -367,3 +411,51 @@ export function calc(
 }
 
 export type Calc = typeof calc;
+
+// ─── css tagged template ─────────────────────────────────────────────────────
+
+/**
+ * Tagged template literal for general CSS value expressions.  A superset of
+ * {@link calc} that additionally supports:
+ *
+ * - **Space-separated concatenation** — adjacent interpolations or values with
+ *   no arithmetic operator between them are joined with a space:
+ *   ```ts
+ *   css`${paddingBlock} ${paddingInline}`
+ *   // → "var(--block) var(--inline)"
+ *   ```
+ *
+ * - **Non-calc CSS functions** — functions like `color-mix`, `oklch`, etc. are
+ *   emitted without an extra `calc()` wrapper, and their arguments may contain
+ *   space-separated values (e.g. the `in hsl` color-space in `color-mix`):
+ *   ```ts
+ *   css`color-mix(in hsl, ${token}, black)`
+ *   // → "color-mix(in hsl, var(--token), black)"
+ *   ```
+ *
+ * An outer `calc(…)` wrapper is optional and will be stripped automatically
+ * (same as {@link calc}).
+ */
+export function css(
+	strings: TemplateStringsArray,
+	...values: CalcInterpolation[]
+): Equation {
+	let input = '';
+	for (let i = 0; i < strings.length; i++) {
+		input += strings[i];
+		if (i < values.length) input += `__P${i}__`;
+	}
+
+	input = input.trim();
+
+	if (input.length === 0) {
+		throw new SyntaxError('css: expression must not be empty');
+	}
+
+	input = stripCalcWrapper(input);
+
+	const lexTokens = tokenize(input);
+	return new Parser(lexTokens, values, true).parse();
+}
+
+export type Css = typeof css;

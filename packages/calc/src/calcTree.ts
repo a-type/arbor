@@ -181,9 +181,9 @@ export function printEquation(equation: Equation): string {
 				equation.unit === '%' ? '100%' : '1'
 			})`;
 		case 'function':
-			return `calc(${equation.name}(${equation.args
+			return `${equation.name}(${equation.args
 				.map((v) => printEquation(v))
-				.join(', ')}))`;
+				.join(', ')})`;
 		case 'concatenate':
 			return equation.values
 				.map((v) => printEquation(v))
@@ -396,12 +396,12 @@ function fnCall(name: string, ...args: ComputationResult[]): ComputationResult {
 	if (isConcatenated) {
 		return {
 			type: 'concatenated',
-			value: `calc(${name}(${args.map(printComputationResult).join(', ')}))`,
+			value: `${name}(${args.map(printComputationResult).join(', ')})`,
 		};
 	}
 	return {
 		type: 'calc',
-		value: `calc(${name}(${args.map(printComputationResult).join(', ')}))`,
+		value: `${name}(${args.map(printComputationResult).join(', ')})`,
 	};
 }
 

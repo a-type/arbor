@@ -1,7 +1,7 @@
 import { createToken } from '@arbor-css/tokens';
 import { describe, expect, it } from 'vitest';
 import { $, computeEquation, Equation, printEquation } from './index.js';
-import { calc } from './parseCalc.js';
+import { calc, css } from './parseCalc.js';
 
 const tokenA = createToken('foo');
 const tokenB = createToken('bar');
@@ -194,5 +194,67 @@ describe('calc template — error cases', () => {
 	it('throws when trailing content remains after a complete expression', () => {
 		// Two complete expressions side by side with no operator
 		expect(() => calc`10px 5px`).toThrow(SyntaxError);
+	});
+});
+
+// ─── css template ─────────────────────────────────────────────────────────────
+
+describe('css template — space-separated concatenation', () => {
+	it('handles two token interpolations separated by a space', () => {
+		const eq = css`${tokenA} ${tokenB}`;
+		expect(printEquation(eq)).toBe(`${tokenA.var} ${tokenB.var}`);
+	});
+
+	it('handles multiple token interpolations separated by spaces', () => {
+		const tokenC = createToken('baz');
+		const eq = css`${tokenA} ${tokenB} ${tokenC}`;
+		expect(printEquation(eq)).toBe(
+			`${tokenA.var} ${tokenB.var} ${tokenC.var}`,
+		);
+	});
+
+	it('tracks tokens from all concatenated parts', () => {
+		const eq = css`${tokenA} ${tokenB}`;
+		expect(eq.tokens).toEqual([tokenA, tokenB]);
+	});
+
+	it('produces a single value when only one token is interpolated', () => {
+		expectSameAs(css`${tokenA}`, $.token(tokenA));
+	});
+});
+
+describe('css template — non-calc functions', () => {
+	it('emits color-mix without a calc() wrapper', () => {
+		const eq = css`color-mix(in hsl, ${tokenA}, black)`;
+		expect(printEquation(eq)).toBe(`color-mix(in hsl, ${tokenA.var}, black)`);
+	});
+
+	it('handles space-separated arguments inside function calls (e.g. in hsl)', () => {
+		const eq = css`color-mix(in hsl, ${tokenA}, ${tokenB})`;
+		expect(printEquation(eq)).toBe(
+			`color-mix(in hsl, ${tokenA.var}, ${tokenB.var})`,
+		);
+	});
+
+	it('emits clamp() without a calc() wrapper', () => {
+		const eq = css`clamp(0px, ${tokenA}, 100px)`;
+		expect(printEquation(eq)).toBe(`clamp(0px, ${tokenA.var}, 100px)`);
+	});
+});
+
+describe('css template — arithmetic still works', () => {
+	it('handles arithmetic expressions', () => {
+		expectSameAs(css`${tokenA} + 10px`, $.add($.token(tokenA), $.val('10px')));
+	});
+
+	it('respects operator precedence', () => {
+		expectSameAs(
+			css`2 * ${tokenA} + 1px`,
+			$.add($.multiply($.val('2'), $.token(tokenA)), $.val('1px')),
+		);
+	});
+
+	it('accepts an outer calc() wrapper', () => {
+		expectSameAs(css`calc(${tokenA} + 10px)`, $.add($.token(tokenA), $.val('10px')));
 	});
 });

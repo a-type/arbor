@@ -1,4 +1,4 @@
-import { calc } from '@arbor-css/calc';
+import { calc, css } from '@arbor-css/calc';
 import { CompiledColors } from '@arbor-css/colors';
 import { $globalProps } from '@arbor-css/globals';
 import {
@@ -147,11 +147,11 @@ function createShadowIntentLevel(
 		y: calc`${primitives.$tokens.shadows[size].y}`,
 		blur: calc`${primitives.$tokens.shadows[size].blur}`,
 		spread: calc`${primitives.$tokens.shadows[size].spread}`,
-		color: calc`oklch(from ${[
+		color: css`oklch(from ${[
 			arborModeSchema.$tokens.shadow.color,
 			primitives.$tokens.shadows[size].color,
 		]} l c h / 15%)`,
-		compiled: calc`${arborModeSchema.$tokens.shadow[size].x} ${arborModeSchema.$tokens.shadow[size].y} ${arborModeSchema.$tokens.shadow[size].blur} ${arborModeSchema.$tokens.shadow[size].spread} ${arborModeSchema.$tokens.shadow[size].color}`,
+		compiled: css`${arborModeSchema.$tokens.shadow[size].x} ${arborModeSchema.$tokens.shadow[size].y} ${arborModeSchema.$tokens.shadow[size].blur} ${arborModeSchema.$tokens.shadow[size].spread} ${arborModeSchema.$tokens.shadow[size].color}`,
 	} satisfies ModeValues<typeof shadowIntents>;
 }
 
@@ -174,7 +174,7 @@ export function createArborModeValues<
 		},
 		surface: {
 			padding: {
-				$root: calc`${arborModeSchema.$tokens.surface.padding.block} ${arborModeSchema.$tokens.surface.padding.inline}`,
+				$root: css`${arborModeSchema.$tokens.surface.padding.block} ${arborModeSchema.$tokens.surface.padding.inline}`,
 				block: calc`calc(${arborModeSchema.$tokens.spacing.lg} * max(1, ${arborModeSchema.$tokens.surface.roundness} * ${$globalProps.roundness}))`,
 				inline: calc`calc(${arborModeSchema.$tokens.spacing.lg} * max(1, ${arborModeSchema.$tokens.surface.roundness} * ${$globalProps.roundness}))`,
 			},
@@ -204,7 +204,7 @@ export function createArborModeValues<
 		},
 		action: {
 			padding: {
-				$root: calc`${arborModeSchema.$tokens.action.padding.block} ${arborModeSchema.$tokens.action.padding.inline}`,
+				$root: css`${arborModeSchema.$tokens.action.padding.block} ${arborModeSchema.$tokens.action.padding.inline}`,
 				block: calc`calc(${config.primitives.$tokens.spacing.md} / ${arborModeSchema.$tokens.density})`,
 				inline: calc`calc((${config.primitives.$tokens.spacing.lg} + ${$globalProps.roundness} * ${config.primitives.$tokens.spacing.sm}) / ${arborModeSchema.$tokens.density})`,
 			},
@@ -234,7 +234,7 @@ export function createArborModeValues<
 		},
 		control: {
 			padding: {
-				$root: calc`${arborModeSchema.$tokens.control.padding.block} ${arborModeSchema.$tokens.control.padding.inline}`,
+				$root: css`${arborModeSchema.$tokens.control.padding.block} ${arborModeSchema.$tokens.control.padding.inline}`,
 				block: calc`calc(${config.primitives.$tokens.spacing.sm} / ${arborModeSchema.$tokens.density})`,
 				inline: calc`calc((${config.primitives.$tokens.spacing.sm} + ${$globalProps.roundness} * ${config.primitives.$tokens.spacing.xs}) / ${arborModeSchema.$tokens.density})`,
 			},
@@ -290,7 +290,7 @@ export function createArborModeValues<
 			lg: calc`calc(${$globalProps.borderWidth} * 2)`,
 		},
 		shadow: {
-			$root: calc`${shadowRoot.x} ${shadowRoot.y} ${shadowRoot.blur} ${shadowRoot.spread} ${shadowRoot.color}`,
+			$root: css`${shadowRoot.x} ${shadowRoot.y} ${shadowRoot.blur} ${shadowRoot.spread} ${shadowRoot.color}`,
 			color: calc`${arborModeSchema.$tokens.color.neutral.heavy}`,
 			sm: createShadowIntentLevel(config.primitives, 'sm'),
 			md: createShadowIntentLevel(config.primitives, 'md'),
