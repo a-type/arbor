@@ -109,6 +109,18 @@ describe('calc template — token interpolation', () => {
 		const eq = calc`${tokenA} + ${tokenB}`;
 		expect(eq.tokens).toEqual([tokenA, tokenB]);
 	});
+
+	it('supports tuple fallback token syntax', () => {
+		const eq = calc`${[tokenA, tokenB]}`;
+		expectSameAs(eq, $.token(tokenA, $.token(tokenB)));
+		expect(eq.tokens).toEqual([tokenA, tokenB]);
+	});
+
+	it('supports token fallback to a literal', () => {
+		const eq = calc`${[tokenA, '10px']}`;
+		expectSameAs(eq, $.token(tokenA, $.val('10px')));
+		expect(eq.tokens).toEqual([tokenA]);
+	});
 });
 
 // ─── Equation interpolation ──────────────────────────────────────────────────

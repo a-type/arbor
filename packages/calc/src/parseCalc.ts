@@ -11,7 +11,10 @@ import { $ } from './index.js';
  * `[tokenA, tokenB]` → `$.token(tokenA, $.token(tokenB))`
  * `[tokenA, [tokenB, tokenC]]` → `$.token(tokenA, $.token(tokenB, $.token(tokenC)))`
  */
-export type NestedFallbackTuple = [Token, Token | NestedFallbackTuple];
+export type NestedFallbackTuple = [
+	Token,
+	CalcInterpolation | NestedFallbackTuple,
+];
 
 export type CalcInterpolation =
 	| Token
@@ -304,7 +307,10 @@ function nestedTupleToEquation(tuple: NestedFallbackTuple): TokenOperation {
 	if (Array.isArray(second)) {
 		return $.token(first, nestedTupleToEquation(second as NestedFallbackTuple));
 	}
-	return $.token(first, $.token(second));
+	return $.token(
+		first,
+		interpolationToEquation(second as CalcInterpolation, 0),
+	);
 }
 
 function interpolationToEquation(
