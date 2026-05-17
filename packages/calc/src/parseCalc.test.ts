@@ -38,7 +38,7 @@ describe('css template — literals', () => {
 	});
 
 	it('accepts an outer calc() wrapper', () => {
-		expectSameAs(css`calc(10px)`, $.val('10px'));
+		expect(printEquation(css`calc(10px)`)).toBe(`calc(10px)`);
 	});
 });
 
@@ -311,12 +311,11 @@ describe('css template — non-calc functions', () => {
 
 describe('css template — arithmetic still works', () => {
 	it('handles arithmetic expressions', () => {
-		expectSameAs(
-			css`
+		expect(
+			printEquation(css`
 				${tokenA} + 10px
-			`,
-			$.add($.token(tokenA), $.val('10px')),
-		);
+			`),
+		).toBe(`(${tokenA.var} + 10px)`);
 	});
 
 	it('respects operator precedence', () => {
@@ -327,9 +326,8 @@ describe('css template — arithmetic still works', () => {
 	});
 
 	it('accepts an outer calc() wrapper', () => {
-		expectSameAs(
-			css`calc(${tokenA} + 10px)`,
-			$.add($.token(tokenA), $.val('10px')),
+		expect(printEquation(css`calc(${tokenA} + 10px)`)).toBe(
+			`calc((${tokenA.var} + 10px))`,
 		);
 	});
 });
