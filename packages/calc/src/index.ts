@@ -1,4 +1,6 @@
 import { Token } from '@arbor-css/tokens';
+export { calc } from './parseCalc.js';
+export type { CalcInterpolation } from './parseCalc.js';
 
 export interface CalcEvaluationContext {
 	propertyValues: Record<string, string | undefined>;
