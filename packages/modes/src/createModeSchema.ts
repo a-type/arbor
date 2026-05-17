@@ -1,5 +1,5 @@
+import { Equation } from '@arbor-css/calc';
 import { createToken, isToken, Token, TokenPurpose } from '@arbor-css/tokens';
-import { isTrackedValue, TrackedValue } from './tracking.js';
 
 export type ModePropertyType = TokenPurpose;
 export type ModeSchemaProperty =
@@ -104,10 +104,11 @@ export function createModeSchema<T extends ModeSchemaLevel>(
 
 export type DeepPartial<T> = { [P in keyof T]?: DeepPartial<T[P]> | undefined };
 
-export type ModeValue = string | number | Token | TrackedValue;
+export type ModeValue = string | number | Token | Equation;
 export function isModeValue(value: any): value is ModeValue {
 	return (
-		isTrackedValue(value) ||
+		// can't do much better for ModeEquation...
+		typeof value === 'function' ||
 		isToken(value) ||
 		typeof value === 'string' ||
 		typeof value === 'number'
@@ -139,8 +140,9 @@ type AsPropertyDefinitions<T> =
 	T extends object ?
 		{
 			[P in keyof T]: NonNullable<T[P]> extends string ? Token
-			: NonNullable<T[P]> extends object ? AsPropertyDefinitions<NonNullable<T[P]>>
-			: never;
+			: NonNullable<T[P]> extends object ?
+				AsPropertyDefinitions<NonNullable<T[P]>>
+			:	never;
 		}
 	:	never;
 

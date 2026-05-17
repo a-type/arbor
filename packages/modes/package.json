@@ -33,6 +33,7 @@
 	"dependencies": {
 		"@arbor-css/tokens": "workspace:*",
 		"@arbor-css/util": "workspace:*",
-		"@arbor-css/globals": "workspace:*"
+		"@arbor-css/globals": "workspace:*",
+		"@arbor-css/calc": "workspace:*"
 	}
 }

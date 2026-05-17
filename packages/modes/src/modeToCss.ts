@@ -1,3 +1,4 @@
+import { isCalcEquation, printEquation } from '@arbor-css/calc';
 import { $systemProps } from '@arbor-css/globals';
 import { isToken, Token } from '@arbor-css/tokens';
 import { toFlatKeys } from '@arbor-css/util';
@@ -8,7 +9,6 @@ import {
 	ModeValue,
 	PartialModeInstance,
 } from './createModeSchema.js';
-import { isTrackedValue } from './tracking.js';
 
 /**
  * For a given Token, returns which values in the base mode depend on it.
@@ -38,13 +38,13 @@ function getBaseModeDependents(
 	});
 	for (const key in flatBase) {
 		const value = flatBase[key];
-		if (isTrackedValue(value)) {
-			if (value.dependencies.some((dep) => dep.name === token.name)) {
+		if (isCalcEquation(value)) {
+			if (value.tokens.some((dep) => dep.name === token.name)) {
 				const tokenForKey = flatTokens[key];
 				if (!tokenForKey) {
 					continue;
 				}
-				dependents[tokenForKey.name] = value.value;
+				dependents[tokenForKey.name] = printEquation(value);
 				// recurse to find any values that depend on this dependent as well
 				Object.assign(
 					dependents,
@@ -80,8 +80,10 @@ export function modeToCss<TModeShape extends ModeSchemaLevel>(
 
 		if (isToken(value)) {
 			cssVars[tokenVar.name] = value.var;
-		} else if (isTrackedValue(value)) {
-			cssVars[tokenVar.name] = value.value;
+		} else if (isCalcEquation(value)) {
+			// TODO: add globals to parameters of this function and computeEquation
+			// instead?
+			cssVars[tokenVar.name] = printEquation(value);
 		} else if (typeof value === 'string' || typeof value === 'number') {
 			cssVars[tokenVar.name] = value.toString();
 		} else {

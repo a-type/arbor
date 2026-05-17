@@ -1,9 +1,24 @@
 import type { Token } from '@arbor-css/tokens';
 import { isToken } from '@arbor-css/tokens';
-import type { Equation } from './index.js';
+import type { Equation, TokenOperation } from './index.js';
 import { $ } from './index.js';
 
-export type CalcInterpolation = Token | Equation | number | string;
+/**
+ * A recursive fallback tuple: `[Token, Token | NestedFallbackTuple]`.
+ * Parsed into nested `$.token(first, $.token(second, ...))` trees.
+ *
+ * @example
+ * `[tokenA, tokenB]` → `$.token(tokenA, $.token(tokenB))`
+ * `[tokenA, [tokenB, tokenC]]` → `$.token(tokenA, $.token(tokenB, $.token(tokenC)))`
+ */
+export type NestedFallbackTuple = [Token, Token | NestedFallbackTuple];
+
+export type CalcInterpolation =
+	| Token
+	| Equation
+	| number
+	| string
+	| NestedFallbackTuple;
 
 // ─── Tokenizer ──────────────────────────────────────────────────────────────
 
@@ -284,10 +299,19 @@ class Parser {
 	}
 }
 
+function nestedTupleToEquation(tuple: NestedFallbackTuple): TokenOperation {
+	const [first, second] = tuple;
+	if (Array.isArray(second)) {
+		return $.token(first, nestedTupleToEquation(second as NestedFallbackTuple));
+	}
+	return $.token(first, $.token(second));
+}
+
 function interpolationToEquation(
 	value: CalcInterpolation,
 	pos: number,
 ): Equation {
+	if (Array.isArray(value)) return nestedTupleToEquation(value);
 	if (isToken(value)) return $.token(value);
 	if (isEquation(value)) return value;
 	if (typeof value === 'number') return $.val(value);
@@ -368,3 +392,5 @@ export function calc(
 	const lexTokens = tokenize(input);
 	return new Parser(lexTokens, values).parse();
 }
+
+export type Calc = typeof calc;

@@ -297,6 +297,9 @@ importers:
 
   packages/modes:
     dependencies:
+      '@arbor-css/calc':
+        specifier: workspace:*
+        version: link:../calc
       '@arbor-css/globals':
         specifier: workspace:*
         version: link:../globals
