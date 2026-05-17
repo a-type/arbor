@@ -38,6 +38,7 @@ describe('css template — literals', () => {
 	});
 
 	it('accepts an outer calc() wrapper', () => {
+		// TODO: remove calc() wrapper here.
 		expect(printEquation(css`calc(10px)`)).toBe(`calc(10px)`);
 	});
 });
@@ -311,6 +312,7 @@ describe('css template — non-calc functions', () => {
 
 describe('css template — arithmetic still works', () => {
 	it('handles arithmetic expressions', () => {
+		// TODO: add calc() wrapper here?
 		expect(
 			printEquation(css`
 				${tokenA} + 10px
