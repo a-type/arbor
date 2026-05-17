@@ -113,10 +113,10 @@ it('compiles a set of color ranges with a custom scheme', () => {
 		    "colors": {
 		      "alt": {
 		        "$neutral": {
-		          "$root": "oklch(calc(clamp(0, 0%, 1)) 0 210)",
-		          "dark": "oklch(calc(clamp(0, 0%, 1)) 0 210)",
-		          "light": "oklch(calc(clamp(0, 0%, 1)) 0 210)",
-		          "mid": "oklch(calc(clamp(0, 0%, 1)) 0 210)",
+		          "$root": "oklch(0% 0 210)",
+		          "dark": "oklch(0% 0 210)",
+		          "light": "oklch(0% 0 210)",
+		          "mid": "oklch(0% 0 210)",
 		        },
 		        "$root": "oklch(0% 0 210)",
 		        "dark": "oklch(0% 0 210)",
@@ -125,10 +125,10 @@ it('compiles a set of color ranges with a custom scheme', () => {
 		      },
 		      "primary": {
 		        "$neutral": {
-		          "$root": "oklch(calc(clamp(0, 0%, 1)) 0 90)",
-		          "dark": "oklch(calc(clamp(0, 0%, 1)) 0 90)",
-		          "light": "oklch(calc(clamp(0, 0%, 1)) 0 90)",
-		          "mid": "oklch(calc(clamp(0, 0%, 1)) 0 90)",
+		          "$root": "oklch(0% 0 90)",
+		          "dark": "oklch(0% 0 90)",
+		          "light": "oklch(0% 0 90)",
+		          "mid": "oklch(0% 0 90)",
 		        },
 		        "$root": "oklch(0% 0 90)",
 		        "dark": "oklch(0% 0 90)",

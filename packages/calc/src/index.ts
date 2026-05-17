@@ -357,6 +357,19 @@ function numericToNumber(value: {
 	}
 	return value.value;
 }
+function areCompatibleNumerics(values: ComputationResult[]): boolean {
+	const units = new Set(
+		values
+			.filter(
+				(v): v is Extract<ComputationResult, { type: 'numeric' }> =>
+					v.type === 'numeric',
+			)
+			// exclude zeroes since they are compatible with any unit
+			.filter((v) => v.value !== 0)
+			.map((v) => v.unit),
+	);
+	return units.size <= 1;
+}
 function fnCall(name: string, ...args: ComputationResult[]): ComputationResult {
 	// inline some functions if all args are numerics
 	if (args.every((arg) => arg.type === 'numeric')) {
@@ -407,7 +420,7 @@ function fnCall(name: string, ...args: ComputationResult[]): ComputationResult {
 					ComputationResult,
 					{ type: 'numeric' }
 				>;
-				if (valArg.unit !== minArg.unit || valArg.unit !== maxArg.unit) {
+				if (!areCompatibleNumerics([minArg, valArg, maxArg])) {
 					break;
 				}
 				return {
