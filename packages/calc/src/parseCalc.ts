@@ -209,7 +209,9 @@ class Parser {
 			// Merge '-' directly into an adjacent number literal (e.g. -1, -10px)
 			if (after.kind === 'number') {
 				this.consume();
-				return $.val(`-${(after as Extract<LexToken, { kind: 'number' }>).value}`);
+				return $.val(
+					`-${(after as Extract<LexToken, { kind: 'number' }>).value}`,
+				);
 			}
 			// Otherwise negate by multiplying by -1
 			return $.multiply($.val(-1), this.parsePrimary());
@@ -278,19 +280,7 @@ class Parser {
 
 		this.expect('rparen', `to close '${name}('`);
 
-		switch (name) {
-			case 'clamp': {
-				if (args.length !== 3) {
-					throw new SyntaxError(
-						`calc: clamp() requires exactly 3 arguments (min, value, max) at position ${namePos}, got ${args.length}`,
-					);
-				}
-				// CSS clamp(min, val, max) → $.clamp(equation, min, max)
-				return $.clamp(args[1], args[0], args[2]);
-			}
-			default:
-				return $.fn(name, ...args);
-		}
+		return $.fn(name, ...args);
 	}
 }
 

@@ -12,10 +12,7 @@ const tokenB = createToken('bar');
  * Asserts that two equations produce the same printed output and the same
  * computed result (with no baked property values).
  */
-function expectSameAs(
-	actual: ReturnType<typeof calc>,
-	expected: Equation,
-) {
+function expectSameAs(actual: ReturnType<typeof calc>, expected: Equation) {
 	expect(printEquation(actual)).toBe(printEquation(expected));
 	const ctx = { propertyValues: {}, skipBaking: true };
 	expect(computeEquation(actual, ctx)).toEqual(computeEquation(expected, ctx));
@@ -132,7 +129,7 @@ describe('calc template — functions', () => {
 	it('parses clamp()', () => {
 		expectSameAs(
 			calc`clamp(0px, ${tokenA}, 100px)`,
-			$.clamp($.token(tokenA), $.val('0px'), $.val('100px')),
+			$.fn('clamp', $.val('0px'), $.token(tokenA), $.val('100px')),
 		);
 	});
 
@@ -157,9 +154,10 @@ describe('calc template — functions', () => {
 	it('parses nested function call', () => {
 		expectSameAs(
 			calc`clamp(0px, min(${tokenA}, 50px), 100px)`,
-			$.clamp(
-				$.fn('min', $.token(tokenA), $.val('50px')),
+			$.fn(
+				'clamp',
 				$.val('0px'),
+				$.fn('min', $.token(tokenA), $.val('50px')),
 				$.val('100px'),
 			),
 		);
@@ -175,10 +173,6 @@ describe('calc template — error cases', () => {
 
 	it('throws on unsupported function', () => {
 		expect(() => calc`rotate(45deg)`).toThrow(/unsupported function/i);
-	});
-
-	it('throws on clamp with wrong argument count', () => {
-		expect(() => calc`clamp(0px, 50px)`).toThrow(/clamp.*3 arguments/i);
 	});
 
 	it('throws on unmatched parenthesis', () => {
