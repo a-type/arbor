@@ -13,7 +13,6 @@ export type OperationTree =
 	| MultiplyOperation
 	| DivideOperation
 	| LiteralOperation
-	| ClampOperation
 	| CastOperation
 	| FunctionCallOperation
 	| ConcatenateOperation
@@ -45,10 +44,6 @@ export interface DivideOperation extends BaseOperation {
 export interface LiteralOperation extends BaseOperation {
 	type: 'literal';
 	value: string | number;
-}
-export interface ClampOperation extends BaseOperation {
-	type: 'clamp';
-	values: Equation[];
 }
 export interface CastOperation extends BaseOperation {
 	type: 'cast';
@@ -113,13 +108,6 @@ export const $ = {
 			tokens: [numerator, denominator].flatMap((v) => v.tokens),
 		};
 	},
-	clamp: (equation: Equation, min: Equation, max: Equation): Equation => {
-		return {
-			type: 'clamp',
-			values: [min, equation, max],
-			tokens: [min, equation, max].flatMap((v) => v.tokens),
-		};
-	},
 	castPercentage: (value: Equation): Equation => {
 		return { type: 'cast', value, unit: '%', tokens: value.tokens };
 	},
@@ -165,15 +153,6 @@ export function printEquation(equation: Equation): string {
 			return `(${equation.values.map((v) => printEquation(v)).join(' * ')})`;
 		case 'divide':
 			return `(${equation.values.map((v) => printEquation(v)).join(' / ')})`;
-		case 'clamp':
-			if (equation.values.length !== 3) {
-				throw new Error(
-					'Clamp operation requires exactly 3 values: min, value, max',
-				);
-			}
-			return `clamp(${equation.values
-				.map((v) => printEquation(v))
-				.join(', ')})`;
 		case 'cast':
 			return `(${printEquation(equation.value)} * ${
 				equation.unit === '%' ? '100%' : '1'
@@ -338,45 +317,6 @@ function divide(a: ComputationResult, b: ComputationResult): ComputationResult {
 	return { type: 'numeric', value: a.value / b.value, unit };
 }
 
-function clamp(
-	value: ComputationResult,
-	min: ComputationResult,
-	max: ComputationResult,
-): ComputationResult {
-	if (
-		value.type === 'concatenated' ||
-		min.type === 'concatenated' ||
-		max.type === 'concatenated'
-	) {
-		return {
-			type: 'concatenated',
-			value: `clamp(${printComputationResult(min)}, ${printComputationResult(
-				value,
-			)}, ${printComputationResult(max)})`,
-		};
-	}
-	if (
-		value.type === 'calc' ||
-		min.type === 'calc' ||
-		max.type === 'calc' ||
-		value.unit !== min.unit ||
-		value.unit !== max.unit ||
-		min.unit !== max.unit
-	) {
-		return {
-			type: 'calc',
-			value: `calc(clamp(${printComputationResult(
-				min,
-			)}, ${printComputationResult(value)}, ${printComputationResult(max)}))`,
-		};
-	}
-	return {
-		type: 'numeric',
-		value: Math.min(Math.max(value.value, min.value), max.value),
-		unit: value.unit,
-	};
-}
-
 function cast(value: ComputationResult, unit: '%' | ''): ComputationResult {
 	if (value.type === 'concatenated') {
 		return {
@@ -454,6 +394,28 @@ function fnCall(name: string, ...args: ComputationResult[]): ComputationResult {
 					value: Math.max(...argsInOrderAsNumbers),
 					unit: '',
 				};
+			case 'clamp': {
+				const minArg = args[0] as Extract<
+					ComputationResult,
+					{ type: 'numeric' }
+				>;
+				const valArg = args[1] as Extract<
+					ComputationResult,
+					{ type: 'numeric' }
+				>;
+				const maxArg = args[2] as Extract<
+					ComputationResult,
+					{ type: 'numeric' }
+				>;
+				if (valArg.unit !== minArg.unit || valArg.unit !== maxArg.unit) {
+					break;
+				}
+				return {
+					type: 'numeric',
+					value: Math.min(Math.max(valArg.value, minArg.value), maxArg.value),
+					unit: valArg.unit,
+				};
+			}
 			case 'pow':
 				return {
 					type: 'numeric',
@@ -593,16 +555,6 @@ export function computeEquation(
 			const numerator = computeEquation(equation.values[0], context);
 			const denominator = computeEquation(equation.values[1], context);
 			return divide(numerator, denominator);
-		case 'clamp':
-			if (equation.values.length !== 3) {
-				throw new Error(
-					'Clamp operation requires exactly 3 values: min, value, max',
-				);
-			}
-			const min = computeEquation(equation.values[0], context);
-			const value = computeEquation(equation.values[1], context);
-			const max = computeEquation(equation.values[2], context);
-			return clamp(value, min, max);
 		case 'cast':
 			const innerValue = computeEquation(equation.value, context);
 			return cast(innerValue, equation.unit);

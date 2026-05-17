@@ -127,8 +127,9 @@ const typographyWeightEquation = (step: number) =>
 	$.add($.val(400), $.multiply($.val(25), $.val(step)));
 
 const typographyLineHeightEquation = (step: number) =>
-	$.clamp(
-		$.subtract($.val(1.5), $.multiply($.val(0.05), $.val(step))),
+	$.fn(
+		'clamp',
 		$.val(1.1),
+		$.subtract($.val(1.5), $.multiply($.val(0.05), $.val(step))),
 		$.val(1.5),
 	);

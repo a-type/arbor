@@ -92,21 +92,23 @@ export function createColorRange<RangeNames extends string = DefaultRangeName>(
 	const range = rangeNames.reduce(
 		(acc, name, i) => {
 			const equation = oklchBuilder(($) => ({
-				l: $.clamp(
+				l: $.fn(
+					'clamp',
+					$.val('0%'),
 					$.castPercentage(
 						lightness($, { step: i, rangeSize: size, midpoint }),
 					),
-					$.val('0%'),
 					$.val('100%'),
 				),
-				c: $.clamp(
+				c: $.fn(
+					'clamp',
+					$.val('0'),
 					$.multiply(
 						$.val(config.saturation ?? 1),
 						$.val('0.4'),
 						chroma($, { step: i, rangeSize: size, midpoint }),
 						$.val($globalProps.saturation.var),
 					),
-					$.val('0'),
 					$.val('0.4'),
 				),
 				h: $.multiply(
@@ -250,8 +252,8 @@ export function createNeutralDerivedRange(
 			const sourceEquation =
 				sourceRange[sourceName as keyof typeof sourceRange].equation;
 			const equation = oklchBuilder(($) => ({
-				l: $.clamp(lightness($, sourceEquation), $.val(0), $.val(1)),
-				c: $.clamp(chroma($, sourceEquation), $.val(0), $.val(0.4)),
+				l: $.fn('clamp', $.val(0), lightness($, sourceEquation), $.val(1)),
+				c: $.fn('clamp', $.val(0), chroma($, sourceEquation), $.val(0.4)),
 				h: sourceEquation.h,
 			}));
 			return [
