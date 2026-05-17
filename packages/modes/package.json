@@ -24,6 +24,7 @@
 		"build": "tsc",
 		"dev": "tsc -w --preserveWatchOutput",
 		"test": "vitest",
+		"test:ci": "vitest --run",
 		"prepublishOnly": "pnpm build"
 	},
 	"devDependencies": {
