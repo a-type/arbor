@@ -124,8 +124,45 @@ function tokenize(input: string): LexToken[] {
 
 // ─── Parser ──────────────────────────────────────────────────────────────────
 
+/**
+ * CSS math functions whose arguments accept arithmetic expressions (including
+ * `/` as division).  A `/` token encountered *outside* one of these functions
+ * is treated as a literal alpha separator (e.g. `oklch(0.5 0.2 270 / 50%)`)
+ * rather than as the division operator.
+ */
+const CSS_MATH_FUNCTIONS = new Set([
+	'calc',
+	'min',
+	'max',
+	'clamp',
+	'round',
+	'mod',
+	'rem',
+	'sin',
+	'cos',
+	'tan',
+	'asin',
+	'acos',
+	'atan',
+	'atan2',
+	'pow',
+	'sqrt',
+	'hypot',
+	'log',
+	'exp',
+	'abs',
+	'sign',
+]);
+
 class Parser {
 	private pos = 0;
+	/**
+	 * Tracks nesting depth inside CSS math functions.  Starts at 1 so that
+	 * top-level expressions are also arithmetic-capable (e.g. bare
+	 * `calc(…)`-free expressions).  Reset to 0 when entering a non-math
+	 * function (e.g. `oklch`, `hsl`) so that `/` there is a literal separator.
+	 */
+	private mathFnDepth = 1;
 
 	constructor(
 		private readonly tokens: LexToken[],
@@ -193,14 +230,28 @@ class Parser {
 	 * space-separated {@link ConcatenateOperation} node.  This lets the parser
 	 * handle things like `in hsl` inside `color-mix(in hsl, …)` and top-level
 	 * multi-value shorthands like `${py} ${px}`.
+	 *
+	 * When outside a CSS math function (`mathFnDepth === 0`), a `/` token is
+	 * treated as a literal alpha separator (e.g. `oklch(0.5 0.2 270 / 50%)`)
+	 * rather than as the division operator.
 	 */
 	private parseCssExpr(): Equation {
 		const first = this.parseAddSub();
-		if (!this.cssMode || !this.isCssConcatContinuation()) return first;
+
+		const canContinue = () =>
+			this.isCssConcatContinuation() ||
+			(this.mathFnDepth === 0 && this.peek().kind === 'slash');
+
+		if (!this.cssMode || !canContinue()) return first;
 
 		const parts: Equation[] = [first];
-		while (this.isCssConcatContinuation()) {
-			parts.push(this.parseAddSub());
+		while (canContinue()) {
+			if (this.mathFnDepth === 0 && this.peek().kind === 'slash') {
+				this.consume();
+				parts.push($.val('/'));
+			} else {
+				parts.push(this.parseAddSub());
+			}
 		}
 		return $.concat(parts, ' ');
 	}
@@ -234,7 +285,7 @@ class Parser {
 			if (next.kind === 'star') {
 				this.consume();
 				left = $.multiply(left, this.parseUnary());
-			} else if (next.kind === 'slash') {
+			} else if (next.kind === 'slash' && this.mathFnDepth > 0) {
 				this.consume();
 				left = $.divide(left, this.parseUnary());
 			} else {
@@ -311,10 +362,21 @@ class Parser {
 	private parseFnCall(name: string, namePos: number): Equation {
 		const args: Equation[] = [];
 
+		const savedDepth = this.mathFnDepth;
+		if (CSS_MATH_FUNCTIONS.has(name)) {
+			this.mathFnDepth = savedDepth + 1;
+		} else {
+			// Non-math functions (e.g. oklch, hsl, color-mix) treat '/' as a
+			// literal separator, not division.
+			this.mathFnDepth = 0;
+		}
+
 		while (this.peek().kind !== 'rparen' && this.peek().kind !== 'eof') {
 			args.push(this.cssMode ? this.parseCssExpr() : this.parseAddSub());
 			if (this.peek().kind === 'comma') this.consume();
 		}
+
+		this.mathFnDepth = savedDepth;
 
 		this.expect('rparen', `to close '${name}('`);
 

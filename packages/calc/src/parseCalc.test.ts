@@ -206,6 +206,33 @@ describe('css template — functions', () => {
 		const eq = css`oklch(from red l c h / 10%)`;
 		expect(printEquation(eq)).toBe(`oklch(from red l c h / 10%)`);
 	});
+
+	it('parses hsl() with / alpha syntax', () => {
+		const eq = css`hsl(270 60% 50% / 20%)`;
+		expect(printEquation(eq)).toBe(`hsl(270 60% 50% / 20%)`);
+	});
+
+	it('parses rgb() with / alpha syntax', () => {
+		const eq = css`rgb(255 0 0 / 0.5)`;
+		expect(printEquation(eq)).toBe(`rgb(255 0 0 / 0.5)`);
+	});
+
+	it('parses color() with / alpha syntax', () => {
+		const eq = css`color(display-p3 1 0.5 0 / 80%)`;
+		expect(printEquation(eq)).toBe(`color(display-p3 1 0.5 0 / 80%)`);
+	});
+
+	it('parses oklch() with an interpolated token and / alpha syntax', () => {
+		const eq = css`oklch(from ${tokenA} l c h / 50%)`;
+		expect(printEquation(eq)).toBe(`oklch(from ${tokenA.var} l c h / 50%)`);
+	});
+
+	it('still parses division inside calc() nested in a color function', () => {
+		const eq = css`oklch(from ${tokenA} calc(l / 2) c h)`;
+		expect(printEquation(eq)).toBe(
+			`oklch(from ${tokenA.var} calc((l / 2)) c h)`,
+		);
+	});
 });
 
 // ─── Error cases ─────────────────────────────────────────────────────────────
