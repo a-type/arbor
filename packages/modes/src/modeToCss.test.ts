@@ -1,4 +1,4 @@
-import { calc } from '@arbor-css/calc';
+import { calc, css } from '@arbor-css/calc';
 import { expect, it } from 'vitest';
 import { createModeSchema } from './createModeSchema.js';
 import { modeToCss } from './modeToCss.js';
@@ -15,9 +15,9 @@ const testSchema = createModeSchema({
 const baseMode = testSchema.createBase({
 	value: 'red',
 	derived: {
-		once: calc`color-mix(in hsl, ${testSchema.$tokens.value}, black)`,
-		twice: calc`color-mix(in hsl, ${testSchema.$tokens.derived.once}, transparent)`,
-		again: calc`color-mix(in hsl, ${testSchema.$tokens.value}, red)`,
+		once: css`color-mix(in hsl, ${testSchema.$tokens.value}, black)`,
+		twice: css`color-mix(in hsl, ${testSchema.$tokens.derived.once}, transparent)`,
+		again: css`color-mix(in hsl, ${testSchema.$tokens.value}, red)`,
 	},
 });
 
@@ -39,9 +39,9 @@ it('prints a base mode with derived values', () => {
 		:where(.\\@mode-base [class^="\\@scheme-"]),
 		:where([data-mode-base=""] [class^="\\@scheme-"]) {
 			--ℹ️-mode: base;
-			--Ⓜ️-derived-once: calc(color-mix(in, hsl, var(--Ⓜ️-value), black));
-		--Ⓜ️-derived-twice: calc(color-mix(in, hsl, var(--Ⓜ️-derived-once), transparent));
-		--Ⓜ️-derived-again: calc(color-mix(in, hsl, var(--Ⓜ️-value), red));
+			--Ⓜ️-derived-once: color-mix(in hsl, var(--Ⓜ️-value), black);
+		--Ⓜ️-derived-twice: color-mix(in hsl, var(--Ⓜ️-derived-once), transparent);
+		--Ⓜ️-derived-again: color-mix(in hsl, var(--Ⓜ️-value), red);
 		--Ⓜ️-value: red;
 
 		}
@@ -57,9 +57,9 @@ it('prints a partial mode with derived dependencies it doesnt declare', () => {
 		:where(.\\@mode-partial [class^="\\@scheme-"]),
 		:where([data-mode-partial=""] [class^="\\@scheme-"]) {
 			--ℹ️-mode: partial;
-			--Ⓜ️-derived-once: calc(color-mix(in, hsl, var(--Ⓜ️-value), black));
-		--Ⓜ️-derived-twice: calc(color-mix(in, hsl, var(--Ⓜ️-derived-once), transparent));
-		--Ⓜ️-derived-again: calc(color-mix(in, hsl, var(--Ⓜ️-value), red));
+			--Ⓜ️-derived-once: color-mix(in hsl, var(--Ⓜ️-value), black);
+		--Ⓜ️-derived-twice: color-mix(in hsl, var(--Ⓜ️-derived-once), transparent);
+		--Ⓜ️-derived-again: color-mix(in hsl, var(--Ⓜ️-value), red);
 		--Ⓜ️-value: blue;
 
 		}
@@ -75,7 +75,7 @@ it('prints a partial mode which overrides derived dependencies from base and doe
 		:where(.\\@mode-underived [class^="\\@scheme-"]),
 		:where([data-mode-underived=""] [class^="\\@scheme-"]) {
 			--ℹ️-mode: underived;
-			--Ⓜ️-derived-twice: calc(color-mix(in, hsl, var(--Ⓜ️-derived-once), transparent));
+			--Ⓜ️-derived-twice: color-mix(in hsl, var(--Ⓜ️-derived-once), transparent);
 		--Ⓜ️-derived-once: green;
 
 		}
@@ -139,8 +139,8 @@ it('throws with full token chain for circular derived dependencies', () => {
 	const circularBase = circularSchema.createBase({
 		value: 'red',
 		derived: {
-			a: calc`color-mix(in hsl, ${circularSchema.$tokens.derived.b}, white)`,
-			b: calc`color-mix(in hsl, ${circularSchema.$tokens.derived.a}, black)`,
+			a: css`color-mix(in hsl, ${circularSchema.$tokens.derived.b}, white)`,
+			b: css`color-mix(in hsl, ${circularSchema.$tokens.derived.a}, black)`,
 		},
 	});
 
