@@ -1,4 +1,4 @@
-import { isTrackedValue } from '@arbor-css/modes';
+import { isCalcEquation, printEquation } from '@arbor-css/calc';
 import { ArborPreset } from '@arbor-css/preset/config';
 import { isToken } from '@arbor-css/tokens';
 import { flattenAndApplyTokenValues } from './flattenAndApplyTokenValues.js';
@@ -40,10 +40,11 @@ export function resolveTokenReferences(
 		}
 		if (isToken(value)) {
 			current = value.name;
-		} else if (isTrackedValue(value)) {
-			// a tracked value could be just a plain var(...) ref,
+		} else if (isCalcEquation(value)) {
+			// a calc value could be just a plain var(...) ref,
 			// in which case we can keep going
-			const propName = extractPropertyRefName(value.value);
+			const printed = printEquation(value);
+			const propName = extractPropertyRefName(printed);
 			if (!propName) {
 				return undefined;
 			}

@@ -1,4 +1,5 @@
 import { Token } from '@arbor-css/tokens';
+import { functionResolvers } from './functions.js';
 
 export interface CalcEvaluationContext {
 	propertyValues: Record<string, string | undefined>;
@@ -7,7 +8,9 @@ export interface CalcEvaluationContext {
 }
 
 export function isCalcEquation(value: any): value is Equation {
-	return value && typeof value === 'object' && 'type' in value;
+	return (
+		value && typeof value === 'object' && 'type' in value && 'tokens' in value
+	);
 }
 
 export type Equation = OperationTree;
@@ -198,12 +201,13 @@ export function printEquation(equation: Equation): string {
 	}
 }
 
+export type NumericComputationResult = {
+	type: 'numeric';
+	value: number;
+	unit: '%' | string;
+};
 export type ComputationResult =
-	| {
-			type: 'numeric';
-			value: number;
-			unit: '%' | string;
-	  }
+	| NumericComputationResult
 	| {
 			type: 'calc';
 			value: string;
@@ -380,114 +384,12 @@ function cast(value: ComputationResult, unit: '%' | string): ComputationResult {
 	}
 }
 
-function numericToNumber(value: {
-	type: 'numeric';
-	value: number;
-	unit: string;
-}): number {
-	if (value.unit === '%') {
-		return value.value / 100;
-	}
-	return value.value;
-}
-function areCompatibleNumerics(values: ComputationResult[]): boolean {
-	const units = new Set(
-		values
-			.filter(
-				(v): v is Extract<ComputationResult, { type: 'numeric' }> =>
-					v.type === 'numeric',
-			)
-			// exclude zeroes since they are compatible with any unit
-			.filter((v) => v.value !== 0)
-			.map((v) => v.unit),
-	);
-	return units.size <= 1;
-}
 function fnCall(name: string, ...args: ComputationResult[]): ComputationResult {
 	// inline some functions if all args are numerics
 	if (args.every((arg) => arg.type === 'numeric')) {
-		const argsInOrderAsNumbers = args.map((arg) =>
-			numericToNumber(arg as Extract<ComputationResult, { type: 'numeric' }>),
-		);
-		switch (name) {
-			case 'sin':
-				return {
-					type: 'numeric',
-					value: Math.sin(argsInOrderAsNumbers[0]),
-					unit: '',
-				};
-			case 'cos':
-				return {
-					type: 'numeric',
-					value: Math.cos(argsInOrderAsNumbers[0]),
-					unit: '',
-				};
-			case 'tan':
-				return {
-					type: 'numeric',
-					value: Math.tan(argsInOrderAsNumbers[0]),
-					unit: '',
-				};
-			case 'min':
-				return {
-					type: 'numeric',
-					value: Math.min(...argsInOrderAsNumbers),
-					unit: '',
-				};
-			case 'max':
-				return {
-					type: 'numeric',
-					value: Math.max(...argsInOrderAsNumbers),
-					unit: '',
-				};
-			case 'clamp': {
-				const minArg = args[0] as Extract<
-					ComputationResult,
-					{ type: 'numeric' }
-				>;
-				const valArg = args[1] as Extract<
-					ComputationResult,
-					{ type: 'numeric' }
-				>;
-				const maxArg = args[2] as Extract<
-					ComputationResult,
-					{ type: 'numeric' }
-				>;
-				if (!areCompatibleNumerics([minArg, valArg, maxArg])) {
-					break;
-				}
-				return {
-					type: 'numeric',
-					value: Math.min(Math.max(valArg.value, minArg.value), maxArg.value),
-					unit: valArg.unit,
-				};
-			}
-			case 'pow':
-				return {
-					type: 'numeric',
-					value: Math.pow(argsInOrderAsNumbers[0], argsInOrderAsNumbers[1]),
-					unit: '',
-				};
-			case 'abs':
-				return {
-					type: 'numeric',
-					value: Math.abs(argsInOrderAsNumbers[0]),
-					unit: '',
-				};
-			case 'exp':
-				return {
-					type: 'numeric',
-					value: Math.exp(argsInOrderAsNumbers[0]),
-					unit: '',
-				};
-			case 'log':
-				return {
-					type: 'numeric',
-					value: Math.log(argsInOrderAsNumbers[0]),
-					unit: '',
-				};
-			default:
-				break;
+		const resolver = functionResolvers[name];
+		if (resolver) {
+			return resolver(...(args as NumericComputationResult[]));
 		}
 	}
 	const isConcatenated = args.some((arg) => arg.type === 'concatenated');

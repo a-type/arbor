@@ -1,7 +1,7 @@
 import type { Token } from '@arbor-css/tokens';
 import { isToken } from '@arbor-css/tokens';
 import type { Equation, TokenOperation } from './index.js';
-import { $ } from './index.js';
+import { $, isCalcEquation } from './index.js';
 
 /**
  * A recursive fallback tuple: `[Token, Token | NestedFallbackTuple]`.
@@ -123,23 +123,6 @@ function tokenize(input: string): LexToken[] {
 }
 
 // ─── Parser ──────────────────────────────────────────────────────────────────
-
-/**
- * Functions supported by the underlying Equation tree. Calls to any other
- * function name will throw a clear error.
- */
-const SUPPORTED_FUNCTIONS = new Set([
-	'clamp',
-	'min',
-	'max',
-	'sin',
-	'cos',
-	'tan',
-	'abs',
-	'exp',
-	'log',
-	'pow',
-]);
 
 class Parser {
 	private pos = 0;
@@ -282,13 +265,6 @@ class Parser {
 
 	// fnCall := already consumed 'name(' — parse args then ')'
 	private parseFnCall(name: string, namePos: number): Equation {
-		if (!SUPPORTED_FUNCTIONS.has(name)) {
-			throw new SyntaxError(
-				`calc: unsupported function '${name}' at position ${namePos}. ` +
-					`Supported functions: ${[...SUPPORTED_FUNCTIONS].join(', ')}`,
-			);
-		}
-
 		const args: Equation[] = [];
 
 		while (this.peek().kind !== 'rparen' && this.peek().kind !== 'eof') {
@@ -319,20 +295,11 @@ function interpolationToEquation(
 ): Equation {
 	if (Array.isArray(value)) return nestedTupleToEquation(value);
 	if (isToken(value)) return $.token(value);
-	if (isEquation(value)) return value;
+	if (isCalcEquation(value)) return value;
 	if (typeof value === 'number') return $.val(value);
 	if (typeof value === 'string') return $.val(value);
 	throw new SyntaxError(
 		`calc: unsupported interpolated value type at position ${pos}`,
-	);
-}
-
-function isEquation(value: CalcInterpolation): value is Equation {
-	return (
-		typeof value === 'object' &&
-		value !== null &&
-		'type' in value &&
-		'tokens' in value
 	);
 }
 

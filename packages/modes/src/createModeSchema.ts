@@ -1,4 +1,4 @@
-import { Equation } from '@arbor-css/calc';
+import { Equation, isCalcEquation } from '@arbor-css/calc';
 import { createToken, isToken, Token, TokenPurpose } from '@arbor-css/tokens';
 
 export type ModePropertyType = TokenPurpose;
@@ -107,8 +107,7 @@ export type DeepPartial<T> = { [P in keyof T]?: DeepPartial<T[P]> | undefined };
 export type ModeValue = string | number | Token | Equation;
 export function isModeValue(value: any): value is ModeValue {
 	return (
-		// can't do much better for ModeEquation...
-		typeof value === 'function' ||
+		isCalcEquation(value) ||
 		isToken(value) ||
 		typeof value === 'string' ||
 		typeof value === 'number'
