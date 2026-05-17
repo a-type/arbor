@@ -1,4 +1,4 @@
-import { calc, css } from '@arbor-css/calc';
+import { css } from '@arbor-css/calc';
 import { expect, it } from 'vitest';
 import { createModeSchema } from './createModeSchema.js';
 import { modeToCss } from './modeToCss.js';
