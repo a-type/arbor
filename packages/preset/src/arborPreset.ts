@@ -1,4 +1,4 @@
-import { calc, css } from '@arbor-css/calc';
+import { css } from '@arbor-css/calc';
 import { CompiledColors } from '@arbor-css/colors';
 import { $globalProps } from '@arbor-css/globals';
 import {
@@ -143,15 +143,20 @@ function createShadowIntentLevel(
 	size: 'sm' | 'md' | 'lg' | 'xl',
 ) {
 	return {
-		x: calc`${primitives.$tokens.shadows[size].x}`,
-		y: calc`${primitives.$tokens.shadows[size].y}`,
-		blur: calc`${primitives.$tokens.shadows[size].blur}`,
-		spread: calc`${primitives.$tokens.shadows[size].spread}`,
+		x: css`${primitives.$tokens.shadows[size].x}`,
+		y: css`${primitives.$tokens.shadows[size].y}`,
+		blur: css`${primitives.$tokens.shadows[size].blur}`,
+		spread: css`${primitives.$tokens.shadows[size].spread}`,
 		color: css`oklch(from ${[
 			arborModeSchema.$tokens.shadow.color,
 			primitives.$tokens.shadows[size].color,
 		]} l c h / 15%)`,
-		compiled: css`${arborModeSchema.$tokens.shadow[size].x} ${arborModeSchema.$tokens.shadow[size].y} ${arborModeSchema.$tokens.shadow[size].blur} ${arborModeSchema.$tokens.shadow[size].spread} ${arborModeSchema.$tokens.shadow[size].color}`,
+		compiled: css`
+			${arborModeSchema.$tokens.shadow[size].x} ${arborModeSchema.$tokens
+				.shadow[size].y} ${arborModeSchema.$tokens.shadow[size]
+				.blur} ${arborModeSchema.$tokens.shadow[size].spread} ${arborModeSchema
+				.$tokens.shadow[size].color}
+		`,
 	} satisfies ModeValues<typeof shadowIntents>;
 }
 
@@ -174,124 +179,135 @@ export function createArborModeValues<
 		},
 		surface: {
 			padding: {
-				$root: css`${arborModeSchema.$tokens.surface.padding.block} ${arborModeSchema.$tokens.surface.padding.inline}`,
-				block: calc`calc(${arborModeSchema.$tokens.spacing.lg} * max(1, ${arborModeSchema.$tokens.surface.roundness} * ${$globalProps.roundness}))`,
-				inline: calc`calc(${arborModeSchema.$tokens.spacing.lg} * max(1, ${arborModeSchema.$tokens.surface.roundness} * ${$globalProps.roundness}))`,
+				$root: css`
+					${arborModeSchema.$tokens.surface.padding.block} ${arborModeSchema
+						.$tokens.surface.padding.inline}
+				`,
+				block: css`calc(${arborModeSchema.$tokens.spacing.lg} * max(1, ${arborModeSchema.$tokens.surface.roundness} * ${$globalProps.roundness}))`,
+				inline: css`calc(${arborModeSchema.$tokens.spacing.lg} * max(1, ${arborModeSchema.$tokens.surface.roundness} * ${$globalProps.roundness}))`,
 			},
 			roundness: 1,
-			borderRadius: calc`calc(${arborModeSchema.$tokens.borderRadius.md} * ${arborModeSchema.$tokens.surface.roundness})`,
+			borderRadius: css`calc(${arborModeSchema.$tokens.borderRadius.md} * ${arborModeSchema.$tokens.surface.roundness})`,
 			primary: {
 				color: {
-					bg: calc`${arborModeSchema.$tokens.color.main.light}`,
-					fg: calc`${arborModeSchema.$tokens.color.main.ink}`,
-					border: calc`${arborModeSchema.$tokens.color.main.heavy}`,
+					bg: css`${arborModeSchema.$tokens.color.main.light}`,
+					fg: css`${arborModeSchema.$tokens.color.main.ink}`,
+					border: css`${arborModeSchema.$tokens.color.main.heavy}`,
 				},
 			},
 			secondary: {
 				color: {
-					bg: calc`${arborModeSchema.$tokens.color.main.wash}`,
-					fg: calc`${arborModeSchema.$tokens.color.neutral.ink}`,
-					border: calc`${arborModeSchema.$tokens.color.main.ink}`,
+					bg: css`${arborModeSchema.$tokens.color.main.wash}`,
+					fg: css`${arborModeSchema.$tokens.color.neutral.ink}`,
+					border: css`${arborModeSchema.$tokens.color.main.ink}`,
 				},
 			},
 			ambient: {
 				color: {
-					bg: calc`${arborModeSchema.$tokens.color.neutral.paper}`,
-					fg: calc`${arborModeSchema.$tokens.color.neutral.ink}`,
-					border: calc`${arborModeSchema.$tokens.color.neutral.heavy}`,
+					bg: css`${arborModeSchema.$tokens.color.neutral.paper}`,
+					fg: css`${arborModeSchema.$tokens.color.neutral.ink}`,
+					border: css`${arborModeSchema.$tokens.color.neutral.heavy}`,
 				},
 			},
 		},
 		action: {
 			padding: {
-				$root: css`${arborModeSchema.$tokens.action.padding.block} ${arborModeSchema.$tokens.action.padding.inline}`,
-				block: calc`calc(${config.primitives.$tokens.spacing.md} / ${arborModeSchema.$tokens.density})`,
-				inline: calc`calc((${config.primitives.$tokens.spacing.lg} + ${$globalProps.roundness} * ${config.primitives.$tokens.spacing.sm}) / ${arborModeSchema.$tokens.density})`,
+				$root: css`
+					${arborModeSchema.$tokens.action.padding.block} ${arborModeSchema
+						.$tokens.action.padding.inline}
+				`,
+				block: css`calc(${config.primitives.$tokens.spacing.md} / ${arborModeSchema.$tokens.density})`,
+				inline: css`calc((${config.primitives.$tokens.spacing.lg} + ${$globalProps.roundness} * ${config.primitives.$tokens.spacing.sm}) / ${arborModeSchema.$tokens.density})`,
 			},
 			roundness: 1,
-			borderRadius: calc`calc(${arborModeSchema.$tokens.borderRadius.sm} * ${arborModeSchema.$tokens.action.roundness})`,
+			borderRadius: css`calc(${arborModeSchema.$tokens.borderRadius.sm} * ${arborModeSchema.$tokens.action.roundness})`,
 			primary: {
 				color: {
-					bg: calc`${arborModeSchema.$tokens.color.main.mid}`,
-					fg: calc`${arborModeSchema.$tokens.color.main.ink}`,
-					border: calc`${arborModeSchema.$tokens.color.main.heavy}`,
+					bg: css`${arborModeSchema.$tokens.color.main.mid}`,
+					fg: css`${arborModeSchema.$tokens.color.main.ink}`,
+					border: css`${arborModeSchema.$tokens.color.main.heavy}`,
 				},
 			},
 			secondary: {
 				color: {
-					bg: calc`${arborModeSchema.$tokens.color.neutral.paper}`,
-					fg: calc`${arborModeSchema.$tokens.color.neutral.ink}`,
-					border: calc`${arborModeSchema.$tokens.color.neutral.heavy}`,
+					bg: css`${arborModeSchema.$tokens.color.neutral.paper}`,
+					fg: css`${arborModeSchema.$tokens.color.neutral.ink}`,
+					border: css`${arborModeSchema.$tokens.color.neutral.heavy}`,
 				},
 			},
 			ambient: {
 				color: {
-					bg: calc`${arborModeSchema.$tokens.color.main.light}`,
-					fg: calc`${arborModeSchema.$tokens.color.main.ink}`,
+					bg: css`${arborModeSchema.$tokens.color.main.light}`,
+					fg: css`${arborModeSchema.$tokens.color.main.ink}`,
 					border: 'transparent',
 				},
 			},
 		},
 		control: {
 			padding: {
-				$root: css`${arborModeSchema.$tokens.control.padding.block} ${arborModeSchema.$tokens.control.padding.inline}`,
-				block: calc`calc(${config.primitives.$tokens.spacing.sm} / ${arborModeSchema.$tokens.density})`,
-				inline: calc`calc((${config.primitives.$tokens.spacing.sm} + ${$globalProps.roundness} * ${config.primitives.$tokens.spacing.xs}) / ${arborModeSchema.$tokens.density})`,
+				$root: css`
+					${arborModeSchema.$tokens.control.padding.block} ${arborModeSchema
+						.$tokens.control.padding.inline}
+				`,
+				block: css`calc(${config.primitives.$tokens.spacing.sm} / ${arborModeSchema.$tokens.density})`,
+				inline: css`calc((${config.primitives.$tokens.spacing.sm} + ${$globalProps.roundness} * ${config.primitives.$tokens.spacing.xs}) / ${arborModeSchema.$tokens.density})`,
 			},
 			roundness: 1,
-			borderRadius: calc`calc(${arborModeSchema.$tokens.borderRadius.sm} * ${arborModeSchema.$tokens.control.roundness})`,
+			borderRadius: css`calc(${arborModeSchema.$tokens.borderRadius.sm} * ${arborModeSchema.$tokens.control.roundness})`,
 			color: {
-				bg: calc`${arborModeSchema.$tokens.color.neutral.paper}`,
-				fg: calc`${arborModeSchema.$tokens.color.neutral.ink}`,
-				border: calc`${arborModeSchema.$tokens.color.neutral.heavy}`,
+				bg: css`${arborModeSchema.$tokens.color.neutral.paper}`,
+				fg: css`${arborModeSchema.$tokens.color.neutral.ink}`,
+				border: css`${arborModeSchema.$tokens.color.neutral.heavy}`,
 			},
 		},
 		density: 1,
 		spacing: {
-			$root: calc`calc(${spacingRoot} / ${arborModeSchema.$tokens.density})`,
-			xs: calc`calc(${config.primitives.$tokens.spacing.xs} / ${arborModeSchema.$tokens.density})`,
-			sm: calc`calc(${config.primitives.$tokens.spacing.sm} / ${arborModeSchema.$tokens.density})`,
-			md: calc`calc(${config.primitives.$tokens.spacing.md} / ${arborModeSchema.$tokens.density})`,
-			lg: calc`calc(${config.primitives.$tokens.spacing.lg} / ${arborModeSchema.$tokens.density})`,
-			xl: calc`calc(${config.primitives.$tokens.spacing.xl} / ${arborModeSchema.$tokens.density})`,
+			$root: css`calc(${spacingRoot} / ${arborModeSchema.$tokens.density})`,
+			xs: css`calc(${config.primitives.$tokens.spacing.xs} / ${arborModeSchema.$tokens.density})`,
+			sm: css`calc(${config.primitives.$tokens.spacing.sm} / ${arborModeSchema.$tokens.density})`,
+			md: css`calc(${config.primitives.$tokens.spacing.md} / ${arborModeSchema.$tokens.density})`,
+			lg: css`calc(${config.primitives.$tokens.spacing.lg} / ${arborModeSchema.$tokens.density})`,
+			xl: css`calc(${config.primitives.$tokens.spacing.xl} / ${arborModeSchema.$tokens.density})`,
 		},
 		text: {
 			primary: {
-				size: calc`calc(${config.primitives.$tokens.typography['3xl'].size} / ${arborModeSchema.$tokens.density})`,
+				size: css`calc(${config.primitives.$tokens.typography['3xl'].size} / ${arborModeSchema.$tokens.density})`,
 				weight: config.primitives.$tokens.typography['3xl'].weight,
 				lineHeight: config.primitives.$tokens.typography['3xl'].lineHeight,
 				font: 'sans-serif',
 			},
 			secondary: {
-				size: calc`calc(max(${config.primitives.$tokens.typography.xs.size}, ${config.primitives.$tokens.typography.md.size} / ${arborModeSchema.$tokens.density}))`,
+				size: css`calc(max(${config.primitives.$tokens.typography.xs.size}, ${config.primitives.$tokens.typography.md.size} / ${arborModeSchema.$tokens.density}))`,
 				weight: config.primitives.$tokens.typography.md.weight,
 				lineHeight: config.primitives.$tokens.typography.md.lineHeight,
 				font: 'sans-serif',
 			},
 			ambient: {
-				size: calc`calc(max(${config.primitives.$tokens.typography.xs.size}, ${config.primitives.$tokens.typography.sm.size} / ${arborModeSchema.$tokens.density}))`,
+				size: css`calc(max(${config.primitives.$tokens.typography.xs.size}, ${config.primitives.$tokens.typography.sm.size} / ${arborModeSchema.$tokens.density}))`,
 				weight: config.primitives.$tokens.typography.sm.weight,
 				lineHeight: config.primitives.$tokens.typography.sm.lineHeight,
 				font: 'sans-serif',
 			},
 		},
 		borderRadius: {
-			$root: calc`${arborModeSchema.$tokens.borderRadius.md}`,
-			xs: calc`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.sm} * 2 / ${arborModeSchema.$tokens.density})`,
-			sm: calc`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.md} * 2 / ${arborModeSchema.$tokens.density})`,
-			md: calc`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.lg} * 2 / ${arborModeSchema.$tokens.density})`,
-			lg: calc`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.xl} * 2 / ${arborModeSchema.$tokens.density})`,
-			xl: calc`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing['2xl']} * 2 / ${arborModeSchema.$tokens.density})`,
+			$root: css`${arborModeSchema.$tokens.borderRadius.md}`,
+			xs: css`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.sm} * 2 / ${arborModeSchema.$tokens.density})`,
+			sm: css`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.md} * 2 / ${arborModeSchema.$tokens.density})`,
+			md: css`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.lg} * 2 / ${arborModeSchema.$tokens.density})`,
+			lg: css`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.xl} * 2 / ${arborModeSchema.$tokens.density})`,
+			xl: css`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing['2xl']} * 2 / ${arborModeSchema.$tokens.density})`,
 		},
 		borderWidth: {
-			$root: calc`${$globalProps.borderWidth}`,
-			sm: calc`calc(max(1px, ${$globalProps.borderWidth} / 2))`,
-			md: calc`${$globalProps.borderWidth}`,
-			lg: calc`calc(${$globalProps.borderWidth} * 2)`,
+			$root: css`${$globalProps.borderWidth}`,
+			sm: css`calc(max(1px, ${$globalProps.borderWidth} / 2))`,
+			md: css`${$globalProps.borderWidth}`,
+			lg: css`calc(${$globalProps.borderWidth} * 2)`,
 		},
 		shadow: {
-			$root: css`${shadowRoot.x} ${shadowRoot.y} ${shadowRoot.blur} ${shadowRoot.spread} ${shadowRoot.color}`,
-			color: calc`${arborModeSchema.$tokens.color.neutral.heavy}`,
+			$root: css`
+				${shadowRoot.x} ${shadowRoot.y} ${shadowRoot.blur} ${shadowRoot.spread} ${shadowRoot.color}
+			`,
+			color: css`${arborModeSchema.$tokens.color.neutral.heavy}`,
 			sm: createShadowIntentLevel(config.primitives, 'sm'),
 			md: createShadowIntentLevel(config.primitives, 'md'),
 			lg: createShadowIntentLevel(config.primitives, 'lg'),

@@ -372,69 +372,28 @@ function stripCalcWrapper(input: string): string {
 // ─── Public API ─────────────────────────────────────────────────────────────
 
 /**
- * Tagged template literal that parses a CSS calc()-style expression into an
- * {@link Equation} tree.
+ * Tagged template literal for CSS value expressions.
  *
- * Interpolated values may be {@link Token} objects, existing {@link Equation}
- * nodes, plain numbers, or literal strings.
- *
- * @example
- * ```ts
- * const eq = calc`${myToken} * 2 + 10px`;
- * const eq2 = calc`clamp(0px, ${myToken}, 100px)`;
- * ```
- *
- * An outer `calc(…)` wrapper is optional and will be stripped automatically.
- * Unsupported syntax throws a {@link SyntaxError} with a position hint.
- */
-export function calc(
-	strings: TemplateStringsArray,
-	...values: CalcInterpolation[]
-): Equation {
-	// Build a single string, replacing each interpolation with a unique marker
-	let input = '';
-	for (let i = 0; i < strings.length; i++) {
-		input += strings[i];
-		if (i < values.length) input += `__P${i}__`;
-	}
-
-	input = input.trim();
-
-	if (input.length === 0) {
-		throw new SyntaxError('calc: expression must not be empty');
-	}
-
-	input = stripCalcWrapper(input);
-
-	const lexTokens = tokenize(input);
-	return new Parser(lexTokens, values).parse();
-}
-
-export type Calc = typeof calc;
-
-// ─── css tagged template ─────────────────────────────────────────────────────
-
-/**
- * Tagged template literal for general CSS value expressions.  A superset of
- * {@link calc} that additionally supports:
- *
- * - **Space-separated concatenation** — adjacent interpolations or values with
- *   no arithmetic operator between them are joined with a space:
+ * Supports all CSS value syntax including:
+ * - **Arithmetic inside `calc()`** — use a `calc(…)` wrapper for math expressions:
+ *   ```ts
+ *   css`calc(${myToken} * 2 + 10px)`
+ *   css`calc(clamp(0px, ${myToken}, 100px))`
+ *   ```
+ * - **Space-separated concatenation** — adjacent values with no operator are joined with a space:
  *   ```ts
  *   css`${paddingBlock} ${paddingInline}`
  *   // → "var(--block) var(--inline)"
  *   ```
- *
- * - **Non-calc CSS functions** — functions like `color-mix`, `oklch`, etc. are
- *   emitted without an extra `calc()` wrapper, and their arguments may contain
- *   space-separated values (e.g. the `in hsl` color-space in `color-mix`):
+ * - **Non-calc CSS functions** — functions like `color-mix`, `oklch`, etc.:
  *   ```ts
  *   css`color-mix(in hsl, ${token}, black)`
  *   // → "color-mix(in hsl, var(--token), black)"
  *   ```
  *
- * An outer `calc(…)` wrapper is optional and will be stripped automatically
- * (same as {@link calc}).
+ * An outer `calc(…)` wrapper is stripped automatically when the expression
+ * contains only a single math expression.
+ * Unsupported syntax throws a {@link SyntaxError} with a position hint.
  */
 export function css(
 	strings: TemplateStringsArray,
