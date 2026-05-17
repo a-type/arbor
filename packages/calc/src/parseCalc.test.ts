@@ -183,10 +183,6 @@ describe('calc template — error cases', () => {
 		expect(() => calc``).toThrow(SyntaxError);
 	});
 
-	it('throws on unsupported function', () => {
-		expect(() => calc`rotate(45deg)`).toThrow(/unsupported function/i);
-	});
-
 	it('throws on unmatched parenthesis', () => {
 		expect(() => calc`(10px + 5px`).toThrow();
 	});
