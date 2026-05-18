@@ -1,4 +1,3 @@
-import { $globalProps } from '@arbor-css/globals';
 import { isToken, Token } from '@arbor-css/tokens';
 import GUI from 'lil-gui';
 import { readProperties } from '../readProperties.js';
@@ -13,7 +12,7 @@ class GlobalsEditor extends ArborElement {
 
 		const globalsFolder = gui.addFolder('Globals');
 
-		for (const [globalKey, token] of Object.entries($globalProps)) {
+		for (const [globalKey, token] of Object.entries(config.$.system.globals)) {
 			let entry =
 				token.type === 'color' ?
 					globalsFolder.addColor(config.primitives.globals, globalKey as any)

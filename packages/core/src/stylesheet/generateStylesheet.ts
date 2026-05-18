@@ -1,4 +1,3 @@
-import { $globalProps, $systemProps } from '@arbor-css/globals';
 import { flattenToPropsList, modeToCss } from '@arbor-css/modes';
 import { AnyArborPreset } from '@arbor-css/preset/config';
 import {
@@ -24,6 +23,8 @@ export function generateStylesheet(
 ): string {
 	const defaultScheme = config.primitives.defaultScheme ?? 'light';
 	const baseMode = config.modes.base;
+	const systemProps = config.$.system;
+	const globalProps = systemProps.globals;
 
 	/**
 	 * Each scheme generates a full set of CSS color properties
@@ -46,12 +47,12 @@ export function generateStylesheet(
 		const values = selfReferencedProps(config.$.primitives.colors, {
 			valuePrefix: config.primitives.schemeTags[schemeName] ?? schemeName,
 		});
-		return `${$systemProps.labels.scheme.assign(schemeName)}
-	${$systemProps.scheme.invertMultiplier.assign(scheme.isDark ? -1 : 1)}
-	${$systemProps.scheme.whenDark.assign(scheme.isDark ? 1 : 0)}
-	${$systemProps.scheme.whenLight.assign(scheme.isDark ? 0 : 1)}
-	${$systemProps.scheme.trueLight.assign(scheme.isDark ? 'black' : 'white')}
-	${$systemProps.scheme.trueHeavy.assign(scheme.isDark ? 'white' : 'black')}
+		return `${systemProps.labels.scheme.assign(schemeName)}
+	${systemProps.scheme.invertMultiplier.assign(scheme.isDark ? -1 : 1)}
+	${systemProps.scheme.whenDark.assign(scheme.isDark ? 1 : 0)}
+	${systemProps.scheme.whenLight.assign(scheme.isDark ? 0 : 1)}
+	${systemProps.scheme.trueLight.assign(scheme.isDark ? 'black' : 'white')}
+	${systemProps.scheme.trueHeavy.assign(scheme.isDark ? 'white' : 'black')}
 	${formatObjectToCss(values)}
 	`;
 	}
@@ -85,9 +86,9 @@ export function generateStylesheet(
 ${cascadeLayerName ? `@layer ${cascadeLayerName} {` : ''}
 :root {
 	/* Assign user globals */
-	${printTokens($globalProps, config.primitives.globals)}
+	${printTokens(globalProps, config.primitives.globals)}
 	/* By default we set the font size */
-	font-size: ${$globalProps.baseFontSize.var};
+	font-size: ${globalProps.baseFontSize.var};
 
 	/* Raw scheme ranges */
 	${Object.keys(config.primitives.colors)
@@ -125,7 +126,7 @@ ${Object.keys(config.primitives.colors)
 ${Object.entries(config.modes)
 	.map(([modeName, modeValue]) => {
 		return `/* Mode: ${modeName} */
-${modeName === 'base' ? ':root, :root [class^="\\@scheme-"], ' : ''}${modeToCss(modeValue, baseMode)}
+${modeName === 'base' ? ':root, :root [class^="\\@scheme-"], ' : ''}${modeToCss(modeValue, baseMode, { systemProps })}
 `;
 	})
 	.join('\n\n')}

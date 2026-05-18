@@ -1,4 +1,6 @@
-import { $systemProps } from '@arbor-css/core';
+import { createGlobalProps, createSystemProps } from '@arbor-css/globals';
+
+const $systemProps = createSystemProps({ globalProps: createGlobalProps() });
 
 function tweak({
 	value,

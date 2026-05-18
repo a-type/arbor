@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { TOKEN_RE_ANYWHERE } from './regex.js';
+import { createTokenRegex } from './regex.js';
 import { TokenProvider } from './tokenProvider.js';
 
 const supportedLanguages = ['css', 'scss', 'less'];
@@ -48,11 +48,12 @@ export class ArborDiagnosticProvider {
 		if (!supportedLanguages.includes(document.languageId)) return;
 
 		const tokenMap = this.tokenProvider.getTokenMap();
+		const tokenRegex = createTokenRegex(this.tokenProvider.getTokenPrefix());
 		const fileDiagnostics: vscode.Diagnostic[] = [];
 
 		for (let lineIndex = 0; lineIndex < document.lineCount; lineIndex++) {
 			const line = document.lineAt(lineIndex).text;
-			for (const match of line.matchAll(TOKEN_RE_ANYWHERE())) {
+			for (const match of line.matchAll(tokenRegex.anywhere())) {
 				if (match.index === undefined) continue;
 				const path = match[1];
 				if (!tokenMap.has(path)) {

@@ -1,6 +1,6 @@
-import { createArborPreset, definePreset } from '@arbor-css/core';
+import { createArbor, definePreset } from '@arbor-css/core';
 
-const preset = createArborPreset({
+const preset = createArbor().preset({
 	globals: {
 		saturation: 0.5,
 	},
@@ -82,4 +82,6 @@ export const arbor = definePreset({
 		creativity: creativityMode,
 		hero: heroMode,
 	},
+	systemProps: preset.$.system,
+	meta: preset.meta,
 });

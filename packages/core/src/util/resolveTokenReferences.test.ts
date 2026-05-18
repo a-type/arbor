@@ -1,8 +1,8 @@
-import { createArborPreset } from '@arbor-css/preset';
+import { createArbor } from '@arbor-css/preset';
 import { expect, it } from 'vitest';
 import { resolveTokenReferences } from './resolveTokenReferences.js';
 
-const preset = createArborPreset({
+const preset = createArbor().preset({
 	colors: {
 		mainColor: 'red',
 		ranges: {
@@ -22,7 +22,7 @@ it('resolves a indirect token values', () => {
 it('resolves direct token values', () => {
 	expect(
 		resolveTokenReferences(preset, preset.$.primitives.spacing.$root.name),
-	).toBe('calc(calc(8px / var(---system-base-font-size)) * 1rem)');
+	).toBe('calc(calc(8px / var(--x-system-base-font-size)) * 1rem)');
 });
 
 it('resolves mode token values', () => {

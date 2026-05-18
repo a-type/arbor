@@ -1,6 +1,6 @@
-import { createArborPreset } from '@arbor-css/preset';
+import { createArbor } from '@arbor-css/preset';
 
-const preset = createArborPreset({
+const preset = createArbor().preset({
 	globals: {
 		shadowBlur: 0,
 		shadowSpread: 0,

@@ -1,6 +1,6 @@
 import { AnyArborPreset, generateStylesheet } from '@arbor-css/core';
 import postcss from 'postcss';
-import { COLOR_PROP_ENTRIES } from './colorSystemProps.js';
+import { getColorPropEntries } from './colorSystemProps.js';
 
 const ARBOR_IMPORT_RE = /^['"]arbor:css['"]$/;
 
@@ -18,6 +18,8 @@ export function transform(
 	preset: AnyArborPreset | null = null,
 ): TransformResult {
 	const root = postcss.parse(cssSource);
+	const colorPropEntries =
+		preset?.$.system ? getColorPropEntries(preset.$.system) : {};
 
 	// Replace @import 'arbor:css' with the full generated stylesheet
 	if (preset) {
@@ -31,7 +33,7 @@ export function transform(
 
 	// inject color system prop assignments to matching css properties
 	root.walkDecls((decl) => {
-		const systemAssignmentEntry = COLOR_PROP_ENTRIES[decl.prop];
+		const systemAssignmentEntry = colorPropEntries[decl.prop];
 		if (systemAssignmentEntry) {
 			// Inject system color props before this declaration
 			decl.cloneBefore({

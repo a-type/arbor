@@ -1,7 +1,7 @@
-import { createArborPreset } from '../src/index.js';
+import { createArbor } from '../src/index.js';
 import { contrastScheme } from './schemes.js';
 
-export const arbor = createArborPreset({
+export const arbor = createArbor().preset({
 	colors: {
 		ranges: {
 			primary: {

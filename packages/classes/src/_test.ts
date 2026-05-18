@@ -1,7 +1,7 @@
-import { createArborPreset } from '@arbor-css/core';
+import { createArbor } from '@arbor-css/core';
 import { createTheme } from './theme/index.js';
 
-export const testArbor = createArborPreset({
+export const testArbor = createArbor().preset({
 	colors: {
 		mainColor: 'brand',
 		ranges: {

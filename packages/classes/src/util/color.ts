@@ -1,9 +1,12 @@
-import { $systemProps, resolveTokenReferences } from '@arbor-css/core';
+import { resolveTokenReferences } from '@arbor-css/core';
+import { createGlobalProps, createSystemProps } from '@arbor-css/globals';
 import { laterals } from '../rules/color.js';
 import { Theme } from '../theme/types.js';
 import { customPropertyRe } from './regex.js';
 import { isNumericLiteral, isNumericUnitLiteral } from './tests.js';
 import { themeOrLiteral } from './themeOrLiteral.js';
+
+const $systemProps = createSystemProps({ globalProps: createGlobalProps() });
 
 const systemTokenMap: Record<string, string> = {
 	'@fg': $systemProps.fg.applied.var,

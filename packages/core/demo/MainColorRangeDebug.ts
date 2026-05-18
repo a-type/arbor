@@ -1,11 +1,10 @@
 import { SchemeDefinition } from '@arbor-css/colors';
-import { $globalProps } from '@arbor-css/globals';
 import { ArborElement } from '../src/runtime/components/index';
 import arbor from './arbor.js';
 
 const oklchMatcher = /oklch\(([0-9.%]+),?\s?([0-9.%]+),?\s?([0-9.%]+)\)/;
 
-const globalPropsFlat = Object.values($globalProps);
+const globalPropsFlat = Object.values(arbor.$.system.globals);
 
 class MainColorRangeDebug extends ArborElement {
 	constructor() {

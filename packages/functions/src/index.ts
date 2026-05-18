@@ -1,4 +1,6 @@
 import {
+	$,
+	CalcOperations,
 	CalcInterpolation,
 	computeEquation,
 	css,
@@ -44,72 +46,85 @@ type ParamsAsInterpolations<TParams extends FunctionParams> = {
  * spacing.definition // @function --spacing-scale(--base <length>, --scale <number>) { result: (var(--base) * var(--scale)); }
  * spacing.compute({ base: '8px', scale: 2 }) // 'calc(var(--base) * 2)' or '16px'
  */
-export function createFunction<TParams extends FunctionParams>(
-	name: string,
-	{
-		description,
-		parameters,
-		definition,
-	}: {
-		description?: string;
-		/**
-		 * Define names to represent each function parameter.
-		 */
-		parameters: TParams;
-		/**
-		 * Provide the definition of the function, using calc tools to construct
-		 * an equation. The incoming parameters are already wrapped with literal()
-		 */
-		definition: (css: Css, ...params: CalcInterpolation[]) => Equation;
-	},
-): ArborFunction<TParams> {
-	const cssName = `${FUNCTION_PREFIX}${name}`;
+export function createFunctionFactory({
+	tokenPrefix = TOKEN_PREFIX,
+}: {
+	tokenPrefix?: string;
+} = {}) {
+	const functionPrefix = `${tokenPrefix}fn-`;
 
-	const paramsList = parameters
-		.map((p) => {
-			if (isToken(p)) {
-				const type = p.type ?? '*';
-				const typeAnnotation = type === '*' ? '' : ` <${type}>`;
-				return `${p.name}${typeAnnotation}`;
-			}
-			return p;
-		})
-		.join(', ');
-
-	const equation = definition(css, ...parameters.map((p) => `var(${p})`));
-	const body = printEquation(equation);
-	const cssDefinition = `@function ${cssName}(${paramsList}) { result: ${body}; }`;
-
-	return {
-		[FUNCTION_BRAND]: true as const,
-		name: cssName,
-		description,
-		parameters,
-		equation,
-		definition: cssDefinition,
-		/**
-		 * Inline the body of the function as a CSS equation, supplying
-		 * tokens to substitute for the normal parameters.
-		 */
-		inline: (...params: ParamsAsInterpolations<TParams>) =>
-			definition(css, ...params),
-		/**
-		 * Compute the function result at runtime by substituting parameter values.
-		 * Parameter keys should match parameter names (without the -- prefix).
-		 */
-		compute(params: Record<string, string | number>): string {
-			const propertyValues: Record<string, string> = {};
-			for (const [key, value] of Object.entries(params)) {
-				propertyValues[`--${key}`] = String(value);
-			}
-			const result = computeEquation(equation, {
-				propertyValues,
-				skipBaking: false,
-			});
-			return printComputationResult(result);
+	return function createFunction<TParams extends FunctionParams>(
+		name: string,
+		{
+			description,
+			parameters,
+			definition,
+		}: {
+			description?: string;
+			parameters: TParams;
+			definition: (
+				css: Css & CalcOperations,
+				...params: CalcInterpolation[]
+			) => Equation;
 		},
+	): ArborFunction<TParams> {
+		const cssName = `${functionPrefix}${name}`;
+		const definitionTools = Object.assign(css, $) as Css & CalcOperations;
+		const parameterNames = parameters.map((parameter) =>
+			isToken(parameter) ? parameter.name : parameter,
+		);
+
+		const paramsList = parameters
+			.map((p) => {
+				if (isToken(p)) {
+					const type = p.type ?? '*';
+					const typeAnnotation = type === '*' ? '' : ` <${type}>`;
+					return `${p.name}${typeAnnotation}`;
+				}
+				return p;
+			})
+			.join(', ');
+
+		const equation = definition(
+			definitionTools,
+			...parameterNames.map((parameter) => $.val(`var(${parameter})`)),
+		);
+		const body = printEquation(equation);
+		const cssDefinition = `@function ${cssName}(${paramsList}) { result: ${body}; }`;
+
+		return {
+			[FUNCTION_BRAND]: true as const,
+			name: cssName,
+			description,
+			parameters,
+			equation,
+			definition: cssDefinition,
+			inline: (...params: ParamsAsInterpolations<TParams>) =>
+				definition(definitionTools, ...params),
+			compute(params: Record<string, string | number>): string {
+				const propertyValues: Record<string, string> = {};
+				for (let index = 0; index < parameters.length; index++) {
+					const parameter = parameters[index];
+					const cssParameterName = parameterNames[index];
+					const logicalName =
+						isToken(parameter) && cssParameterName.startsWith(tokenPrefix) ?
+							cssParameterName.slice(tokenPrefix.length)
+						:	cssParameterName.replace(/^--/, '');
+					if (logicalName in params) {
+						propertyValues[cssParameterName] = String(params[logicalName]);
+					}
+				}
+				const result = computeEquation(equation, {
+					propertyValues,
+					skipBaking: false,
+				});
+				return printComputationResult(result);
+			},
+		};
 	};
 }
+
+export const createFunction = createFunctionFactory();
 
 export type ArborFunction<TParams extends FunctionParams = FunctionParams> = {
 	[FUNCTION_BRAND]: true;

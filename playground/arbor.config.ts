@@ -1,6 +1,6 @@
-import { createArborPreset } from '@arbor-css/core';
+import { createArbor } from '@arbor-css/core';
 
-const preset = createArborPreset({
+const preset = createArbor().preset({
 	colors: {
 		ranges: {
 			brand: {

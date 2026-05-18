@@ -2,7 +2,7 @@ import { ColorRangeItem, CompiledColors } from '@arbor-css/colors';
 import { defaultGlobals, GlobalConfig } from '@arbor-css/globals';
 import { CompiledShadows, isCompiledShadowLevel } from '@arbor-css/shadows';
 import { CompiledSpacing } from '@arbor-css/spacing';
-import { createToken, Token } from '@arbor-css/tokens';
+import { createToken, CreateToken, Token } from '@arbor-css/tokens';
 import { CompiledTypography, isTypographyLevel } from '@arbor-css/typography';
 import { convertStructure } from '@arbor-css/util';
 
@@ -21,6 +21,7 @@ export interface PrimitivesConfig<
 	defaultScheme?: keyof TCompiledColors;
 	schemeTags?: Record<string, string>;
 	globals?: Partial<GlobalConfig>;
+	createToken?: CreateToken;
 }
 
 type LiteralsToTokens<T extends Record<string, any>> = {
@@ -89,7 +90,12 @@ export function createPrimitives<
 	TCompiledSpacing,
 	TCompiledShadows
 > {
-	const { colors, defaultScheme, globals: userGlobals } = config;
+	const {
+		colors,
+		defaultScheme,
+		globals: userGlobals,
+		createToken: createTokenValue = createToken,
+	} = config;
 	const arbitraryScheme = Object.values(colors)[0];
 	if (!arbitraryScheme) {
 		throw new Error('At least one color scheme must be defined in primitives');
@@ -100,7 +106,7 @@ export function createPrimitives<
 		arbitraryScheme.colors,
 		(item) => typeof item === 'string',
 		(_, path) =>
-			createToken(path.join('-'), {
+			createTokenValue(path.join('-'), {
 				type: 'color',
 				purpose: 'color',
 				group: path.slice(0, -1).join('-'),
@@ -112,19 +118,19 @@ export function createPrimitives<
 		config.typography.levels,
 		isTypographyLevel,
 		(_, path) => ({
-			size: createToken(`typography-${path.join('-')}-size`, {
+			size: createTokenValue(`typography-${path.join('-')}-size`, {
 				type: 'length',
 				purpose: 'font-size',
 				group: path.join('-'),
 				tag: 'primitive',
 			}),
-			weight: createToken(`typography-${path.join('-')}-weight`, {
+			weight: createTokenValue(`typography-${path.join('-')}-weight`, {
 				type: '*',
 				purpose: 'font-weight',
 				group: path.join('-'),
 				tag: 'primitive',
 			}),
-			lineHeight: createToken(`typography-${path.join('-')}-line-height`, {
+			lineHeight: createTokenValue(`typography-${path.join('-')}-line-height`, {
 				type: '*',
 				purpose: 'line-height',
 				group: path.join('-'),
@@ -138,7 +144,7 @@ export function createPrimitives<
 		(value): value is string | number =>
 			typeof value === 'string' || typeof value === 'number',
 		(_, path) =>
-			createToken(`spacing-${path.join('-')}`, {
+			createTokenValue(`spacing-${path.join('-')}`, {
 				type: 'length',
 				purpose: 'spacing',
 				tag: 'primitive',
@@ -149,31 +155,31 @@ export function createPrimitives<
 		config.shadows.levels,
 		isCompiledShadowLevel,
 		(_, path) => ({
-			x: createToken(`shadow-${path.join('-')}-x`, {
+			x: createTokenValue(`shadow-${path.join('-')}-x`, {
 				type: 'length',
 				purpose: 'shadow-x',
 				group: path.join('-'),
 				tag: 'primitive',
 			}),
-			y: createToken(`shadow-${path.join('-')}-y`, {
+			y: createTokenValue(`shadow-${path.join('-')}-y`, {
 				type: 'length',
 				purpose: 'shadow-y',
 				group: path.join('-'),
 				tag: 'primitive',
 			}),
-			blur: createToken(`shadow-${path.join('-')}-blur`, {
+			blur: createTokenValue(`shadow-${path.join('-')}-blur`, {
 				type: 'length',
 				purpose: 'shadow-blur',
 				group: path.join('-'),
 				tag: 'primitive',
 			}),
-			spread: createToken(`shadow-${path.join('-')}-spread`, {
+			spread: createTokenValue(`shadow-${path.join('-')}-spread`, {
 				type: 'length',
 				purpose: 'shadow-spread',
 				group: path.join('-'),
 				tag: 'primitive',
 			}),
-			color: createToken(`shadow-${path.join('-')}-color`, {
+			color: createTokenValue(`shadow-${path.join('-')}-color`, {
 				type: 'color',
 				purpose: 'shadow-color',
 				group: path.join('-'),

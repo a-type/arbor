@@ -35,7 +35,9 @@ describe('preset $root mappings', () => {
 			],
 		);
 
-		const css = modeToCss(testBaseMode, testBaseMode);
+		const css = modeToCss(testBaseMode, testBaseMode, {
+			systemProps: testArbor.$.system,
+		});
 		expect(css).toContain(
 			`--Ⓜ️-spacing: calc(${testArbor.$.primitives.spacing.$root.var} / var(--Ⓜ️-density));`,
 		);

@@ -9,7 +9,7 @@ describe('createFunction', () => {
 			parameters: [],
 			definition: ($) => $.val(0),
 		});
-		expect(fn.name).toBe('--my-func');
+		expect(fn.name).toBe('--x-fn-my-func');
 	});
 
 	it('stores description and parameters', () => {
@@ -35,7 +35,7 @@ describe('createFunction', () => {
 				definition: ($, base, factor) => $.multiply(base, factor),
 			});
 			expect(fn.definition).toBe(
-				'@function --scale(--base <length>, --factor <number>) { result: (var(--base) * var(--factor)); }',
+				'@function --x-fn-scale(--x-base <length>, --x-factor <number>) { result: (var(--x-base) * var(--x-factor)); }',
 			);
 		});
 
@@ -45,7 +45,7 @@ describe('createFunction', () => {
 				definition: (_, value) => value,
 			});
 			expect(fn.definition).toBe(
-				'@function --passthrough(--value) { result: var(--value); }',
+				'@function --x-fn-passthrough(--x-value) { result: var(--x-value); }',
 			);
 		});
 
@@ -55,7 +55,7 @@ describe('createFunction', () => {
 				definition: (_, value) => value,
 			});
 			expect(fn.definition).toBe(
-				'@function --passthrough(--value) { result: var(--value); }',
+				'@function --x-fn-passthrough(--x-value) { result: var(--x-value); }',
 			);
 		});
 
@@ -64,7 +64,7 @@ describe('createFunction', () => {
 				parameters: [],
 				definition: ($) => $.val('PI'),
 			});
-			expect(fn.definition).toBe('@function --pi() { result: PI; }');
+			expect(fn.definition).toBe('@function --x-fn-pi() { result: PI; }');
 		});
 
 		it('generates @function with clamp equation', () => {
@@ -77,7 +77,7 @@ describe('createFunction', () => {
 				definition: ($, value, min, max) => $.fn('clamp', min, value, max),
 			});
 			expect(fn.definition).toBe(
-				'@function --clamped(--value <number>, --min <number>, --max <number>) { result: clamp(var(--min), var(--value), var(--max)); }',
+				'@function --x-fn-clamped(--x-value <number>, --x-min <number>, --x-max <number>) { result: clamp(var(--x-min), var(--x-value), var(--x-max)); }',
 			);
 		});
 	});
@@ -113,10 +113,8 @@ describe('createFunction', () => {
 				],
 				definition: ($, base, factor) => $.multiply(base, factor),
 			});
-			// '8px' is not a plain number so calc falls through to a calc() string
 			const result = fn.compute({ base: '8px', factor: 2 });
-			expect(result).toMatch(/8px/);
-			expect(result).toMatch(/2/);
+			expect(result).toBe('16px');
 		});
 
 		it('resolves a constant equation with no params', () => {
@@ -134,7 +132,7 @@ describe('createFunction', () => {
 				parameters: [createToken('x')],
 				definition: ($, x) => $.multiply(x, $.val(2)),
 			});
-			expect(printEquation(fn.equation)).toBe('(var(--x) * 2)');
+			expect(printEquation(fn.equation)).toBe('(var(--x-x) * 2)');
 		});
 	});
 });

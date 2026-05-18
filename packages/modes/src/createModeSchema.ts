@@ -1,5 +1,11 @@
 import { Equation, isCalcEquation } from '@arbor-css/calc';
-import { createToken, isToken, Token, TokenPurpose } from '@arbor-css/tokens';
+import {
+	createToken,
+	CreateToken,
+	isToken,
+	Token,
+	TokenPurpose,
+} from '@arbor-css/tokens';
 
 export type ModePropertyType = TokenPurpose;
 export type ModeSchemaProperty =
@@ -46,12 +52,13 @@ function isModeSchemaProperty(value: any): value is ModeSchemaProperty {
 function getModeSchemaPropertyAsPropertyDefinition(
 	name: string,
 	prop: ModeSchemaProperty,
+	createTokenValue: CreateToken,
 	group?: string,
 ): Token {
 	if (typeof prop === 'string') {
-		return createToken(name, { purpose: prop, group });
+		return createTokenValue(name, { purpose: prop, group });
 	} else {
-		return createToken(name, {
+		return createTokenValue(name, {
 			purpose: prop.type,
 			fallback: prop.fallback,
 			group,
@@ -61,9 +68,17 @@ function getModeSchemaPropertyAsPropertyDefinition(
 
 export function createModeSchema<T extends ModeSchemaLevel>(
 	input: T,
-	{ tag = '', extraCss }: { tag?: string; extraCss?: string } = {},
+	{
+		tag = '',
+		extraCss,
+		createToken: createTokenValue = createToken,
+	}: {
+		tag?: string;
+		extraCss?: string;
+		createToken?: CreateToken;
+	} = {},
 ): ModeSchema<T> {
-	const PROPS = createModeTokens(input, tag);
+	const PROPS = createModeTokens(input, tag, createTokenValue);
 	const schema = {
 		definition: input,
 		tag,
@@ -96,6 +111,7 @@ export function createModeSchema<T extends ModeSchemaLevel>(
 			} as T & TExtensionSchema;
 			return createModeSchema(extendedDefinition, {
 				tag: schema.tag,
+				createToken: createTokenValue,
 			});
 		},
 	};
@@ -147,6 +163,7 @@ export type ModeTokens<T> =
 function createModeTokens<T extends ModeSchemaLevel>(
 	root: T,
 	tag: string,
+	createTokenValue: CreateToken,
 ): ModeTokens<T> {
 	function generatePropsForSchemaLevel(
 		schemaLevel: any,
@@ -161,6 +178,7 @@ function createModeTokens<T extends ModeSchemaLevel>(
 					propsLevel.$root = getModeSchemaPropertyAsPropertyDefinition(
 						propPrefix,
 						value,
+						createTokenValue,
 						propPrefix,
 					);
 				}
@@ -173,6 +191,7 @@ function createModeTokens<T extends ModeSchemaLevel>(
 				const propertyDefinition = getModeSchemaPropertyAsPropertyDefinition(
 					currentPrefix,
 					value,
+					createTokenValue,
 					propPrefix,
 				);
 				propsLevel[key] = propertyDefinition;

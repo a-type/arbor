@@ -1,10 +1,12 @@
-import { $systemProps } from '@arbor-css/core';
+import { createGlobalProps, createSystemProps } from '@arbor-css/globals';
 import type { Rule } from '@unocss/core';
 import { colorableShadows } from '@unocss/preset-mini/utils';
 import { $classesProps } from '../properties.js';
 import { Theme } from '../theme/types.js';
 import { h } from '../util/h.js';
 import { getFromTheme } from '../util/themeOrLiteral.js';
+
+const $systemProps = createSystemProps({ globalProps: createGlobalProps() });
 
 export const shadowRules: Rule<Theme>[] = [
 	// shadow sizes

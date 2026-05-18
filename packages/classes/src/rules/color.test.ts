@@ -1,9 +1,11 @@
-import { $systemProps } from '@arbor-css/core';
+import { createGlobalProps, createSystemProps } from '@arbor-css/globals';
 import { describe, expect, it } from 'vitest';
 import { testBaseMode } from '../_test.js';
 import { colorAlters } from '../util/alters.js';
 import { testRules } from './_test.js';
 import { colorRules } from './color.js';
+
+const $systemProps = createSystemProps({ globalProps: createGlobalProps() });
 
 describe('fg color', () => {
 	it('matches colors from theme', async () => {

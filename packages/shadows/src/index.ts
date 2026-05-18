@@ -4,8 +4,11 @@ import {
 	computeEquation,
 	printComputationResult,
 } from '@arbor-css/calc';
-import { $dynamicProps } from '@arbor-css/globals';
-import { $globalProps, GlobalConfig } from '../../globals/dist/globalProps.js';
+import {
+	GlobalConfig,
+	GlobalConfigProps,
+	SystemTokens,
+} from '@arbor-css/globals';
 
 export const defaultShadowLevels = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
 export type DefaultShadowLevel = (typeof defaultShadowLevels)[number];
@@ -50,23 +53,41 @@ export interface CompiledShadows<
 const defaultShadowXEquation = (step: number) => $.val(`0px`);
 const defaultShadowYEquation = (step: number) =>
 	$.multiply($.val('1px'), $.fn('pow', $.val(2), $.val(step - 1)));
-const defaultShadowBlurEquation = (step: number) =>
+const defaultShadowBlurEquation = (
+	step: number,
+	globalProps: GlobalConfigProps,
+) =>
 	$.multiply(
-		$.val($globalProps.shadowBlur.varFallback('0.5')),
-		$.val($globalProps.baseSpacingSize.varFallback('0.5rem')),
+		$.val(globalProps.shadowBlur.varFallback('0.5')),
+		$.val(globalProps.baseSpacingSize.varFallback('0.5rem')),
 		$.val(0.25),
 		$.fn('pow', $.val(2), $.val(step - 1)),
 	);
-const defaultShadowSpreadEquation = (step: number) =>
-	$.multiply($.val($globalProps.shadowSpread.varFallback('1')), $.val('1px'));
-const defaultShadowColorEquation = (step: number) =>
+const defaultShadowSpreadEquation = (
+	step: number,
+	globalProps: GlobalConfigProps,
+) => $.multiply($.val(globalProps.shadowSpread.varFallback('1')), $.val('1px'));
+const defaultShadowColorEquation = (
+	step: number,
+	globalProps: GlobalConfigProps,
+	dynamicProps: SystemTokens['dynamic'],
+) =>
 	$.val(
-		$dynamicProps.shadowColor.varFallback($globalProps.defaultShadowColor.var),
+		dynamicProps.shadowColor.varFallback(globalProps.defaultShadowColor.var),
 	);
 
 export function compileShadows<
 	TShadowLevel extends string = DefaultShadowLevel,
->(config: ShadowConfig<TShadowLevel>): CompiledShadows<TShadowLevel> {
+>(
+	config: ShadowConfig<TShadowLevel>,
+	{
+		globalProps,
+		dynamicProps,
+	}: {
+		globalProps: GlobalConfigProps;
+		dynamicProps: SystemTokens['dynamic'];
+	},
+): CompiledShadows<TShadowLevel> {
 	const levelNames =
 		config.levels ?
 			Object.keys(config.levels)
@@ -82,13 +103,12 @@ export function compileShadows<
 
 	const ctx: CalcEvaluationContext = {
 		propertyValues: {
-			[$globalProps.defaultShadowColor.name]:
+			[globalProps.defaultShadowColor.name]:
 				config.globals?.defaultShadowColor?.toString(),
-			[$globalProps.shadowSpread.name]:
-				config.globals?.shadowSpread?.toString(),
-			[$globalProps.baseSpacingSize.name]:
+			[globalProps.shadowSpread.name]: config.globals?.shadowSpread?.toString(),
+			[globalProps.baseSpacingSize.name]:
 				config.globals?.baseSpacingSize?.toString(),
-			[$globalProps.shadowBlur.name]: config.globals?.shadowBlur?.toString(),
+			[globalProps.shadowBlur.name]: config.globals?.shadowBlur?.toString(),
 		},
 	};
 
@@ -104,13 +124,16 @@ export function compileShadows<
 					computeEquation(defaultShadowYEquation(i), ctx),
 				),
 				blur: printComputationResult(
-					computeEquation(defaultShadowBlurEquation(i), ctx),
+					computeEquation(defaultShadowBlurEquation(i, globalProps), ctx),
 				),
 				spread: printComputationResult(
-					computeEquation(defaultShadowSpreadEquation(i), ctx),
+					computeEquation(defaultShadowSpreadEquation(i, globalProps), ctx),
 				),
 				color: printComputationResult(
-					computeEquation(defaultShadowColorEquation(i), ctx),
+					computeEquation(
+						defaultShadowColorEquation(i, globalProps, dynamicProps),
+						ctx,
+					),
 				),
 				...levelConfig,
 			};

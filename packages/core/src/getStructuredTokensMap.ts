@@ -1,4 +1,3 @@
-import { $systemProps } from '@arbor-css/globals';
 import { AnyArborPreset } from '@arbor-css/preset/config';
 import { isToken, Token } from '@arbor-css/tokens';
 
@@ -26,7 +25,7 @@ export function getStructuredTokensMap(
 	}
 
 	// System tokens - we only expose the "final" tokens
-	walkTokenTree($systemProps, 'system', map, {
+	walkTokenTree(preset.$.system, 'system', map, {
 		delimiter,
 	});
 

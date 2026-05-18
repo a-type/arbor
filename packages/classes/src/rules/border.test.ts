@@ -1,8 +1,10 @@
-import { $systemProps } from '@arbor-css/core';
+import { createGlobalProps, createSystemProps } from '@arbor-css/globals';
 import { describe, it } from 'vitest';
 import { testBaseMode } from '../_test.js';
 import { colorAlters } from '../util/alters.js';
 import { testRules } from './_test.js';
+
+const $systemProps = createSystemProps({ globalProps: createGlobalProps() });
 
 describe('border color', () => {
 	it('matches border colors from theme', async () => {

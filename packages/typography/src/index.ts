@@ -4,7 +4,10 @@ import {
 	computeEquation,
 	printComputationResult,
 } from '@arbor-css/calc';
-import { $globalProps, GlobalConfig } from '../../globals/dist/globalProps.js';
+import {
+	GlobalConfig,
+	GlobalConfigProps,
+} from '@arbor-css/globals';
 
 export interface TypographyLevel {
 	size: string;
@@ -52,7 +55,10 @@ export type TypographyConfig<TLevels extends string = DefaultTypographyLevel> =
 
 export function compileTypography<
 	TLevels extends string = DefaultTypographyLevel,
->(config: TypographyConfig<TLevels>): CompiledTypography<TLevels> {
+>(
+	config: TypographyConfig<TLevels>,
+	{ globalProps }: { globalProps: GlobalConfigProps },
+): CompiledTypography<TLevels> {
 	const levelNames =
 		config.levels ?
 			Object.keys(config.levels)
@@ -67,8 +73,7 @@ export function compileTypography<
 
 	const evalContext: CalcEvaluationContext = {
 		propertyValues: {
-			[$globalProps.baseFontSize.name]:
-				config.globals?.baseFontSize?.toString(),
+			[globalProps.baseFontSize.name]: config.globals?.baseFontSize?.toString(),
 		},
 	};
 

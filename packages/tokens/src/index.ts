@@ -1,5 +1,21 @@
 export const TOKEN_PREFIX = '--x-';
 
+export interface TokenOptions {
+	/** Inferred from purpose if not provided, defaults to "*" */
+	type?: PropertyType;
+	purpose?: TokenPurpose;
+	group?: string;
+	fallback?: string | number;
+	tag?: string;
+	inherits?: boolean;
+	/**
+	 * Force the generation of a @property rule definition, even if it's not meaningful.
+	 * Otherwise tokens whose properties have no special concerns like inherit:false will
+	 * skip generating an @property
+	 */
+	forceDefinition?: boolean;
+}
+
 /**
  * Allowed types of properties - specifying one allows defining
  * a custom property in CSS which enables interpolation in animations
@@ -136,74 +152,80 @@ function normalizeName(name: string) {
 	return name.replaceAll('$', '').replace(/\s+/g, '-');
 }
 
-export function createToken(
-	name: string,
-	{
-		fallback,
-		inherits = true,
-		forceDefinition,
-		purpose = 'other',
-		type = getTypeFromPurpose(purpose),
-		group,
-		tag,
-	}: {
-		/** Inferred from purpose if not provided, defaults to "*" */
-		type?: PropertyType;
-		purpose?: TokenPurpose;
-		group?: string;
-		fallback?: string | number;
-		tag?: string;
-		inherits?: boolean;
-		/**
-		 * Force the generation of a @property rule definition, even if it's not meaningful.
-		 * Otherwise tokens whose properties have no special concerns like inherit:false will
-		 * skip generating an @property
-		 */
-		forceDefinition?: boolean;
-	} = {},
-) {
-	const taggedName = tag ? `${tag}-${name}` : name;
-	const resolvedName = `${TOKEN_PREFIX}${normalizeName(taggedName)}`;
-	return {
-		[TOKEN_BRAND]: true as const,
-		name: resolvedName,
-		type,
-		tag,
-		purpose,
-		group,
-		fallback,
-		var: `var(${resolvedName}${fallback ? `, ${fallback}` : ''})`,
-		varFallback: (fallbackOverride?: string | number) =>
-			`var(${resolvedName}, ${fallbackOverride ?? fallback ?? 'initial'})`,
-		assign: (value?: string | number) =>
-			`${resolvedName}: ${value ?? fallback};`,
-		get definition() {
-			if (inherits === false || forceDefinition) {
-				return `@property ${resolvedName} { syntax: '${type === '*' ? '*' : `<${type}>`}'; inherits: ${inherits}; initial-value: ${fallback ?? 'initial'}; }`;
-			}
-			return '';
-		},
-		suffixed: (suffix: string) =>
-			createToken(`${name}-${suffix}`, {
-				type,
-				fallback,
-				inherits,
-				tag,
-			}),
-		prefixed: (prefix: string) =>
-			createToken(`${prefix}-${name}`, {
-				type,
-				fallback,
-				inherits,
-				tag,
-			}),
+function createTokenWithPrefix(tokenPrefix: string) {
+	return function createToken(
+		name: string,
+		{
+			fallback,
+			inherits = true,
+			forceDefinition,
+			purpose = 'other',
+			type = getTypeFromPurpose(purpose),
+			group,
+			tag,
+		}: TokenOptions = {},
+	) {
+		const taggedName = tag ? `${tag}-${name}` : name;
+		const resolvedName = `${tokenPrefix}${normalizeName(taggedName)}`;
+		return {
+			[TOKEN_BRAND]: true as const,
+			name: resolvedName,
+			type,
+			tag,
+			purpose,
+			group,
+			fallback,
+			var: `var(${resolvedName}${fallback ? `, ${fallback}` : ''})`,
+			varFallback: (fallbackOverride?: string | number) =>
+				`var(${resolvedName}, ${fallbackOverride ?? fallback ?? 'initial'})`,
+			assign: (value?: string | number) =>
+				`${resolvedName}: ${value ?? fallback};`,
+			get definition() {
+				if (inherits === false || forceDefinition) {
+					return `@property ${resolvedName} { syntax: '${type === '*' ? '*' : `<${type}>`}'; inherits: ${inherits}; initial-value: ${fallback ?? 'initial'}; }`;
+				}
+				return '';
+			},
+			suffixed: (suffix: string) =>
+				createToken(`${name}-${suffix}`, {
+					type,
+					fallback,
+					inherits,
+					tag,
+				}),
+			prefixed: (prefix: string) =>
+				createToken(`${prefix}-${name}`, {
+					type,
+					fallback,
+					inherits,
+					tag,
+				}),
+		};
 	};
 }
 
+export const createToken = createTokenWithPrefix(TOKEN_PREFIX);
 export type Token = ReturnType<typeof createToken>;
+export type CreateToken = typeof createToken;
 export type TokenSchema = {
 	[Key: string]: Token | TokenSchema;
 };
+
+export interface TokenContext {
+	tokenPrefix: string;
+	createToken: CreateToken;
+}
+
+export function createTokenContext({
+	tokenPrefix = TOKEN_PREFIX,
+}: {
+	tokenPrefix?: string;
+} = {}): TokenContext {
+	return {
+		tokenPrefix,
+		createToken: createTokenWithPrefix(tokenPrefix),
+	};
+}
 
 export function isToken(value: any): value is ReturnType<typeof createToken> {
 	return typeof value === 'object' && value !== null && TOKEN_BRAND in value;

@@ -1,6 +1,8 @@
-import { $globalProps } from '@arbor-css/globals';
-import { $systemProps } from '@arbor-css/preset';
+import { createGlobalProps, createSystemProps } from '@arbor-css/globals';
 import { Rule } from 'unocss';
+
+const $globalProps = createGlobalProps();
+const $systemProps = createSystemProps({ globalProps: $globalProps });
 
 export const arrowRules: Rule[] = [
 	[

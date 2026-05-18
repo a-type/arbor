@@ -3,7 +3,7 @@ import {
 	CalcOperations,
 	Equation,
 } from '@arbor-css/calc';
-import { $globalProps } from '@arbor-css/globals';
+import { GlobalConfigProps } from '@arbor-css/globals';
 import { oklchBuilder, OklchColorEquation } from './color.js';
 
 export const defaultRangeNames = [
@@ -75,6 +75,7 @@ export type CompiledColorRange<TRangeConfig extends ColorRangeConfig<string>> =
 export function createColorRange<RangeNames extends string = DefaultRangeName>(
 	config: ColorRangeConfig<RangeNames>,
 	calcs: ColorRangeCalculations,
+	{ globalProps }: { globalProps: GlobalConfigProps },
 ): UncompiledColorRange<ColorRangeConfig<RangeNames>> {
 	const {
 		hue: sourceHue,
@@ -107,7 +108,7 @@ export function createColorRange<RangeNames extends string = DefaultRangeName>(
 						$.val(config.saturation ?? 1),
 						$.val('0.4'),
 						chroma($, { step: i, rangeSize: size, midpoint }),
-						$.val($globalProps.saturation.var),
+						$.val(globalProps.saturation.var),
 					),
 					$.val('0.4'),
 				),
@@ -193,6 +194,7 @@ export function createColorLightModeRange(
 		base?: number;
 		scale?: number;
 	},
+	options: { globalProps: GlobalConfigProps },
 ) {
 	const lightness = lightnessEq({
 		rangeUp: 0.3,
@@ -204,10 +206,14 @@ export function createColorLightModeRange(
 		rangeUp: -0.7,
 		rangeDown: 0.2,
 	});
-	return createColorRange(config, {
-		lightness,
-		chroma,
-	});
+	return createColorRange(
+		config,
+		{
+			lightness,
+			chroma,
+		},
+		options,
+	);
 }
 
 export function createColorDarkModeRange(
@@ -215,6 +221,7 @@ export function createColorDarkModeRange(
 		base?: number;
 		scale?: number;
 	},
+	options: { globalProps: GlobalConfigProps },
 ) {
 	const lightness = lightnessEq({
 		rangeUp: -0.38,
@@ -226,14 +233,19 @@ export function createColorDarkModeRange(
 		rangeUp: -0.7,
 		rangeDown: 0.38,
 	});
-	return createColorRange(config, {
-		lightness,
-		chroma,
-	});
+	return createColorRange(
+		config,
+		{
+			lightness,
+			chroma,
+		},
+		options,
+	);
 }
 
 export function createNeutralDerivedRange(
 	sourceRange: UncompiledColorRange<ColorRangeConfig<string>>,
+	{ globalProps }: { globalProps: GlobalConfigProps },
 ): UncompiledColorRange<ColorRangeConfig<string>> {
 	function lightness($: CalcOperations, source: OklchColorEquation) {
 		const sourceLAsZeroToOne = $.divide(source.l, $.val('100%'));
@@ -242,7 +254,7 @@ export function createNeutralDerivedRange(
 	function chroma($: CalcOperations, source: OklchColorEquation) {
 		return $.multiply(
 			source.c,
-			$.val($globalProps.saturation.var),
+			$.val(globalProps.saturation.var),
 			$.val('0.15'),
 		);
 	}

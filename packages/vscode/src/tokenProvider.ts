@@ -1,6 +1,7 @@
 import {
 	AnyArborPreset,
 	ArborFunction,
+	TOKEN_PREFIX,
 	Token,
 	flattenToPropsList,
 } from '@arbor-css/core';
@@ -17,6 +18,7 @@ export type TokenMap = Map<string, Token | ArborFunction>;
 export class TokenProvider {
 	private tokenMap: TokenMap = new Map();
 	private preset: AnyArborPreset | null = null;
+	private tokenPrefix = TOKEN_PREFIX;
 	private configPath: string | null = null;
 	private watcher: vscode.FileSystemWatcher | null = null;
 	private onChangeEmitter = new vscode.EventEmitter<void>();
@@ -44,6 +46,7 @@ export class TokenProvider {
 		if (!preset) return;
 
 		this.preset = preset;
+		this.tokenPrefix = preset.meta?.tokenPrefix ?? TOKEN_PREFIX;
 		const tokensList = flattenToPropsList(preset);
 		this.tokenMap = new Map();
 		for (const token of tokensList) {
@@ -78,6 +81,10 @@ export class TokenProvider {
 
 	getPreset(): AnyArborPreset | null {
 		return this.preset;
+	}
+
+	getTokenPrefix(): string {
+		return this.tokenPrefix;
 	}
 
 	/** Returns all next-level segments for a given prefix */

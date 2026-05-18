@@ -1,4 +1,4 @@
-import { $systemProps } from '@arbor-css/core';
+import { createGlobalProps, createSystemProps } from '@arbor-css/globals';
 import { CSSObject, Rule } from 'unocss';
 import { Theme } from '../theme/types.js';
 import { colorAlters, colorAltersMatch } from '../util/alters.js';
@@ -13,6 +13,8 @@ import {
 import { dirRegex } from '../util/matchers.js';
 import { themeOrLiteral } from '../util/themeOrLiteral.js';
 import { laterals } from './color.js';
+
+const $systemProps = createSystemProps({ globalProps: createGlobalProps() });
 
 const borderStyles = [
 	'solid',

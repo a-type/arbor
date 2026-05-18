@@ -1,4 +1,4 @@
-import { createToken, Token } from '@arbor-css/tokens';
+import { createToken, CreateToken, Token } from '@arbor-css/tokens';
 
 export interface GlobalConfig {
 	saturation: number;
@@ -26,48 +26,54 @@ export const defaultGlobals: GlobalConfig = {
 	borderWidth: '1px',
 };
 
-export const $globalProps: GlobalConfigProps = {
-	saturation: createToken('sat', {
-		tag: 'system',
-		type: 'number',
-	}),
-	roundness: createToken('round', {
-		tag: 'system',
-		type: 'number',
-	}),
-	baseFontSize: createToken('base-font-size', {
-		tag: 'system',
-		type: 'length',
-	}),
-	baseSpacingSize: createToken('base-spacing-size', {
-		tag: 'system',
-		type: 'length',
-	}),
-	defaultShadowColor: createToken('default-shadow-color', {
-		tag: 'system',
-		type: 'color',
-	}),
-	shadowSpread: createToken('shadow-spread', {
-		tag: 'system',
-		type: 'number',
-	}),
-	shadowBlur: createToken('shadow-blur', {
-		tag: 'system',
-		type: 'number',
-	}),
-	arrowWidth: createToken('arrow-width', {
-		tag: 'system',
-		type: 'length',
-	}),
-	arrowHeight: createToken('arrow-height', {
-		tag: 'system',
-		type: 'length',
-	}),
-	borderWidth: createToken('border-width', {
-		tag: 'system',
-		type: 'length',
-	}),
-};
+export function createGlobalProps({
+	createToken: createTokenValue = createToken,
+}: {
+	createToken?: CreateToken;
+} = {}): GlobalConfigProps {
+	return {
+		saturation: createTokenValue('sat', {
+			tag: 'system',
+			type: 'number',
+		}),
+		roundness: createTokenValue('round', {
+			tag: 'system',
+			type: 'number',
+		}),
+		baseFontSize: createTokenValue('base-font-size', {
+			tag: 'system',
+			type: 'length',
+		}),
+		baseSpacingSize: createTokenValue('base-spacing-size', {
+			tag: 'system',
+			type: 'length',
+		}),
+		defaultShadowColor: createTokenValue('default-shadow-color', {
+			tag: 'system',
+			type: 'color',
+		}),
+		shadowSpread: createTokenValue('shadow-spread', {
+			tag: 'system',
+			type: 'number',
+		}),
+		shadowBlur: createTokenValue('shadow-blur', {
+			tag: 'system',
+			type: 'number',
+		}),
+		arrowWidth: createTokenValue('arrow-width', {
+			tag: 'system',
+			type: 'length',
+		}),
+		arrowHeight: createTokenValue('arrow-height', {
+			tag: 'system',
+			type: 'length',
+		}),
+		borderWidth: createTokenValue('border-width', {
+			tag: 'system',
+			type: 'length',
+		}),
+	};
+}
 
 export function createGlobals(config: Partial<GlobalConfig>): GlobalConfig {
 	return {

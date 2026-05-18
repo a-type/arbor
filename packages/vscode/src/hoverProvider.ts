@@ -1,6 +1,6 @@
 import { isFunction, isToken, resolveTokenReferences } from '@arbor-css/core';
 import * as vscode from 'vscode';
-import { OKLCH_RE, TOKEN_RE_ANYWHERE } from './regex.js';
+import { createTokenRegex, OKLCH_RE } from './regex.js';
 import type { TokenProvider } from './tokenProvider.js';
 
 function makeColorSwatch(color: string): string {
@@ -19,9 +19,10 @@ export class ArborHoverProvider implements vscode.HoverProvider {
 		const line = document.lineAt(position).text;
 		const tokenMap = this.tokenProvider.getTokenMap();
 		const preset = this.tokenProvider.getPreset();
+		const tokenRegex = createTokenRegex(this.tokenProvider.getTokenPrefix());
 
 		// Find all token references on this line and see if the cursor is inside one
-		for (const match of line.matchAll(TOKEN_RE_ANYWHERE())) {
+		for (const match of line.matchAll(tokenRegex.anywhere())) {
 			if (match.index === undefined) continue;
 			const start = match.index;
 			const end = start + match[0].length;

@@ -1,13 +1,15 @@
 import { css } from '@arbor-css/calc';
 import { CompiledColors } from '@arbor-css/colors';
-import { $globalProps } from '@arbor-css/globals';
+import { GlobalConfigProps } from '@arbor-css/globals';
 import {
 	createModeSchema,
+	ModeSchema,
 	ModeSchemaLevel,
 	ModeValues,
 	PartialModeInstance,
 } from '@arbor-css/modes';
 import { Primitives } from '@arbor-css/primitives';
+import { CreateToken } from '@arbor-css/tokens';
 
 const colorIntents = {
 	fg: 'color',
@@ -37,7 +39,7 @@ const shadowIntents = {
 	compiled: 'shadow',
 } satisfies ModeSchemaLevel;
 
-export const arborModeSchema = createModeSchema({
+export const arborModeDefinition = {
 	color: {
 		main: {
 			$root: 'color',
@@ -134,10 +136,22 @@ export const arborModeSchema = createModeSchema({
 		lg: shadowIntents,
 		xl: shadowIntents,
 	},
-});
+} satisfies ModeSchemaLevel;
+
+export function createArborModeSchema({
+	createToken,
+}: {
+	createToken?: CreateToken;
+} = {}) {
+	return createModeSchema(arborModeDefinition, {
+		createToken,
+	});
+}
+
+export const arborModeSchema = createArborModeSchema();
 
 export type ArborModeSchema = typeof arborModeSchema;
-export type ArborModeSchemaDefinition = ArborModeSchema['definition'];
+export type ArborModeSchemaDefinition = typeof arborModeDefinition;
 export type ArborModeValues = ModeValues<ArborModeSchemaDefinition>;
 export type ModesOfArborModeSchema = Record<
 	string,
@@ -147,6 +161,7 @@ export type ModesOfArborModeSchema = Record<
 function createShadowIntentLevel(
 	primitives: Primitives<any>,
 	size: 'sm' | 'md' | 'lg' | 'xl',
+	modeSchema: ModeSchema<ArborModeSchemaDefinition>,
 ) {
 	return {
 		x: css`
@@ -162,14 +177,14 @@ function createShadowIntentLevel(
 			${primitives.$tokens.shadows[size].spread}
 		`,
 		color: css`oklch(from ${[
-			arborModeSchema.$tokens.shadow.color,
+			modeSchema.$tokens.shadow.color,
 			primitives.$tokens.shadows[size].color,
 		]} l c h / 15%)`,
 		compiled: css`
-			${arborModeSchema.$tokens.shadow[size].x} ${arborModeSchema.$tokens
-				.shadow[size].y} ${arborModeSchema.$tokens.shadow[size]
-				.blur} ${arborModeSchema.$tokens.shadow[size].spread} ${arborModeSchema
-				.$tokens.shadow[size].color}
+			${modeSchema.$tokens.shadow[size].x} ${modeSchema.$tokens.shadow[size]
+				.y} ${modeSchema.$tokens.shadow[size].blur} ${modeSchema.$tokens.shadow[
+				size
+			].spread} ${modeSchema.$tokens.shadow[size].color}
 		`,
 	} satisfies ModeValues<typeof shadowIntents>;
 }
@@ -179,9 +194,13 @@ export function createArborModeValues<
 >(config: {
 	mainColor: keyof TCompiledColors[keyof TCompiledColors]['colors'];
 	primitives: Primitives<TCompiledColors>;
+	modeSchema?: ModeSchema<ArborModeSchemaDefinition>;
+	globalProps: GlobalConfigProps;
 }): ModeValues<ArborModeSchema['definition']> {
 	// FIXME: user-facing typing for this is good, but internally something is
 	// broken...
+	const modeSchema = config.modeSchema ?? arborModeSchema;
+	const globalProps = config.globalProps;
 	const mainColor: any = config.primitives.$tokens.colors[config.mainColor];
 	const spacingRoot = config.primitives.$tokens.spacing.$root;
 	const shadowRoot = config.primitives.$tokens.shadows.$root;
@@ -194,50 +213,50 @@ export function createArborModeValues<
 		surface: {
 			padding: {
 				$root: css`
-					${arborModeSchema.$tokens.surface.padding.block} ${arborModeSchema
-						.$tokens.surface.padding.inline}
+					${modeSchema.$tokens.surface.padding.block} ${modeSchema.$tokens
+						.surface.padding.inline}
 				`,
-				block: css`calc(${arborModeSchema.$tokens.spacing.lg} * max(1, ${arborModeSchema.$tokens.surface.roundness} * ${$globalProps.roundness}))`,
-				inline: css`calc(${arborModeSchema.$tokens.spacing.lg} * max(1, ${arborModeSchema.$tokens.surface.roundness} * ${$globalProps.roundness}))`,
+				block: css`calc(${modeSchema.$tokens.spacing.lg} * max(1, ${modeSchema.$tokens.surface.roundness} * ${globalProps.roundness}))`,
+				inline: css`calc(${modeSchema.$tokens.spacing.lg} * max(1, ${modeSchema.$tokens.surface.roundness} * ${globalProps.roundness}))`,
 			},
 			roundness: 1,
-			borderRadius: css`calc(${arborModeSchema.$tokens.borderRadius.md} * ${arborModeSchema.$tokens.surface.roundness})`,
+			borderRadius: css`calc(${modeSchema.$tokens.borderRadius.md} * ${modeSchema.$tokens.surface.roundness})`,
 			primary: {
 				color: {
 					bg: css`
-						${arborModeSchema.$tokens.color.main.light}
+						${modeSchema.$tokens.color.main.light}
 					`,
 					fg: css`
-						${arborModeSchema.$tokens.color.main.ink}
+						${modeSchema.$tokens.color.main.ink}
 					`,
 					border: css`
-						${arborModeSchema.$tokens.color.main.heavy}
+						${modeSchema.$tokens.color.main.heavy}
 					`,
 				},
 			},
 			secondary: {
 				color: {
 					bg: css`
-						${arborModeSchema.$tokens.color.main.wash}
+						${modeSchema.$tokens.color.main.wash}
 					`,
 					fg: css`
-						${arborModeSchema.$tokens.color.neutral.ink}
+						${modeSchema.$tokens.color.neutral.ink}
 					`,
 					border: css`
-						${arborModeSchema.$tokens.color.main.ink}
+						${modeSchema.$tokens.color.main.ink}
 					`,
 				},
 			},
 			ambient: {
 				color: {
 					bg: css`
-						${arborModeSchema.$tokens.color.neutral.paper}
+						${modeSchema.$tokens.color.neutral.paper}
 					`,
 					fg: css`
-						${arborModeSchema.$tokens.color.neutral.ink}
+						${modeSchema.$tokens.color.neutral.ink}
 					`,
 					border: css`
-						${arborModeSchema.$tokens.color.neutral.heavy}
+						${modeSchema.$tokens.color.neutral.heavy}
 					`,
 				},
 			},
@@ -245,47 +264,47 @@ export function createArborModeValues<
 		action: {
 			padding: {
 				$root: css`
-					${arborModeSchema.$tokens.action.padding.block} ${arborModeSchema
-						.$tokens.action.padding.inline}
+					${modeSchema.$tokens.action.padding.block} ${modeSchema.$tokens.action
+						.padding.inline}
 				`,
-				block: css`calc(${config.primitives.$tokens.spacing.md} / ${arborModeSchema.$tokens.density})`,
-				inline: css`calc((${config.primitives.$tokens.spacing.lg} + ${$globalProps.roundness} * ${config.primitives.$tokens.spacing.sm}) / ${arborModeSchema.$tokens.density})`,
+				block: css`calc(${config.primitives.$tokens.spacing.md} / ${modeSchema.$tokens.density})`,
+				inline: css`calc((${config.primitives.$tokens.spacing.lg} + ${globalProps.roundness} * ${config.primitives.$tokens.spacing.sm}) / ${modeSchema.$tokens.density})`,
 			},
 			roundness: 1,
-			borderRadius: css`calc(${arborModeSchema.$tokens.borderRadius.sm} * ${arborModeSchema.$tokens.action.roundness})`,
+			borderRadius: css`calc(${modeSchema.$tokens.borderRadius.sm} * ${modeSchema.$tokens.action.roundness})`,
 			primary: {
 				color: {
 					bg: css`
-						${arborModeSchema.$tokens.color.main.mid}
+						${modeSchema.$tokens.color.main.mid}
 					`,
 					fg: css`
-						${arborModeSchema.$tokens.color.main.ink}
+						${modeSchema.$tokens.color.main.ink}
 					`,
 					border: css`
-						${arborModeSchema.$tokens.color.main.heavy}
+						${modeSchema.$tokens.color.main.heavy}
 					`,
 				},
 			},
 			secondary: {
 				color: {
 					bg: css`
-						${arborModeSchema.$tokens.color.neutral.paper}
+						${modeSchema.$tokens.color.neutral.paper}
 					`,
 					fg: css`
-						${arborModeSchema.$tokens.color.neutral.ink}
+						${modeSchema.$tokens.color.neutral.ink}
 					`,
 					border: css`
-						${arborModeSchema.$tokens.color.neutral.heavy}
+						${modeSchema.$tokens.color.neutral.heavy}
 					`,
 				},
 			},
 			ambient: {
 				color: {
 					bg: css`
-						${arborModeSchema.$tokens.color.main.light}
+						${modeSchema.$tokens.color.main.light}
 					`,
 					fg: css`
-						${arborModeSchema.$tokens.color.main.ink}
+						${modeSchema.$tokens.color.main.ink}
 					`,
 					border: 'transparent',
 				},
@@ -294,50 +313,50 @@ export function createArborModeValues<
 		control: {
 			padding: {
 				$root: css`
-					${arborModeSchema.$tokens.control.padding.block} ${arborModeSchema
-						.$tokens.control.padding.inline}
+					${modeSchema.$tokens.control.padding.block} ${modeSchema.$tokens
+						.control.padding.inline}
 				`,
-				block: css`calc(${config.primitives.$tokens.spacing.sm} / ${arborModeSchema.$tokens.density})`,
-				inline: css`calc((${config.primitives.$tokens.spacing.sm} + ${$globalProps.roundness} * ${config.primitives.$tokens.spacing.xs}) / ${arborModeSchema.$tokens.density})`,
+				block: css`calc(${config.primitives.$tokens.spacing.sm} / ${modeSchema.$tokens.density})`,
+				inline: css`calc((${config.primitives.$tokens.spacing.sm} + ${globalProps.roundness} * ${config.primitives.$tokens.spacing.xs}) / ${modeSchema.$tokens.density})`,
 			},
 			roundness: 1,
-			borderRadius: css`calc(${arborModeSchema.$tokens.borderRadius.sm} * ${arborModeSchema.$tokens.control.roundness})`,
+			borderRadius: css`calc(${modeSchema.$tokens.borderRadius.sm} * ${modeSchema.$tokens.control.roundness})`,
 			color: {
 				bg: css`
-					${arborModeSchema.$tokens.color.neutral.paper}
+					${modeSchema.$tokens.color.neutral.paper}
 				`,
 				fg: css`
-					${arborModeSchema.$tokens.color.neutral.ink}
+					${modeSchema.$tokens.color.neutral.ink}
 				`,
 				border: css`
-					${arborModeSchema.$tokens.color.neutral.heavy}
+					${modeSchema.$tokens.color.neutral.heavy}
 				`,
 			},
 		},
 		density: 1,
 		spacing: {
-			$root: css`calc(${spacingRoot} / ${arborModeSchema.$tokens.density})`,
-			xs: css`calc(${config.primitives.$tokens.spacing.xs} / ${arborModeSchema.$tokens.density})`,
-			sm: css`calc(${config.primitives.$tokens.spacing.sm} / ${arborModeSchema.$tokens.density})`,
-			md: css`calc(${config.primitives.$tokens.spacing.md} / ${arborModeSchema.$tokens.density})`,
-			lg: css`calc(${config.primitives.$tokens.spacing.lg} / ${arborModeSchema.$tokens.density})`,
-			xl: css`calc(${config.primitives.$tokens.spacing.xl} / ${arborModeSchema.$tokens.density})`,
+			$root: css`calc(${spacingRoot} / ${modeSchema.$tokens.density})`,
+			xs: css`calc(${config.primitives.$tokens.spacing.xs} / ${modeSchema.$tokens.density})`,
+			sm: css`calc(${config.primitives.$tokens.spacing.sm} / ${modeSchema.$tokens.density})`,
+			md: css`calc(${config.primitives.$tokens.spacing.md} / ${modeSchema.$tokens.density})`,
+			lg: css`calc(${config.primitives.$tokens.spacing.lg} / ${modeSchema.$tokens.density})`,
+			xl: css`calc(${config.primitives.$tokens.spacing.xl} / ${modeSchema.$tokens.density})`,
 		},
 		text: {
 			primary: {
-				size: css`calc(${config.primitives.$tokens.typography['3xl'].size} / ${arborModeSchema.$tokens.density})`,
+				size: css`calc(${config.primitives.$tokens.typography['3xl'].size} / ${modeSchema.$tokens.density})`,
 				weight: config.primitives.$tokens.typography['3xl'].weight,
 				lineHeight: config.primitives.$tokens.typography['3xl'].lineHeight,
 				font: 'sans-serif',
 			},
 			secondary: {
-				size: css`calc(max(${config.primitives.$tokens.typography.xs.size}, ${config.primitives.$tokens.typography.md.size} / ${arborModeSchema.$tokens.density}))`,
+				size: css`calc(max(${config.primitives.$tokens.typography.xs.size}, ${config.primitives.$tokens.typography.md.size} / ${modeSchema.$tokens.density}))`,
 				weight: config.primitives.$tokens.typography.md.weight,
 				lineHeight: config.primitives.$tokens.typography.md.lineHeight,
 				font: 'sans-serif',
 			},
 			ambient: {
-				size: css`calc(max(${config.primitives.$tokens.typography.xs.size}, ${config.primitives.$tokens.typography.sm.size} / ${arborModeSchema.$tokens.density}))`,
+				size: css`calc(max(${config.primitives.$tokens.typography.xs.size}, ${config.primitives.$tokens.typography.sm.size} / ${modeSchema.$tokens.density}))`,
 				weight: config.primitives.$tokens.typography.sm.weight,
 				lineHeight: config.primitives.$tokens.typography.sm.lineHeight,
 				font: 'sans-serif',
@@ -345,35 +364,35 @@ export function createArborModeValues<
 		},
 		borderRadius: {
 			$root: css`
-				${arborModeSchema.$tokens.borderRadius.md}
+				${modeSchema.$tokens.borderRadius.md}
 			`,
-			xs: css`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.sm} * 2 / ${arborModeSchema.$tokens.density})`,
-			sm: css`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.md} * 2 / ${arborModeSchema.$tokens.density})`,
-			md: css`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.lg} * 2 / ${arborModeSchema.$tokens.density})`,
-			lg: css`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing.xl} * 2 / ${arborModeSchema.$tokens.density})`,
-			xl: css`calc(${$globalProps.roundness} * ${config.primitives.$tokens.spacing['2xl']} * 2 / ${arborModeSchema.$tokens.density})`,
+			xs: css`calc(${globalProps.roundness} * ${config.primitives.$tokens.spacing.sm} * 2 / ${modeSchema.$tokens.density})`,
+			sm: css`calc(${globalProps.roundness} * ${config.primitives.$tokens.spacing.md} * 2 / ${modeSchema.$tokens.density})`,
+			md: css`calc(${globalProps.roundness} * ${config.primitives.$tokens.spacing.lg} * 2 / ${modeSchema.$tokens.density})`,
+			lg: css`calc(${globalProps.roundness} * ${config.primitives.$tokens.spacing.xl} * 2 / ${modeSchema.$tokens.density})`,
+			xl: css`calc(${globalProps.roundness} * ${config.primitives.$tokens.spacing['2xl']} * 2 / ${modeSchema.$tokens.density})`,
 		},
 		borderWidth: {
 			$root: css`
-				${$globalProps.borderWidth}
+				${globalProps.borderWidth}
 			`,
-			sm: css`calc(max(1px, ${$globalProps.borderWidth} / 2))`,
+			sm: css`calc(max(1px, ${globalProps.borderWidth} / 2))`,
 			md: css`
-				${$globalProps.borderWidth}
+				${globalProps.borderWidth}
 			`,
-			lg: css`calc(${$globalProps.borderWidth} * 2)`,
+			lg: css`calc(${globalProps.borderWidth} * 2)`,
 		},
 		shadow: {
 			$root: css`
 				${shadowRoot.x} ${shadowRoot.y} ${shadowRoot.blur} ${shadowRoot.spread} ${shadowRoot.color}
 			`,
 			color: css`
-				${arborModeSchema.$tokens.color.neutral.heavy}
+				${modeSchema.$tokens.color.neutral.heavy}
 			`,
-			sm: createShadowIntentLevel(config.primitives, 'sm'),
-			md: createShadowIntentLevel(config.primitives, 'md'),
-			lg: createShadowIntentLevel(config.primitives, 'lg'),
-			xl: createShadowIntentLevel(config.primitives, 'xl'),
+			sm: createShadowIntentLevel(config.primitives, 'sm', modeSchema),
+			md: createShadowIntentLevel(config.primitives, 'md', modeSchema),
+			lg: createShadowIntentLevel(config.primitives, 'lg', modeSchema),
+			xl: createShadowIntentLevel(config.primitives, 'xl', modeSchema),
 		},
-	} satisfies ModeValues<(typeof arborModeSchema)['definition']>;
+	} satisfies ModeValues<ArborModeSchemaDefinition>;
 }

@@ -1,10 +1,12 @@
 import { getContrastColor } from '@arbor-css/colors';
-import { $systemProps } from '@arbor-css/core';
+import { createGlobalProps, createSystemProps } from '@arbor-css/globals';
 import { Rule, symbols } from 'unocss';
 import { Theme } from '../theme/types.js';
 import { colorAlters, colorAltersMatch } from '../util/alters.js';
 import { parseColor, resolveColor } from '../util/color.js';
 import { themeOrLiteral } from '../util/themeOrLiteral.js';
+
+const $systemProps = createSystemProps({ globalProps: createGlobalProps() });
 
 export const laterals = {
 	fg: $systemProps.fg.$root.varFallback(

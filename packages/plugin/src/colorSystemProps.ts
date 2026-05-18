@@ -1,4 +1,4 @@
-import { $systemProps } from '@arbor-css/globals';
+import { SystemTokens } from '@arbor-css/globals';
 
 export interface ColorPropEntry {
 	/** CSS custom property name for the applied color */
@@ -19,42 +19,46 @@ export interface ColorPropEntry {
  * Maps CSS color-related property names to the Arbor system props they should populate.
  * Mirrors the behavior of the `classes` package color rules.
  */
-export const COLOR_PROP_ENTRIES: Record<string, ColorPropEntry> = {
-	color: {
-		applied: $systemProps.fg.applied.name,
-		final: $systemProps.fg.$root.name,
-		opacity: $systemProps.fg.opacity.name,
-	},
-	'background-color': {
-		applied: $systemProps.bg.applied.name,
-		final: $systemProps.bg.$root.name,
-		opacity: $systemProps.bg.opacity.name,
-		extras: [{ prop: $systemProps.bg.contrast.name, value: 'applied' }],
-	},
-	background: {
-		applied: $systemProps.bg.applied.name,
-		final: $systemProps.bg.$root.name,
-		opacity: $systemProps.bg.opacity.name,
-		extras: [{ prop: $systemProps.bg.contrast.name, value: 'applied' }],
-	},
-	'border-color': {
-		applied: $systemProps.borderColor[''].applied.name,
-		final: $systemProps.borderColor[''].$root.name,
-		opacity: $systemProps.borderColor[''].opacity.name,
-	},
-	fill: {
-		applied: $systemProps.fill.applied.name,
-		final: $systemProps.fill.$root.name,
-		opacity: $systemProps.fill.opacity.name,
-	},
-	stroke: {
-		applied: $systemProps.stroke.applied.name,
-		final: $systemProps.stroke.$root.name,
-		opacity: $systemProps.stroke.opacity.name,
-	},
-	'accent-color': {
-		applied: $systemProps.accent.applied.name,
-		final: $systemProps.accent.$root.name,
-		opacity: $systemProps.accent.opacity.name,
-	},
-};
+export function getColorPropEntries(
+	systemProps: SystemTokens,
+): Record<string, ColorPropEntry> {
+	return {
+		color: {
+			applied: systemProps.fg.applied.name,
+			final: systemProps.fg.$root.name,
+			opacity: systemProps.fg.opacity.name,
+		},
+		'background-color': {
+			applied: systemProps.bg.applied.name,
+			final: systemProps.bg.$root.name,
+			opacity: systemProps.bg.opacity.name,
+			extras: [{ prop: systemProps.bg.contrast.name, value: 'applied' }],
+		},
+		background: {
+			applied: systemProps.bg.applied.name,
+			final: systemProps.bg.$root.name,
+			opacity: systemProps.bg.opacity.name,
+			extras: [{ prop: systemProps.bg.contrast.name, value: 'applied' }],
+		},
+		'border-color': {
+			applied: systemProps.borderColor[''].applied.name,
+			final: systemProps.borderColor[''].$root.name,
+			opacity: systemProps.borderColor[''].opacity.name,
+		},
+		fill: {
+			applied: systemProps.fill.applied.name,
+			final: systemProps.fill.$root.name,
+			opacity: systemProps.fill.opacity.name,
+		},
+		stroke: {
+			applied: systemProps.stroke.applied.name,
+			final: systemProps.stroke.$root.name,
+			opacity: systemProps.stroke.opacity.name,
+		},
+		'accent-color': {
+			applied: systemProps.accent.applied.name,
+			final: systemProps.accent.$root.name,
+			opacity: systemProps.accent.opacity.name,
+		},
+	};
+}

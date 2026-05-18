@@ -1,5 +1,8 @@
 import { $, computeEquation, printComputationResult } from '@arbor-css/calc';
-import { $globalProps, GlobalConfig } from '../../globals/dist/globalProps.js';
+import {
+	GlobalConfig,
+	GlobalConfigProps,
+} from '@arbor-css/globals';
 
 export const defaultSpacingLevels = [
 	'2xs',
@@ -13,13 +16,16 @@ export const defaultSpacingLevels = [
 ] as const;
 export type DefaultSpacingLevel = (typeof defaultSpacingLevels)[number];
 
-const defaultSpacingEquation = (step: number) =>
+const defaultSpacingEquation = (
+	step: number,
+	globalProps: GlobalConfigProps,
+) =>
 	$.multiply(
 		// calculate rem value of the spacing relative to the
 		// font size.
 		$.divide(
-			$.val($globalProps.baseSpacingSize.var),
-			$.val($globalProps.baseFontSize.var),
+			$.val(globalProps.baseSpacingSize.var),
+			$.val(globalProps.baseFontSize.var),
 		),
 		$.val('1rem'),
 		$.fn('pow', $.val(1.5), $.val(step)),
@@ -46,7 +52,10 @@ export interface CompiledSpacing<
 
 export function compileSpacing<
 	TSpacingLevel extends string = DefaultSpacingLevel,
->(config: SpacingConfig<TSpacingLevel>): CompiledSpacing<TSpacingLevel> {
+>(
+	config: SpacingConfig<TSpacingLevel>,
+	{ globalProps }: { globalProps: GlobalConfigProps },
+): CompiledSpacing<TSpacingLevel> {
 	const levelNames =
 		config.levels ?
 			Object.keys(config.levels)
@@ -67,9 +76,9 @@ export function compileSpacing<
 			acc[nameCast] =
 				levelConfig ??
 				printComputationResult(
-					computeEquation(defaultSpacingEquation(i - baseIndex), {
+					computeEquation(defaultSpacingEquation(i - baseIndex, globalProps), {
 						propertyValues: {
-							[$globalProps.baseSpacingSize.name]:
+							[globalProps.baseSpacingSize.name]:
 								config.globals?.baseSpacingSize?.toString(),
 						},
 					}),

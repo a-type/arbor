@@ -1,7 +1,8 @@
 export * from '@arbor-css/colors';
 export {
-	$systemProps,
+	createGlobalProps,
 	createGlobals,
+	createSystemProps,
 	defaultGlobals,
 	type GlobalConfigProps,
 	type GlobalConfig as PrimitiveGlobals,

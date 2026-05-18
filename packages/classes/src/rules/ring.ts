@@ -1,9 +1,11 @@
-import { $systemProps } from '@arbor-css/globals';
+import { createGlobalProps, createSystemProps } from '@arbor-css/globals';
 import type { CSSObject, Rule, RuleContext } from '@unocss/core';
 import { $classesProps } from '../properties.js';
 import { Theme } from '../theme/types.js';
 import { h } from '../util/h.js';
 import { themeOrLiteral } from '../util/themeOrLiteral.js';
+
+const $systemProps = createSystemProps({ globalProps: createGlobalProps() });
 
 export const ringRules: Rule<Theme>[] = [
 	// ring

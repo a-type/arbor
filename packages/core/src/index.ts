@@ -1,7 +1,5 @@
 export * from '@arbor-css/functions';
 export {
-	$globalProps,
-	$systemProps,
 	createGlobals,
 	defaultGlobals,
 	type GlobalConfigProps,
@@ -9,6 +7,7 @@ export {
 } from '@arbor-css/globals';
 export * from '@arbor-css/modes';
 export {
+	createArbor,
 	createArborPreset,
 	type CreateArborPresetConfig,
 } from '@arbor-css/preset';

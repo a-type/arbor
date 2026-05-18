@@ -51,7 +51,7 @@ describe('calc computeEquation', () => {
 		const result = computeEquation($.token(tokenA, $.val('10px')), {
 			propertyValues: {},
 		});
-		expect(result).toEqual({ value: 'var(--foo, 10px)', type: 'calc' });
+		expect(result).toEqual({ value: `var(${tokenA.name}, 10px)`, type: 'calc' });
 	});
 
 	it('supports grouping with parentheses', () => {

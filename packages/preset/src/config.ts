@@ -1,6 +1,6 @@
 import { CompiledColors } from '@arbor-css/colors';
 import { PresetFunctions } from '@arbor-css/functions';
-import { $systemProps, SystemTokens } from '@arbor-css/globals';
+import { SystemTokens } from '@arbor-css/globals';
 import {
 	ModeInstance,
 	ModeSchema,
@@ -49,6 +49,10 @@ export interface ArborPreset<
 	mode: ModeSchema<TModeShape>;
 	/** All tokens in this preset. */
 	$: PresetTokens<TModeShape, TCompiledColors, TTypography, TSpacing, TShadows>;
+	meta?: {
+		tokenPrefix?: string;
+		config?: unknown;
+	};
 }
 
 export function definePreset<
@@ -73,6 +77,9 @@ export function definePreset<
 		'$' | 'mode' | 'functions'
 	> & {
 		functions?: TFunctions;
+	} & {
+		systemProps: SystemTokens;
+		meta?: ArborPreset['meta'];
 	},
 ): ArborPreset<
 	TModeShape,
@@ -86,13 +93,14 @@ export function definePreset<
 	const tokens = {
 		mode: config.modes.base.schema.$tokens,
 		primitives: config.primitives.$tokens,
-		system: $systemProps,
+		system: config.systemProps,
 	};
 	return {
 		functions: {} as TFunctions,
 		...config,
 		mode: config.modes.base.schema,
 		$: tokens,
+		meta: config.meta,
 	};
 }
 

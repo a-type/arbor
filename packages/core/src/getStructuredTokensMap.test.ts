@@ -1,9 +1,9 @@
-import { $systemProps, createArborPreset } from '@arbor-css/preset';
+import { createArbor } from '@arbor-css/preset';
 import { expect, it } from 'vitest';
 import { getStructuredTokensMap } from './getStructuredTokensMap.js';
 
 it('generates a map of mode, primitive, and system tokens with correct paths', () => {
-	const preset = createArborPreset({
+	const preset = createArbor().preset({
 		colors: {
 			ranges: {
 				brand: {
@@ -23,5 +23,5 @@ it('generates a map of mode, primitive, and system tokens with correct paths', (
 	expect(map.has('primitives.spacing.md')).toBe(true);
 	expect(map.get('primitives.spacing.md')).toBe(preset.$.primitives.spacing.md);
 	expect(map.has('system.fg')).toBe(true);
-	expect(map.get('system.fg')).toBe($systemProps.fg.$root);
+	expect(map.get('system.fg')).toBe(preset.$.system.fg.$root);
 });

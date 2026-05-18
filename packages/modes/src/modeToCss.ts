@@ -1,5 +1,5 @@
 import { isCalcEquation, printEquation } from '@arbor-css/calc';
-import { $systemProps } from '@arbor-css/globals';
+import { SystemTokens } from '@arbor-css/globals';
 import { isToken, Token } from '@arbor-css/tokens';
 import { toFlatKeys } from '@arbor-css/util';
 import {
@@ -59,6 +59,11 @@ function getBaseModeDependents(
 export function modeToCss<TModeShape extends ModeSchemaLevel>(
 	mode: PartialModeInstance<TModeShape>,
 	baseMode: ModeInstance<TModeShape>,
+	{
+		systemProps,
+	}: {
+		systemProps: SystemTokens;
+	},
 ): string {
 	const flatValues = toFlatKeys<ModeValue>(mode.values, isModeValue, {
 		separator: '-',
@@ -107,7 +112,7 @@ export function modeToCss<TModeShape extends ModeSchemaLevel>(
 [data-mode-${mode.config.name}=""],
 :where(.\\@mode-${mode.config.name} [class^="\\@scheme-"]),
 :where([data-mode-${mode.config.name}=""] [class^="\\@scheme-"]) {
-	${$systemProps.labels.mode.assign(mode.config.name)}
+	${systemProps.labels.mode.assign(mode.config.name)}
 	${content}
 }
 `;
