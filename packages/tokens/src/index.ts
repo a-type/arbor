@@ -204,9 +204,8 @@ function createTokenWithPrefix(tokenPrefix: string) {
 	};
 }
 
-export const createToken = createTokenWithPrefix(TOKEN_PREFIX);
-export type Token = ReturnType<typeof createToken>;
-export type CreateToken = typeof createToken;
+export type Token = ReturnType<ReturnType<typeof createTokenWithPrefix>>;
+export type CreateToken = ReturnType<typeof createTokenWithPrefix>;
 export type TokenSchema = {
 	[Key: string]: Token | TokenSchema;
 };
@@ -227,7 +226,7 @@ export function createTokenContext({
 	};
 }
 
-export function isToken(value: any): value is ReturnType<typeof createToken> {
+export function isToken(value: any): value is Token {
 	return typeof value === 'object' && value !== null && TOKEN_BRAND in value;
 }
 

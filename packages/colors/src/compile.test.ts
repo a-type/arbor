@@ -3,11 +3,14 @@ import {
 	createGlobals,
 	GlobalConfig,
 } from '@arbor-css/globals';
+import { createTokenContext } from '@arbor-css/tokens';
 import { expect, it } from 'vitest';
 import { compileColors } from './compile.js';
 import { createColorRange, defaultRangeNames } from './ranges.js';
 
-const globalProps = createGlobalProps();
+const globalProps = createGlobalProps({
+	createToken: createTokenContext().createToken,
+});
 
 it('compiles a set of color ranges with default schemes and no precalculated globals', () => {
 	const compiled = compileColors({
@@ -105,10 +108,14 @@ it('compiles a set of color ranges with a custom scheme', () => {
 			custom: {
 				tag: '👌',
 				getColorRange: (config, { globalProps: gp }) =>
-					createColorRange(config, {
-						lightness: ($) => $.val('0'),
-						chroma: ($) => $.val('0'),
-					}, { globalProps: gp }),
+					createColorRange(
+						config,
+						{
+							lightness: ($) => $.val('0'),
+							chroma: ($) => $.val('0'),
+						},
+						{ globalProps: gp },
+					),
 				isDark: true,
 			},
 		},

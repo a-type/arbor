@@ -1,8 +1,11 @@
 import { createGlobalProps } from '@arbor-css/globals';
+import { createTokenContext } from '@arbor-css/tokens';
 import { expect, it } from 'vitest';
 import { compileColors } from './compile.js';
 
-const globalProps = createGlobalProps();
+const globalProps = createGlobalProps({
+	createToken: createTokenContext().createToken,
+});
 
 it('assigns color and neutral $root to mid when mid exists', () => {
 	const compiled = compileColors({

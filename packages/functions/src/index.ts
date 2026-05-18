@@ -1,7 +1,7 @@
 import {
 	$,
-	CalcOperations,
 	CalcInterpolation,
+	CalcOperations,
 	computeEquation,
 	css,
 	Css,
@@ -124,7 +124,7 @@ export function createFunctionFactory({
 	};
 }
 
-export const createFunction = createFunctionFactory();
+export type CreateFunction = ReturnType<typeof createFunctionFactory>;
 
 export type ArborFunction<TParams extends FunctionParams = FunctionParams> = {
 	[FUNCTION_BRAND]: true;

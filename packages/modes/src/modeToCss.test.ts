@@ -1,20 +1,32 @@
 import { css } from '@arbor-css/calc';
 import { createGlobalProps, createSystemProps } from '@arbor-css/globals';
+import { createTokenContext } from '@arbor-css/tokens';
 import { expect, it } from 'vitest';
 import { createModeSchema } from './createModeSchema.js';
 import { modeToCss } from './modeToCss.js';
 
-const $globalProps = createGlobalProps();
-const systemProps = createSystemProps({ globalProps: $globalProps });
-
-const testSchema = createModeSchema({
-	value: 'color',
-	derived: {
-		once: 'color',
-		twice: 'color',
-		again: 'color',
-	},
+const ctx = createTokenContext();
+const $globalProps = createGlobalProps({
+	createToken: ctx.createToken,
 });
+const systemProps = createSystemProps({
+	globalProps: $globalProps,
+	createToken: ctx.createToken,
+});
+
+const testSchema = createModeSchema(
+	{
+		value: 'color',
+		derived: {
+			once: 'color',
+			twice: 'color',
+			again: 'color',
+		},
+	},
+	{
+		createToken: ctx.createToken,
+	},
+);
 
 const baseMode = testSchema.createBase({
 	value: 'red',
@@ -88,14 +100,19 @@ it('prints a partial mode which overrides derived dependencies from base and doe
 });
 
 // $root tests
-const rootSchema = createModeSchema({
-	colors: {
-		main: {
-			$root: 'color',
-			mid: 'color',
+const rootSchema = createModeSchema(
+	{
+		colors: {
+			main: {
+				$root: 'color',
+				mid: 'color',
+			},
 		},
 	},
-});
+	{
+		createToken: ctx.createToken,
+	},
+);
 
 const rootBase = rootSchema.createBase({
 	colors: {
@@ -132,13 +149,18 @@ it('partial mode override of $root maps correctly', () => {
 });
 
 it('throws with full token chain for circular derived dependencies', () => {
-	const circularSchema = createModeSchema({
-		value: 'color',
-		derived: {
-			a: 'color',
-			b: 'color',
+	const circularSchema = createModeSchema(
+		{
+			value: 'color',
+			derived: {
+				a: 'color',
+				b: 'color',
+			},
 		},
-	});
+		{
+			createToken: ctx.createToken,
+		},
+	);
 
 	const circularBase = circularSchema.createBase({
 		value: 'red',

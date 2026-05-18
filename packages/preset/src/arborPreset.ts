@@ -9,7 +9,7 @@ import {
 	PartialModeInstance,
 } from '@arbor-css/modes';
 import { Primitives } from '@arbor-css/primitives';
-import { CreateToken } from '@arbor-css/tokens';
+import { CreateToken, createTokenContext } from '@arbor-css/tokens';
 
 const colorIntents = {
 	fg: 'color',
@@ -141,14 +141,16 @@ export const arborModeDefinition = {
 export function createArborModeSchema({
 	createToken,
 }: {
-	createToken?: CreateToken;
-} = {}) {
+	createToken: CreateToken;
+}) {
 	return createModeSchema(arborModeDefinition, {
 		createToken,
 	});
 }
 
-export const arborModeSchema = createArborModeSchema();
+export const arborModeSchema = createArborModeSchema({
+	createToken: createTokenContext().createToken,
+});
 
 export type ArborModeSchema = typeof arborModeSchema;
 export type ArborModeSchemaDefinition = typeof arborModeDefinition;

@@ -1,4 +1,4 @@
-import { createToken, CreateToken, Token } from '@arbor-css/tokens';
+import { CreateToken, Token } from '@arbor-css/tokens';
 
 export interface GlobalConfig {
 	saturation: number;
@@ -27,10 +27,10 @@ export const defaultGlobals: GlobalConfig = {
 };
 
 export function createGlobalProps({
-	createToken: createTokenValue = createToken,
+	createToken: createTokenValue,
 }: {
-	createToken?: CreateToken;
-} = {}): GlobalConfigProps {
+	createToken: CreateToken;
+}): GlobalConfigProps {
 	return {
 		saturation: createTokenValue('sat', {
 			tag: 'system',

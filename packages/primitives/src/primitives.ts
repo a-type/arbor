@@ -2,7 +2,7 @@ import { ColorRangeItem, CompiledColors } from '@arbor-css/colors';
 import { defaultGlobals, GlobalConfig } from '@arbor-css/globals';
 import { CompiledShadows, isCompiledShadowLevel } from '@arbor-css/shadows';
 import { CompiledSpacing } from '@arbor-css/spacing';
-import { createToken, CreateToken, Token } from '@arbor-css/tokens';
+import { CreateToken, Token } from '@arbor-css/tokens';
 import { CompiledTypography, isTypographyLevel } from '@arbor-css/typography';
 import { convertStructure } from '@arbor-css/util';
 
@@ -21,7 +21,7 @@ export interface PrimitivesConfig<
 	defaultScheme?: keyof TCompiledColors;
 	schemeTags?: Record<string, string>;
 	globals?: Partial<GlobalConfig>;
-	createToken?: CreateToken;
+	createToken: CreateToken;
 }
 
 type LiteralsToTokens<T extends Record<string, any>> = {
@@ -94,7 +94,7 @@ export function createPrimitives<
 		colors,
 		defaultScheme,
 		globals: userGlobals,
-		createToken: createTokenValue = createToken,
+		createToken: createTokenValue,
 	} = config;
 	const arbitraryScheme = Object.values(colors)[0];
 	if (!arbitraryScheme) {

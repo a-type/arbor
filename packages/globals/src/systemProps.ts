@@ -1,4 +1,4 @@
-import { createToken, CreateToken } from '@arbor-css/tokens';
+import { CreateToken } from '@arbor-css/tokens';
 import { GlobalConfigProps } from './globalProps.js';
 
 function makeSystemColorTokens(name: string, createTokenValue: CreateToken) {
@@ -23,10 +23,10 @@ function makeSystemColorTokens(name: string, createTokenValue: CreateToken) {
 }
 
 export function createSystemProps({
-	createToken: createTokenValue = createToken,
+	createToken: createTokenValue,
 	globalProps,
 }: {
-	createToken?: CreateToken;
+	createToken: CreateToken;
 	globalProps: GlobalConfigProps;
 }) {
 	const $labelProps = {
@@ -120,4 +120,4 @@ export function createSystemProps({
 	};
 }
 
-export type SystemTokens= ReturnType<typeof createSystemProps>;
+export type SystemTokens = ReturnType<typeof createSystemProps>;

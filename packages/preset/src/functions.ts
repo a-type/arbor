@@ -1,5 +1,5 @@
 import { CalcInterpolation, Css } from '@arbor-css/calc';
-import { createFunction, createFunctionFactory } from '@arbor-css/functions';
+import { CreateFunction } from '@arbor-css/functions';
 import { SystemTokens } from '@arbor-css/globals';
 
 function lightDarkAlterations(
@@ -20,7 +20,7 @@ function lightDarkAlterations(
 
 export function createPresetFunctions(
 	systemProps: SystemTokens,
-	createFunctionValue = createFunction,
+	createFunctionValue: CreateFunction,
 ) {
 	const lightenColor = createFunctionValue('lighten-color', {
 		description: 'Lightens a color by a specified "step" value',

@@ -1,11 +1,5 @@
 import { Equation, isCalcEquation } from '@arbor-css/calc';
-import {
-	createToken,
-	CreateToken,
-	isToken,
-	Token,
-	TokenPurpose,
-} from '@arbor-css/tokens';
+import { CreateToken, isToken, Token, TokenPurpose } from '@arbor-css/tokens';
 
 export type ModePropertyType = TokenPurpose;
 export type ModeSchemaProperty =
@@ -71,12 +65,12 @@ export function createModeSchema<T extends ModeSchemaLevel>(
 	{
 		tag = '',
 		extraCss,
-		createToken: createTokenValue = createToken,
+		createToken: createTokenValue,
 	}: {
 		tag?: string;
 		extraCss?: string;
-		createToken?: CreateToken;
-	} = {},
+		createToken: CreateToken;
+	},
 ): ModeSchema<T> {
 	const PROPS = createModeTokens(input, tag, createTokenValue);
 	const schema = {
