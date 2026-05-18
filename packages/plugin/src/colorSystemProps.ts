@@ -1,4 +1,4 @@
-import { SystemTokens } from '@arbor-css/globals';
+import { ArborPreset } from '@arbor-css/core';
 
 export interface ColorPropEntry {
 	/** CSS custom property name for the applied color */
@@ -20,8 +20,9 @@ export interface ColorPropEntry {
  * Mirrors the behavior of the `classes` package color rules.
  */
 export function getColorPropEntries(
-	systemProps: SystemTokens,
+	preset: ArborPreset,
 ): Record<string, ColorPropEntry> {
+	const systemProps = preset.$.system;
 	return {
 		color: {
 			applied: systemProps.fg.applied.name,

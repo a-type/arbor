@@ -11,15 +11,14 @@ const ARBOR_IMPORT_RE = /^['"]arbor:css['"]$/;
  *     (mirroring the behavior of the `classes` package utility rules).
  *
  * @param cssSource - Raw CSS source string
- * @param preset - Loaded Arbor preset for `@import 'arbor:css'` expansion (null to skip)
+ * @param preset - Loaded Arbor preset for `@import 'arbor:css'` expansion
  */
 export function transform(
 	cssSource: string,
-	preset: AnyArborPreset | null = null,
+	preset: AnyArborPreset,
 ): TransformResult {
 	const root = postcss.parse(cssSource);
-	const colorPropEntries =
-		preset?.$.system ? getColorPropEntries(preset.$.system) : {};
+	const colorPropEntries = getColorPropEntries(preset);
 
 	// Replace @import 'arbor:css' with the full generated stylesheet
 	if (preset) {

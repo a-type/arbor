@@ -11,11 +11,6 @@ export interface ArborPluginOptions {
 	 * If not provided, the plugin will search upward from each transformed file.
 	 */
 	configFile?: string;
-	/**
-	 * If true, warnings about unknown token references are emitted as build warnings.
-	 * @default true
-	 */
-	warnOnMissingTokens?: boolean;
 }
 
 const ANY_CSS_RE = /\.css(\?.*)?$/;
@@ -27,7 +22,7 @@ interface CachedConfig {
 
 export const ArborPlugin = createUnplugin(
 	(options: ArborPluginOptions = {}) => {
-		const { configFile, warnOnMissingTokens = true } = options;
+		const { configFile } = options;
 
 		// Cache per config-file path
 		const configCache = new Map<string, CachedConfig>();
@@ -59,9 +54,6 @@ export const ArborPlugin = createUnplugin(
 			},
 
 			async transform(code, id) {
-				const hasArborImport =
-					code.includes("'arbor:css'") || code.includes('"arbor:css"');
-
 				const fileDir = dirname(id.replace(/\?.*$/, ''));
 				const config = await getConfig(fileDir);
 
@@ -72,7 +64,7 @@ export const ArborPlugin = createUnplugin(
 					return null;
 				}
 
-				const result = transform(code, hasArborImport ? config.preset : null);
+				const result = transform(code, config.preset);
 
 				return {
 					code: result.css,

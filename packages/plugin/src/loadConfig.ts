@@ -1,3 +1,4 @@
+import { ArborPreset } from '@arbor-css/core';
 import escalade from 'escalade';
 import { createJiti } from 'jiti';
 import { resolve } from 'path';
@@ -6,7 +7,7 @@ export interface LoadedConfig {
 	/** Path to the resolved config file */
 	configPath: string;
 	/** The default export from the config (an ArborPreset) */
-	preset: any;
+	preset: ArborPreset;
 }
 
 /**
