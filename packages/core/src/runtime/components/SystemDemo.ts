@@ -13,7 +13,7 @@ class SystemDemo extends ArborElement {
 					<summary>Primitive Tokens</summary>
 					<pre>${JSON.stringify(
 						convertStructure(
-							this.config.primitives.$tokens,
+							this.config.$.primitives,
 							isToken,
 							(token) => token.name,
 						),
@@ -25,7 +25,7 @@ class SystemDemo extends ArborElement {
 					<summary>Mode Tokens</summary>
 					<pre>${JSON.stringify(
 						convertStructure(
-							this.config.modes.base.schema.$tokens,
+							this.config.$.mode,
 							isToken,
 							(token) => token.name,
 						),
@@ -40,7 +40,7 @@ class SystemDemo extends ArborElement {
 				<arbor-scheme-selector>
 					<details open>
 						<summary><h2 id="primitives" style="display: inline; margin: 0;">Primitive Tokens</h2></summary>
-						<arbor-token-values schema-path="primitives.$tokens"></arbor-token-values>
+						<arbor-token-values schema-path="$.primitives"></arbor-token-values>
 					</details>
 					<details open>
 						<summary><h2 id="modes" style="display: inline; margin: 0;">Mode Tokens</h2></summary>

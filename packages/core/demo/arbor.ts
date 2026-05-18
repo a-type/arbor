@@ -28,13 +28,13 @@ export const arbor = createArborPreset({
 })
 	.withMode('alt', (preset) => ({
 		colors: {
-			main: preset.primitives.$tokens.colors.alt,
-			neutral: preset.primitives.$tokens.colors.alt.$neutral,
+			main: preset.$.primitives.colors.alt,
+			neutral: preset.$.primitives.colors.alt.$neutral,
 		},
 		control: {
 			color: {
-				border: preset.primitives.$tokens.colors.alt.heavy.var,
-				bg: preset.primitives.$tokens.colors.alt.wash.var,
+				border: preset.$.primitives.colors.alt.heavy.var,
+				bg: preset.$.primitives.colors.alt.wash.var,
 			},
 		},
 	}))
@@ -42,16 +42,16 @@ export const arbor = createArborPreset({
 		action: {
 			primary: {
 				color: {
-					bg: preset.primitives.$tokens.colors.green.mid.var,
-					fg: preset.primitives.$tokens.colors.green.ink.var,
-					border: preset.primitives.$tokens.colors.green.heavy.var,
+					bg: preset.$.primitives.colors.green.mid.var,
+					fg: preset.$.primitives.colors.green.ink.var,
+					border: preset.$.primitives.colors.green.heavy.var,
 				},
 			},
 			secondary: {
 				color: {
-					bg: preset.primitives.$tokens.colors.green.light.var,
-					fg: preset.primitives.$tokens.colors.green.heavy.var,
-					border: preset.primitives.$tokens.colors.green.heavy.var,
+					bg: preset.$.primitives.colors.green.light.var,
+					fg: preset.$.primitives.colors.green.heavy.var,
+					border: preset.$.primitives.colors.green.heavy.var,
 				},
 			},
 		},

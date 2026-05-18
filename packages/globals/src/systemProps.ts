@@ -92,6 +92,8 @@ export const $systemProps = {
 	shadow: makeSystemColorTokens('shadow'),
 };
 
+export type SystemTokens = typeof $systemProps;
+
 function makeSystemColorTokens(name: string) {
 	return {
 		applied: createToken(`💲-${name}-applied`, {

@@ -33,8 +33,20 @@ export interface PrimitivesColorScheme {
 	[Color: string]: ColorRangeItem[];
 }
 
+export type PrimitiveTokens<
+	TCompiledColors extends CompiledColors<any, any>,
+	TTypography extends CompiledTypography,
+	TSpacing extends CompiledSpacing,
+	TShadows extends CompiledShadows,
+> = {
+	colors: LiteralsToTokens<TCompiledColors[keyof TCompiledColors]['colors']>;
+	typography: LiteralsToTokens<TTypography['levels']>;
+	spacing: LiteralsToTokens<TSpacing['levels']>;
+	shadows: LiteralsToTokens<TShadows['levels']>;
+};
+
 export type Primitives<
-	TCompiledColors extends CompiledColors<any, any> = CompiledColors<any, any>,
+	TCompiledColors extends CompiledColors = CompiledColors,
 	TCompiledTypography extends CompiledTypography = CompiledTypography,
 	TCompiledSpacing extends CompiledSpacing = CompiledSpacing,
 	TCompiledShadows extends CompiledShadows = CompiledShadows,
@@ -51,12 +63,12 @@ export type Primitives<
 	defaultScheme: keyof TCompiledColors;
 	schemeTags: Record<string, string>;
 	globals: GlobalConfig;
-	$tokens: {
-		colors: LiteralsToTokens<TCompiledColors[keyof TCompiledColors]['colors']>;
-		typography: LiteralsToTokens<TCompiledTypography['levels']>;
-		spacing: LiteralsToTokens<TCompiledSpacing['levels']>;
-		shadows: LiteralsToTokens<TCompiledShadows['levels']>;
-	};
+	$tokens: PrimitiveTokens<
+		TCompiledColors,
+		TCompiledTypography,
+		TCompiledSpacing,
+		TCompiledShadows
+	>;
 };
 
 export function createPrimitives<

@@ -10,11 +10,11 @@ export function resolveTokenReferences(
 ): string | undefined {
 	const flat = flattenAndApplyTokenValues(
 		{
-			colors: preset.primitives.$tokens.colors,
-			shadows: preset.primitives.$tokens.shadows,
-			spacing: preset.primitives.$tokens.spacing,
-			typography: preset.primitives.$tokens.typography,
-			mode: preset.modes.base.schema.$tokens,
+			colors: preset.$.primitives.colors,
+			shadows: preset.$.primitives.shadows,
+			spacing: preset.$.primitives.spacing,
+			typography: preset.$.primitives.typography,
+			mode: preset.$.mode,
 		},
 		{
 			colors: preset.primitives.colors[colorScheme].colors,

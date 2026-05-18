@@ -158,16 +158,12 @@ export function createTheme(
 	arbor: ArborPreset<any, any>,
 	breakpointConfig: ThemeConfig = defaultThemeConfig,
 ) {
-	const flatPrimitiveTokens = toFlatKeys<Token>(
-		arbor.primitives.$tokens,
-		isToken,
-		{ separator: '-' },
-	);
-	const flatModeTokens = toFlatKeys<Token>(
-		arbor.modes.base.schema.$tokens,
-		isToken,
-		{ separator: '-' },
-	);
+	const flatPrimitiveTokens = toFlatKeys<Token>(arbor.$.primitives, isToken, {
+		separator: '-',
+	});
+	const flatModeTokens = toFlatKeys<Token>(arbor.$.mode, isToken, {
+		separator: '-',
+	});
 
 	// split into theme categories
 	const theme: Partial<Theme> = {

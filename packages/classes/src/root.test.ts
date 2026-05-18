@@ -11,10 +11,10 @@ describe('preset $root mappings', () => {
 			testArbor.primitives.colors.light.colors.brand.$neutral.mid,
 		);
 		expect(testBaseMode.values.color.main.$root).toBe(
-			testArbor.primitives.$tokens.colors.brand.$root,
+			testArbor.$.primitives.colors.brand.$root,
 		);
 		expect(testBaseMode.values.color.neutral.$root).toBe(
-			testArbor.primitives.$tokens.colors.brand.$neutral.$root,
+			testArbor.$.primitives.colors.brand.$neutral.$root,
 		);
 	});
 
@@ -37,7 +37,7 @@ describe('preset $root mappings', () => {
 
 		const css = modeToCss(testBaseMode, testBaseMode);
 		expect(css).toContain(
-			`--Ⓜ️-spacing: calc(${testArbor.primitives.$tokens.spacing.$root.var} / var(--Ⓜ️-density));`,
+			`--Ⓜ️-spacing: calc(${testArbor.$.primitives.spacing.$root.var} / var(--Ⓜ️-density));`,
 		);
 	});
 });

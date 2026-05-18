@@ -25,7 +25,11 @@ class MainColorRangeDebug extends ArborElement {
 		);
 		const range = (
 			(arbor.meta.config.colors.schemes as any).dark as SchemeDefinition
-		).getColorRange(arbor.meta.config.colors.ranges[colorName]);
+		).getColorRange(
+			arbor.meta.config.colors.ranges[
+				colorName as keyof typeof arbor.meta.config.colors.ranges
+			],
+		);
 		this.shadowRoot.innerHTML = `
 			<div class="range @scheme-dark">
 				${(['paper', 'wash', 'light', 'mid', 'heavy', 'ink'] as const)
@@ -35,7 +39,7 @@ class MainColorRangeDebug extends ArborElement {
 							skipBaking: false,
 						});
 						const match = compiled.match(oklchMatcher) ?? [];
-						return `<div class="color-swatch" style="background: ${arbor.primitives.$tokens.colors[colorName][name].var}; width: 100px; height: 100px;" title="${range[name].equation.printDynamic({ propertyValues: {} })}">
+						return `<div class="color-swatch" style="background: ${arbor.$.primitives.colors[colorName as keyof typeof arbor.$.primitives.colors][name].var}; width: 100px; height: 100px;" title="${range[name].equation.printDynamic({ propertyValues: {} })}">
 					<div class="pip l" style="bottom: ${match[1] ?? 0}"></div>
 					<div class="pip c" style="bottom: calc(${match[2] ?? 0} / 0.4 * 100%)"></div>
 					<div class="pip h" style="bottom: calc(${match[3] ?? 0} / 360 * 100%)"></div>
@@ -48,7 +52,7 @@ class MainColorRangeDebug extends ArborElement {
 			<style>
 				.range {
 					display: flex;
-					color: ${arbor.modes.base.schema.$tokens.color.neutral.ink.var};
+					color: ${arbor.$.mode.color.neutral.ink.var};
 				}
 				.color-swatch {
 					position: relative;

@@ -48,10 +48,10 @@ class GlobalsEditor extends ArborElement {
 			});
 		}
 
-		const values = readProperties(config.primitives.$tokens);
+		const values = readProperties(config.$.primitives);
 
 		for (const [firstLayerKey, firstTokenLayer] of Object.entries(
-			config.primitives.$tokens,
+			config.$.primitives,
 		)) {
 			if (isToken(firstTokenLayer)) {
 				addToken(values, firstLayerKey, firstTokenLayer, primitivesFolder);

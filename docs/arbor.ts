@@ -42,9 +42,9 @@ const rootMode = modeSchema.createBase({
 
 function makeSeasonMode(season: 'winter' | 'spring' | 'summer' | 'fall') {
 	return modeSchema.createPartial(season, {
-		colors: {
-			main: primitives.$tokens.colors[season],
-			neutral: primitives.$tokens.colors[season].$neutral,
+		color: {
+			main: preset.$.primitives.colors[season],
+			neutral: preset.$.primitives.colors[season].$neutral,
 		},
 	});
 }
@@ -64,9 +64,9 @@ const creativityMode = modeSchema.createPartial('creativity', {
 const heroMode = modeSchema.createPartial('hero', {
 	density: 0.5,
 	text: {
-		primary: primitives.$tokens.typography['4xl'],
-		secondary: primitives.$tokens.typography['2xl'],
-		ambient: primitives.$tokens.typography.md,
+		primary: preset.$.primitives.typography['4xl'],
+		secondary: preset.$.primitives.typography['2xl'],
+		ambient: preset.$.primitives.typography.md,
 	},
 });
 

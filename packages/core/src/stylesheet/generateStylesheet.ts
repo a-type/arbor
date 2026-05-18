@@ -1,22 +1,12 @@
-import { CompiledColors } from '@arbor-css/colors';
-import { ArborFunction } from '@arbor-css/functions';
 import { $globalProps, $systemProps } from '@arbor-css/globals';
-import {
-	flattenToPropsList,
-	ModeSchemaLevel,
-	modeToCss,
-	PartialModeInstance,
-} from '@arbor-css/modes';
-import { ArborPreset } from '@arbor-css/preset/config';
-import { CompiledShadows } from '@arbor-css/shadows';
-import { CompiledSpacing } from '@arbor-css/spacing';
+import { flattenToPropsList, modeToCss } from '@arbor-css/modes';
+import { AnyArborPreset } from '@arbor-css/preset/config';
 import {
 	createToken,
 	isToken,
 	selfReferencedProps,
 	tokenSchemaToList,
 } from '@arbor-css/tokens';
-import { CompiledTypography } from '@arbor-css/typography';
 import { convertStructure } from '@arbor-css/util';
 import { flattenAndApplyTokenValues } from '../util/flattenAndApplyTokenValues.js';
 import { formatObjectToCss } from '../util/formatObjectToCss.js';
@@ -24,24 +14,8 @@ import { printTokens } from '../util/printTokens.js';
 
 const noPreference = `, (prefers-color-scheme: no-preference)`;
 
-export function generateStylesheet<
-	TModeShape extends ModeSchemaLevel,
-	TModes extends Record<string, PartialModeInstance<TModeShape>>,
-	TCompiledColors extends CompiledColors<any, any>,
-	TTypography extends CompiledTypography<any>,
-	TSpacing extends CompiledSpacing<any>,
-	TShadows extends CompiledShadows<any>,
-	TFunctions extends ArborFunction[],
->(
-	config: ArborPreset<
-		TModeShape,
-		TModes,
-		TCompiledColors,
-		TTypography,
-		TSpacing,
-		TShadows,
-		TFunctions
-	>,
+export function generateStylesheet(
+	config: AnyArborPreset,
 	{
 		layer: cascadeLayerName = 'arbor',
 	}: {
@@ -59,7 +33,7 @@ export function generateStylesheet<
 	 */
 	function getSchemeRootPropertiesCss(schemeName: string) {
 		const values = flattenAndApplyTokenValues(
-			config.primitives.$tokens.colors,
+			config.$.primitives.colors,
 			config.primitives.colors[schemeName].colors,
 			{ prefix: config.primitives.schemeTags[schemeName] ?? schemeName },
 		);
@@ -69,7 +43,7 @@ export function generateStylesheet<
 
 	function schemeApplicationCss(schemeName: string) {
 		const scheme = config.primitives.colors[schemeName];
-		const values = selfReferencedProps(config.primitives.$tokens.colors, {
+		const values = selfReferencedProps(config.$.primitives.colors, {
 			valuePrefix: config.primitives.schemeTags[schemeName] ?? schemeName,
 		});
 		return `${$systemProps.labels.scheme.assign(schemeName)}
@@ -134,9 +108,9 @@ ${cascadeLayerName ? `@layer ${cascadeLayerName} {` : ''}
 	}
 
 	/* Other primitives */
-	${printTokens(config.primitives.$tokens.typography, config.primitives.typography.levels)}
-	${printTokens(config.primitives.$tokens.spacing, config.primitives.spacing.levels)}
-	${printTokens(config.primitives.$tokens.shadows, config.primitives.shadows.levels)}
+	${printTokens(config.$.primitives.typography, config.primitives.typography.levels)}
+	${printTokens(config.$.primitives.spacing, config.primitives.spacing.levels)}
+	${printTokens(config.$.primitives.shadows, config.primitives.shadows.levels)}
 }
 
 /* Scheme classes */
@@ -157,7 +131,7 @@ ${modeName === 'base' ? ':root, :root [class^="\\@scheme-"], ' : ''}${modeToCss(
 	.join('\n\n')}
 
 /* Function definitions */
-${config.functions
+${Object.values(config.functions)
 	.map((fn) => fn.definition)
 	.filter(Boolean)
 	.join('\n\n')}

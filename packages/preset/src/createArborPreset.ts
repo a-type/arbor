@@ -6,21 +6,35 @@ import {
 	defaultLightScheme,
 	SchemeDefinition,
 } from '@arbor-css/colors';
-import { ArborFunction } from '@arbor-css/functions';
+import { PresetFunctions } from '@arbor-css/functions';
 import { createGlobals, GlobalConfig } from '@arbor-css/globals';
 import { ModeValues, PartialModeInstance } from '@arbor-css/modes';
 import { createPrimitives } from '@arbor-css/primitives';
-import { compileShadows, ShadowConfig } from '@arbor-css/shadows';
-import { compileSpacing, SpacingConfig } from '@arbor-css/spacing';
-import { compileTypography, TypographyConfig } from '@arbor-css/typography';
+import {
+	CompiledShadows,
+	compileShadows,
+	ShadowConfig,
+} from '@arbor-css/shadows';
+import {
+	CompiledSpacing,
+	compileSpacing,
+	SpacingConfig,
+} from '@arbor-css/spacing';
+import {
+	CompiledTypography,
+	compileTypography,
+	TypographyConfig,
+} from '@arbor-css/typography';
 import { deepMerge, DeepPartial } from '@arbor-css/util';
 import {
-	ArborModeSchema,
 	arborModeSchema,
+	ArborModeSchemaDefinition,
+	ArborModeValues,
 	createArborModeValues,
+	ModesOfArborModeSchema,
 } from './arborPreset.js';
-import { ArborPreset } from './config.js';
-import { presetFunctions } from './functions.js';
+import { ArborPreset, definePreset } from './config.js';
+import { BuiltinFunctions, presetFunctions } from './functions.js';
 
 export interface CreateArborPresetConfig<
 	TRanges extends Record<string, ColorRangeConfig<any>>,
@@ -38,35 +52,37 @@ export interface CreateArborPresetConfig<
 	spacing?: Omit<SpacingConfig, 'globals'>;
 	shadows?: Omit<ShadowConfig, 'globals'>;
 	baseMode?: DeepPartial<ModeValues<(typeof arborModeSchema)['definition']>>;
-	functions?: ArborFunction[];
+	functions?: PresetFunctions;
 }
 
 export type ArborPresetInstance<
 	TRanges extends Record<string, ColorRangeConfig<any>>,
 	TSchemes extends Record<string, SchemeDefinition>,
-	TModes extends Record<
-		string,
-		PartialModeInstance<ArborModeSchema['definition']>
-	> = Record<string, PartialModeInstance<ArborModeSchema['definition']>>,
+	TModes extends ModesOfArborModeSchema = ModesOfArborModeSchema,
+	TFunctions extends PresetFunctions = PresetFunctions,
 > = ArborPreset<
-	ArborModeSchema['definition'],
+	ArborModeSchemaDefinition,
 	TModes,
-	CompiledColors<TRanges, TSchemes>
+	CompiledColors<TRanges, TSchemes>,
+	CompiledTypography,
+	CompiledSpacing,
+	CompiledShadows,
+	BuiltinFunctions & TFunctions
 > & {
 	withMode: <TName extends string>(
 		name: TName,
 		mode: (
 			preset: ArborPreset<
-				ArborModeSchema['definition'],
+				ArborModeSchemaDefinition,
 				TModes,
 				CompiledColors<TRanges, TSchemes>
 			>,
-		) => DeepPartial<ModeValues<ArborModeSchema['definition']>>,
+		) => DeepPartial<ModeValues<ArborModeSchemaDefinition>>,
 	) => ArborPresetInstance<
 		TRanges,
 		TSchemes,
 		TModes & {
-			[K in TName]: PartialModeInstance<ArborModeSchema['definition']>;
+			[K in TName]: PartialModeInstance<ArborModeSchemaDefinition>;
 		}
 	>;
 	meta: {
@@ -77,9 +93,10 @@ export type ArborPresetInstance<
 export function createArborPreset<
 	TRanges extends Record<string, ColorRangeConfig<any>>,
 	TSchemes extends Record<string, SchemeDefinition> = Record<string, never>,
+	TFunctions extends PresetFunctions = PresetFunctions,
 >(
 	inputConfig: CreateArborPresetConfig<TRanges, TSchemes>,
-): ArborPresetInstance<TRanges, TSchemes> {
+): ArborPresetInstance<TRanges, TSchemes, ModesOfArborModeSchema, TFunctions> {
 	const config: CreateArborPresetConfig<TRanges, TSchemes> = {
 		...inputConfig,
 		colors: {
@@ -125,7 +142,7 @@ export function createArborPreset<
 		schemeTags: config.colors.schemeTags,
 	});
 
-	const baseModeValues: ModeValues<ArborModeSchema['definition']> = deepMerge(
+	const baseModeValues: ArborModeValues = deepMerge(
 		createArborModeValues({
 			mainColor: config.colors.mainColor as any,
 			primitives,
@@ -139,13 +156,13 @@ export function createArborPreset<
 		base: baseMode,
 	};
 
-	const functions = [...presetFunctions, ...(config.functions ?? [])];
+	const functions = { ...presetFunctions, ...config.functions };
 
-	const preset: ArborPreset<any, any> = {
-		modes,
+	const preset = definePreset({
 		primitives,
+		modes,
 		functions,
-	};
+	});
 
 	(preset as any).withMode = (name: string, mode: any) => {
 		modes[name] = arborModeSchema.createPartial(name, mode(preset));
@@ -155,5 +172,5 @@ export function createArborPreset<
 		config,
 	};
 
-	return preset as ArborPresetInstance<TRanges, TSchemes>;
+	return preset as any;
 }

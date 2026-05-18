@@ -22,7 +22,7 @@ export type ModeSchemaLevel = {
 export type ModeSchema<TSchema extends ModeSchemaLevel = ModeSchemaLevel> = {
 	definition: TSchema;
 	tag: string;
-	$tokens: AsPropertyDefinitions<TSchema>;
+	$tokens: ModeTokens<TSchema>;
 	createBase: (def: ModeValues<TSchema>) => ModeInstance<TSchema>;
 	createPartial: (
 		name: string,
@@ -135,20 +135,19 @@ export type PartialModeInstance<T extends ModeSchemaLevel> = Omit<
 	values: DeepPartial<ModeValues<T>>;
 };
 
-type AsPropertyDefinitions<T> =
+export type ModeTokens<T> =
 	T extends object ?
 		{
 			[P in keyof T]: NonNullable<T[P]> extends string ? Token
-			: NonNullable<T[P]> extends object ?
-				AsPropertyDefinitions<NonNullable<T[P]>>
-			:	never;
+			: NonNullable<T[P]> extends object ? ModeTokens<NonNullable<T[P]>>
+			: never;
 		}
 	:	never;
 
 function createModeTokens<T extends ModeSchemaLevel>(
 	root: T,
 	tag: string,
-): AsPropertyDefinitions<T> {
+): ModeTokens<T> {
 	function generatePropsForSchemaLevel(
 		schemaLevel: any,
 		propPrefix: string,

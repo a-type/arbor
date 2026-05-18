@@ -1,4 +1,5 @@
 import {
+	CalcInterpolation,
 	computeEquation,
 	css,
 	Css,
@@ -6,7 +7,7 @@ import {
 	printComputationResult,
 	printEquation,
 } from '@arbor-css/calc';
-import { Token } from '@arbor-css/tokens';
+import { isToken } from '@arbor-css/tokens';
 
 export const FUNCTION_PREFIX = '--';
 
@@ -20,6 +21,12 @@ export type ParameterSchema = {
 };
 
 const FUNCTION_BRAND = '@@FUNCTION@@';
+
+type CssProperty = `--${string}`;
+type FunctionParams = readonly CssProperty[];
+type ParamsAsInterpolations<TParams extends FunctionParams> = {
+	[K in keyof TParams]: CalcInterpolation;
+};
 
 /**
  * Creates a CSS custom function definition with runtime compute capability.
@@ -37,7 +44,7 @@ const FUNCTION_BRAND = '@@FUNCTION@@';
  * spacing.definition // @function --spacing-scale(--base <length>, --scale <number>) { result: (var(--base) * var(--scale)); }
  * spacing.compute({ base: '8px', scale: 2 }) // 'calc(var(--base) * 2)' or '16px'
  */
-export function createFunction<TParams extends Token[] = Token[]>(
+export function createFunction<TParams extends FunctionParams>(
 	name: string,
 	{
 		description,
@@ -46,27 +53,30 @@ export function createFunction<TParams extends Token[] = Token[]>(
 	}: {
 		description?: string;
 		/**
-		 * Define tokens to represent each function parameter.
+		 * Define names to represent each function parameter.
 		 */
 		parameters: TParams;
 		/**
 		 * Provide the definition of the function, using calc tools to construct
 		 * an equation. The incoming parameters are already wrapped with literal()
 		 */
-		definition: (css: Css, ...params: Token[]) => Equation;
+		definition: (css: Css, ...params: CalcInterpolation[]) => Equation;
 	},
-) {
+): ArborFunction<TParams> {
 	const cssName = `${FUNCTION_PREFIX}${name}`;
 
 	const paramsList = parameters
 		.map((p) => {
-			const type = p.type ?? '*';
-			const typeAnnotation = type === '*' ? '' : ` <${type}>`;
-			return `${p.name}${typeAnnotation}`;
+			if (isToken(p)) {
+				const type = p.type ?? '*';
+				const typeAnnotation = type === '*' ? '' : ` <${type}>`;
+				return `${p.name}${typeAnnotation}`;
+			}
+			return '';
 		})
 		.join(', ');
 
-	const equation = definition(css, ...parameters);
+	const equation = definition(css, ...parameters.map((p) => `var(${p})`));
 	const body = printEquation(equation);
 	const cssDefinition = `@function ${cssName}(${paramsList}) { result: ${body}; }`;
 
@@ -77,6 +87,12 @@ export function createFunction<TParams extends Token[] = Token[]>(
 		parameters,
 		equation,
 		definition: cssDefinition,
+		/**
+		 * Inline the body of the function as a CSS equation, supplying
+		 * tokens to substitute for the normal parameters.
+		 */
+		inline: (...params: ParamsAsInterpolations<TParams>) =>
+			definition(css, ...params),
 		/**
 		 * Compute the function result at runtime by substituting parameter values.
 		 * Parameter keys should match parameter names (without the -- prefix).
@@ -95,8 +111,18 @@ export function createFunction<TParams extends Token[] = Token[]>(
 	};
 }
 
-export type ArborFunction = ReturnType<typeof createFunction>;
+export type ArborFunction<TParams extends FunctionParams> = {
+	[FUNCTION_BRAND]: true;
+	name: string;
+	description?: string;
+	parameters: TParams;
+	equation: Equation;
+	definition: string;
+	inline: (...params: ParamsAsInterpolations<TParams>) => Equation;
+	compute: (params: Record<string, string | number>) => string;
+};
+export type PresetFunctions = Record<string, ArborFunction<any>>;
 
-export function isFunction(value: unknown): value is ArborFunction {
+export function isFunction(value: unknown): value is ArborFunction<any> {
 	return typeof value === 'object' && value !== null && FUNCTION_BRAND in value;
 }

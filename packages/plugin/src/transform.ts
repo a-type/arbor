@@ -1,4 +1,4 @@
-import { generateStylesheet, Token } from '@arbor-css/core';
+import { AnyArborPreset, generateStylesheet, Token } from '@arbor-css/core';
 import postcss from 'postcss';
 import { COLOR_PROP_ENTRIES } from './colorSystemProps.js';
 
@@ -19,7 +19,7 @@ const ARBOR_IMPORT_RE = /^['"]arbor:css['"]$/;
 export function transform(
 	cssSource: string,
 	tokenMap: Map<string, Token> | null,
-	preset: any | null = null,
+	preset: AnyArborPreset | null = null,
 ): TransformResult {
 	const warnings: string[] = [];
 	const root = postcss.parse(cssSource);

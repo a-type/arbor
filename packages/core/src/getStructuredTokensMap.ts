@@ -1,6 +1,5 @@
 import { $systemProps } from '@arbor-css/globals';
-import { ModeSchemaLevel } from '@arbor-css/modes';
-import { ArborPreset } from '@arbor-css/preset/config';
+import { AnyArborPreset } from '@arbor-css/preset/config';
 import { isToken, Token } from '@arbor-css/tokens';
 
 /**
@@ -9,7 +8,7 @@ import { isToken, Token } from '@arbor-css/tokens';
  * to expose and resolve in the VS Code extension and bundler plugin.
  */
 export function getStructuredTokensMap(
-	preset: ArborPreset<ModeSchemaLevel, any>,
+	preset: AnyArborPreset,
 	{ delimiter = '.' } = { delimiter: '.' },
 ): Map<string, Token> {
 	const map = new Map<string, Token>();

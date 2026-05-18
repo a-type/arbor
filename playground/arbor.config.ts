@@ -15,7 +15,7 @@ const preset = createArborPreset({
 	globals: {},
 }).withMode('success', (base) => ({
 	color: {
-		main: base.primitives.$tokens.colors.success,
+		main: base.$.primitives.colors.success,
 	},
 }));
 
