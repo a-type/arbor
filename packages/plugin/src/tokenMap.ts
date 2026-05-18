@@ -2,9 +2,9 @@ import { $systemProps, ArborPreset, flattenToPropsList } from '@arbor-css/core';
 import { isToken, type Token } from '@arbor-css/tokens';
 
 export interface TokenMapEntry {
-	/** The CSS var() expression, e.g. `var(--Ⓜ️-color-main-mid)` */
+	/** The CSS var() expression, e.g. `var(--$-color-main-mid)` */
 	cssVar: string;
-	/** Raw CSS custom property name, e.g. `--Ⓜ️-color-main-mid` */
+	/** Raw CSS custom property name, e.g. `--$-color-main-mid` */
 	name: string;
 	/** Token purpose (color, spacing, etc.) */
 	purpose: Token['purpose'];

@@ -22,7 +22,7 @@ it('resolves a indirect token values', () => {
 it('resolves direct token values', () => {
 	expect(
 		resolveTokenReferences(preset, preset.$.primitives.spacing.$root.name),
-	).toBe('calc(calc(8px / var(--🧑-base-font-size)) * 1rem)');
+	).toBe('calc(calc(8px / var(---system-base-font-size)) * 1rem)');
 });
 
 it('resolves mode token values', () => {

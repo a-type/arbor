@@ -158,8 +158,7 @@ export function createToken(
 		forceDefinition?: boolean;
 	} = {},
 ) {
-	const escapedName = name.replaceAll('$', '');
-	const taggedName = tag ? `${tag}-${escapedName}` : escapedName;
+	const taggedName = tag ? `${tag}-${name}` : name;
 	const resolvedName = `${TOKEN_PREFIX}${taggedName}`;
 	return {
 		[TOKEN_BRAND]: true as const,
@@ -218,7 +217,7 @@ export function selfReferencedProps(
 	{
 		valuePrefix: prefix,
 	}: {
-		/** Apply a prefix to the referenced value, i.e. 'Ⓜ️' = '--🌗-black': '--🌗-Ⓜ️-black' */
+		/** Apply a prefix to the referenced value, i.e. '$' = '--$system-black': '--$system-$-black' */
 		valuePrefix?: string;
 	} = {},
 ): Record<string, string> {

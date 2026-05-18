@@ -27,34 +27,44 @@ export const defaultGlobals: GlobalConfig = {
 };
 
 export const $globalProps: GlobalConfigProps = {
-	saturation: createToken('🧑-sat', {
+	saturation: createToken('sat', {
+		tag: '-system',
 		type: 'number',
 	}),
-	roundness: createToken('🧑-round', {
+	roundness: createToken('round', {
+		tag: '-system',
 		type: 'number',
 	}),
-	baseFontSize: createToken('🧑-base-font-size', {
+	baseFontSize: createToken('base-font-size', {
+		tag: '-system',
 		type: 'length',
 	}),
-	baseSpacingSize: createToken('🧑-base-spacing-size', {
+	baseSpacingSize: createToken('base-spacing-size', {
+		tag: '-system',
 		type: 'length',
 	}),
-	defaultShadowColor: createToken('🧑-default-shadow-color', {
+	defaultShadowColor: createToken('default-shadow-color', {
+		tag: '-system',
 		type: 'color',
 	}),
-	shadowSpread: createToken('🧑-shadow-spread', {
+	shadowSpread: createToken('shadow-spread', {
+		tag: '-system',
 		type: 'number',
 	}),
-	shadowBlur: createToken('🧑-shadow-blur', {
+	shadowBlur: createToken('shadow-blur', {
+		tag: '-system',
 		type: 'number',
 	}),
-	arrowWidth: createToken('🧑-arrow-width', {
+	arrowWidth: createToken('arrow-width', {
+		tag: '-system',
 		type: 'length',
 	}),
-	arrowHeight: createToken('🧑-arrow-height', {
+	arrowHeight: createToken('arrow-height', {
+		tag: '-system',
 		type: 'length',
 	}),
-	borderWidth: createToken('🧑-border-width', {
+	borderWidth: createToken('border-width', {
+		tag: '-system',
 		type: 'length',
 	}),
 };
