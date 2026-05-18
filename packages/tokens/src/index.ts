@@ -1,4 +1,4 @@
-export const TOKEN_PREFIX = '--x-';
+export const DEFAULT_TOKEN_PREFIX = '--x-';
 
 export interface TokenOptions {
 	/** Inferred from purpose if not provided, defaults to "*" */
@@ -152,7 +152,7 @@ function normalizeName(name: string) {
 	return name.replaceAll('$', '').replace(/\s+/g, '-');
 }
 
-function createTokenWithPrefix(tokenPrefix: string) {
+export function createTokenFactory({ tokenPrefix }: { tokenPrefix: string }) {
 	return function createToken(
 		name: string,
 		{
@@ -204,27 +204,11 @@ function createTokenWithPrefix(tokenPrefix: string) {
 	};
 }
 
-export type Token = ReturnType<ReturnType<typeof createTokenWithPrefix>>;
-export type CreateToken = ReturnType<typeof createTokenWithPrefix>;
+export type Token = ReturnType<ReturnType<typeof createTokenFactory>>;
+export type CreateToken = ReturnType<typeof createTokenFactory>;
 export type TokenSchema = {
 	[Key: string]: Token | TokenSchema;
 };
-
-export interface TokenContext {
-	tokenPrefix: string;
-	createToken: CreateToken;
-}
-
-export function createTokenContext({
-	tokenPrefix = TOKEN_PREFIX,
-}: {
-	tokenPrefix?: string;
-} = {}): TokenContext {
-	return {
-		tokenPrefix,
-		createToken: createTokenWithPrefix(tokenPrefix),
-	};
-}
 
 export function isToken(value: any): value is Token {
 	return typeof value === 'object' && value !== null && TOKEN_BRAND in value;

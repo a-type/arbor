@@ -9,9 +9,9 @@ import {
 	printComputationResult,
 	printEquation,
 } from '@arbor-css/calc';
-import { isToken, TOKEN_PREFIX } from '@arbor-css/tokens';
+import { DEFAULT_TOKEN_PREFIX, isToken } from '@arbor-css/tokens';
 
-export const FUNCTION_PREFIX = `${TOKEN_PREFIX}fn-`;
+export const FUNCTION_PREFIX = `${DEFAULT_TOKEN_PREFIX}fn-`;
 
 export type ParameterSchema = {
 	name: string;
@@ -47,7 +47,7 @@ type ParamsAsInterpolations<TParams extends FunctionParams> = {
  * spacing.compute({ base: '8px', scale: 2 }) // 'calc(var(--base) * 2)' or '16px'
  */
 export function createFunctionFactory({
-	tokenPrefix = TOKEN_PREFIX,
+	tokenPrefix = DEFAULT_TOKEN_PREFIX,
 }: {
 	tokenPrefix?: string;
 } = {}) {

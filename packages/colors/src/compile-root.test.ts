@@ -1,11 +1,8 @@
-import { createGlobalProps } from '@arbor-css/globals';
-import { createTokenContext } from '@arbor-css/tokens';
+import { createGlobalContext } from '@arbor-css/globals';
 import { expect, it } from 'vitest';
 import { compileColors } from './compile.js';
 
-const globalProps = createGlobalProps({
-	createToken: createTokenContext().createToken,
-});
+const ctx = createGlobalContext();
 
 it('assigns color and neutral $root to mid when mid exists', () => {
 	const compiled = compileColors({
@@ -16,7 +13,7 @@ it('assigns color and neutral $root to mid when mid exists', () => {
 			},
 		},
 		schemes: {},
-		globalProps,
+		globalProps: ctx.$systemTokens.globals,
 	});
 
 	expect(compiled.light.colors.primary.$root).toBe(
@@ -36,7 +33,7 @@ it('assigns $root to midpoint when mid is absent', () => {
 			},
 		},
 		schemes: {},
-		globalProps,
+		globalProps: ctx.$systemTokens.globals,
 	});
 
 	expect(compiled.light.colors.primary.$root).toBe(

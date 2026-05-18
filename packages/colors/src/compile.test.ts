@@ -1,16 +1,13 @@
 import {
-	createGlobalProps,
+	createGlobalContext,
 	createGlobals,
 	GlobalConfig,
 } from '@arbor-css/globals';
-import { createTokenContext } from '@arbor-css/tokens';
 import { expect, it } from 'vitest';
 import { compileColors } from './compile.js';
 import { createColorRange, defaultRangeNames } from './ranges.js';
 
-const globalProps = createGlobalProps({
-	createToken: createTokenContext().createToken,
-});
+const ctx = createGlobalContext();
 
 it('compiles a set of color ranges with default schemes and no precalculated globals', () => {
 	const compiled = compileColors({
@@ -25,7 +22,7 @@ it('compiles a set of color ranges with default schemes and no precalculated glo
 			},
 		},
 		schemes: {},
-		globalProps,
+		globalProps: ctx.$systemTokens.globals,
 	});
 
 	expect(compiled).toMatchInlineSnapshot(`
@@ -119,7 +116,7 @@ it('compiles a set of color ranges with a custom scheme', () => {
 				isDark: true,
 			},
 		},
-		globalProps,
+		globalProps: ctx.$systemTokens.globals,
 	});
 
 	expect(compiled).toMatchInlineSnapshot(`
@@ -228,7 +225,7 @@ it('precomputes colors when globals are provided', () => {
 		},
 		schemes: {},
 		globals,
-		globalProps,
+		globalProps: ctx.$systemTokens.globals,
 	});
 
 	expect(compiled).toMatchInlineSnapshot(`
@@ -279,7 +276,7 @@ it('provides default range names', () => {
 			},
 		},
 		schemes: {},
-		globalProps,
+		globalProps: ctx.$systemTokens.globals,
 	});
 
 	for (const name of defaultRangeNames) {
@@ -302,7 +299,7 @@ it('supports color-level saturation', () => {
 		globals: {
 			saturation: 1,
 		},
-		globalProps,
+		globalProps: ctx.$systemTokens.globals,
 	});
 
 	const matchChroma = /oklch\((.*)\)/;
@@ -328,7 +325,7 @@ it('supports hue defined as a CSS property', () => {
 			},
 		},
 		schemes: {},
-		globalProps,
+		globalProps: ctx.$systemTokens.globals,
 	});
 
 	expect(compiled.dark.colors.primary.light).toMatchInlineSnapshot(

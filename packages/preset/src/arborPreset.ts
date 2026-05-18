@@ -1,6 +1,6 @@
 import { css } from '@arbor-css/calc';
 import { CompiledColors } from '@arbor-css/colors';
-import { GlobalConfigProps } from '@arbor-css/globals';
+import { createGlobalContext, GlobalConfigProps } from '@arbor-css/globals';
 import {
 	createModeSchema,
 	ModeSchema,
@@ -9,7 +9,7 @@ import {
 	PartialModeInstance,
 } from '@arbor-css/modes';
 import { Primitives } from '@arbor-css/primitives';
-import { CreateToken, createTokenContext } from '@arbor-css/tokens';
+import { CreateToken } from '@arbor-css/tokens';
 
 const colorIntents = {
 	fg: 'color',
@@ -149,7 +149,7 @@ export function createArborModeSchema({
 }
 
 export const arborModeSchema = createArborModeSchema({
-	createToken: createTokenContext().createToken,
+	createToken: createGlobalContext().createToken,
 });
 
 export type ArborModeSchema = typeof arborModeSchema;

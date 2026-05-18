@@ -1,7 +1,6 @@
 import { flattenToPropsList, modeToCss } from '@arbor-css/modes';
 import { AnyArborPreset } from '@arbor-css/preset/config';
 import {
-	createTokenContext,
 	isToken,
 	selfReferencedProps,
 	tokenSchemaToList,
@@ -76,9 +75,7 @@ export function generateStylesheet(
 		{} as Record<string, Record<string, any>>,
 	);
 	// convert all tagged scheme colors to Tokens
-	const createToken = createTokenContext({
-		tokenPrefix: config.meta?.tokenPrefix,
-	}).createToken;
+	const createToken = config.context.createToken;
 	const allColorTokens = tokenSchemaToList(
 		convertStructure(schemeColorsWithTags, isToken, (_, path) =>
 			createToken(path.join('-'), { type: 'color' }),

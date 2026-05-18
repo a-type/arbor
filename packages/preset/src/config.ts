@@ -1,6 +1,6 @@
 import { CompiledColors } from '@arbor-css/colors';
 import { PresetFunctions } from '@arbor-css/functions';
-import { SystemTokens } from '@arbor-css/globals';
+import { GlobalContext, SystemTokens } from '@arbor-css/globals';
 import {
 	ModeInstance,
 	ModeSchema,
@@ -50,9 +50,9 @@ export interface ArborPreset<
 	/** All tokens in this preset. */
 	$: PresetTokens<TModeShape, TCompiledColors, TTypography, TSpacing, TShadows>;
 	meta?: {
-		tokenPrefix?: string;
 		config?: unknown;
 	};
+	context: GlobalContext;
 }
 
 export function definePreset<

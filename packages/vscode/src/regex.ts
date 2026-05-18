@@ -1,10 +1,8 @@
-import { TOKEN_PREFIX } from '@arbor-css/core';
-
 function escapeRegex(value: string): string {
 	return value.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
 }
 
-export function createTokenRegex(prefix: string = TOKEN_PREFIX) {
+export function createTokenRegex(prefix: string) {
 	const escapedPrefix = escapeRegex(prefix);
 	return {
 		end: () => new RegExp(`(${escapedPrefix}([\\w-]+)?)$`, 'g'),

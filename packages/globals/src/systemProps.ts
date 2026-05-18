@@ -1,5 +1,5 @@
 import { CreateToken } from '@arbor-css/tokens';
-import { GlobalConfigProps } from './globalProps.js';
+import { createGlobalProps } from './globalProps.js';
 
 function makeSystemColorTokens(name: string, createTokenValue: CreateToken) {
 	return {
@@ -24,10 +24,8 @@ function makeSystemColorTokens(name: string, createTokenValue: CreateToken) {
 
 export function createSystemProps({
 	createToken: createTokenValue,
-	globalProps,
 }: {
 	createToken: CreateToken;
-	globalProps: GlobalConfigProps;
 }) {
 	const $labelProps = {
 		mode: createTokenValue('mode', { tag: 'system', type: 'string' }),
@@ -79,7 +77,7 @@ export function createSystemProps({
 		labels: $labelProps,
 		dynamic: $dynamicProps,
 		scheme: $schemeProps,
-		globals: globalProps,
+		globals: createGlobalProps({ createToken: createTokenValue }),
 		fg: makeSystemColorTokens('fg', createTokenValue),
 		bg: {
 			...makeSystemColorTokens('bg', createTokenValue),

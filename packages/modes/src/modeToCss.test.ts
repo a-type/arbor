@@ -1,18 +1,11 @@
 import { css } from '@arbor-css/calc';
-import { createGlobalProps, createSystemProps } from '@arbor-css/globals';
-import { createTokenContext } from '@arbor-css/tokens';
+import { createGlobalContext } from '@arbor-css/globals';
 import { expect, it } from 'vitest';
 import { createModeSchema } from './createModeSchema.js';
 import { modeToCss } from './modeToCss.js';
 
-const ctx = createTokenContext();
-const $globalProps = createGlobalProps({
-	createToken: ctx.createToken,
-});
-const systemProps = createSystemProps({
-	globalProps: $globalProps,
-	createToken: ctx.createToken,
-});
+const ctx = createGlobalContext();
+const systemProps = ctx.$systemTokens;
 
 const testSchema = createModeSchema(
 	{

@@ -8,12 +8,11 @@ import {
 } from '@arbor-css/colors';
 import { createFunctionFactory, PresetFunctions } from '@arbor-css/functions';
 import {
-	createGlobalProps,
+	createGlobalContext,
 	createGlobals,
-	createSystemProps,
 	GlobalConfig,
-	GlobalConfigProps,
-	SystemTokens,
+	GlobalContext,
+	GlobalContextConfig,
 } from '@arbor-css/globals';
 import { ModeValues, PartialModeInstance } from '@arbor-css/modes';
 import { createPrimitives } from '@arbor-css/primitives';
@@ -27,7 +26,6 @@ import {
 	compileSpacing,
 	SpacingConfig,
 } from '@arbor-css/spacing';
-import { createTokenContext, TokenContext } from '@arbor-css/tokens';
 import {
 	CompiledTypography,
 	compileTypography,
@@ -44,9 +42,7 @@ import {
 import { ArborPreset, definePreset } from './config.js';
 import { BuiltinFunctions, createPresetFunctions } from './functions.js';
 
-export interface CreateArborConfig {
-	tokenPrefix?: string;
-}
+export interface CreateArborConfig extends GlobalContextConfig {}
 
 export interface CreateArborPresetConfig<
 	TRanges extends Record<string, ColorRangeConfig<any>>,
@@ -105,10 +101,7 @@ export type ArborPresetInstance<
 };
 
 export interface ArborBuilder {
-	tokenPrefix: string;
-	tokenContext: TokenContext;
-	$globalProps: GlobalConfigProps;
-	$systemProps: SystemTokens;
+	context: GlobalContext;
 	preset: <
 		TRanges extends Record<string, ColorRangeConfig<any>>,
 		TSchemes extends Record<string, SchemeDefinition> = Record<string, never>,
@@ -124,35 +117,23 @@ export interface ArborBuilder {
 }
 
 export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
-	const tokenContext = createTokenContext({
-		tokenPrefix: config.tokenPrefix,
-	});
-	const $globalProps = createGlobalProps({
-		createToken: tokenContext.createToken,
-	});
-	const $systemProps = createSystemProps({
-		createToken: tokenContext.createToken,
-		globalProps: $globalProps,
-	});
+	const context = createGlobalContext(config);
 	const modeSchema = createArborModeSchema({
-		createToken: tokenContext.createToken,
+		createToken: context.createToken,
 	});
 	const builtinFunctions = createPresetFunctions(
-		$systemProps,
+		context.$systemTokens,
 		createFunctionFactory({
-			tokenPrefix: tokenContext.tokenPrefix,
+			tokenPrefix: context.tokenPrefix,
 		}),
 	);
 
 	return {
-		tokenPrefix: tokenContext.tokenPrefix,
-		tokenContext,
-		$globalProps,
-		$systemProps,
+		context,
 		preset: (inputConfig) => {
 			const normalizedConfig: CreateArborPresetConfig<any, any> = {
 				...inputConfig,
-				tokenPrefix: tokenContext.tokenPrefix,
+				tokenPrefix: context.tokenPrefix,
 				colors: {
 					...inputConfig.colors,
 					schemes: {
@@ -169,7 +150,7 @@ export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
 				ranges: normalizedConfig.colors.ranges,
 				schemes: normalizedConfig.colors.schemes,
 				globals,
-				globalProps: $globalProps,
+				globalProps: context.$systemTokens.globals,
 			});
 
 			const typography = compileTypography(
@@ -177,7 +158,7 @@ export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
 					...normalizedConfig.typography,
 					globals,
 				},
-				{ globalProps: $globalProps },
+				{ globalProps: context.$systemTokens.globals },
 			);
 
 			const spacing = compileSpacing(
@@ -185,7 +166,7 @@ export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
 					...normalizedConfig.spacing,
 					globals,
 				},
-				{ globalProps: $globalProps },
+				{ globalProps: context.$systemTokens.globals },
 			);
 
 			const shadows = compileShadows(
@@ -194,8 +175,8 @@ export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
 					globals,
 				},
 				{
-					globalProps: $globalProps,
-					dynamicProps: $systemProps.dynamic,
+					globalProps: context.$systemTokens.globals,
+					dynamicProps: context.$systemTokens.dynamic,
 				},
 			);
 
@@ -207,7 +188,7 @@ export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
 				globals,
 				defaultScheme: normalizedConfig.colors.defaultScheme,
 				schemeTags: normalizedConfig.colors.schemeTags,
-				createToken: tokenContext.createToken,
+				createToken: context.createToken,
 			});
 
 			const baseModeValues: ArborModeValues = deepMerge(
@@ -215,7 +196,7 @@ export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
 					mainColor: normalizedConfig.colors.mainColor as any,
 					primitives,
 					modeSchema,
-					globalProps: $globalProps,
+					globalProps: context.$systemTokens.globals,
 				}),
 				normalizedConfig.baseMode ?? {},
 			);
@@ -233,11 +214,11 @@ export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
 				primitives,
 				modes,
 				functions,
-				systemProps: $systemProps,
+				systemProps: context.$systemTokens,
 				meta: {
-					tokenPrefix: tokenContext.tokenPrefix,
 					config: normalizedConfig,
 				},
+				context,
 			});
 
 			(preset as any).withMode = (name: string, mode: any) => {
@@ -245,7 +226,7 @@ export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
 				return preset as any;
 			};
 			(preset as any).meta = {
-				tokenPrefix: tokenContext.tokenPrefix,
+				tokenPrefix: context.tokenPrefix,
 				config: normalizedConfig,
 			};
 

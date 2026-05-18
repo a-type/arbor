@@ -199,6 +199,9 @@ importers:
 
   packages/globals:
     dependencies:
+      '@arbor-css/functions':
+        specifier: workspace:*
+        version: link:../functions
       '@arbor-css/tokens':
         specifier: workspace:*
         version: link:../tokens
