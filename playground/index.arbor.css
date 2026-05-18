@@ -61,17 +61,17 @@ button {
 	}
 
 	&:hover {
-		$.system.bg: oklch(from $.system.bg.applied calc(l * 0.98) c h / 1);
+		$.system.bg: --darken-color($.system.bg.applied, 2);
 		$.system.ring: 0 0 0 6px $.system.bg;
 	}
 	&:active {
-		$.system.bg: oklch(from $.system.bg.applied calc(l * 0.94) c h / 1);
+		$.system.bg: --darken-color($.system.bg.applied, 4);
 	}
 	&:focus {
 		outline: none;
 	}
 	&:focus-visible {
-		$.system.bg: oklch(from $.system.bg.applied calc(l * 1.1) c h / 1);
+		$.system.bg: --lighten-color($.system.bg.applied, 2);
 		$.system.ring: 0 0 0 2px $.color.main.ink;
 	}
 }
@@ -86,6 +86,22 @@ input {
 	line-height: $.text.secondary.lineHeight;
 	background: $.control.color.bg;
 	color: $.control.color.fg;
+	box-shadow: $.system.ring, $.system.shadow;
+	$.system.shadow: $.shadow.sm.compiled;
+	$.system.ring: 0 0 0 0 transparent;
+
+	&:hover {
+		$.system.bg: --darken-color($.control.color.bg, 1);
+		$.system.borderColor: --darken-color($.control.color.border, 2);
+		$.system.ring: 0 0 0 2px $.system.borderColor;
+	}
+	&:focus {
+		outline: none;
+	}
+	&:focus-visible {
+		$.system.borderColor: --darken-color($.control.color.border, 4);
+		$.system.ring: 0 0 0 6px $.system.bg;
+	}
 }
 
 .title,

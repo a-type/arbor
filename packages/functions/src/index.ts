@@ -72,7 +72,7 @@ export function createFunction<TParams extends FunctionParams>(
 				const typeAnnotation = type === '*' ? '' : ` <${type}>`;
 				return `${p.name}${typeAnnotation}`;
 			}
-			return '';
+			return p;
 		})
 		.join(', ');
 
