@@ -13,7 +13,7 @@ export type ModeSchemaLevel = {
 	/**
 	 * Special key: creates a token at the current group path without appending
 	 * a `-$root` segment. For example, `{ colors: { main: { $root: 'color', mid: 'color' } } }`
-	 * generates `--Ⓜ️-colors-main` (for `$root`) and `--Ⓜ️-colors-main-mid` (for `mid`).
+	 * generates `--$-colors-main` (for `$root`) and `--$-colors-main-mid` (for `mid`).
 	 * Optional at any level.
 	 */
 	$root?: ModeSchemaProperty;
@@ -61,7 +61,7 @@ function getModeSchemaPropertyAsPropertyDefinition(
 
 export function createModeSchema<T extends ModeSchemaLevel>(
 	input: T,
-	{ tag = 'Ⓜ️', extraCss }: { tag?: string; extraCss?: string } = {},
+	{ tag = '', extraCss }: { tag?: string; extraCss?: string } = {},
 ): ModeSchema<T> {
 	const PROPS = createModeTokens(input, tag);
 	const schema = {

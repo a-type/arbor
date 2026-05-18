@@ -20,13 +20,13 @@ export function createScheme<
 }
 
 export const defaultLightScheme: SchemeDefinition = {
-	tag: '☀️',
+	tag: 'light',
 	getColorRange: createColorLightModeRange,
 	isDark: false,
 };
 
 export const defaultDarkScheme: SchemeDefinition = {
-	tag: '🌑',
+	tag: 'dark',
 	getColorRange: createColorDarkModeRange,
 	isDark: true,
 };
