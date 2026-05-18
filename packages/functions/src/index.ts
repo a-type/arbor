@@ -7,9 +7,9 @@ import {
 	printComputationResult,
 	printEquation,
 } from '@arbor-css/calc';
-import { isToken } from '@arbor-css/tokens';
+import { isToken, TOKEN_PREFIX } from '@arbor-css/tokens';
 
-export const FUNCTION_PREFIX = '--';
+export const FUNCTION_PREFIX = `${TOKEN_PREFIX}fn-`;
 
 export type ParameterSchema = {
 	name: string;
@@ -111,7 +111,7 @@ export function createFunction<TParams extends FunctionParams>(
 	};
 }
 
-export type ArborFunction<TParams extends FunctionParams> = {
+export type ArborFunction<TParams extends FunctionParams = FunctionParams> = {
 	[FUNCTION_BRAND]: true;
 	name: string;
 	description?: string;
@@ -123,6 +123,6 @@ export type ArborFunction<TParams extends FunctionParams> = {
 };
 export type PresetFunctions = Record<string, ArborFunction<any>>;
 
-export function isFunction(value: unknown): value is ArborFunction<any> {
+export function isFunction(value: unknown): value is ArborFunction {
 	return typeof value === 'object' && value !== null && FUNCTION_BRAND in value;
 }

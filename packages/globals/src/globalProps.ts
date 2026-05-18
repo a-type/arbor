@@ -28,43 +28,43 @@ export const defaultGlobals: GlobalConfig = {
 
 export const $globalProps: GlobalConfigProps = {
 	saturation: createToken('sat', {
-		tag: '-system',
+		tag: 'system',
 		type: 'number',
 	}),
 	roundness: createToken('round', {
-		tag: '-system',
+		tag: 'system',
 		type: 'number',
 	}),
 	baseFontSize: createToken('base-font-size', {
-		tag: '-system',
+		tag: 'system',
 		type: 'length',
 	}),
 	baseSpacingSize: createToken('base-spacing-size', {
-		tag: '-system',
+		tag: 'system',
 		type: 'length',
 	}),
 	defaultShadowColor: createToken('default-shadow-color', {
-		tag: '-system',
+		tag: 'system',
 		type: 'color',
 	}),
 	shadowSpread: createToken('shadow-spread', {
-		tag: '-system',
+		tag: 'system',
 		type: 'number',
 	}),
 	shadowBlur: createToken('shadow-blur', {
-		tag: '-system',
+		tag: 'system',
 		type: 'number',
 	}),
 	arrowWidth: createToken('arrow-width', {
-		tag: '-system',
+		tag: 'system',
 		type: 'length',
 	}),
 	arrowHeight: createToken('arrow-height', {
-		tag: '-system',
+		tag: 'system',
 		type: 'length',
 	}),
 	borderWidth: createToken('border-width', {
-		tag: '-system',
+		tag: 'system',
 		type: 'length',
 	}),
 };

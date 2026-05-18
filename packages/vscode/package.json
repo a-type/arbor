@@ -2,7 +2,7 @@
 	"name": "arbor-css-vscode",
 	"type": "module",
 	"displayName": "Arbor CSS",
-	"description": "Language support for .arbor.css files — token autocomplete, hover previews, and syntax highlighting",
+	"description": "Token autocomplete, hover previews, and validation for Arbor CSS presets",
 	"version": "0.0.1",
 	"publisher": "a-type",
 	"engines": {
@@ -15,32 +15,34 @@
 		"Programming Languages",
 		"Other"
 	],
-	"main": "./dist/extension.mjs",
+	"activationEvents": [
+		"onLanguage:css",
+		"onLanguage:scss",
+		"onLanguage:less"
+	],
 	"contributes": {
 		"languages": [
 			{
-				"id": "arbor-css",
+				"id": "css",
 				"aliases": [
-					"Arbor CSS",
-					"arbor-css"
-				],
-				"extensions": [
-					".arbor.css"
-				],
-				"configuration": "./language-configuration.json"
-			}
-		],
-		"grammars": [
+					"CSS"
+				]
+			},
 			{
-				"language": "arbor-css",
-				"scopeName": "source.arbor-css",
-				"path": "./syntaxes/arbor-css.tmLanguage.json",
-				"embeddedLanguages": {
-					"source.css": "css"
-				}
+				"id": "scss",
+				"aliases": [
+					"SCSS"
+				]
+			},
+			{
+				"id": "less",
+				"aliases": [
+					"LESS"
+				]
 			}
 		]
 	},
+	"main": "./dist/extension.mjs",
 	"scripts": {
 		"compile": "node esbuild.mjs",
 		"build": "pnpm compile && pnpm vsce:package",

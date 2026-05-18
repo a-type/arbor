@@ -18,7 +18,6 @@ export interface ArborPluginOptions {
 	warnOnMissingTokens?: boolean;
 }
 
-const ARBOR_CSS_RE = /\.arbor\.css(\?.*)?$/;
 const ANY_CSS_RE = /\.css(\?.*)?$/;
 
 interface CachedConfig {
@@ -60,12 +59,8 @@ export const ArborPlugin = createUnplugin(
 			},
 
 			async transform(code, id) {
-				const isArborCss = ARBOR_CSS_RE.test(id);
 				const hasArborImport =
 					code.includes("'arbor:css'") || code.includes('"arbor:css"');
-
-				// Skip plain CSS files that don't use any Arbor features
-				if (!isArborCss && !hasArborImport) return null;
 
 				const fileDir = dirname(id.replace(/\?.*$/, ''));
 				const config = await getConfig(fileDir);
@@ -77,17 +72,7 @@ export const ArborPlugin = createUnplugin(
 					return null;
 				}
 
-				const result = transform(
-					code,
-					isArborCss ? config.tokenMap : null,
-					hasArborImport ? config.preset : null,
-				);
-
-				if (warnOnMissingTokens) {
-					for (const warning of result.warnings) {
-						this.warn(`[arbor-css] ${warning}`);
-					}
-				}
+				const result = transform(code, hasArborImport ? config.preset : null);
 
 				return {
 					code: result.css,

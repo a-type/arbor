@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
-import type { TokenProvider } from './tokenProvider.js';
+import { TOKEN_RE_ANYWHERE } from './regex.js';
+import { TokenProvider } from './tokenProvider.js';
 
-/** Matches all `$.token.path` references in a line */
-const TOKEN_RE = /\$\.([\w.]+)/g;
+const supportedLanguages = ['css', 'scss', 'less'];
 
 /**
  * Manages diagnostics (red underlines) for unknown Arbor token references.
@@ -45,14 +45,14 @@ export class ArborDiagnosticProvider {
 	}
 
 	private validate(document: vscode.TextDocument): void {
-		if (document.languageId !== 'arbor-css') return;
+		if (!supportedLanguages.includes(document.languageId)) return;
 
 		const tokenMap = this.tokenProvider.getTokenMap();
 		const fileDiagnostics: vscode.Diagnostic[] = [];
 
 		for (let lineIndex = 0; lineIndex < document.lineCount; lineIndex++) {
 			const line = document.lineAt(lineIndex).text;
-			for (const match of line.matchAll(TOKEN_RE)) {
+			for (const match of line.matchAll(TOKEN_RE_ANYWHERE())) {
 				if (match.index === undefined) continue;
 				const path = match[1];
 				if (!tokenMap.has(path)) {
@@ -63,7 +63,7 @@ export class ArborDiagnosticProvider {
 					);
 					const diagnostic = new vscode.Diagnostic(
 						new vscode.Range(start, end),
-						`Unknown Arbor token: $.${path}`,
+						`Unknown Arbor ${path.includes('fn-') ? 'function' : 'token'}: ${path}`,
 						vscode.DiagnosticSeverity.Error,
 					);
 					diagnostic.source = 'arbor-css';

@@ -1,3 +1,4 @@
+import { AnyArborPreset } from '@arbor-css/core';
 import escalade from 'escalade';
 import { createJiti } from 'jiti';
 
@@ -15,7 +16,9 @@ export async function findConfigFile(fromDir: string): Promise<string | null> {
  * Loads an Arbor config file using jiti (TypeScript-aware require).
  * Returns the default export (expected to be an ArborPreset).
  */
-export async function loadConfigFile(configPath: string): Promise<any | null> {
+export async function loadConfigFile(
+	configPath: string,
+): Promise<AnyArborPreset | null> {
 	try {
 		const jiti = createJiti(import.meta.url, {
 			moduleCache: false,

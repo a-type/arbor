@@ -1,4 +1,4 @@
-export const TOKEN_PREFIX = '--';
+export const TOKEN_PREFIX = '--x-';
 
 /**
  * Allowed types of properties - specifying one allows defining
@@ -132,6 +132,10 @@ export function getTypeFromPurpose(purpose: TokenPurpose): PropertyType {
 
 const TOKEN_BRAND = '@@TOKEN@@';
 
+function normalizeName(name: string) {
+	return name.replaceAll('$', '').replace(/\s+/g, '-');
+}
+
 export function createToken(
 	name: string,
 	{
@@ -159,7 +163,7 @@ export function createToken(
 	} = {},
 ) {
 	const taggedName = tag ? `${tag}-${name}` : name;
-	const resolvedName = `${TOKEN_PREFIX}${taggedName}`;
+	const resolvedName = `${TOKEN_PREFIX}${normalizeName(taggedName)}`;
 	return {
 		[TOKEN_BRAND]: true as const,
 		name: resolvedName,

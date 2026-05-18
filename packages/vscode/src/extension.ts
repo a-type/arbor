@@ -4,17 +4,21 @@ import { ArborDiagnosticProvider } from './diagnosticProvider.js';
 import { ArborHoverProvider } from './hoverProvider.js';
 import { TokenProvider } from './tokenProvider.js';
 
-const ARBOR_CSS_LANG = 'arbor-css';
-
 export function activate(context: vscode.ExtensionContext): void {
-	const tokenProvider = new TokenProvider();
+	const outputChannel = vscode.window.createOutputChannel('Arbor CSS');
+	outputChannel.appendLine('Activating Arbor CSS extension...');
+	const languageSelector: vscode.DocumentSelector = ['css', 'scss', 'less'];
+
+	const tokenProvider = new TokenProvider(outputChannel);
 
 	// Initialize per workspace folder
 	const workspaceFolders = vscode.workspace.workspaceFolders;
 	if (workspaceFolders?.length) {
 		// Use the first workspace folder; multi-root workspaces would need per-folder providers
 		tokenProvider.initialize(workspaceFolders[0]).catch((err) => {
-			console.error('[arbor-css] Failed to initialize token provider:', err);
+			outputChannel.appendLine(
+				'[arbor-css] Failed to initialize token provider: ' + err,
+			);
 		});
 	}
 
@@ -28,21 +32,24 @@ export function activate(context: vscode.ExtensionContext): void {
 		}),
 	);
 
-	const langSelector: vscode.DocumentSelector = { language: ARBOR_CSS_LANG };
+	/**
+	 * Activate for all CSS, SCSS, and LESS files since Arbor tokens can be used in any of these. We could
+	 * potentially narrow this down to only activate on files that also contain Arbor-prefixed token references, but that would
+	 * require more complex logic to watch for file changes and re-activate providers, and might miss some edge cases, so we'll keep it simple for now.
+	 */
 
-	// Completion provider — triggered on `.` within `$.path` expressions
 	context.subscriptions.push(
 		vscode.languages.registerCompletionItemProvider(
-			langSelector,
-			new ArborCompletionProvider(tokenProvider),
-			'.', // trigger character
+			languageSelector,
+			new ArborCompletionProvider(tokenProvider, outputChannel),
+			'-', // trigger character
 		),
 	);
 
 	// Hover provider
 	context.subscriptions.push(
 		vscode.languages.registerHoverProvider(
-			langSelector,
+			languageSelector,
 			new ArborHoverProvider(tokenProvider),
 		),
 	);

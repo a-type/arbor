@@ -1,21 +1,7 @@
-import { resolveTokenReferences } from '@arbor-css/core';
+import { isFunction, isToken, resolveTokenReferences } from '@arbor-css/core';
 import * as vscode from 'vscode';
+import { OKLCH_RE, TOKEN_RE_ANYWHERE } from './regex.js';
 import type { TokenProvider } from './tokenProvider.js';
-
-/** Matches a complete `$.token.path` reference */
-const TOKEN_RE = /\$\.([\w.]+)/g;
-
-/**
- * Returns true if the given character index is on the property side of a CSS declaration
- * (i.e., before the first `:` on the line).
- */
-function isPropertySide(line: string, charIndex: number): boolean {
-	const colonIndex = line.indexOf(':');
-	return colonIndex === -1 || charIndex < colonIndex;
-}
-
-/** Matches an OKLCH color value */
-const OKLCH_RE = /^oklch\(/i;
 
 function makeColorSwatch(color: string): string {
 	const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"><rect width="12" height="12" rx="2" fill="${color}"/></svg>`;
@@ -35,7 +21,7 @@ export class ArborHoverProvider implements vscode.HoverProvider {
 		const preset = this.tokenProvider.getPreset();
 
 		// Find all token references on this line and see if the cursor is inside one
-		for (const match of line.matchAll(TOKEN_RE)) {
+		for (const match of line.matchAll(TOKEN_RE_ANYWHERE())) {
 			if (match.index === undefined) continue;
 			const start = match.index;
 			const end = start + match[0].length;
@@ -45,37 +31,39 @@ export class ArborHoverProvider implements vscode.HoverProvider {
 			const entry = tokenMap.get(path);
 
 			const range = new vscode.Range(position.line, start, position.line, end);
-			const onPropertySide = isPropertySide(line, start);
 
 			if (!entry) {
 				return new vscode.Hover(
-					new vscode.MarkdownString(`⚠️ Unknown Arbor token: \`$.${path}\``),
+					new vscode.MarkdownString(
+						`⚠️ Unknown Arbor token/function: \`${path}\``,
+					),
 					range,
 				);
 			}
 
 			const md = new vscode.MarkdownString();
 			md.supportHtml = true;
-			md.appendMarkdown(`**Arbor token** \`$.${path}\`\n\n`);
-			if (onPropertySide) {
-				md.appendMarkdown(`**Assigns CSS variable:** \`${entry.name}\`\n\n`);
-			} else {
-				md.appendMarkdown(`**CSS property:** \`${entry.name}\`\n\n`);
-			}
+			md.appendMarkdown(`**Arbor token:** \`${entry.name}\`\n\n`);
+			if (isToken(entry)) {
+				md.appendMarkdown(`**Purpose:** ${entry.purpose}`);
 
-			md.appendMarkdown(`**Purpose:** ${entry.purpose}`);
-
-			if (entry.purpose === 'color' && preset) {
-				const resolved = resolveTokenReferences(preset, entry.name);
-				if (resolved) {
-					if (OKLCH_RE.test(resolved)) {
-						md.appendMarkdown(
-							`\n\n${makeColorSwatch(resolved)} \`${resolved}\``,
-						);
-					} else {
-						md.appendMarkdown(`\n\n**Color value:** \`${resolved}\``);
+				if (entry.purpose === 'color' && preset) {
+					const resolved = resolveTokenReferences(preset, entry.name);
+					if (resolved) {
+						if (OKLCH_RE.test(resolved)) {
+							md.appendMarkdown(
+								`\n\n${makeColorSwatch(resolved)} \`${resolved}\``,
+							);
+						} else {
+							md.appendMarkdown(`\n\n**Color value:** \`${resolved}\``);
+						}
 					}
 				}
+			} else if (isFunction(entry)) {
+				md.appendMarkdown(
+					`**Arbor function:** \`${entry.name}(${entry.parameters.join(', ')})\``,
+				);
+				md.appendMarkdown(`\n\n${entry.description}`);
 			}
 
 			return new vscode.Hover(md, range);

@@ -104,7 +104,7 @@ export function createPrimitives<
 				type: 'color',
 				purpose: 'color',
 				group: path.slice(0, -1).join('-'),
-				tag: '-primitive',
+				tag: 'primitive',
 			}),
 	);
 
@@ -116,19 +116,19 @@ export function createPrimitives<
 				type: 'length',
 				purpose: 'font-size',
 				group: path.join('-'),
-				tag: '-primitive',
+				tag: 'primitive',
 			}),
 			weight: createToken(`typography-${path.join('-')}-weight`, {
 				type: '*',
 				purpose: 'font-weight',
 				group: path.join('-'),
-				tag: '-primitive',
+				tag: 'primitive',
 			}),
 			lineHeight: createToken(`typography-${path.join('-')}-line-height`, {
 				type: '*',
 				purpose: 'line-height',
 				group: path.join('-'),
-				tag: '-primitive',
+				tag: 'primitive',
 			}),
 		}),
 	);
@@ -141,7 +141,7 @@ export function createPrimitives<
 			createToken(`spacing-${path.join('-')}`, {
 				type: 'length',
 				purpose: 'spacing',
-				tag: '-primitive',
+				tag: 'primitive',
 			}),
 	);
 
@@ -153,31 +153,31 @@ export function createPrimitives<
 				type: 'length',
 				purpose: 'shadow-x',
 				group: path.join('-'),
-				tag: '-primitive',
+				tag: 'primitive',
 			}),
 			y: createToken(`shadow-${path.join('-')}-y`, {
 				type: 'length',
 				purpose: 'shadow-y',
 				group: path.join('-'),
-				tag: '-primitive',
+				tag: 'primitive',
 			}),
 			blur: createToken(`shadow-${path.join('-')}-blur`, {
 				type: 'length',
 				purpose: 'shadow-blur',
 				group: path.join('-'),
-				tag: '-primitive',
+				tag: 'primitive',
 			}),
 			spread: createToken(`shadow-${path.join('-')}-spread`, {
 				type: 'length',
 				purpose: 'shadow-spread',
 				group: path.join('-'),
-				tag: '-primitive',
+				tag: 'primitive',
 			}),
 			color: createToken(`shadow-${path.join('-')}-color`, {
 				type: 'color',
 				purpose: 'shadow-color',
 				group: path.join('-'),
-				tag: '-primitive',
+				tag: 'primitive',
 			}),
 		}),
 	);

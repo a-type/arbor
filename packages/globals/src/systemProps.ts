@@ -2,18 +2,18 @@ import { createToken } from '@arbor-css/tokens';
 import { $globalProps } from './globalProps.js';
 
 export const $labelProps = {
-	mode: createToken('mode', { tag: '-system', type: 'string' }),
-	scheme: createToken('scheme', { tag: '-system', type: 'string' }),
+	mode: createToken('mode', { tag: 'system', type: 'string' }),
+	scheme: createToken('scheme', { tag: 'system', type: 'string' }),
 };
 
 export const $dynamicProps = {
 	shadowColor: createToken('shadow-color', {
-		tag: '-system',
+		tag: 'system',
 		type: 'color',
 		fallback: 'rgba(0, 0, 0, 0.1)',
 	}),
 	shadowReverse: createToken('shadow-reverse', {
-		tag: '-system',
+		tag: 'system',
 		type: 'number',
 		fallback: 1,
 	}),
@@ -21,27 +21,27 @@ export const $dynamicProps = {
 
 export const $schemeProps = {
 	invertMultiplier: createToken('scheme-invert-mult', {
-		tag: '-system',
+		tag: 'system',
 		type: 'number',
 		fallback: 1,
 	}),
 	whenDark: createToken('scheme-when-dark', {
-		tag: '-system',
+		tag: 'system',
 		type: 'number',
 		fallback: 0,
 	}),
 	whenLight: createToken('scheme-when-light', {
-		tag: '-system',
+		tag: 'system',
 		type: 'number',
 		fallback: 1,
 	}),
 	trueLight: createToken('scheme-true-light', {
-		tag: '-system',
+		tag: 'system',
 		type: 'color',
 		fallback: 'white',
 	}),
 	trueHeavy: createToken('scheme-true-heavy', {
-		tag: '-system',
+		tag: 'system',
 		type: 'color',
 		fallback: 'black',
 	}),
@@ -67,7 +67,7 @@ export const $systemProps = {
 	bg: {
 		...makeSystemColorTokens('bg'),
 		contrast: createToken(`bg-contrast`, {
-			tag: '-system',
+			tag: 'system',
 			type: 'color',
 			inherits: true,
 		}),
@@ -82,7 +82,7 @@ export const $systemProps = {
 	ring: {
 		...makeSystemColorTokens('ring'),
 		target: createToken(`ring-target`, {
-			tag: '-system',
+			tag: 'system',
 			type: 'color',
 			inherits: false,
 		}),
@@ -90,7 +90,7 @@ export const $systemProps = {
 	ringOffset: {
 		...makeSystemColorTokens('ring-offset'),
 		target: createToken(`ring-offset-target`, {
-			tag: '-system',
+			tag: 'system',
 			type: 'color',
 			inherits: false,
 		}),
@@ -107,17 +107,17 @@ export type SystemTokens = typeof $systemProps;
 function makeSystemColorTokens(name: string) {
 	return {
 		applied: createToken(`${name}-applied`, {
-			tag: '-system',
+			tag: 'system',
 			type: 'color',
 			inherits: true,
 		}),
 		$root: createToken(`${name}`, {
-			tag: '-system',
+			tag: 'system',
 			type: 'color',
 			inherits: false,
 		}),
 		opacity: createToken(`${name}-op`, {
-			tag: '-system',
+			tag: 'system',
 			type: 'number',
 			inherits: false,
 			fallback: '100%',

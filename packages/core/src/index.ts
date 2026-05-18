@@ -1,3 +1,4 @@
+export * from '@arbor-css/functions';
 export {
 	$globalProps,
 	$systemProps,

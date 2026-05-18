@@ -1,9 +1,14 @@
-import { getStructuredTokensMap, Token } from '@arbor-css/core';
+import {
+	AnyArborPreset,
+	ArborFunction,
+	Token,
+	flattenToPropsList,
+} from '@arbor-css/core';
 import * as vscode from 'vscode';
 import { findConfigFile, loadConfigFile } from './configLoader.js';
 
-/** Flat map from dot-path to token entry */
-export type TokenMap = Map<string, Token>;
+/** Flat map of name->token */
+export type TokenMap = Map<string, Token | ArborFunction>;
 
 /**
  * Manages loading, caching, and watching of the user's Arbor config file.
@@ -11,17 +16,19 @@ export type TokenMap = Map<string, Token>;
  */
 export class TokenProvider {
 	private tokenMap: TokenMap = new Map();
-	private preset: any = null;
+	private preset: AnyArborPreset | null = null;
 	private configPath: string | null = null;
 	private watcher: vscode.FileSystemWatcher | null = null;
 	private onChangeEmitter = new vscode.EventEmitter<void>();
+
+	constructor(private outputChannel: vscode.OutputChannel) {}
 
 	readonly onDidChange = this.onChangeEmitter.event;
 
 	async initialize(workspaceFolder: vscode.WorkspaceFolder): Promise<void> {
 		const configPath = await findConfigFile(workspaceFolder.uri.fsPath);
 		if (!configPath) {
-			console.log('[arbor-css] No arbor.config.ts found in workspace');
+			this.outputChannel.appendLine('No arbor.config.ts found in workspace');
 			return;
 		}
 
@@ -37,9 +44,21 @@ export class TokenProvider {
 		if (!preset) return;
 
 		this.preset = preset;
-		this.tokenMap = getStructuredTokensMap(preset, { delimiter: '.' });
-		console.log(
-			`[arbor-css] Loaded config from ${this.configPath} (${this.tokenMap.size} tokens)`,
+		const tokensList = flattenToPropsList(preset);
+		this.tokenMap = new Map();
+		for (const token of tokensList) {
+			this.tokenMap.set(token.name, token);
+		}
+		for (const func of preset.functions ?
+			Object.values(preset.functions)
+		:	[]) {
+			this.tokenMap.set(func.name, func);
+		}
+		this.outputChannel.appendLine(
+			`Loaded config from ${this.configPath} (${this.tokenMap.size} tokens / functions)`,
+		);
+		this.outputChannel.appendLine(
+			`Example token: ${[...this.tokenMap.entries()][0]}`,
 		);
 		this.onChangeEmitter.fire();
 	}
@@ -57,32 +76,49 @@ export class TokenProvider {
 		return this.tokenMap;
 	}
 
-	getPreset(): any {
+	getPreset(): AnyArborPreset | null {
 		return this.preset;
 	}
 
-	/** Returns all next-level segments for a given dot-path prefix */
-	getCompletionSegments(
-		prefix: string,
-	): Array<{ segment: string; isLeaf: boolean }> {
-		const results = new Map<string, boolean>();
-		const searchPrefix = prefix ? prefix + '.' : '';
+	/** Returns all next-level segments for a given prefix */
+	getCompletions(
+		start: string,
+	): Array<{ name: string; value: Token | ArborFunction | 'namespace' }> {
+		const results = new Map<string, Token | ArborFunction | 'namespace'>();
+		this.outputChannel.appendLine(
+			`Getting completion segments for text "${start}"`,
+		);
 
-		for (const [p] of this.tokenMap) {
-			if (!p.startsWith(searchPrefix)) continue;
-			const rest = p.slice(searchPrefix.length);
-			const nextSegment = rest.split('.')[0];
-			if (!nextSegment) continue;
+		for (const [p, token] of this.tokenMap) {
+			if (!p.startsWith(start)) continue;
+			const rest = p.slice(start.length);
+			// skip extended completion segments, focus on next items.
+			// i.e. when we get --color, we want to show --color-main or --color-action,
+			// not --color-main-ink etc
+			// to do this, we ignore any matches where there's more than 1 - in the remainder
+			const hyphenCount = (rest.match(/-/g) || []).length;
+			if (hyphenCount > 1) continue;
+			const partial = rest?.includes('-');
 
-			const isLeaf = rest === nextSegment; // no more dots = it's a leaf
-			if (!results.has(nextSegment) || isLeaf) {
-				results.set(nextSegment, isLeaf);
+			if (partial) {
+				const segment = start + rest.slice(0, rest.indexOf('-'));
+				results.set(segment, 'namespace');
+			} else {
+				results.set(token.name, this.tokenMap.get(p)!);
 			}
 		}
 
-		return Array.from(results.entries()).map(([segment, isLeaf]) => ({
-			segment,
-			isLeaf,
+		if (results.size === 0) {
+			this.outputChannel.appendLine(`No completions found for text "${start}"`);
+		} else {
+			this.outputChannel.appendLine(
+				`Found completions for text "${start}": ${[...results.keys()].join(', ')}`,
+			);
+		}
+
+		return Array.from(results.entries()).map(([name, value]) => ({
+			name,
+			value,
 		}));
 	}
 

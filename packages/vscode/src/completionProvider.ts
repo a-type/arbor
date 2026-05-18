@@ -1,23 +1,13 @@
+import { isFunction, isToken, TOKEN_PREFIX } from '@arbor-css/core';
 import * as vscode from 'vscode';
+import { TOKEN_RE_END } from './regex.js';
 import type { TokenProvider } from './tokenProvider.js';
 
-/** Matches `$.` (possibly with partial path) in CSS property names or values */
-const TOKEN_START_RE = /\$\.([\w.]*)$/;
-
-/**
- * Returns true if the cursor is on the property side of a declaration
- * (i.e., the `$.token.path` appears before any `:` on the line).
- */
-function isPropertySideContext(
-	linePrefix: string,
-	matchStart: number,
-): boolean {
-	const precedingText = linePrefix.slice(0, matchStart);
-	return !precedingText.includes(':');
-}
-
 export class ArborCompletionProvider implements vscode.CompletionItemProvider {
-	constructor(private readonly tokenProvider: TokenProvider) {}
+	constructor(
+		private readonly tokenProvider: TokenProvider,
+		private readonly outputChannel: vscode.OutputChannel,
+	) {}
 
 	provideCompletionItems(
 		document: vscode.TextDocument,
@@ -26,65 +16,66 @@ export class ArborCompletionProvider implements vscode.CompletionItemProvider {
 		const linePrefix = document
 			.lineAt(position)
 			.text.slice(0, position.character);
-		const match = TOKEN_START_RE.exec(linePrefix);
+		const match = TOKEN_RE_END().exec(linePrefix);
 		if (!match) return undefined;
 
-		const currentPath = match[1]; // everything typed after `$.`
-		const matchStart = linePrefix.length - match[0].length;
-		const onPropertySide = isPropertySideContext(linePrefix, matchStart);
-		// Remove the trailing segment being typed (we complete the next segment)
-		const lastDot = currentPath.lastIndexOf('.');
-		const prefix = lastDot >= 0 ? currentPath.slice(0, lastDot) : '';
-		const partialSegment =
-			lastDot >= 0 ? currentPath.slice(lastDot + 1) : currentPath;
-
-		const segments = this.tokenProvider.getCompletionSegments(prefix);
+		const matched = match[1] ?? TOKEN_PREFIX;
+		const segments = this.tokenProvider.getCompletions(matched);
 		if (!segments.length) return undefined;
 
-		return segments
-			.filter(({ segment }) =>
-				partialSegment ? segment.startsWith(partialSegment) : true,
-			)
-			.map(({ segment, isLeaf }) => {
-				const fullPath = prefix ? `${prefix}.${segment}` : segment;
-				const tokenEntry =
-					isLeaf ? this.tokenProvider.getTokenMap().get(fullPath) : undefined;
+		return segments.map(({ name, value }) => {
+			const item = new vscode.CompletionItem(
+				name,
+				value ?
+					isToken(value) ? vscode.CompletionItemKind.Variable
+					:	vscode.CompletionItemKind.Function
+				:	vscode.CompletionItemKind.Module,
+			);
+			// since "name" is the entire token name (--color-main-ink), e.g.
+			// we need to replace the matched text with the full token name, not just the segment (main-ink)
+			item.range = new vscode.Range(
+				position.line,
+				position.character - matched.length,
+				position.line,
+				position.character,
+			);
+			item.filterText = name;
+			item.insertText = name;
 
-				const item = new vscode.CompletionItem(
-					segment,
-					isLeaf ?
-						vscode.CompletionItemKind.Variable
-					:	vscode.CompletionItemKind.Module,
+			if (isToken(value)) {
+				item.detail = value.name;
+				item.documentation = new vscode.MarkdownString(
+					[
+						`**CSS property:** \`${value.name}\``,
+						`**Purpose:** ${value.purpose}`,
+						'**Type:** `' + value.type + '`',
+					].join('\n\n'),
 				);
-
-				if (tokenEntry) {
-					item.detail = onPropertySide ? tokenEntry.name : tokenEntry.var;
-					item.documentation = new vscode.MarkdownString(
-						[
-							onPropertySide ?
-								`**Assigns CSS variable:** \`${tokenEntry.name}\``
-							:	`**CSS property:** \`${tokenEntry.name}\``,
-
-							`**Purpose:** ${tokenEntry.purpose}`,
-						].join('\n\n'),
-					);
-					if (tokenEntry.purpose === 'color') {
-						item.kind = vscode.CompletionItemKind.Color;
-					}
-				} else {
-					item.detail = `Arbor token namespace`;
+				if (value.purpose === 'color') {
+					item.kind = vscode.CompletionItemKind.Color;
 				}
-
-				// If it's a namespace (not a leaf), auto-insert a `.` to continue the path
-				if (!isLeaf) {
-					item.insertText = new vscode.SnippetString(`${segment}.`);
-					item.command = {
-						command: 'editor.action.triggerSuggest',
-						title: 'Trigger completions',
-					};
-				}
-
-				return item;
-			});
+			} else if (isFunction(value)) {
+				item.detail = value.name + `(${value.parameters.join(', ')})`;
+				item.documentation = new vscode.MarkdownString(
+					[
+						`**CSS function:** \`${value.name}()\``,
+						value.description ? `**Description:** ${value.description}` : null,
+						'**Parameters:**',
+						...value.parameters.map((p) => `- \`${p}\``),
+					]
+						.filter(Boolean)
+						.join('\n\n'),
+				);
+			} else {
+				item.detail = `Arbor token namespace`;
+				// Namespace: replace matched word with full path + '-' to continue the path
+				item.insertText = new vscode.SnippetString(`${item.insertText!}-`);
+				item.command = {
+					command: 'editor.action.triggerSuggest',
+					title: 'Trigger completions',
+				};
+			}
+			return item;
+		});
 	}
 }
