@@ -149,36 +149,23 @@ export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
 			const colors = compileColors({
 				ranges: normalizedConfig.colors.ranges,
 				schemes: normalizedConfig.colors.schemes,
-				globals,
-				globalProps: context.$systemTokens.globals,
+				context,
 			});
 
-			const typography = compileTypography(
-				{
-					...normalizedConfig.typography,
-					globals,
-				},
-				{ globalProps: context.$systemTokens.globals },
-			);
+			const typography = compileTypography({
+				...normalizedConfig.typography,
+				context,
+			});
 
-			const spacing = compileSpacing(
-				{
-					...normalizedConfig.spacing,
-					globals,
-				},
-				{ globalProps: context.$systemTokens.globals },
-			);
+			const spacing = compileSpacing({
+				...normalizedConfig.spacing,
+				context,
+			});
 
-			const shadows = compileShadows(
-				{
-					...normalizedConfig.shadows,
-					globals,
-				},
-				{
-					globalProps: context.$systemTokens.globals,
-					dynamicProps: context.$systemTokens.dynamic,
-				},
-			);
+			const shadows = compileShadows({
+				...normalizedConfig.shadows,
+				context,
+			});
 
 			const primitives = createPrimitives({
 				colors,

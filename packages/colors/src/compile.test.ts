@@ -1,8 +1,4 @@
-import {
-	createGlobalContext,
-	createGlobals,
-	GlobalConfig,
-} from '@arbor-css/globals';
+import { createGlobalContext } from '@arbor-css/globals';
 import { expect, it } from 'vitest';
 import { compileColors } from './compile.js';
 import { createColorRange, defaultRangeNames } from './ranges.js';
@@ -22,7 +18,7 @@ it('compiles a set of color ranges with default schemes and no precalculated glo
 			},
 		},
 		schemes: {},
-		globalProps: ctx.$systemTokens.globals,
+		context: ctx,
 	});
 
 	expect(compiled).toMatchInlineSnapshot(`
@@ -104,19 +100,19 @@ it('compiles a set of color ranges with a custom scheme', () => {
 		schemes: {
 			custom: {
 				tag: '👌',
-				getColorRange: (config, { globalProps: gp }) =>
+				getColorRange: (config, ctx) =>
 					createColorRange(
 						config,
 						{
 							lightness: ($) => $.val('0'),
 							chroma: ($) => $.val('0'),
 						},
-						{ globalProps: gp },
+						ctx,
 					),
 				isDark: true,
 			},
 		},
-		globalProps: ctx.$systemTokens.globals,
+		context: ctx,
 	});
 
 	expect(compiled).toMatchInlineSnapshot(`
@@ -213,8 +209,10 @@ it('compiles a set of color ranges with a custom scheme', () => {
 });
 
 it('precomputes colors when globals are provided', () => {
-	const globals: GlobalConfig = createGlobals({
-		saturation: 0.5,
+	const ctx = createGlobalContext({
+		globals: {
+			saturation: 0.5,
+		},
 	});
 	const compiled = compileColors({
 		ranges: {
@@ -224,8 +222,7 @@ it('precomputes colors when globals are provided', () => {
 			},
 		},
 		schemes: {},
-		globals,
-		globalProps: ctx.$systemTokens.globals,
+		context: ctx,
 	});
 
 	expect(compiled).toMatchInlineSnapshot(`
@@ -276,7 +273,7 @@ it('provides default range names', () => {
 			},
 		},
 		schemes: {},
-		globalProps: ctx.$systemTokens.globals,
+		context: ctx,
 	});
 
 	for (const name of defaultRangeNames) {
@@ -296,10 +293,7 @@ it('supports color-level saturation', () => {
 			},
 		},
 		schemes: {},
-		globals: {
-			saturation: 1,
-		},
-		globalProps: ctx.$systemTokens.globals,
+		context: ctx,
 	});
 
 	const matchChroma = /oklch\((.*)\)/;
@@ -325,7 +319,7 @@ it('supports hue defined as a CSS property', () => {
 			},
 		},
 		schemes: {},
-		globalProps: ctx.$systemTokens.globals,
+		context: ctx,
 	});
 
 	expect(compiled.dark.colors.primary.light).toMatchInlineSnapshot(

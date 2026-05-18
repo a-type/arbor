@@ -4,28 +4,47 @@ import {
 	createTokenFactory,
 	DEFAULT_TOKEN_PREFIX,
 } from '@arbor-css/tokens';
+import { defaultGlobals, GlobalConfig } from './globalProps.js';
 import { createSystemProps, SystemTokens } from './systemProps.js';
 
 export interface GlobalContextConfig {
 	tokenPrefix?: string;
+	globals?: Partial<GlobalConfig>;
 }
 
 export interface GlobalContext {
 	createToken: CreateToken;
 	createFunction: CreateFunction;
 	tokenPrefix: string;
+	globals: GlobalConfig;
 	$systemTokens: SystemTokens;
+	getGlobalPropertyAssignments(): Record<string, string>;
 }
 
 export function createGlobalContext(config: GlobalContextConfig = {}) {
 	const tokenPrefix = config.tokenPrefix ?? DEFAULT_TOKEN_PREFIX;
 	const createToken = createTokenFactory({ tokenPrefix });
+	const $systemTokens = createSystemProps({ createToken });
+	const globals = {
+		...defaultGlobals,
+		...config.globals,
+	};
 	return {
 		createFunction: createFunctionFactory({ tokenPrefix }),
 		createToken,
 		tokenPrefix,
-		$systemTokens: createSystemProps({
-			createToken,
-		}),
+		$systemTokens,
+		globals,
+		getGlobalPropertyAssignments() {
+			const assignments: Record<string, string> = {};
+			let key: keyof GlobalConfig;
+			for (key of Object.keys(
+				$systemTokens.globals,
+			) as (keyof GlobalConfig)[]) {
+				const token = $systemTokens.globals[key];
+				assignments[token.name] = globals[key].toString();
+			}
+			return assignments;
+		},
 	};
 }

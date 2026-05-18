@@ -1,8 +1,5 @@
 import { CalcEvaluationContext } from '@arbor-css/calc';
-import {
-	GlobalConfig,
-	GlobalConfigProps,
-} from '@arbor-css/globals';
+import { GlobalContext } from '@arbor-css/globals';
 import {
 	ColorRangeConfig,
 	CompiledColorRange,
@@ -57,18 +54,14 @@ export function compileColors<
 >({
 	ranges,
 	schemes: userSchemes,
-	globals,
-	globalProps,
+	context,
 }: {
 	ranges: TRanges;
 	schemes?: TSchemes;
-	globals?: Partial<GlobalConfig>;
-	globalProps: GlobalConfigProps;
+	context: GlobalContext;
 }) {
 	const evalContext: CalcEvaluationContext = {
-		propertyValues: {
-			[globalProps.saturation.name]: globals?.saturation?.toString(),
-		},
+		propertyValues: context.getGlobalPropertyAssignments(),
 	};
 	const schemes = {
 		light: defaultLightScheme,
@@ -85,17 +78,13 @@ export function compileColors<
 					(rangeAcc, rangeName) => {
 						const rangeConfig = ranges[rangeName as keyof TRanges];
 
-						const uncompiled = scheme.getColorRange(rangeConfig, {
-							globalProps,
-						});
+						const uncompiled = scheme.getColorRange(rangeConfig, context);
 
 						const compiled = compileRange(uncompiled, evalContext);
 
 						const uncompiledNeutralRange = createNeutralDerivedRange(
 							uncompiled,
-							{
-								globalProps,
-							},
+							context,
 						);
 
 						rangeAcc[rangeName as keyof TRanges] = {

@@ -13,7 +13,7 @@ it('assigns color and neutral $root to mid when mid exists', () => {
 			},
 		},
 		schemes: {},
-		globalProps: ctx.$systemTokens.globals,
+		context: ctx,
 	});
 
 	expect(compiled.light.colors.primary.$root).toBe(
@@ -33,7 +33,7 @@ it('assigns $root to midpoint when mid is absent', () => {
 			},
 		},
 		schemes: {},
-		globalProps: ctx.$systemTokens.globals,
+		context: ctx,
 	});
 
 	expect(compiled.light.colors.primary.$root).toBe(

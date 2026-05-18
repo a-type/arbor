@@ -1,8 +1,5 @@
 import { $, computeEquation, printComputationResult } from '@arbor-css/calc';
-import {
-	GlobalConfig,
-	GlobalConfigProps,
-} from '@arbor-css/globals';
+import { GlobalContext } from '@arbor-css/globals';
 
 export const defaultSpacingLevels = [
 	'2xs',
@@ -16,16 +13,13 @@ export const defaultSpacingLevels = [
 ] as const;
 export type DefaultSpacingLevel = (typeof defaultSpacingLevels)[number];
 
-const defaultSpacingEquation = (
-	step: number,
-	globalProps: GlobalConfigProps,
-) =>
+const defaultSpacingEquation = (step: number, context: GlobalContext) =>
 	$.multiply(
 		// calculate rem value of the spacing relative to the
 		// font size.
 		$.divide(
-			$.val(globalProps.baseSpacingSize.var),
-			$.val(globalProps.baseFontSize.var),
+			$.val(context.$systemTokens.globals.baseSpacingSize.var),
+			$.val(context.$systemTokens.globals.baseFontSize.var),
 		),
 		$.val('1rem'),
 		$.fn('pow', $.val(1.5), $.val(step)),
@@ -36,7 +30,7 @@ export interface SpacingConfig<
 > {
 	levels?: Record<TSpacingLevel, string | number>;
 	defaultLevel?: TSpacingLevel;
-	globals?: GlobalConfig;
+	context: GlobalContext;
 }
 
 export interface CompiledSpacing<
@@ -52,10 +46,7 @@ export interface CompiledSpacing<
 
 export function compileSpacing<
 	TSpacingLevel extends string = DefaultSpacingLevel,
->(
-	config: SpacingConfig<TSpacingLevel>,
-	{ globalProps }: { globalProps: GlobalConfigProps },
-): CompiledSpacing<TSpacingLevel> {
+>(config: SpacingConfig<TSpacingLevel>): CompiledSpacing<TSpacingLevel> {
 	const levelNames =
 		config.levels ?
 			Object.keys(config.levels)
@@ -76,12 +67,12 @@ export function compileSpacing<
 			acc[nameCast] =
 				levelConfig ??
 				printComputationResult(
-					computeEquation(defaultSpacingEquation(i - baseIndex, globalProps), {
-						propertyValues: {
-							[globalProps.baseSpacingSize.name]:
-								config.globals?.baseSpacingSize?.toString(),
+					computeEquation(
+						defaultSpacingEquation(i - baseIndex, config.context),
+						{
+							propertyValues: config.context.getGlobalPropertyAssignments(),
 						},
-					}),
+					),
 				);
 			return acc;
 		},

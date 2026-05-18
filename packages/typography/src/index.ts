@@ -4,10 +4,7 @@ import {
 	computeEquation,
 	printComputationResult,
 } from '@arbor-css/calc';
-import {
-	GlobalConfig,
-	GlobalConfigProps,
-} from '@arbor-css/globals';
+import { GlobalContext } from '@arbor-css/globals';
 
 export interface TypographyLevel {
 	size: string;
@@ -48,17 +45,14 @@ export type TypographyConfig<TLevels extends string = DefaultTypographyLevel> =
 	{
 		levels?: Record<TLevels, Partial<TypographyLevel>>;
 		defaultLevel?: TLevels;
-		globals?: Partial<GlobalConfig>;
 		minSize?: string;
 		maxSize?: string;
+		context: GlobalContext;
 	};
 
 export function compileTypography<
 	TLevels extends string = DefaultTypographyLevel,
->(
-	config: TypographyConfig<TLevels>,
-	{ globalProps }: { globalProps: GlobalConfigProps },
-): CompiledTypography<TLevels> {
+>(config: TypographyConfig<TLevels>): CompiledTypography<TLevels> {
 	const levelNames =
 		config.levels ?
 			Object.keys(config.levels)
@@ -72,9 +66,7 @@ export function compileTypography<
 		: levelNames.indexOf('md' as TLevels);
 
 	const evalContext: CalcEvaluationContext = {
-		propertyValues: {
-			[globalProps.baseFontSize.name]: config.globals?.baseFontSize?.toString(),
-		},
+		propertyValues: config.context.getGlobalPropertyAssignments(),
 	};
 
 	const levels = levelNames.reduce(

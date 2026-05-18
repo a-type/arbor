@@ -1,4 +1,4 @@
-import { GlobalConfigProps } from '@arbor-css/globals';
+import { GlobalContext } from '@arbor-css/globals';
 import {
 	ColorRangeConfig,
 	createColorDarkModeRange,
@@ -11,7 +11,7 @@ export interface SchemeDefinition<
 > {
 	getColorRange: (
 		config: RangeConfig,
-		options: { globalProps: GlobalConfigProps },
+		context: GlobalContext,
 	) => UncompiledColorRange<RangeConfig>;
 	tag: string;
 	isDark: boolean;
