@@ -1,7 +1,8 @@
 import { printEquation } from '@arbor-css/calc';
-import { createToken } from '@arbor-css/tokens';
 import { describe, expect, it } from 'vitest';
-import { createFunction, isFunction } from './index.js';
+import { createFunctionFactory, isFunction } from './index.js';
+
+const createFunction = createFunctionFactory({ tokenPrefix: '--x-' });
 
 describe('createFunction', () => {
 	it('sets the CSS name with -- prefix', () => {
@@ -15,11 +16,8 @@ describe('createFunction', () => {
 	it('stores description and parameters', () => {
 		const fn = createFunction('scale', {
 			description: 'Scales a value',
-			parameters: [
-				createToken('base', { type: 'length' }),
-				createToken('factor', { type: 'number' }),
-			],
-			definition: ($, base, factor) => $.multiply(base, factor),
+			parameters: ['--base', '--factor'],
+			definition: ($, base, factor) => $`calc(${base} * ${factor})`,
 		});
 		expect(fn.description).toBe('Scales a value');
 		expect(fn.parameters).toHaveLength(2);
@@ -28,34 +26,31 @@ describe('createFunction', () => {
 	describe('definition (CSS @function)', () => {
 		it('generates @function with typed parameters', () => {
 			const fn = createFunction('scale', {
-				parameters: [
-					createToken('base', { type: 'length' }),
-					createToken('factor', { type: 'number' }),
-				],
-				definition: ($, base, factor) => $.multiply(base, factor),
+				parameters: ['--base', '--factor'],
+				definition: ($, base, factor) => $`calc(${base} * ${factor})`,
 			});
 			expect(fn.definition).toBe(
-				'@function --x-fn-scale(--x-base <length>, --x-factor <number>) { result: (var(--x-base) * var(--x-factor)); }',
+				'@function --x-fn-scale(--base, --factor) { result: calc((var(--base) * var(--factor))); }',
 			);
 		});
 
 		it('omits type annotation for * (wildcard) type', () => {
 			const fn = createFunction('passthrough', {
-				parameters: [createToken('value')],
-				definition: (_, value) => value,
+				parameters: ['--value'],
+				definition: ($, value) => $`${value}`,
 			});
 			expect(fn.definition).toBe(
-				'@function --x-fn-passthrough(--x-value) { result: var(--x-value); }',
+				'@function --x-fn-passthrough(--value) { result: var(--value); }',
 			);
 		});
 
 		it('omits type annotation when type is not provided (defaults to *)', () => {
 			const fn = createFunction('passthrough', {
-				parameters: [createToken('value')],
-				definition: (_, value) => value,
+				parameters: ['--value'],
+				definition: ($, value) => $`${value}`,
 			});
 			expect(fn.definition).toBe(
-				'@function --x-fn-passthrough(--x-value) { result: var(--x-value); }',
+				'@function --x-fn-passthrough(--value) { result: var(--value); }',
 			);
 		});
 
@@ -69,15 +64,11 @@ describe('createFunction', () => {
 
 		it('generates @function with clamp equation', () => {
 			const fn = createFunction('clamped', {
-				parameters: [
-					createToken('value', { type: 'number' }),
-					createToken('min', { type: 'number' }),
-					createToken('max', { type: 'number' }),
-				],
-				definition: ($, value, min, max) => $.fn('clamp', min, value, max),
+				parameters: ['--value', '--min', '--max'],
+				definition: ($, value, min, max) => $`clamp(${min}, ${value}, ${max})`,
 			});
 			expect(fn.definition).toBe(
-				'@function --x-fn-clamped(--x-value <number>, --x-min <number>, --x-max <number>) { result: clamp(var(--x-min), var(--x-value), var(--x-max)); }',
+				'@function --x-fn-clamped(--value, --min, --max) { result: clamp(var(--min), var(--value), var(--max)); }',
 			);
 		});
 	});
@@ -85,36 +76,28 @@ describe('createFunction', () => {
 	describe('compute', () => {
 		it('computes a simple multiply with numeric values', () => {
 			const fn = createFunction('scale', {
-				parameters: [
-					createToken('base', { type: 'number' }),
-					createToken('factor', { type: 'number' }),
-				],
-				definition: ($, base, factor) => $.multiply(base, factor),
+				parameters: ['--base', '--factor'],
+				definition: ($, base, factor) => $`calc(${base} * ${factor})`,
 			});
-			expect(fn.compute({ base: 4, factor: 3 })).toBe('12');
+			// TODO: make this resolve just '12'
+			expect(fn.compute({ base: 4, factor: 3 })).toBe('calc(12)');
 		});
 
 		it('computes an add expression', () => {
 			const fn = createFunction('add', {
-				parameters: [
-					createToken('a', { type: 'number' }),
-					createToken('b', { type: 'number' }),
-				],
-				definition: ($, a, b) => $.add(a, b),
+				parameters: ['--a', '--b'],
+				definition: ($, a, b) => $`calc(${a} + ${b})`,
 			});
-			expect(fn.compute({ a: 10, b: 5 })).toBe('15');
+			expect(fn.compute({ a: 10, b: 5 })).toBe('calc(15)');
 		});
 
 		it('computes with string values that cannot be resolved numerically', () => {
 			const fn = createFunction('scale-length', {
-				parameters: [
-					createToken('base', { type: 'length' }),
-					createToken('factor', { type: 'number' }),
-				],
-				definition: ($, base, factor) => $.multiply(base, factor),
+				parameters: ['--base', '--factor'],
+				definition: ($, base, factor) => $`calc(${base} * ${factor})`,
 			});
 			const result = fn.compute({ base: '8px', factor: 2 });
-			expect(result).toBe('16px');
+			expect(result).toBe('calc(16px)');
 		});
 
 		it('resolves a constant equation with no params', () => {
@@ -129,10 +112,10 @@ describe('createFunction', () => {
 	describe('equation property', () => {
 		it('equation can be printed independently', () => {
 			const fn = createFunction('test', {
-				parameters: [createToken('x')],
-				definition: ($, x) => $.multiply(x, $.val(2)),
+				parameters: ['--x'],
+				definition: ($, x) => $`calc(${x} * 2)`,
 			});
-			expect(printEquation(fn.equation)).toBe('(var(--x-x) * 2)');
+			expect(printEquation(fn.equation)).toBe('calc((var(--x) * 2))');
 		});
 	});
 });

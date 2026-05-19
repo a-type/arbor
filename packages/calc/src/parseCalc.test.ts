@@ -1,7 +1,9 @@
-import { createToken } from '@arbor-css/tokens';
+import { createTokenFactory } from '@arbor-css/tokens';
 import { describe, expect, it } from 'vitest';
 import { $, computeEquation, Equation, printEquation } from './index.js';
 import { css } from './parseCalc.js';
+
+const createToken = createTokenFactory({ tokenPrefix: '--x-' });
 
 const tokenA = createToken('foo');
 const tokenB = createToken('bar');

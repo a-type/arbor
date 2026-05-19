@@ -1,6 +1,8 @@
-import { createToken } from '@arbor-css/tokens';
+import { createTokenFactory } from '@arbor-css/tokens';
 import { describe, expect, it } from 'vitest';
 import { $, computeEquation, printEquation } from './calcTree.js';
+
+const createToken = createTokenFactory({ tokenPrefix: '--x-' });
 
 const tokenA = createToken('foo');
 const tokenB = createToken('bar');
@@ -51,7 +53,10 @@ describe('calc computeEquation', () => {
 		const result = computeEquation($.token(tokenA, $.val('10px')), {
 			propertyValues: {},
 		});
-		expect(result).toEqual({ value: `var(${tokenA.name}, 10px)`, type: 'calc' });
+		expect(result).toEqual({
+			value: `var(${tokenA.name}, 10px)`,
+			type: 'calc',
+		});
 	});
 
 	it('supports grouping with parentheses', () => {

@@ -7,7 +7,8 @@
 	"scripts": {
 		"dev": "pnpm run -r --parallel dev",
 		"bump": "bumpp -r",
-		"build": "pnpm run -r build"
+		"build": "pnpm run -r build",
+		"test": "pnpm run -r test:ci"
 	},
 	"keywords": [],
 	"author": "",
