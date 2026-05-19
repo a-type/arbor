@@ -6,11 +6,11 @@ const watch = process.argv.includes('--watch');
 const options = {
 	entryPoints: ['src/extension.ts'],
 	bundle: true,
-	outfile: 'dist/extension.cjs',
+	outfile: 'dist/extension.mjs',
 	external: ['vscode'],
 	platform: 'node',
-	format: 'cjs',
-	target: 'node18',
+	format: 'esm',
+	target: 'node22',
 	sourcemap: true,
 	minify: false,
 };

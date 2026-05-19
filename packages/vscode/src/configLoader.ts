@@ -1,6 +1,6 @@
 import { AnyArborPreset } from '@arbor-css/core';
 import escalade from 'escalade';
-import { createJiti } from 'jiti';
+import { pathToFileURL } from 'node:url';
 
 export const CONFIG_FILE_NAMES = [
 	'arbor.config.ts',
@@ -26,11 +26,8 @@ export async function loadConfigFile(
 	configPath: string,
 ): Promise<AnyArborPreset | null> {
 	try {
-		const jiti = createJiti(__filename, {
-			moduleCache: false,
-			fsCache: false,
-		});
-		const mod = await jiti.import(configPath);
+		const specifier = pathToFileURL(configPath).href;
+		const mod = await import(specifier);
 		return (mod as any).default ?? mod;
 	} catch (err) {
 		console.error(`[arbor-css] Failed to load config at ${configPath}:`, err);

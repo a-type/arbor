@@ -1,10 +1,10 @@
 import { isFunction, isToken, resolveTokenReferences } from '@arbor-css/core';
 import * as vscode from 'vscode';
-import { createTokenRegex, OKLCH_RE } from './regex.js';
+import { createTokenRegex } from './regex.js';
 import type { TokenProvider } from './tokenProvider.js';
 
 function makeColorSwatch(color: string): string {
-	const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"><rect width="12" height="12" rx="2" fill="${color}"/></svg>`;
+	const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"><rect width="12" height="12" rx="2" fill="${color}" stroke="black"/></svg>`;
 	const encoded = Buffer.from(svg).toString('base64');
 	return `![color swatch](data:image/svg+xml;base64,${encoded})`;
 }
@@ -48,18 +48,12 @@ export class ArborHoverProvider implements vscode.HoverProvider {
 			md.appendMarkdown(`**Arbor token:** \`${entry.name}\`\n\n`);
 			if (isToken(entry)) {
 				md.appendMarkdown(`**Purpose:** ${entry.purpose}`);
+				const resolved = resolveTokenReferences(state.preset, entry.name);
 
-				if (entry.purpose === 'color') {
-					const resolved = resolveTokenReferences(state.preset, entry.name);
-					if (resolved) {
-						if (OKLCH_RE.test(resolved)) {
-							md.appendMarkdown(
-								`\n\n${makeColorSwatch(resolved)} \`${resolved}\``,
-							);
-						} else {
-							md.appendMarkdown(`\n\n**Color value:** \`${resolved}\``);
-						}
-					}
+				if (entry.purpose === 'color' && resolved) {
+					md.appendMarkdown(`\n\n${makeColorSwatch(resolved)} \`${resolved}\``);
+				} else {
+					md.appendMarkdown(`\n\n**Value:** \`${resolved}\``);
 				}
 			} else if (isFunction(entry)) {
 				md.appendMarkdown(

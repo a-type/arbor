@@ -25,7 +25,10 @@ interface ConfigState {
  */
 export class TokenProvider {
 	private readonly configPathCache = new Map<string, string | null>();
-	private readonly configStateCache = new Map<string, Promise<ConfigState | null>>();
+	private readonly configStateCache = new Map<
+		string,
+		Promise<ConfigState | null>
+	>();
 	private readonly configWatchers = new Map<string, vscode.FileSystemWatcher>();
 	private readonly workspaceWatcher: vscode.FileSystemWatcher;
 	private onChangeEmitter = new vscode.EventEmitter<void>();
@@ -55,15 +58,19 @@ export class TokenProvider {
 		document: vscode.TextDocument,
 	): Promise<ConfigState | null> {
 		const configPath = await this.getConfigPathForDocument(document);
-		if (!configPath) return null;
+		if (!configPath) {
+			return null;
+		}
 		return await this.getConfigState(configPath);
 	}
 
 	async getTokenPrefixForDocument(
 		document: vscode.TextDocument,
 	): Promise<string> {
-		return (await this.getStateForDocument(document))?.tokenPrefix ??
-			DEFAULT_TOKEN_PREFIX;
+		return (
+			(await this.getStateForDocument(document))?.tokenPrefix ??
+			DEFAULT_TOKEN_PREFIX
+		);
 	}
 
 	async getCompletions(
@@ -102,7 +109,9 @@ export class TokenProvider {
 		return configPath;
 	}
 
-	private async getConfigState(configPath: string): Promise<ConfigState | null> {
+	private async getConfigState(
+		configPath: string,
+	): Promise<ConfigState | null> {
 		const cached = this.configStateCache.get(configPath);
 		if (cached) return await cached;
 
@@ -116,7 +125,9 @@ export class TokenProvider {
 		return state;
 	}
 
-	private async loadConfigState(configPath: string): Promise<ConfigState | null> {
+	private async loadConfigState(
+		configPath: string,
+	): Promise<ConfigState | null> {
 		const preset = await loadConfigFile(configPath);
 		if (!preset) return null;
 
@@ -124,7 +135,9 @@ export class TokenProvider {
 		for (const token of flattenToPropsList(preset)) {
 			tokenMap.set(token.name, token);
 		}
-		for (const func of preset.functions ? Object.values(preset.functions) : []) {
+		for (const func of preset.functions ?
+			Object.values(preset.functions)
+		:	[]) {
 			tokenMap.set(func.name, func);
 		}
 
