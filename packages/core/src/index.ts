@@ -9,6 +9,7 @@ export * from '@arbor-css/modes';
 export {
 	createArbor,
 	createArborPreset,
+	type ArborPresetInstance,
 	type CreateArborPresetConfig,
 } from '@arbor-css/preset';
 export * from '@arbor-css/preset/config';

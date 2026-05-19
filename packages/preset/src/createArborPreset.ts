@@ -57,9 +57,9 @@ export interface CreateArborPresetConfig<
 		defaultScheme?: keyof CompiledColors<TRanges, TSchemes>;
 		schemeTags?: Record<string, string>;
 	};
-	typography?: Omit<TypographyConfig, 'globals'>;
-	spacing?: Omit<SpacingConfig, 'globals'>;
-	shadows?: Omit<ShadowConfig, 'globals'>;
+	typography?: Omit<TypographyConfig, 'context'>;
+	spacing?: Omit<SpacingConfig, 'context'>;
+	shadows?: Omit<ShadowConfig, 'context'>;
 	baseMode?: DeepPartial<ModeValues<ArborModeSchemaDefinition>>;
 	functions?: PresetFunctions;
 }
