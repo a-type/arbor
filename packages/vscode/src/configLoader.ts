@@ -20,7 +20,7 @@ export async function loadConfigFile(
 	configPath: string,
 ): Promise<AnyArborPreset | null> {
 	try {
-		const jiti = createJiti(import.meta.url, {
+		const jiti = createJiti(__filename, {
 			moduleCache: false,
 			fsCache: false,
 		});

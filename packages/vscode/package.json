@@ -1,6 +1,6 @@
 {
 	"name": "arbor-css-vscode",
-	"type": "module",
+	"type": "commonjs",
 	"displayName": "Arbor CSS",
 	"description": "Token autocomplete, hover previews, and validation for Arbor CSS presets",
 	"version": "0.0.1",
@@ -42,7 +42,7 @@
 			}
 		]
 	},
-	"main": "./dist/extension.mjs",
+	"main": "./dist/extension.cjs",
 	"scripts": {
 		"compile": "node esbuild.mjs",
 		"build": "pnpm compile && pnpm vsce:package",
