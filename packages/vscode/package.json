@@ -4,6 +4,7 @@
 	"displayName": "Arbor CSS",
 	"description": "Token autocomplete, hover previews, and validation for Arbor CSS presets",
 	"version": "0.0.1",
+	"private": true,
 	"publisher": "a-type",
 	"engines": {
 		"vscode": "^1.90.0"
