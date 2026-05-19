@@ -12,14 +12,15 @@ function makeColorSwatch(color: string): string {
 export class ArborHoverProvider implements vscode.HoverProvider {
 	constructor(private readonly tokenProvider: TokenProvider) {}
 
-	provideHover(
+	async provideHover(
 		document: vscode.TextDocument,
 		position: vscode.Position,
-	): vscode.Hover | undefined {
+	): Promise<vscode.Hover | undefined> {
 		const line = document.lineAt(position).text;
-		const tokenMap = this.tokenProvider.getTokenMap();
-		const preset = this.tokenProvider.getPreset();
-		const tokenRegex = createTokenRegex(this.tokenProvider.getTokenPrefix());
+		const state = await this.tokenProvider.getStateForDocument(document);
+		if (!state) return undefined;
+
+		const tokenRegex = createTokenRegex(state.tokenPrefix);
 
 		// Find all token references on this line and see if the cursor is inside one
 		for (const match of line.matchAll(tokenRegex.anywhere())) {
@@ -29,7 +30,7 @@ export class ArborHoverProvider implements vscode.HoverProvider {
 			if (position.character < start || position.character > end) continue;
 
 			const path = match[1];
-			const entry = tokenMap.get(path);
+			const entry = state.tokenMap.get(path);
 
 			const range = new vscode.Range(position.line, start, position.line, end);
 
@@ -48,8 +49,8 @@ export class ArborHoverProvider implements vscode.HoverProvider {
 			if (isToken(entry)) {
 				md.appendMarkdown(`**Purpose:** ${entry.purpose}`);
 
-				if (entry.purpose === 'color' && preset) {
-					const resolved = resolveTokenReferences(preset, entry.name);
+				if (entry.purpose === 'color') {
+					const resolved = resolveTokenReferences(state.preset, entry.name);
 					if (resolved) {
 						if (OKLCH_RE.test(resolved)) {
 							md.appendMarkdown(

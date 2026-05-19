@@ -9,19 +9,20 @@ export class ArborCompletionProvider implements vscode.CompletionItemProvider {
 		private readonly outputChannel: vscode.OutputChannel,
 	) {}
 
-	provideCompletionItems(
+	async provideCompletionItems(
 		document: vscode.TextDocument,
 		position: vscode.Position,
-	): vscode.CompletionItem[] | undefined {
+	): Promise<vscode.CompletionItem[] | undefined> {
 		const linePrefix = document
 			.lineAt(position)
 			.text.slice(0, position.character);
-		const tokenPrefix = this.tokenProvider.getTokenPrefix();
+		const tokenPrefix =
+			await this.tokenProvider.getTokenPrefixForDocument(document);
 		const match = createTokenRegex(tokenPrefix).end().exec(linePrefix);
 		if (!match) return undefined;
 
 		const matched = match[1] ?? tokenPrefix;
-		const segments = this.tokenProvider.getCompletions(matched);
+		const segments = await this.tokenProvider.getCompletions(document, matched);
 		if (!segments.length) return undefined;
 
 		return segments.map(({ name, value }) => {

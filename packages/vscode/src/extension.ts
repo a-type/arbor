@@ -11,26 +11,26 @@ export function activate(context: vscode.ExtensionContext): void {
 
 	const tokenProvider = new TokenProvider(outputChannel);
 
-	// Initialize per workspace folder
-	const workspaceFolders = vscode.workspace.workspaceFolders;
-	if (workspaceFolders?.length) {
-		// Use the first workspace folder; multi-root workspaces would need per-folder providers
-		tokenProvider.initialize(workspaceFolders[0]).catch((err) => {
-			outputChannel.appendLine(
-				'[arbor-css] Failed to initialize token provider: ' + err,
-			);
-		});
-	}
-
-	// Re-initialize when workspace folders change
 	context.subscriptions.push(
-		vscode.workspace.onDidChangeWorkspaceFolders(async () => {
-			const folders = vscode.workspace.workspaceFolders;
-			if (folders?.length) {
-				await tokenProvider.initialize(folders[0]);
+		vscode.workspace.onDidChangeWorkspaceFolders(() => {
+			tokenProvider.reset();
+		}),
+		vscode.window.onDidChangeActiveTextEditor((editor) => {
+			if (editor) {
+				void tokenProvider.primeDocument(editor.document);
 			}
 		}),
+		vscode.workspace.onDidOpenTextDocument((document) => {
+			void tokenProvider.primeDocument(document);
+		}),
 	);
+
+	for (const document of vscode.workspace.textDocuments) {
+		void tokenProvider.primeDocument(document);
+	}
+	if (vscode.window.activeTextEditor) {
+		void tokenProvider.primeDocument(vscode.window.activeTextEditor.document);
+	}
 
 	/**
 	 * Activate for all CSS, SCSS, and LESS files since Arbor tokens can be used in any of these. We could

@@ -2,12 +2,18 @@ import { AnyArborPreset } from '@arbor-css/core';
 import escalade from 'escalade';
 import { createJiti } from 'jiti';
 
+export const CONFIG_FILE_NAMES = [
+	'arbor.config.ts',
+	'arbor.config.js',
+	'arbor.config.mjs',
+] as const;
+
 /** Searches upward from `fromDir` for an `arbor.config.*` file. */
 export async function findConfigFile(fromDir: string): Promise<string | null> {
 	const found = await escalade(fromDir, (_dir, files) => {
-		if (files.includes('arbor.config.ts')) return 'arbor.config.ts';
-		if (files.includes('arbor.config.js')) return 'arbor.config.js';
-		if (files.includes('arbor.config.mjs')) return 'arbor.config.mjs';
+		for (const fileName of CONFIG_FILE_NAMES) {
+			if (files.includes(fileName)) return fileName;
+		}
 	});
 	return found ?? null;
 }

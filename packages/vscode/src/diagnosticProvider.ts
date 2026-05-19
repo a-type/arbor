@@ -18,9 +18,9 @@ export class ArborDiagnosticProvider {
 	register(context: vscode.ExtensionContext): void {
 		// Validate on open and change
 		context.subscriptions.push(
-			vscode.workspace.onDidOpenTextDocument((doc) => this.validate(doc)),
-			vscode.workspace.onDidChangeTextDocument((e) =>
-				this.validate(e.document),
+			vscode.workspace.onDidOpenTextDocument((doc) => void this.validate(doc)),
+			vscode.workspace.onDidChangeTextDocument(
+				(e) => void this.validate(e.document),
 			),
 			vscode.workspace.onDidCloseTextDocument((doc) =>
 				this.diagnostics.delete(doc.uri),
@@ -40,15 +40,20 @@ export class ArborDiagnosticProvider {
 
 	private validateAll(): void {
 		for (const doc of vscode.workspace.textDocuments) {
-			this.validate(doc);
+			void this.validate(doc);
 		}
 	}
 
-	private validate(document: vscode.TextDocument): void {
+	private async validate(document: vscode.TextDocument): Promise<void> {
 		if (!supportedLanguages.includes(document.languageId)) return;
 
-		const tokenMap = this.tokenProvider.getTokenMap();
-		const tokenRegex = createTokenRegex(this.tokenProvider.getTokenPrefix());
+		const state = await this.tokenProvider.getStateForDocument(document);
+		if (!state) {
+			this.diagnostics.delete(document.uri);
+			return;
+		}
+
+		const tokenRegex = createTokenRegex(state.tokenPrefix);
 		const fileDiagnostics: vscode.Diagnostic[] = [];
 
 		for (let lineIndex = 0; lineIndex < document.lineCount; lineIndex++) {
@@ -56,7 +61,7 @@ export class ArborDiagnosticProvider {
 			for (const match of line.matchAll(tokenRegex.anywhere())) {
 				if (match.index === undefined) continue;
 				const path = match[1];
-				if (!tokenMap.has(path)) {
+				if (!state.tokenMap.has(path)) {
 					const start = new vscode.Position(lineIndex, match.index);
 					const end = new vscode.Position(
 						lineIndex,
