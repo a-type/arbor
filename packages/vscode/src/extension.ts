@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { ArborCompletionProvider } from './completionProvider.js';
-import { ArborDocumentColorProvider } from './documentColorProvider.js';
 import { ArborDiagnosticProvider } from './diagnosticProvider.js';
+import { ArborDocumentColorProvider } from './documentColorProvider.js';
 import { ArborHoverProvider } from './hoverProvider.js';
 import { TokenProvider } from './tokenProvider.js';
 
@@ -78,12 +78,8 @@ export function activate(context: vscode.ExtensionContext): void {
 	new ArborDiagnosticProvider(tokenProvider).register(context);
 	outputChannel.appendLine('Registered diagnostic provider.');
 
-	// Refresh completions when config changes
-	context.subscriptions.push(
-		tokenProvider.onDidChange(() => {
-			void vscode.commands.executeCommand('editor.action.triggerSuggest');
-		}),
-	);
+	// idk what this is meant to do tbh
+	context.subscriptions.push(tokenProvider.onDidChange(() => {}));
 	outputChannel.appendLine('Registered configuration change listener.');
 
 	context.subscriptions.push(tokenProvider);
