@@ -1,4 +1,8 @@
-import { ComputationResult, NumericComputationResult } from './calcTree.js';
+import {
+	ComputationResult,
+	NumericComputationResult,
+	printComputationResult,
+} from './calcTree.js';
 
 function numericToNumber(value: {
 	type: 'numeric';
@@ -26,7 +30,7 @@ function areCompatibleNumerics(values: ComputationResult[]): boolean {
 
 export const functionResolvers: Record<
 	string,
-	(...args: NumericComputationResult[]) => NumericComputationResult
+	(...args: NumericComputationResult[]) => ComputationResult
 > = {
 	sin: (x: NumericComputationResult) => ({
 		type: 'numeric',
@@ -61,7 +65,10 @@ export const functionResolvers: Record<
 	min: (...args: NumericComputationResult[]) => {
 		const unit = args[0].unit;
 		if (!args.every((arg) => arg.unit === unit)) {
-			throw new Error('All arguments to min must have the same unit');
+			return {
+				type: 'calc',
+				value: `min(${args.map((arg) => printComputationResult(arg)).join(', ')})`,
+			};
 		}
 		return {
 			type: 'numeric',
@@ -72,7 +79,10 @@ export const functionResolvers: Record<
 	max: (...args: NumericComputationResult[]) => {
 		const unit = args[0].unit;
 		if (!args.every((arg) => arg.unit === unit)) {
-			throw new Error('All arguments to max must have the same unit');
+			return {
+				type: 'calc',
+				value: `max(${args.map((arg) => printComputationResult(arg)).join(', ')})`,
+			};
 		}
 		return {
 			type: 'numeric',
@@ -86,7 +96,12 @@ export const functionResolvers: Record<
 		max: NumericComputationResult,
 	) => {
 		if (!areCompatibleNumerics([min, val, max])) {
-			throw new Error('All arguments to clamp must have the same unit');
+			return {
+				type: 'calc',
+				value: `clamp(${[min, val, max]
+					.map((arg) => printComputationResult(arg))
+					.join(', ')})`,
+			};
 		}
 		return {
 			type: 'numeric',
