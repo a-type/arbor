@@ -1,6 +1,10 @@
-import { isFunction, isToken, resolveTokenReferences } from '@arbor-css/core';
+import { isFunction, isToken } from '@arbor-css/core';
 import * as vscode from 'vscode';
 import { createTokenRegex } from './regex.js';
+import {
+	resolveColorTokenValue,
+	resolveTokenValue,
+} from './resolvedTokenValue.js';
 import type { TokenProvider } from './tokenProvider.js';
 
 function makeColorSwatch(color: string): string {
@@ -51,12 +55,15 @@ export class ArborHoverProvider implements vscode.HoverProvider {
 				if (entry.description) {
 					md.appendMarkdown(`\n\n${entry.description}`);
 				}
-				const resolved = resolveTokenReferences(state.preset, entry.name);
+				const resolved = resolveTokenValue(state, entry);
+				const resolvedColor = resolveColorTokenValue(state, entry);
 
-				if (entry.purpose === 'color' && resolved) {
-					md.appendMarkdown(`\n\n${makeColorSwatch(resolved)} \`${resolved}\``);
+				if (resolvedColor) {
+					md.appendMarkdown(
+						`\n\n${makeColorSwatch(resolvedColor)} \`${resolvedColor}\``,
+					);
 				} else {
-					md.appendMarkdown(`\n\n**Value:** \`${resolved}\``);
+					md.appendMarkdown(`\n\n**Value:** \`${resolved ?? 'unresolved'}\``);
 				}
 			} else if (isFunction(entry)) {
 				md.appendMarkdown(

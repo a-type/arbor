@@ -14,7 +14,7 @@ import { getTokenCompletions } from './tokenCompletions.js';
 export type TokenMap = Map<string, Token | ArborFunction>;
 export type CompletionValue = Token | ArborFunction | 'namespace';
 
-interface ConfigState {
+export interface ConfigState {
 	configPath: string;
 	preset: AnyArborPreset;
 	tokenMap: TokenMap;
