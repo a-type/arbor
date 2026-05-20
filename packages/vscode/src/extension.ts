@@ -24,7 +24,11 @@ export function activate(context: vscode.ExtensionContext): void {
 			void tokenProvider.primeDocument(document);
 		}),
 	);
+	outputChannel.appendLine(
+		'Registered event listeners for workspace folder changes, active editor changes, and document opens.',
+	);
 
+	outputChannel.appendLine(`Priming token provider with open documents (${vscode.workspace.textDocuments.length})...`);
 	for (const document of vscode.workspace.textDocuments) {
 		void tokenProvider.primeDocument(document);
 	}
@@ -45,6 +49,7 @@ export function activate(context: vscode.ExtensionContext): void {
 			'-', // trigger character
 		),
 	);
+	outputChannel.appendLine('Registered completion item provider.');
 
 	// Hover provider
 	context.subscriptions.push(
@@ -53,9 +58,11 @@ export function activate(context: vscode.ExtensionContext): void {
 			new ArborHoverProvider(tokenProvider),
 		),
 	);
+	outputChannel.appendLine('Registered hover provider.');
 
 	// Diagnostic provider — red underlines for unknown tokens
 	new ArborDiagnosticProvider(tokenProvider).register(context);
+	outputChannel.appendLine('Registered diagnostic provider.');
 
 	// Refresh completions when config changes
 	context.subscriptions.push(
@@ -64,10 +71,10 @@ export function activate(context: vscode.ExtensionContext): void {
 			// (No direct API to invalidate completion cache, but providers are re-called on next trigger)
 		}),
 	);
+	outputChannel.appendLine('Registered configuration change listener.');
 
 	context.subscriptions.push(tokenProvider);
-
-	console.log('[arbor-css] Extension activated');
+	outputChannel.appendLine('Extension activated.');
 }
 
 export function deactivate(): void {}

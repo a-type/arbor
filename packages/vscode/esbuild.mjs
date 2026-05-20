@@ -10,6 +10,9 @@ const options = {
 	external: ['vscode'],
 	platform: 'node',
 	format: 'esm',
+	banner: {
+		js: 'const require = createRequire(import.meta.url);',
+	},
 	target: 'node22',
 	sourcemap: true,
 	minify: false,

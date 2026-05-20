@@ -1,5 +1,7 @@
 import { AnyArborPreset } from '@arbor-css/core';
 import escalade from 'escalade';
+import { createJiti } from 'jiti/static';
+import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 export const CONFIG_FILE_NAMES = [
@@ -25,12 +27,14 @@ export async function findConfigFile(fromDir: string): Promise<string | null> {
 export async function loadConfigFile(
 	configPath: string,
 ): Promise<AnyArborPreset | null> {
-	try {
-		const specifier = pathToFileURL(configPath).href;
-		const mod = await import(specifier);
-		return (mod as any).default ?? mod;
-	} catch (err) {
-		console.error(`[arbor-css] Failed to load config at ${configPath}:`, err);
-		return null;
-	}
+	const absoluteConfigPath = path.resolve(configPath);
+	const configUrl = pathToFileURL(absoluteConfigPath).href;
+	const jiti = createJiti(import.meta.url, {
+		cache: false,
+		importMeta: import.meta,
+	});
+	const mod = await jiti.import(configUrl, {
+		default: true,
+	});
+	return (mod as any) ?? null;
 }

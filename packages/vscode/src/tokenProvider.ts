@@ -94,8 +94,15 @@ export class TokenProvider {
 	): Promise<string | null> {
 		if (document.uri.scheme !== 'file') return null;
 
+		this.outputChannel.appendLine(`Finding config for ${document.uri.fsPath}`);
+
 		const fromDir = dirname(document.uri.fsPath);
 		if (this.configPathCache.has(fromDir)) {
+			this.outputChannel.appendLine(
+				`Found cached config path for ${fromDir}: ${this.configPathCache.get(
+					fromDir,
+				)}`,
+			);
 			return this.configPathCache.get(fromDir) ?? null;
 		}
 
@@ -104,6 +111,10 @@ export class TokenProvider {
 		if (!configPath) {
 			this.outputChannel.appendLine(
 				`No arbor.config.* found searching upward from ${fromDir}`,
+			);
+		} else {
+			this.outputChannel.appendLine(
+				`Found config for ${fromDir}: ${configPath}`,
 			);
 		}
 		return configPath;
@@ -128,31 +139,43 @@ export class TokenProvider {
 	private async loadConfigState(
 		configPath: string,
 	): Promise<ConfigState | null> {
-		const preset = await loadConfigFile(configPath);
-		if (!preset) return null;
+		try {
+			const preset = await loadConfigFile(configPath);
+			if (!preset) {
+				this.outputChannel.appendLine(
+					`Failed to load config from ${configPath}: did not return valid config`,
+				);
+				return null;
+			}
 
-		const tokenMap = new Map<string, Token | ArborFunction>();
-		for (const token of flattenToPropsList(preset)) {
-			tokenMap.set(token.name, token);
+			const tokenMap = new Map<string, Token | ArborFunction>();
+			for (const token of flattenToPropsList(preset)) {
+				tokenMap.set(token.name, token);
+			}
+			for (const func of preset.functions ?
+				Object.values(preset.functions)
+			:	[]) {
+				tokenMap.set(func.name, func);
+			}
+
+			this.ensureConfigWatcher(configPath);
+			this.outputChannel.appendLine(
+				`Loaded config from ${configPath} (${tokenMap.size} tokens / functions)`,
+			);
+			this.onChangeEmitter.fire();
+
+			return {
+				configPath,
+				preset,
+				tokenMap,
+				tokenPrefix: preset.context.tokenPrefix,
+			};
+		} catch (err) {
+			this.outputChannel.appendLine(
+				`Error loading config from ${configPath}: ${err}`,
+			);
+			return null;
 		}
-		for (const func of preset.functions ?
-			Object.values(preset.functions)
-		:	[]) {
-			tokenMap.set(func.name, func);
-		}
-
-		this.ensureConfigWatcher(configPath);
-		this.outputChannel.appendLine(
-			`Loaded config from ${configPath} (${tokenMap.size} tokens / functions)`,
-		);
-		this.onChangeEmitter.fire();
-
-		return {
-			configPath,
-			preset,
-			tokenMap,
-			tokenPrefix: preset.context.tokenPrefix,
-		};
 	}
 
 	private ensureConfigWatcher(configPath: string): void {
