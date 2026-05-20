@@ -1,7 +1,6 @@
-import { generateStylesheet } from '@arbor-css/core';
-import { isFunction, FUNCTION_PREFIX } from '@arbor-css/functions';
-import { isMixin, MIXIN_PREFIX } from '@arbor-css/mixins';
 import { printEquation } from '@arbor-css/calc';
+import { AnyArborPreset, generateStylesheet } from '@arbor-css/core';
+import { isFunction, isMixin } from '@arbor-css/functions';
 import { stat } from 'node:fs/promises';
 import postcss, { Plugin } from 'postcss';
 import { getColorPropEntries } from './colorSystemProps.js';
@@ -25,7 +24,7 @@ const PLUGIN_NAME = 'arbor-css';
 
 interface CachedConfig {
 	configPath: string;
-	preset: any;
+	preset: AnyArborPreset;
 	mtimeMs: number;
 }
 
@@ -112,40 +111,45 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 			}
 
 			// Inline custom function calls: --x-fn-name(arg1, arg2, ...)
-			if (decl.value.includes(FUNCTION_PREFIX)) {
+			if (decl.value.includes(`${config.preset.context.tokenPrefix}fn-`)) {
 				const fnCallRegex = new RegExp(
-					`(${escapeRegExp(FUNCTION_PREFIX)}[\\w-]+)\\(([^)]*)\\)`,
+					`(${escapeRegExp(`${config.preset.context.tokenPrefix}fn-`)}[\\w-]+)\\(([^)]*)\\)`,
 					'g',
 				);
-				decl.value = decl.value.replace(fnCallRegex, (match, fnName, argsStr) => {
-					const fn = Object.values(config.preset.functions ?? {}).find(
-						(f) => isFunction(f) && f.name === fnName,
-					) as import('@arbor-css/functions').ArborFunction | undefined;
+				decl.value = decl.value.replace(
+					fnCallRegex,
+					(match, fnName, argsStr) => {
+						const fn = Object.values(config.preset.functions ?? {}).find(
+							(f) => isFunction(f) && f.name === fnName,
+						) as
+							| import('../../functions/dist/functions.js').ArborFunction
+							| undefined;
 
-					if (!fn) {
-						helper.result.warn(
-							`[arbor-css] Unknown function: ${fnName}`,
-							{ plugin: PLUGIN_NAME, node: decl },
-						);
-						return match;
-					}
+						if (!fn) {
+							helper.result.warn(`[arbor-css] Unknown function: ${fnName}`, {
+								plugin: PLUGIN_NAME,
+								node: decl,
+							});
+							return match;
+						}
 
-					const args = argsStr
-						.split(',')
-						.map((a: string) => a.trim())
-						.filter(Boolean);
+						const args = argsStr
+							.split(',')
+							.map((a: string) => a.trim())
+							.filter(Boolean);
 
-					const paramValues: Record<string, string> = {};
-					fn.parameters.forEach((param, i) => {
-						const paramName =
-							typeof param === 'string' ?
-								param.replace(/^--/, '')
-							:	(param as any).name?.replace(/^--/, '') ?? String(i);
-						paramValues[paramName] = args[i] ?? '';
-					});
+						const paramValues: Record<string, string> = {};
+						fn.parameters.forEach((param, i) => {
+							const paramName =
+								typeof param === 'string' ?
+									param.replace(/^--/, '')
+								:	((param as any).name?.replace(/^--/, '') ?? String(i));
+							paramValues[paramName] = args[i] ?? '';
+						});
 
-					return fn.compute(paramValues);
-				});
+						return fn.compute(paramValues);
+					},
+				);
 			}
 
 			const colorPropEntries = getColorPropEntries(config.preset);
@@ -184,22 +188,22 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 		},
 		async AtRule(atRule, helper) {
 			if (atRule.name !== 'apply') return;
-
-			const mixinName = atRule.params.trim();
-			if (!mixinName.startsWith(MIXIN_PREFIX)) return;
-
 			const config = await getConfig(helper);
 			if (!config) return;
 
+			const mixinName = atRule.params.trim();
+			if (!mixinName.startsWith(`${config.preset.context.tokenPrefix}mixin-`))
+				return;
+
 			const mixin = Object.values(config.preset.mixins ?? {}).find(
 				(m) => isMixin(m) && m.name === mixinName,
-			) as import('@arbor-css/mixins').ArborMixin | undefined;
+			);
 
 			if (!mixin) {
-				helper.result.warn(
-					`[arbor-css] Unknown mixin: ${mixinName}`,
-					{ plugin: PLUGIN_NAME, node: atRule },
-				);
+				helper.result.warn(`[arbor-css] Unknown mixin: ${mixinName}`, {
+					plugin: PLUGIN_NAME,
+					node: atRule,
+				});
 				return;
 			}
 

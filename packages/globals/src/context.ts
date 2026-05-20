@@ -1,5 +1,9 @@
-import { CreateFunction, createFunctionFactory } from '@arbor-css/functions';
-import { CreateMixin, createMixinFactory } from '@arbor-css/mixins';
+import {
+	CreateFunction,
+	createFunctionFactory,
+	CreateMixin,
+	createMixinFactory,
+} from '@arbor-css/functions';
 import {
 	CreateToken,
 	createTokenFactory,

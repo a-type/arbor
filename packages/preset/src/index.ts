@@ -7,7 +7,6 @@ export {
 	type GlobalConfigProps,
 	type GlobalConfig as PrimitiveGlobals,
 } from '@arbor-css/globals';
-export * from '@arbor-css/mixins';
 export * from '@arbor-css/modes';
 export * from '@arbor-css/shadows';
 export * from '@arbor-css/spacing';

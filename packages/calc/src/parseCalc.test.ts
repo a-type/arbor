@@ -43,6 +43,10 @@ describe('css template — literals', () => {
 		// TODO: remove calc() wrapper here.
 		expect(printEquation(css`calc(10px)`)).toBe(`calc(10px)`);
 	});
+
+	it('parsers a var(--*) reference inlined in the template', () => {
+		expectSameAs(css`var(--x-foo)`, $.val('var(--x-foo)'));
+	});
 });
 
 // ─── Arithmetic ──────────────────────────────────────────────────────────────
@@ -309,6 +313,21 @@ describe('css template — non-calc functions', () => {
 	it('emits clamp() without a calc() wrapper', () => {
 		const eq = css`clamp(0px, ${tokenA}, 100px)`;
 		expect(printEquation(eq)).toBe(`clamp(0px, ${tokenA.var}, 100px)`);
+	});
+
+	it('handles comma separated tokens as a bare string', () => {
+		const eq = css`var(--ring), var(--shadow)`;
+		expect(printEquation(eq)).toBe(`var(--ring), var(--shadow)`);
+	});
+
+	it('handles space separated tokens as a bare string', () => {
+		const eq = css`0 0 0 0 black`;
+		expect(printEquation(eq)).toBe(`0 0 0 0 black`);
+	});
+
+	it('interpolates tokens into space separated lists', () => {
+		const eq = css`0 0 0 0 ${tokenA}`;
+		expect(printEquation(eq)).toBe(`0 0 0 0 ${tokenA.var}`);
 	});
 });
 

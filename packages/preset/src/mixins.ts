@@ -1,4 +1,4 @@
-import { CreateMixin } from '@arbor-css/mixins';
+import { CreateMixin } from '@arbor-css/functions';
 
 export function createPresetMixins(
 	tokenPrefix: string,
@@ -13,21 +13,15 @@ export function createPresetMixins(
 		definition: (css) => [
 			{
 				prop: shadowVariable,
-				value: css`
-					${'0 0 0 0 transparent'}
-				`,
+				value: css`0 0 0 0 transparent`,
 			},
 			{
 				prop: ringVariable,
-				value: css`
-					${'0 0 0 0 transparent'}
-				`,
+				value: css`0 0 0 0 transparent`,
 			},
 			{
 				prop: 'box-shadow',
-				value: css`
-					${`var(${ringVariable}), var(${shadowVariable})`}
-				`,
+				value: css`var(${ringVariable}), var(${shadowVariable})`,
 			},
 		],
 	});

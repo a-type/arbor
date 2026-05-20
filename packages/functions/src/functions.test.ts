@@ -1,6 +1,6 @@
 import { printEquation } from '@arbor-css/calc';
 import { describe, expect, it } from 'vitest';
-import { createFunctionFactory, isFunction } from './index.js';
+import { createFunctionFactory, isFunction } from './functions.js';
 
 const createFunction = createFunctionFactory({ tokenPrefix: '--x-' });
 
@@ -8,7 +8,7 @@ describe('createFunction', () => {
 	it('sets the CSS name with -- prefix', () => {
 		const fn = createFunction('my-func', {
 			parameters: [],
-			definition: ($) => $.val(0),
+			definition: ($) => $`0`,
 		});
 		expect(fn.name).toBe('--x-fn-my-func');
 	});
@@ -57,7 +57,7 @@ describe('createFunction', () => {
 		it('generates @function with no parameters', () => {
 			const fn = createFunction('pi', {
 				parameters: [],
-				definition: ($) => $.val('PI'),
+				definition: ($) => $`PI`,
 			});
 			expect(fn.definition).toBe('@function --x-fn-pi() { result: PI; }');
 		});
@@ -103,7 +103,7 @@ describe('createFunction', () => {
 		it('resolves a constant equation with no params', () => {
 			const fn = createFunction('answer', {
 				parameters: [],
-				definition: ($) => $.multiply($.val(6), $.val(7)),
+				definition: ($) => $`6 * 7`,
 			});
 			expect(fn.compute({})).toBe('42');
 		});
@@ -124,7 +124,7 @@ describe('isFunction', () => {
 	it('returns true for a created function', () => {
 		const fn = createFunction('test', {
 			parameters: [],
-			definition: ($) => $.val(0),
+			definition: ($) => $`0`,
 		});
 		expect(isFunction(fn)).toBe(true);
 	});

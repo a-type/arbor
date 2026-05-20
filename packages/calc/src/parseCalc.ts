@@ -35,6 +35,7 @@ type LexToken =
 	| { kind: 'rparen'; pos: number }
 	| { kind: 'comma'; pos: number }
 	| { kind: 'ident'; value: string; pos: number }
+	| { kind: 'customprop'; value: string; pos: number }
 	| { kind: 'placeholder'; index: number; pos: number }
 	| { kind: 'eof'; pos: number };
 
@@ -70,6 +71,20 @@ function tokenize(input: string): LexToken[] {
 		if (numMatch) {
 			tokens.push({ kind: 'number', value: numMatch[0], pos: start });
 			pos += numMatch[0].length;
+			continue;
+		}
+
+		// CSS custom property: --ident (e.g. --x-foo, --my-var)
+		const customPropMatch = input
+			.slice(pos)
+			.match(/^--([a-zA-Z_][a-zA-Z0-9_-]*)/);
+		if (customPropMatch) {
+			tokens.push({
+				kind: 'customprop',
+				value: customPropMatch[0],
+				pos: start,
+			});
+			pos += customPropMatch[0].length;
 			continue;
 		}
 
@@ -167,23 +182,17 @@ class Parser {
 	constructor(
 		private readonly tokens: LexToken[],
 		private readonly interpolations: CalcInterpolation[],
-		/** When true, allows space-separated concatenation at the top level and
-		 * within function arguments. Used by the `css` tagged template. */
-		private readonly cssMode: boolean = false,
 	) {}
 
 	parse(): Equation {
-		if (this.cssMode) {
-			return this.parseCssExpr();
+		const first = this.parseCssExpr();
+		if (this.peek().kind !== 'comma') return first;
+		const parts: Equation[] = [first];
+		while (this.peek().kind === 'comma') {
+			this.consume(); // eat comma
+			parts.push(this.parseCssExpr());
 		}
-		const result = this.parseAddSub();
-		const remaining = this.peek();
-		if (remaining.kind !== 'eof') {
-			throw new SyntaxError(
-				`calc: unexpected '${remaining.kind}' at position ${remaining.pos} — expression was not fully consumed`,
-			);
-		}
-		return result;
+		return $.concat(parts, ', ');
 	}
 
 	private peek(): LexToken {
@@ -242,7 +251,7 @@ class Parser {
 			this.isCssConcatContinuation() ||
 			(this.mathFnDepth === 0 && this.peek().kind === 'slash');
 
-		if (!this.cssMode || !canContinue()) return first;
+		if (!canContinue()) return first;
 
 		const parts: Equation[] = [first];
 		while (canContinue()) {
@@ -340,6 +349,11 @@ class Parser {
 			);
 		}
 
+		if (next.kind === 'customprop') {
+			this.consume();
+			return $.val((next as Extract<LexToken, { kind: 'customprop' }>).value);
+		}
+
 		if (next.kind === 'ident') {
 			const ident = this.consume() as Extract<LexToken, { kind: 'ident' }>;
 
@@ -372,7 +386,7 @@ class Parser {
 		}
 
 		while (this.peek().kind !== 'rparen' && this.peek().kind !== 'eof') {
-			args.push(this.cssMode ? this.parseCssExpr() : this.parseAddSub());
+			args.push(this.parseCssExpr());
 			if (this.peek().kind === 'comma') this.consume();
 		}
 
@@ -452,7 +466,7 @@ export function css(
 	}
 
 	const lexTokens = tokenize(input);
-	return new Parser(lexTokens, values, true).parse();
+	return new Parser(lexTokens, values).parse();
 }
 
 export type Css = typeof css;

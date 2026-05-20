@@ -1,7 +1,6 @@
 import { CompiledColors } from '@arbor-css/colors';
-import { PresetFunctions } from '@arbor-css/functions';
+import { PresetFunctions, PresetMixins } from '@arbor-css/functions';
 import { GlobalContext, SystemTokens } from '@arbor-css/globals';
-import { PresetMixins } from '@arbor-css/mixins';
 import {
 	ModeInstance,
 	ModeSchema,

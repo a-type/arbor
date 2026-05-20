@@ -6,7 +6,12 @@ import {
 	defaultLightScheme,
 	SchemeDefinition,
 } from '@arbor-css/colors';
-import { createFunctionFactory, PresetFunctions } from '@arbor-css/functions';
+import {
+	createFunctionFactory,
+	createMixinFactory,
+	PresetFunctions,
+	PresetMixins,
+} from '@arbor-css/functions';
 import {
 	createGlobalContext,
 	createGlobals,
@@ -14,7 +19,6 @@ import {
 	GlobalContext,
 	GlobalContextConfig,
 } from '@arbor-css/globals';
-import { createMixinFactory, PresetMixins } from '@arbor-css/mixins';
 import { ModeValues, PartialModeInstance } from '@arbor-css/modes';
 import { createPrimitives } from '@arbor-css/primitives';
 import {

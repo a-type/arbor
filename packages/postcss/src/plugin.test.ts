@@ -1,7 +1,7 @@
-import { createFunctionFactory } from '@arbor-css/functions';
-import { createMixinFactory } from '@arbor-css/mixins';
+import { createMixinFactory } from '@arbor-css/functions';
 import postcss from 'postcss';
 import { beforeEach, expect, it, vi } from 'vitest';
+import { createFunctionFactory } from '../../functions/dist/functions.js';
 import { ArborPlugin } from './index.js';
 import * as loadConfigModule from './loadConfig.js';
 
@@ -28,11 +28,23 @@ it('inlines @apply for an Arbor mixin', async () => {
 	const shadow = createMixin('shadow', {
 		description: 'Stacked shadow setup',
 		definition: (css) => [
-			{ prop: '--x-system-shadow', value: css`${'0 0 0 0 transparent'}` },
-			{ prop: '--x-system-ring', value: css`${'0 0 0 0 transparent'}` },
+			{
+				prop: '--x-system-shadow',
+				value: css`
+					${'0 0 0 0 transparent'}
+				`,
+			},
+			{
+				prop: '--x-system-ring',
+				value: css`
+					${'0 0 0 0 transparent'}
+				`,
+			},
 			{
 				prop: 'box-shadow',
-				value: css`${'var(--x-system-ring), var(--x-system-shadow)'}`,
+				value: css`
+					${'var(--x-system-ring), var(--x-system-shadow)'}
+				`,
 			},
 		],
 	});
