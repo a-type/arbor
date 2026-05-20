@@ -5,6 +5,7 @@ export interface TokenOptions {
 	type?: PropertyType;
 	purpose?: TokenPurpose;
 	group?: string;
+	description?: string;
 	fallback?: string | number;
 	tag?: string;
 	inherits?: boolean;
@@ -162,6 +163,7 @@ export function createTokenFactory({ tokenPrefix }: { tokenPrefix: string }) {
 			purpose = 'other',
 			type = getTypeFromPurpose(purpose),
 			group,
+			description,
 			tag,
 		}: TokenOptions = {},
 	) {
@@ -174,6 +176,7 @@ export function createTokenFactory({ tokenPrefix }: { tokenPrefix: string }) {
 			tag,
 			purpose,
 			group,
+			description,
 			fallback,
 			var: `var(${resolvedName}${fallback ? `, ${fallback}` : ''})`,
 			varFallback: (fallbackOverride?: string | number) =>
@@ -191,6 +194,7 @@ export function createTokenFactory({ tokenPrefix }: { tokenPrefix: string }) {
 					type,
 					fallback,
 					inherits,
+					description,
 					tag,
 				}),
 			prefixed: (prefix: string) =>
@@ -198,6 +202,7 @@ export function createTokenFactory({ tokenPrefix }: { tokenPrefix: string }) {
 					type,
 					fallback,
 					inherits,
+					description,
 					tag,
 				}),
 		};

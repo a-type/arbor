@@ -48,6 +48,9 @@ export class ArborHoverProvider implements vscode.HoverProvider {
 			md.appendMarkdown(`**Arbor token:** \`${entry.name}\`\n\n`);
 			if (isToken(entry)) {
 				md.appendMarkdown(`**Purpose:** ${entry.purpose}`);
+				if (entry.description) {
+					md.appendMarkdown(`\n\n${entry.description}`);
+				}
 				const resolved = resolveTokenReferences(state.preset, entry.name);
 
 				if (entry.purpose === 'color' && resolved) {

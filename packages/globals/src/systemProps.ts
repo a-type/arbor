@@ -1,19 +1,26 @@
 import { CreateToken } from '@arbor-css/tokens';
 import { createGlobalProps } from './globalProps.js';
 
-function makeSystemColorTokens(name: string, createTokenValue: CreateToken) {
+function makeSystemColorTokens(
+	name: string,
+	descriptionName: string,
+	createTokenValue: CreateToken,
+) {
 	return {
 		applied: createTokenValue(`${name}-applied`, {
+			description: `Stores the resolved ${descriptionName} before Arbor applies opacity handling.`,
 			tag: 'system',
 			type: 'color',
 			inherits: true,
 		}),
 		$root: createTokenValue(`${name}`, {
+			description: `Stores the final ${descriptionName} value Arbor applies in CSS.`,
 			tag: 'system',
 			type: 'color',
 			inherits: false,
 		}),
 		opacity: createTokenValue(`${name}-op`, {
+			description: `Controls the opacity Arbor applies to the ${descriptionName}.`,
 			tag: 'system',
 			type: 'number',
 			inherits: false,
@@ -28,17 +35,31 @@ export function createSystemProps({
 	createToken: CreateToken;
 }) {
 	const $labelProps = {
-		mode: createTokenValue('mode', { tag: 'system', type: 'string' }),
-		scheme: createTokenValue('scheme', { tag: 'system', type: 'string' }),
+		mode: createTokenValue('mode', {
+			description:
+				'Labels the currently applied mode name for debugging and styling hooks.',
+			tag: 'system',
+			type: 'string',
+		}),
+		scheme: createTokenValue('scheme', {
+			description:
+				'Labels the active color scheme name for debugging and styling hooks.',
+			tag: 'system',
+			type: 'string',
+		}),
 	};
 
 	const $dynamicProps = {
 		shadowColor: createTokenValue('shadow-color', {
+			description:
+				'Stores the computed shadow color currently applied to the element.',
 			tag: 'system',
 			type: 'color',
 			fallback: 'rgba(0, 0, 0, 0.1)',
 		}),
 		shadowReverse: createTokenValue('shadow-reverse', {
+			description:
+				'Flips shadow direction for inverse elevation treatments.',
 			tag: 'system',
 			type: 'number',
 			fallback: 1,
@@ -47,26 +68,34 @@ export function createSystemProps({
 
 	const $schemeProps = {
 		invertMultiplier: createTokenValue('scheme-invert-mult', {
+			description:
+				'Switches scheme-aware calculations between light and dark behavior.',
 			tag: 'system',
 			type: 'number',
 			fallback: 1,
 		}),
 		whenDark: createTokenValue('scheme-when-dark', {
+			description: 'Resolves to 1 in dark schemes and 0 in light schemes.',
 			tag: 'system',
 			type: 'number',
 			fallback: 0,
 		}),
 		whenLight: createTokenValue('scheme-when-light', {
+			description: 'Resolves to 1 in light schemes and 0 in dark schemes.',
 			tag: 'system',
 			type: 'number',
 			fallback: 1,
 		}),
 		trueLight: createTokenValue('scheme-true-light', {
+			description:
+				'Provides an absolute light reference color that does not change with scheme.',
 			tag: 'system',
 			type: 'color',
 			fallback: 'white',
 		}),
 		trueHeavy: createTokenValue('scheme-true-heavy', {
+			description:
+				'Provides an absolute dark reference color that does not change with scheme.',
 			tag: 'system',
 			type: 'color',
 			fallback: 'black',
@@ -78,43 +107,77 @@ export function createSystemProps({
 		dynamic: $dynamicProps,
 		scheme: $schemeProps,
 		globals: createGlobalProps({ createToken: createTokenValue }),
-		fg: makeSystemColorTokens('fg', createTokenValue),
+		fg: makeSystemColorTokens('fg', 'foreground color', createTokenValue),
 		bg: {
-			...makeSystemColorTokens('bg', createTokenValue),
+			...makeSystemColorTokens('bg', 'background color', createTokenValue),
 			contrast: createTokenValue(`bg-contrast`, {
+				description:
+					'Stores a contrast companion derived from the resolved background color.',
 				tag: 'system',
 				type: 'color',
 				inherits: true,
 			}),
 		},
 		borderColor: {
-			'': makeSystemColorTokens('borderColor-all', createTokenValue),
-			bottom: makeSystemColorTokens('borderColor-bottom', createTokenValue),
-			top: makeSystemColorTokens('borderColor-top', createTokenValue),
-			left: makeSystemColorTokens('borderColor-left', createTokenValue),
-			right: makeSystemColorTokens('borderColor-right', createTokenValue),
+			'': makeSystemColorTokens(
+				'borderColor-all',
+				'border color',
+				createTokenValue,
+			),
+			bottom: makeSystemColorTokens(
+				'borderColor-bottom',
+				'bottom border color',
+				createTokenValue,
+			),
+			top: makeSystemColorTokens(
+				'borderColor-top',
+				'top border color',
+				createTokenValue,
+			),
+			left: makeSystemColorTokens(
+				'borderColor-left',
+				'left border color',
+				createTokenValue,
+			),
+			right: makeSystemColorTokens(
+				'borderColor-right',
+				'right border color',
+				createTokenValue,
+			),
 		},
 		ring: {
-			...makeSystemColorTokens('ring', createTokenValue),
+			...makeSystemColorTokens('ring', 'focus ring color', createTokenValue),
 			target: createTokenValue(`ring-target`, {
+				description:
+					'Captures the source color Arbor should use when deriving the focus ring color.',
 				tag: 'system',
 				type: 'color',
 				inherits: false,
 			}),
 		},
 		ringOffset: {
-			...makeSystemColorTokens('ring-offset', createTokenValue),
+			...makeSystemColorTokens(
+				'ring-offset',
+				'focus ring offset color',
+				createTokenValue,
+			),
 			target: createTokenValue(`ring-offset-target`, {
+				description:
+					'Captures the source color Arbor should use when deriving the focus ring offset color.',
 				tag: 'system',
 				type: 'color',
 				inherits: false,
 			}),
 		},
-		placeholder: makeSystemColorTokens('placeholder', createTokenValue),
-		accent: makeSystemColorTokens('accent', createTokenValue),
-		fill: makeSystemColorTokens('fill', createTokenValue),
-		stroke: makeSystemColorTokens('stroke', createTokenValue),
-		shadow: makeSystemColorTokens('shadow', createTokenValue),
+		placeholder: makeSystemColorTokens(
+			'placeholder',
+			'placeholder color',
+			createTokenValue,
+		),
+		accent: makeSystemColorTokens('accent', 'accent color', createTokenValue),
+		fill: makeSystemColorTokens('fill', 'fill color', createTokenValue),
+		stroke: makeSystemColorTokens('stroke', 'stroke color', createTokenValue),
+		shadow: makeSystemColorTokens('shadow', 'shadow color', createTokenValue),
 	};
 }
 

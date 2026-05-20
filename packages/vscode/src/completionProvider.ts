@@ -48,10 +48,13 @@ export class ArborCompletionProvider implements vscode.CompletionItemProvider {
 				item.detail = value.name;
 				item.documentation = new vscode.MarkdownString(
 					[
-						`**CSS property:** \`${value.name}\``,
+						`\`${value.name}\``,
+						value.description ? `${value.description}` : null,
 						`**Purpose:** ${value.purpose}`,
 						'**Type:** `' + value.type + '`',
-					].join('\n\n'),
+					]
+						.filter(Boolean)
+						.join('\n\n'),
 				);
 				if (value.purpose === 'color') {
 					item.kind = vscode.CompletionItemKind.Color;
