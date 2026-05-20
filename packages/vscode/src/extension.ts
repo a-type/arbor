@@ -8,6 +8,9 @@ export function activate(context: vscode.ExtensionContext): void {
 	const outputChannel = vscode.window.createOutputChannel('Arbor CSS');
 	outputChannel.appendLine('Activating Arbor CSS extension...');
 	const languageSelector: vscode.DocumentSelector = ['css', 'scss', 'less'];
+	const completionTriggerCharacters = Array.from(
+		'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-',
+	);
 
 	const tokenProvider = new TokenProvider(outputChannel);
 
@@ -48,6 +51,7 @@ export function activate(context: vscode.ExtensionContext): void {
 		vscode.languages.registerCompletionItemProvider(
 			languageSelector,
 			new ArborCompletionProvider(tokenProvider, outputChannel),
+			...completionTriggerCharacters,
 		),
 	);
 	outputChannel.appendLine('Registered completion item provider.');
@@ -68,8 +72,7 @@ export function activate(context: vscode.ExtensionContext): void {
 	// Refresh completions when config changes
 	context.subscriptions.push(
 		tokenProvider.onDidChange(() => {
-			// Force VS Code to re-request completions by briefly toggling something
-			// (No direct API to invalidate completion cache, but providers are re-called on next trigger)
+			void vscode.commands.executeCommand('editor.action.triggerSuggest');
 		}),
 	);
 	outputChannel.appendLine('Registered configuration change listener.');
