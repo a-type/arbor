@@ -18,8 +18,8 @@ const defaultSpacingEquation = (step: number, context: GlobalContext) =>
 		// calculate rem value of the spacing relative to the
 		// font size.
 		$.divide(
-			$.val(context.$systemTokens.globals.baseSpacingSize.var),
-			$.val(context.$systemTokens.globals.baseFontSize.var),
+			$.token(context.$systemTokens.globals.baseSpacingSize),
+			$.token(context.$systemTokens.globals.baseFontSize),
 		),
 		$.val('1rem'),
 		$.fn('pow', $.val(1.5), $.val(step)),

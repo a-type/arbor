@@ -361,11 +361,8 @@ function divide(a: ComputationResult, b: ComputationResult): ComputationResult {
 			`Invalid state: units should have been checked to be the same at this point, but got ${a.unit} and ${b.unit}`,
 		);
 	}
-	const unit = a.unit;
-	if (unit === '%') {
-		return { type: 'numeric', value: a.value / b.value, unit: '' };
-	}
-	return { type: 'numeric', value: a.value / b.value, unit };
+	// units are erased when dividing - e.g. 10px / 5px = 2 (unitless)
+	return { type: 'numeric', value: a.value / b.value, unit: '' };
 }
 
 function cast(value: ComputationResult, unit: '%' | string): ComputationResult {
