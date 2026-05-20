@@ -11,6 +11,7 @@ export {
 	createArborPreset,
 	type ArborPresetInstance,
 	type CreateArborPresetConfig,
+	type ModesOfArborModeSchema,
 } from '@arbor-css/preset';
 export * from '@arbor-css/preset/config';
 export * from '@arbor-css/tokens';
