@@ -9,7 +9,7 @@
 	},
 	"dependencies": {
 		"@arbor-css/core": "workspace:^",
-		"@arbor-css/plugin": "workspace:^"
+		"@arbor-css/postcss": "workspace:^"
 	},
 	"devDependencies": {
 		"vite": "^7.2.6",

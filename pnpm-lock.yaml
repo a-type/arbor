@@ -238,7 +238,7 @@ importers:
         specifier: 'catalog:'
         version: 4.1.7(@types/node@25.9.1)(@vitest/browser-playwright@4.1.5)(vite@8.0.13(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(yaml@2.8.4))
 
-  packages/plugin:
+  packages/postcss:
     dependencies:
       '@arbor-css/core':
         specifier: workspace:*
@@ -251,10 +251,10 @@ importers:
         version: link:../tokens
       jiti:
         specifier: ^2.4.2
-        version: 2.6.1
+        version: 2.7.0
       postcss:
         specifier: ^8.5.4
-        version: 8.5.10
+        version: 8.5.15
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
@@ -264,7 +264,7 @@ importers:
         version: 6.0.3
       vitest:
         specifier: 'catalog:'
-        version: 4.1.7(@types/node@25.9.1)(vite@8.0.13(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.6.1)(yaml@2.8.4))
+        version: 4.1.7(@types/node@25.9.1)(@vitest/browser-playwright@4.1.5)(vite@8.0.13(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(yaml@2.8.4))
 
   packages/preset:
     dependencies:
@@ -445,9 +445,9 @@ importers:
       '@arbor-css/core':
         specifier: workspace:^
         version: link:../packages/core
-      '@arbor-css/plugin':
+      '@arbor-css/postcss':
         specifier: workspace:^
-        version: link:../packages/plugin
+        version: link:../packages/postcss
     devDependencies:
       typescript:
         specifier: 'catalog:'
@@ -3120,10 +3120,6 @@ packages:
     resolution: {integrity: sha512-LKWqWJRhstyYo9pGvgor/ivk2w94eSjE3RGVuzLGlr3NmD8bf7RcYGze1mNdEHRP6TRP6rMuDHk5t44hnTRyow==}
     engines: {node: '>=14.19.0'}
 
-  postcss@8.5.10:
-    resolution: {integrity: sha512-pMMHxBOZKFU6HgAZ4eyGnwXF/EvPGGqUr0MnZ5+99485wwW41kW91A4LOGxSHhgugZmSChL5AlElNdwlNgcnLQ==}
-    engines: {node: ^10 || ^12 || >=14}
-
   postcss@8.5.15:
     resolution: {integrity: sha512-FfR8sjd4em2T6fb3I2MwAJU7HWVMr9zba+enmQeeWFfCbm+UOC/0X4DS8XtpUTMwWMGbjKYP7xjfNekzyGmB3A==}
     engines: {node: ^10 || ^12 || >=14}
@@ -5035,7 +5031,7 @@ snapshots:
 
   '@types/fontkit@2.0.8':
     dependencies:
-      '@types/node': 25.8.0
+      '@types/node': 25.9.1
 
   '@types/hast@3.0.4':
     dependencies:
@@ -5211,14 +5207,6 @@ snapshots:
       magic-string: 0.30.21
     optionalDependencies:
       vite: 8.0.13(@types/node@25.8.0)(esbuild@0.28.0)(jiti@2.7.0)(yaml@2.8.4)
-
-  '@vitest/mocker@4.1.7(vite@8.0.13(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.6.1)(yaml@2.8.4))':
-    dependencies:
-      '@vitest/spy': 4.1.7
-      estree-walker: 3.0.3
-      magic-string: 0.30.21
-    optionalDependencies:
-      vite: 8.0.13(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.6.1)(yaml@2.8.4)
 
   '@vitest/mocker@4.1.7(vite@8.0.13(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(yaml@2.8.4))':
     dependencies:
@@ -7202,12 +7190,6 @@ snapshots:
 
   pngjs@7.0.0: {}
 
-  postcss@8.5.10:
-    dependencies:
-      nanoid: 3.3.11
-      picocolors: 1.1.1
-      source-map-js: 1.2.1
-
   postcss@8.5.15:
     dependencies:
       nanoid: 3.3.12
@@ -7998,7 +7980,7 @@ snapshots:
       esbuild: 0.25.12
       fdir: 6.5.0(picomatch@4.0.3)
       picomatch: 4.0.3
-      postcss: 8.5.10
+      postcss: 8.5.15
       rollup: 4.53.3
       tinyglobby: 0.2.15
     optionalDependencies:
@@ -8049,20 +8031,6 @@ snapshots:
       esbuild: 0.28.0
       fsevents: 2.3.3
       jiti: 2.7.0
-      yaml: 2.8.4
-
-  vite@8.0.13(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.6.1)(yaml@2.8.4):
-    dependencies:
-      lightningcss: 1.32.0
-      picomatch: 4.0.4
-      postcss: 8.5.15
-      rolldown: 1.0.1
-      tinyglobby: 0.2.16
-    optionalDependencies:
-      '@types/node': 25.9.1
-      esbuild: 0.28.0
-      fsevents: 2.3.3
-      jiti: 2.6.1
       yaml: 2.8.4
 
   vite@8.0.13(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(yaml@2.8.4):
@@ -8163,33 +8131,6 @@ snapshots:
     optionalDependencies:
       '@types/node': 25.9.1
       '@vitest/browser-playwright': 4.1.5(playwright@1.57.0)(vite@8.0.13(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(yaml@2.8.4))(vitest@4.1.7)
-    transitivePeerDependencies:
-      - msw
-
-  vitest@4.1.7(@types/node@25.9.1)(vite@8.0.13(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.6.1)(yaml@2.8.4)):
-    dependencies:
-      '@vitest/expect': 4.1.7
-      '@vitest/mocker': 4.1.7(vite@8.0.13(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.6.1)(yaml@2.8.4))
-      '@vitest/pretty-format': 4.1.7
-      '@vitest/runner': 4.1.7
-      '@vitest/snapshot': 4.1.7
-      '@vitest/spy': 4.1.7
-      '@vitest/utils': 4.1.7
-      es-module-lexer: 2.0.0
-      expect-type: 1.3.0
-      magic-string: 0.30.21
-      obug: 2.1.1
-      pathe: 2.0.3
-      picomatch: 4.0.4
-      std-env: 4.1.0
-      tinybench: 2.9.0
-      tinyexec: 1.1.2
-      tinyglobby: 0.2.16
-      tinyrainbow: 3.1.0
-      vite: 8.0.13(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.6.1)(yaml@2.8.4)
-      why-is-node-running: 2.3.0
-    optionalDependencies:
-      '@types/node': 25.9.1
     transitivePeerDependencies:
       - msw
 
