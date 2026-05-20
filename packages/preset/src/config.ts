@@ -1,6 +1,7 @@
 import { CompiledColors } from '@arbor-css/colors';
 import { PresetFunctions } from '@arbor-css/functions';
 import { GlobalContext, SystemTokens } from '@arbor-css/globals';
+import { PresetMixins } from '@arbor-css/mixins';
 import {
 	ModeInstance,
 	ModeSchema,
@@ -39,12 +40,14 @@ export interface ArborPreset<
 	TSpacing extends CompiledSpacing = CompiledSpacing,
 	TShadows extends CompiledShadows = CompiledShadows,
 	TFunctions extends PresetFunctions = PresetFunctions,
+	TMixins extends PresetMixins = PresetMixins,
 > {
 	primitives: Primitives<TCompiledColors, TTypography, TSpacing, TShadows>;
 	modes: {
 		base: ModeInstance<TModeShape>;
 	} & TModes;
 	functions: TFunctions;
+	mixins: TMixins;
 	/** Easy access to your mode schema */
 	mode: ModeSchema<TModeShape>;
 	/** All tokens in this preset. */
@@ -63,6 +66,7 @@ export function definePreset<
 	TSpacing extends CompiledSpacing<any>,
 	TShadows extends CompiledShadows<any>,
 	TFunctions extends PresetFunctions,
+	TMixins extends PresetMixins,
 >(
 	config: Omit<
 		ArborPreset<
@@ -72,11 +76,13 @@ export function definePreset<
 			TTypography,
 			TSpacing,
 			TShadows,
-			TFunctions
+			TFunctions,
+			TMixins
 		>,
-		'$' | 'mode' | 'functions'
+		'$' | 'mode' | 'functions' | 'mixins'
 	> & {
 		functions?: TFunctions;
+		mixins?: TMixins;
 	} & {
 		systemProps: SystemTokens;
 		meta?: ArborPreset['meta'];
@@ -88,7 +94,8 @@ export function definePreset<
 	TTypography,
 	TSpacing,
 	TShadows,
-	TFunctions
+	TFunctions,
+	TMixins
 > {
 	const tokens = {
 		mode: config.modes.base.schema.$tokens,
@@ -97,6 +104,7 @@ export function definePreset<
 	};
 	return {
 		functions: {} as TFunctions,
+		mixins: {} as TMixins,
 		...config,
 		mode: config.modes.base.schema,
 		$: tokens,
@@ -111,5 +119,6 @@ export type AnyArborPreset = ArborPreset<
 	any,
 	any,
 	any,
-	PresetFunctions
+	PresetFunctions,
+	PresetMixins
 >;

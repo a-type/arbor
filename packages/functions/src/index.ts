@@ -46,6 +46,7 @@ type ParamsAsInterpolations<TParams extends FunctionParams> = {
  * spacing.definition // @function --spacing-scale(--base <length>, --scale <number>) { result: (var(--base) * var(--scale)); }
  * spacing.compute({ base: '8px', scale: 2 }) // 'calc(var(--base) * 2)' or '16px'
  */
+export type CreateFunction = ReturnType<typeof createFunctionFactory>;
 export function createFunctionFactory({
 	tokenPrefix = DEFAULT_TOKEN_PREFIX,
 }: {
@@ -123,8 +124,6 @@ export function createFunctionFactory({
 		};
 	};
 }
-
-export type CreateFunction = ReturnType<typeof createFunctionFactory>;
 
 export type ArborFunction<TParams extends FunctionParams = FunctionParams> = {
 	[FUNCTION_BRAND]: true;

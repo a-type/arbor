@@ -1,4 +1,5 @@
 import { CreateFunction, createFunctionFactory } from '@arbor-css/functions';
+import { CreateMixin, createMixinFactory } from '@arbor-css/mixins';
 import {
 	CreateToken,
 	createTokenFactory,
@@ -15,6 +16,7 @@ export interface GlobalContextConfig {
 export interface GlobalContext {
 	createToken: CreateToken;
 	createFunction: CreateFunction;
+	createMixin: CreateMixin;
 	tokenPrefix: string;
 	globals: GlobalConfig;
 	$systemTokens: SystemTokens;
@@ -31,6 +33,7 @@ export function createGlobalContext(config: GlobalContextConfig = {}) {
 	};
 	return {
 		createFunction: createFunctionFactory({ tokenPrefix }),
+		createMixin: createMixinFactory({ tokenPrefix }),
 		createToken,
 		tokenPrefix,
 		$systemTokens,

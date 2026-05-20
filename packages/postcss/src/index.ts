@@ -1,4 +1,7 @@
 import { generateStylesheet } from '@arbor-css/core';
+import { isFunction, FUNCTION_PREFIX } from '@arbor-css/functions';
+import { isMixin, MIXIN_PREFIX } from '@arbor-css/mixins';
+import { printEquation } from '@arbor-css/calc';
 import { stat } from 'node:fs/promises';
 import postcss, { Plugin } from 'postcss';
 import { getColorPropEntries } from './colorSystemProps.js';
@@ -58,11 +61,17 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 			return null;
 		}
 
-		const currentStats = await stat(loaded.configPath);
+		let mtimeMs = 0;
+		try {
+			const currentStats = await stat(loaded.configPath);
+			mtimeMs = currentStats.mtimeMs;
+		} catch {
+			// config path may be virtual (e.g. in tests); skip mtime caching
+		}
 		cachedConfig = {
 			configPath: loaded.configPath,
 			preset: loaded.preset,
-			mtimeMs: currentStats.mtimeMs,
+			mtimeMs,
 		};
 		return cachedConfig;
 	}
@@ -102,6 +111,43 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 				return;
 			}
 
+			// Inline custom function calls: --x-fn-name(arg1, arg2, ...)
+			if (decl.value.includes(FUNCTION_PREFIX)) {
+				const fnCallRegex = new RegExp(
+					`(${escapeRegExp(FUNCTION_PREFIX)}[\\w-]+)\\(([^)]*)\\)`,
+					'g',
+				);
+				decl.value = decl.value.replace(fnCallRegex, (match, fnName, argsStr) => {
+					const fn = Object.values(config.preset.functions ?? {}).find(
+						(f) => isFunction(f) && f.name === fnName,
+					) as import('@arbor-css/functions').ArborFunction | undefined;
+
+					if (!fn) {
+						helper.result.warn(
+							`[arbor-css] Unknown function: ${fnName}`,
+							{ plugin: PLUGIN_NAME, node: decl },
+						);
+						return match;
+					}
+
+					const args = argsStr
+						.split(',')
+						.map((a: string) => a.trim())
+						.filter(Boolean);
+
+					const paramValues: Record<string, string> = {};
+					fn.parameters.forEach((param, i) => {
+						const paramName =
+							typeof param === 'string' ?
+								param.replace(/^--/, '')
+							:	(param as any).name?.replace(/^--/, '') ?? String(i);
+						paramValues[paramName] = args[i] ?? '';
+					});
+
+					return fn.compute(paramValues);
+				});
+			}
+
 			const colorPropEntries = getColorPropEntries(config.preset);
 
 			const systemAssignmentEntry = colorPropEntries[decl.prop];
@@ -136,7 +182,40 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 				decl.value = `var(${systemAssignmentEntry.final})`;
 			}
 		},
+		async AtRule(atRule, helper) {
+			if (atRule.name !== 'apply') return;
+
+			const mixinName = atRule.params.trim();
+			if (!mixinName.startsWith(MIXIN_PREFIX)) return;
+
+			const config = await getConfig(helper);
+			if (!config) return;
+
+			const mixin = Object.values(config.preset.mixins ?? {}).find(
+				(m) => isMixin(m) && m.name === mixinName,
+			) as import('@arbor-css/mixins').ArborMixin | undefined;
+
+			if (!mixin) {
+				helper.result.warn(
+					`[arbor-css] Unknown mixin: ${mixinName}`,
+					{ plugin: PLUGIN_NAME, node: atRule },
+				);
+				return;
+			}
+
+			const declarations = mixin.inline();
+			for (const decl of declarations) {
+				atRule.cloneBefore(
+					postcss.decl({ prop: decl.prop, value: printEquation(decl.value) }),
+				);
+			}
+			atRule.remove();
+		},
 	};
+}
+
+function escapeRegExp(s: string) {
+	return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 ArborPlugin.postcss = true;

@@ -28,7 +28,10 @@
 		"prepublishOnly": "pnpm build"
 	},
 	"dependencies": {
+		"@arbor-css/calc": "workspace:*",
 		"@arbor-css/core": "workspace:*",
+		"@arbor-css/functions": "workspace:*",
+		"@arbor-css/mixins": "workspace:*",
 		"@arbor-css/tokens": "workspace:*",
 		"@arbor-css/globals": "workspace:*",
 		"jiti": "^2.4.2",

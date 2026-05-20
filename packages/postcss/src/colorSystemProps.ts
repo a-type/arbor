@@ -22,6 +22,7 @@ export interface ColorPropEntry {
 export function getColorPropEntries(
 	preset: ArborPreset,
 ): Record<string, ColorPropEntry> {
+	if (!preset.$?.system) return {};
 	const systemProps = preset.$.system;
 	return {
 		color: {

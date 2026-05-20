@@ -14,6 +14,7 @@ import {
 	GlobalContext,
 	GlobalContextConfig,
 } from '@arbor-css/globals';
+import { createMixinFactory, PresetMixins } from '@arbor-css/mixins';
 import { ModeValues, PartialModeInstance } from '@arbor-css/modes';
 import { createPrimitives } from '@arbor-css/primitives';
 import {
@@ -41,6 +42,7 @@ import {
 } from './arborPreset.js';
 import { ArborPreset, definePreset } from './config.js';
 import { BuiltinFunctions, createPresetFunctions } from './functions.js';
+import { BuiltinMixins, createPresetMixins } from './mixins.js';
 
 export interface CreateArborConfig extends GlobalContextConfig {}
 
@@ -62,6 +64,7 @@ export interface CreateArborPresetConfig<
 	shadows?: Omit<ShadowConfig, 'context'>;
 	baseMode?: DeepPartial<ModeValues<ArborModeSchemaDefinition>>;
 	functions?: PresetFunctions;
+	mixins?: PresetMixins;
 }
 
 export type ArborPresetInstance<
@@ -69,6 +72,7 @@ export type ArborPresetInstance<
 	TSchemes extends Record<string, SchemeDefinition>,
 	TModes extends ModesOfArborModeSchema = ModesOfArborModeSchema,
 	TFunctions extends PresetFunctions = PresetFunctions,
+	TMixins extends PresetMixins = PresetMixins,
 > = ArborPreset<
 	ArborModeSchemaDefinition,
 	TModes,
@@ -76,7 +80,8 @@ export type ArborPresetInstance<
 	CompiledTypography,
 	CompiledSpacing,
 	CompiledShadows,
-	BuiltinFunctions & TFunctions
+	BuiltinFunctions & TFunctions,
+	BuiltinMixins & TMixins
 > & {
 	withMode: <TName extends string>(
 		name: TName,
@@ -106,13 +111,15 @@ export interface ArborBuilder {
 		TRanges extends Record<string, ColorRangeConfig<any>>,
 		TSchemes extends Record<string, SchemeDefinition> = Record<string, never>,
 		TFunctions extends PresetFunctions = PresetFunctions,
+		TMixins extends PresetMixins = PresetMixins,
 	>(
 		config: CreateArborPresetConfig<TRanges, TSchemes>,
 	) => ArborPresetInstance<
 		TRanges,
 		TSchemes,
 		ModesOfArborModeSchema,
-		TFunctions
+		TFunctions,
+		TMixins
 	>;
 }
 
@@ -124,6 +131,12 @@ export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
 	const builtinFunctions = createPresetFunctions(
 		context.$systemTokens,
 		createFunctionFactory({
+			tokenPrefix: context.tokenPrefix,
+		}),
+	);
+	const builtinMixins = createPresetMixins(
+		context.tokenPrefix,
+		createMixinFactory({
 			tokenPrefix: context.tokenPrefix,
 		}),
 	);
@@ -196,11 +209,16 @@ export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
 				...builtinFunctions,
 				...normalizedConfig.functions,
 			};
+			const mixins = {
+				...builtinMixins,
+				...normalizedConfig.mixins,
+			};
 
 			const preset = definePreset({
 				primitives,
 				modes,
 				functions,
+				mixins,
 				systemProps: context.$systemTokens,
 				meta: {
 					config: normalizedConfig,

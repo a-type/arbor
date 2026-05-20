@@ -128,6 +128,9 @@ importers:
       '@arbor-css/globals':
         specifier: workspace:*
         version: link:../globals
+      '@arbor-css/mixins':
+        specifier: workspace:*
+        version: link:../mixins
       '@arbor-css/modes':
         specifier: workspace:*
         version: link:../modes
@@ -205,6 +208,9 @@ importers:
       '@arbor-css/functions':
         specifier: workspace:*
         version: link:../functions
+      '@arbor-css/mixins':
+        specifier: workspace:*
+        version: link:../mixins
       '@arbor-css/tokens':
         specifier: workspace:*
         version: link:../tokens
@@ -212,6 +218,25 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.7(@types/node@25.9.1)(@vitest/browser-playwright@4.1.5)(vite@8.0.13(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(yaml@2.8.4))
+
+  packages/mixins:
+    dependencies:
+      '@arbor-css/calc':
+        specifier: workspace:*
+        version: link:../calc
+      '@arbor-css/tokens':
+        specifier: workspace:*
+        version: link:../tokens
+    devDependencies:
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
+      vite:
+        specifier: 'catalog:'
+        version: 8.0.13(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(yaml@2.8.4)
       vitest:
         specifier: 'catalog:'
         version: 4.1.7(@types/node@25.9.1)(@vitest/browser-playwright@4.1.5)(vite@8.0.13(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(yaml@2.8.4))
@@ -240,12 +265,21 @@ importers:
 
   packages/postcss:
     dependencies:
+      '@arbor-css/calc':
+        specifier: workspace:*
+        version: link:../calc
       '@arbor-css/core':
         specifier: workspace:*
         version: link:../core
+      '@arbor-css/functions':
+        specifier: workspace:*
+        version: link:../functions
       '@arbor-css/globals':
         specifier: workspace:*
         version: link:../globals
+      '@arbor-css/mixins':
+        specifier: workspace:*
+        version: link:../mixins
       '@arbor-css/tokens':
         specifier: workspace:*
         version: link:../tokens
@@ -280,6 +314,9 @@ importers:
       '@arbor-css/globals':
         specifier: workspace:*
         version: link:../globals
+      '@arbor-css/mixins':
+        specifier: workspace:*
+        version: link:../mixins
       '@arbor-css/modes':
         specifier: workspace:*
         version: link:../modes
