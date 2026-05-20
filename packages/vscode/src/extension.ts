@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { ArborCompletionProvider } from './completionProvider.js';
+import { ArborDocumentColorProvider } from './documentColorProvider.js';
 import { ArborDiagnosticProvider } from './diagnosticProvider.js';
 import { ArborHoverProvider } from './hoverProvider.js';
 import { TokenProvider } from './tokenProvider.js';
@@ -60,6 +61,14 @@ export function activate(context: vscode.ExtensionContext): void {
 		),
 	);
 	outputChannel.appendLine('Registered hover provider.');
+
+	context.subscriptions.push(
+		vscode.languages.registerColorProvider(
+			languageSelector,
+			new ArborDocumentColorProvider(tokenProvider),
+		),
+	);
+	outputChannel.appendLine('Registered document color provider.');
 
 	// Diagnostic provider — red underlines for unknown tokens
 	new ArborDiagnosticProvider(tokenProvider).register(context);
