@@ -32,12 +32,12 @@
 		"@arbor-css/tokens": "workspace:*",
 		"@arbor-css/globals": "workspace:*",
 		"jiti": "^2.4.2",
-		"postcss": "^8.5.4",
-		"unplugin": "^2.3.5"
+		"postcss": "^8.5.4"
 	},
 	"devDependencies": {
 		"typescript": "catalog:",
-		"vitest": "catalog:"
+		"vitest": "catalog:",
+		"@types/node": "catalog:"
 	},
 	"peerDependencies": {
 		"@arbor-css/core": "*"

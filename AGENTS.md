@@ -14,7 +14,7 @@ arbor-css (pnpm monorepo)
 │   ├── core/          # Main library where most concepts come together: create primitives, modes and generate CSS from them
 │   ├── preset/        # The "Arbor preset" — a ready-to-use collection of primitives, schemes, and mode schema bundled together. Also re-exports everything needed to define an arbor.config.ts.
 │   ├── primitives/    # Assembles compiled colors, typography, spacing, and shadows into a typed token tree used by `preset` and `core`
-│   ├── plugin/        # Bundler plugin (Vite/Rollup/webpack via unplugin). Transforms `.arbor.css` files: applies CSS extensions for the color system and resolves `@import 'arbor:css'` to generated CSS at build time.
+│   ├── plugin/        # PostCSS plugin. Applies CSS extensions for the color system and resolves `@import 'arbor:css'` to generated CSS at build time.
 │   ├── vscode/        # VS Code extension. Provides syntax highlighting, token autocomplete, and hover previews for CSS files.
 │   ├── tokens/        # Design Token abstraction that captures intent/usage and can write to various CSS representations (name, var, property definition)
 │   ├── modes/         # Defines Mode schemas
@@ -91,14 +91,14 @@ In `packages/calc` you'll find a CSS parser which is able to interpolate Tokens 
 
 This CSS parser and preprocessor powers both the `functions` capabilities and the more advanced use of mode token assignment which allows full CSS `calc()`, color functions, etc.
 
-#### Bundler Plugin
+#### PostCSS Plugin
 
-`plugin` is a framework-agnostic bundler plugin built on [unplugin](https://github.com/unjs/unplugin), supporting Vite, Rollup, and webpack. It performs two transforms at build time:
+`plugin` is a PostCSS plugin for existing CSS pipelines. It performs two transforms at build time:
 
 1. **`.css` files** — Replaces the assignment of certain properties related to color with a more advanced assignment which exposes the color as a custom property to be used in other CSS properties. For example, the background color can be copied and darkened to create a focus ring color.
 2. **Any CSS file with `@import 'arbor:css'`** — expands that import into the full generated Arbor stylesheet for the project.
 
-The plugin looks for a single `arbor.config.ts` relative to the current working directory (where the bundler is invoked) and caches the resolved token map.
+The plugin looks for a single `arbor.config.ts` relative to the current working directory (where PostCSS is invoked) and caches the resolved preset.
 
 See: [packages/plugin](packages/plugin)
 

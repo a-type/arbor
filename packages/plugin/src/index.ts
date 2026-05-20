@@ -1,8 +1,8 @@
-import { getStructuredTokensMap } from '@arbor-css/core';
-import { Token } from '@arbor-css/tokens';
-import { createUnplugin } from 'unplugin';
+import { generateStylesheet } from '@arbor-css/core';
+import { stat } from 'node:fs/promises';
+import postcss, { Plugin } from 'postcss';
+import { getColorPropEntries } from './colorSystemProps.js';
 import { loadConfig } from './loadConfig.js';
-import { transform } from './transform.js';
 
 export interface ArborPluginOptions {
 	/**
@@ -10,78 +10,137 @@ export interface ArborPluginOptions {
 	 * If not provided, the plugin will look in the current working directory.
 	 */
 	configFile?: string;
+
+	/**
+	 * Working directory used to resolve the Arbor config file.
+	 * Defaults to the current working directory.
+	 */
+	cwd?: string;
 }
 
-const ANY_CSS_RE = /\.css(\?.*)?$/;
+const PLUGIN_NAME = 'arbor-css';
 
 interface CachedConfig {
-	tokenMap: Map<string, Token>;
+	configPath: string;
 	preset: any;
+	mtimeMs: number;
 }
 
-export const ArborPlugin = createUnplugin(
-	(options: ArborPluginOptions = {}) => {
-		const { configFile } = options;
-		const cwd = process.cwd();
+export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
+	const { configFile, cwd = process.cwd() } = options;
+	let cachedConfig: CachedConfig | null = null;
+	let warnedAboutMissingConfig = false;
 
-		// Cache per config-file path
-		const configCache = new Map<string, CachedConfig>();
-
-		async function getConfig(): Promise<CachedConfig | null> {
-			const loaded = await loadConfig({ cwd, configFile });
-			if (!loaded) return null;
-
-			const cached = configCache.get(loaded.configPath);
-			if (cached) return cached;
-
-			const tokenMap = getStructuredTokensMap(loaded.preset, {
-				delimiter: '.',
-			});
-			const entry: CachedConfig = { tokenMap, preset: loaded.preset };
-			configCache.set(loaded.configPath, entry);
-			console.log(
-				`[arbor-css] Loaded config from ${loaded.configPath} (${tokenMap.size} tokens)`,
-			);
-			return entry;
+	async function getConfig(helper: {
+		result: postcss.Result;
+	}): Promise<CachedConfig | null> {
+		if (cachedConfig) {
+			try {
+				const currentStats = await stat(cachedConfig.configPath);
+				if (currentStats.mtimeMs === cachedConfig.mtimeMs) {
+					return cachedConfig;
+				}
+			} catch {
+				cachedConfig = null;
+			}
 		}
 
-		return {
-			name: 'arbor-css',
-			enforce: 'pre',
+		const loaded = await loadConfig({ cwd, configFile });
+		if (!loaded) {
+			cachedConfig = null;
+			if (!warnedAboutMissingConfig) {
+				helper.result.warn(
+					`[arbor-css] No arbor.config file found in ${cwd}. The @import 'arbor:css' rule was not replaced with the generated stylesheet.`,
+					{ plugin: PLUGIN_NAME },
+				);
+				warnedAboutMissingConfig = true;
+			}
+			return null;
+		}
 
-			transformInclude(id) {
-				return ANY_CSS_RE.test(id);
-			},
-
-			async transform(code, id) {
-				const config = await getConfig();
-
-				if (!config) {
-					this.warn(
-						`[arbor-css] No arbor.config file found in ${cwd}. Token references will not be resolved.`,
-					);
-					return null;
-				}
-
-				const result = transform(code, config.preset);
-
-				return {
-					code: result.css,
-					map: null,
-				};
-			},
-
-			watchChange(id) {
-				// Invalidate cache when config files change
-				if (id.includes('arbor.config')) {
-					console.log(
-						`[arbor-css] Config changed (${id}), clearing token cache`,
-					);
-					configCache.clear();
-				}
-			},
+		const currentStats = await stat(loaded.configPath);
+		cachedConfig = {
+			configPath: loaded.configPath,
+			preset: loaded.preset,
+			mtimeMs: currentStats.mtimeMs,
 		};
-	},
-);
+		return cachedConfig;
+	}
+
+	console.log(
+		`[arbor-css] Using config file: ${configFile ?? 'auto-detected'}`,
+	);
+
+	return {
+		postcssPlugin: PLUGIN_NAME,
+
+		async Once(root, helper) {
+			const config = await getConfig(helper);
+			if (!config) {
+				return;
+			}
+
+			// watch the config file for changes and re-run transforms when it changes
+			helper.result.messages.push({
+				type: 'dependency',
+				plugin: PLUGIN_NAME,
+				file: config.configPath,
+			});
+
+			root.walkComments((comment) => {
+				if (comment.text.trim() === 'inline-arbor-base') {
+					const generatedCss = generateStylesheet(config.preset);
+					const generatedRoot = postcss.parse(generatedCss);
+					comment.replaceWith(...generatedRoot.nodes);
+				}
+			});
+		},
+
+		async Declaration(decl, helper) {
+			const config = await getConfig(helper);
+			if (!config) {
+				return;
+			}
+
+			const colorPropEntries = getColorPropEntries(config.preset);
+
+			const systemAssignmentEntry = colorPropEntries[decl.prop];
+			if (systemAssignmentEntry) {
+				// Inject system color props before this declaration
+				decl.cloneBefore({
+					prop: systemAssignmentEntry.applied,
+					value: decl.value,
+					raws: {},
+				});
+				decl.cloneBefore({
+					prop: systemAssignmentEntry.final,
+					value: `var(${systemAssignmentEntry.applied})`,
+					raws: {},
+				});
+				decl.cloneBefore({
+					prop: systemAssignmentEntry.opacity,
+					value: '1',
+					raws: {},
+				});
+				for (const extra of systemAssignmentEntry.extras ?? []) {
+					decl.cloneBefore({
+						prop: extra.prop,
+						value:
+							extra.value === 'applied' ?
+								`var(${systemAssignmentEntry.applied})`
+							:	extra.value,
+						raws: {},
+					});
+				}
+				// Point the actual CSS property at the system final var for runtime flexibility
+				decl.value = `var(${systemAssignmentEntry.final})`;
+			}
+		},
+	};
+}
+
+ArborPlugin.postcss = true;
+
+export const arborCss = ArborPlugin;
 
 export default ArborPlugin;
