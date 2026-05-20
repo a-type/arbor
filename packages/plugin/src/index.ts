@@ -1,6 +1,5 @@
 import { getStructuredTokensMap } from '@arbor-css/core';
 import { Token } from '@arbor-css/tokens';
-import { dirname } from 'path';
 import { createUnplugin } from 'unplugin';
 import { loadConfig } from './loadConfig.js';
 import { transform } from './transform.js';
@@ -8,7 +7,7 @@ import { transform } from './transform.js';
 export interface ArborPluginOptions {
 	/**
 	 * Path to the Arbor config file.
-	 * If not provided, the plugin will search upward from each transformed file.
+	 * If not provided, the plugin will look in the current working directory.
 	 */
 	configFile?: string;
 }
@@ -23,12 +22,13 @@ interface CachedConfig {
 export const ArborPlugin = createUnplugin(
 	(options: ArborPluginOptions = {}) => {
 		const { configFile } = options;
+		const cwd = process.cwd();
 
 		// Cache per config-file path
 		const configCache = new Map<string, CachedConfig>();
 
-		async function getConfig(fromDir: string): Promise<CachedConfig | null> {
-			const loaded = await loadConfig(fromDir, { configFile });
+		async function getConfig(): Promise<CachedConfig | null> {
+			const loaded = await loadConfig({ cwd, configFile });
 			if (!loaded) return null;
 
 			const cached = configCache.get(loaded.configPath);
@@ -54,12 +54,11 @@ export const ArborPlugin = createUnplugin(
 			},
 
 			async transform(code, id) {
-				const fileDir = dirname(id.replace(/\?.*$/, ''));
-				const config = await getConfig(fileDir);
+				const config = await getConfig();
 
 				if (!config) {
 					this.warn(
-						`[arbor-css] No arbor.config.ts found searching upward from ${fileDir}. Token references will not be resolved.`,
+						`[arbor-css] No arbor.config file found in ${cwd}. Token references will not be resolved.`,
 					);
 					return null;
 				}

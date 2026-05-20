@@ -98,7 +98,7 @@ This CSS parser and preprocessor powers both the `functions` capabilities and th
 1. **`.css` files** — Replaces the assignment of certain properties related to color with a more advanced assignment which exposes the color as a custom property to be used in other CSS properties. For example, the background color can be copied and darkened to create a focus ring color.
 2. **Any CSS file with `@import 'arbor:css'`** — expands that import into the full generated Arbor stylesheet for the project.
 
-The plugin walks upward from each file to find the nearest `arbor.config.ts` and caches the resolved token map per config file.
+The plugin looks for a single `arbor.config.ts` relative to the current working directory (where the bundler is invoked) and caches the resolved token map.
 
 See: [packages/plugin](packages/plugin)
 

@@ -1,5 +1,5 @@
 import { ArborPreset } from '@arbor-css/core';
-import escalade from 'escalade';
+import { access } from 'fs/promises';
 import { createJiti } from 'jiti';
 import { resolve } from 'path';
 
@@ -10,25 +10,30 @@ export interface LoadedConfig {
 	preset: ArborPreset;
 }
 
-/**
- * Finds and loads an `arbor.config.ts` (or .js) file by searching upward
- * from the given directory.
- */
-export async function loadConfig(
-	fromDir: string,
-	options: { configFile?: string } = {},
-): Promise<LoadedConfig | null> {
-	let configPath: string | null = null;
+const DEFAULT_CONFIG_FILES = [
+	'arbor.config.ts',
+	'arbor.config.js',
+	'arbor.config.mjs',
+] as const;
 
-	if (options.configFile) {
-		configPath = resolve(fromDir, options.configFile);
-	} else {
-		const found = await escalade(fromDir, (_dir, files) => {
-			if (files.includes('arbor.config.ts')) return 'arbor.config.ts';
-			if (files.includes('arbor.config.js')) return 'arbor.config.js';
-			if (files.includes('arbor.config.mjs')) return 'arbor.config.mjs';
-		});
-		configPath = found ?? null;
+export async function loadConfig(
+	options: { cwd?: string; configFile?: string } = {},
+): Promise<LoadedConfig | null> {
+	const cwd = options.cwd ?? process.cwd();
+	const candidates = options.configFile
+		? [options.configFile]
+		: DEFAULT_CONFIG_FILES;
+
+	let configPath: string | null = null;
+	for (const candidate of candidates) {
+		const resolvedPath = resolve(cwd, candidate);
+		try {
+			await access(resolvedPath);
+			configPath = resolvedPath;
+			break;
+		} catch {
+			continue;
+		}
 	}
 
 	if (!configPath) return null;

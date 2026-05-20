@@ -23,19 +23,21 @@
 	"scripts": {
 		"build": "tsc",
 		"dev": "tsc -w --preserveWatchOutput",
+		"test": "vitest",
+		"test:ci": "vitest --run",
 		"prepublishOnly": "pnpm build"
 	},
 	"dependencies": {
 		"@arbor-css/core": "workspace:*",
 		"@arbor-css/tokens": "workspace:*",
 		"@arbor-css/globals": "workspace:*",
-		"escalade": "^3.2.0",
 		"jiti": "^2.4.2",
 		"postcss": "^8.5.4",
 		"unplugin": "^2.3.5"
 	},
 	"devDependencies": {
-		"typescript": "catalog:"
+		"typescript": "catalog:",
+		"vitest": "catalog:"
 	},
 	"peerDependencies": {
 		"@arbor-css/core": "*"
