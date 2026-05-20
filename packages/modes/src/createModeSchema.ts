@@ -178,9 +178,7 @@ function createModeTokens<T extends ModeSchemaLevel>(
 				}
 				continue;
 			}
-			const currentPrefix = [propPrefix, key.toLowerCase()]
-				.filter(Boolean)
-				.join('-');
+			const currentPrefix = [propPrefix, key].filter(Boolean).join('-');
 			if (isModeSchemaProperty(value)) {
 				const propertyDefinition = getModeSchemaPropertyAsPropertyDefinition(
 					currentPrefix,

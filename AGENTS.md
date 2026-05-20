@@ -12,14 +12,13 @@ The creator of Arbor CSS is a frontend web engineer who builds a lot of design s
 arbor-css (pnpm monorepo)
 ├── packages/
 │   ├── core/          # Main library where most concepts come together: create primitives, modes and generate CSS from them
-│   ├── classes/       # Utility class system built on UnoCSS. Turns the config from `core` into on-demand utility classes.
 │   ├── preset/        # The "Arbor preset" — a ready-to-use collection of primitives, schemes, and mode schema bundled together. Also re-exports everything needed to define an arbor.config.ts.
 │   ├── primitives/    # Assembles compiled colors, typography, spacing, and shadows into a typed token tree used by `preset` and `core`
-│   ├── plugin/        # Bundler plugin (Vite/Rollup/webpack via unplugin). Transforms `.arbor.css` files and resolves `$.token.path` references and `@import 'arbor:css'` to generated CSS at build time.
-│   ├── vscode/        # VS Code extension. Provides syntax highlighting, token autocomplete, and hover previews for `.arbor.css` files.
+│   ├── plugin/        # Bundler plugin (Vite/Rollup/webpack via unplugin). Transforms `.arbor.css` files: applies CSS extensions for the color system and resolves `@import 'arbor:css'` to generated CSS at build time.
+│   ├── vscode/        # VS Code extension. Provides syntax highlighting, token autocomplete, and hover previews for CSS files.
 │   ├── tokens/        # Design Token abstraction that captures intent/usage and can write to various CSS representations (name, var, property definition)
 │   ├── modes/         # Defines Mode schemas
-│   ├── globals/       # Defines common global user configuration
+│   ├── globals/       # Defines common global user configuration and token / function namespacing
 │   ├── calc/          # A subset implementation of CSS `calc` in TS, allowing "baking" of equations before CSS generation and sharing the same logic in both CSS and runtime
 │   ├── colors/        # Generates primitive OKLCH color ranges, scheme projections of colors
 │   ├── typography/    # Generates typography primitives
@@ -44,14 +43,13 @@ If you're working on a worktree, remember to install dependencies before trying 
 **Development servers**:
 
 - Core demo: http://localhost:5173 (Vite) - See [packages/core/demo](packages/core/demo) - Visualizes output of core CSS generation
-- Classes demo: http://localhost:5174 (Vite) - See [packages/classes/demo/](packages/classes/demo) - Debugging and demonstration of CSS utility classes
 - Docs: http://localhost:3000+ (Astro) - See [docs/](docs) - Homepage for the project and documentation
 
 ## Key Architecture
 
 ### Concepts
 
-Arbor has strong opinions about the organization of CSS tokens into several layers of usable abstractions.
+Arbor has strong opinions about the organization of CSS tokens into several layers of abstractions.
 
 #### Primitives
 
@@ -87,11 +85,17 @@ See: [packages/modes](packages/modes)
 
 See: [packages/preset](packages/preset)
 
+#### Hybrid runtime / baked CSS system
+
+In `packages/calc` you'll find a CSS parser which is able to interpolate Tokens intelligently into a user's CSS value. It can also "bake" property values known at build-time into an equation, simplifying it to reduce its size and complexity for the browser.
+
+This CSS parser and preprocessor powers both the `functions` capabilities and the more advanced use of mode token assignment which allows full CSS `calc()`, color functions, etc.
+
 #### Bundler Plugin
 
 `plugin` is a framework-agnostic bundler plugin built on [unplugin](https://github.com/unjs/unplugin), supporting Vite, Rollup, and webpack. It performs two transforms at build time:
 
-1. **`.arbor.css` files** — resolves `$.token.path` shorthand references (e.g. `$.color.primary`) into their CSS `var(--arbor-...)` equivalents and injects any required system property declarations.
+1. **`.css` files** — Replaces the assignment of certain properties related to color with a more advanced assignment which exposes the color as a custom property to be used in other CSS properties. For example, the background color can be copied and darkened to create a focus ring color.
 2. **Any CSS file with `@import 'arbor:css'`** — expands that import into the full generated Arbor stylesheet for the project.
 
 The plugin walks upward from each file to find the nearest `arbor.config.ts` and caches the resolved token map per config file.
@@ -102,8 +106,7 @@ See: [packages/plugin](packages/plugin)
 
 `vscode` is a VS Code extension (`arbor-css-vscode`) that adds IDE support for `.arbor.css` files:
 
-- **Syntax highlighting** via a TextMate grammar (`.arbor.css` is treated as CSS with embedded `$.token.path` expressions)
-- **Token autocomplete** — triggered on `.` inside `$` expressions, pulling completions from the project's `arbor.config.ts`
+- **Token autocomplete** — Pulls completions for `--x-` (or user-configured prefixed) properties from the project's `arbor.config.ts`
 - **Hover previews** — shows the resolved CSS variable name and value for a token reference under the cursor
 
 The extension loads the config using the same `jiti`-based loader as the bundler plugin.
@@ -111,8 +114,6 @@ The extension loads the config using the same `jiti`-based loader as the bundler
 See: [packages/vscode](packages/vscode)
 
 ### Dependency Flow
-
-`classes` depends on `core` to define the global CSS tokens, primitives, modes, and other values needed to define util classes.
 
 `core` depends on most other things: `tokens` to define and interpret design tokens, `globals` to declare what things a user can tweak, `modes` to declare what a mode is and how it becomes CSS and tokens, and `colors`, `shadows`, `typography`, `spacing` to generate primitives for the "arbor preset."
 
@@ -122,48 +123,11 @@ See: [packages/vscode](packages/vscode)
 
 ## Development Patterns
 
-### Adding Utility Classes
-
-Rules live in [packages/classes/src/rules/](packages/classes/src/rules). Each rule:
-
-1. Matches a class name pattern (RegExp)
-2. Extracts values from the class name
-3. Resolves values from theme or literals
-4. Returns CSS object
-
-**Example structure** (`packages/classes/src/rules/border.ts`):
-
-```typescript
-import { Rule } from '@unocss/core';
-import { themeOrLiteral } from '../_util';
-
-export const borderRules: Rule<Theme>[] = [
-	[
-		/^border-color-(.+)$/,
-		([, value], { theme }) => {
-			const [cssValue] = themeOrLiteral(value, theme, { startFrom: 'colors' });
-			return cssValue ? { 'border-color': cssValue } : undefined;
-		},
-	],
-];
-```
-
-**Testing pattern** (see [packages/classes/src/rules/border.test.ts](packages/classes/src/rules/border.test.ts)):
-
-```typescript
-await testRules('border-color-primary', {
-	'border-color': 'var(--arbor-color-primary)',
-	[colorVar.name]: 'oklch(0.5 0.1 240)',
-});
-```
-
-This matches the input utility class against all rules defined in the system and compares it to the expected output as a second parameter.
-
 ### Configuration & Theming
 
-Configuration flows: globals → primitives → modes → UnoCSS preset.
+Configuration flows: globals → primitives → modes
 
-See working example: [packages/classes/arbor.config.ts](packages/classes/arbor.config.ts)
+See working example: [playground/arbor.config.ts](playground/arbor.config.ts)
 
 **Key files**:
 
@@ -187,14 +151,7 @@ See: [packages/colors/](packages/colors)
 - **Test utilities**: `testArbor`, `testBaseMode` in [packages/classes/src/\_test.ts](packages/classes/src/_test.ts)
 - **Running tests**: `pnpm run -r test` (watch) or `pnpm run -r test:ci` (once)
 
-## Conventions
-
-### Naming
-
-- **CSS properties** use emoji prefixes: `💲-` (system internals), `👟-` (runtime dynamic), `ℹ️-` (info), `🍂-` (css util class vars), etc
-- **Token names** use lowercase kebab-case: `color-primary`, `spacing-xs`
-
-### TypeScript
+## TypeScript
 
 - Target: ES2022, ESNext modules
 - Base config: [tsconfig.base.json](tsconfig.base.json)
@@ -202,13 +159,9 @@ See: [packages/colors/](packages/colors)
 
 ## Common Pitfalls
 
-⚠️ **Watch mode**: Changes to config files don't auto-recompile UnoCSS. Restart dev servers if `arbor.config.ts` or `uno.config.ts` changes.
-
 ⚠️ **Modes and schemes**: "Mode" does not mean "light mode" or "dark mode." Those are "schemes." "Modes" are semantic applications of tokens in the UI. See the section on Modes in this document.
 
 ⚠️ **Workspace protocols**: Internal dependencies use `workspace:*`. Ensure `pnpm` is used (not npm).
-
-⚠️ **Theme resolution**: Use `themeOrLiteral()` to handle both theme tokens and literal values correctly.
 
 ## Documentation to Reference
 
@@ -216,21 +169,6 @@ See: [packages/colors/](packages/colors)
 - **Examples**: [docs/src/components/](docs/src/components) - Live Astro components
 - **Classes demo**: [packages/classes/demo/](packages/classes/demo) - Interactive testing app
 - **Test examples**: [packages/classes/src/rules/](packages/classes/src/rules) - Extensive `.test.ts` files
-
-## Quick Starts
-
-**Add a new utility rule**:
-
-1. Create `packages/classes/src/rules/yourfeature.ts`
-2. Define rule matching pattern and CSS generation
-3. Add tests in `yourfeature.test.ts`
-4. Export from [packages/classes/src/rules/index.ts](packages/classes/src/rules/index.ts)
-
-**Fix a CSS utility class issue**:
-
-1. Update UnoCSS logic in [packages/classes/src](packages/classes/src)
-2. Run `pnpm run demo` in `packages/classes` and check the generated CSS in demo app
-3. Demo app runs on http://localhost:5174
 
 ## Process
 
@@ -241,5 +179,4 @@ See: [packages/colors/](packages/colors)
 - **Node**: 22+
 - **Package manager**: pnpm (workspace: protocol support)
 - **TypeScript**: 5.x+
-- **UnoCSS**: Latest from workspace catalog
 - **Vitest**: Latest from workspace catalog

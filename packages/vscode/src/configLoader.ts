@@ -33,8 +33,6 @@ export async function loadConfigFile(
 		cache: false,
 		importMeta: import.meta,
 	});
-	const mod = await jiti.import(configUrl, {
-		default: true,
-	});
-	return (mod as any) ?? null;
+	const mod = await jiti.import(configUrl);
+	return (mod as any)?.default ?? (mod as any) ?? null;
 }

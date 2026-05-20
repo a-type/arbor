@@ -28,7 +28,9 @@ export function activate(context: vscode.ExtensionContext): void {
 		'Registered event listeners for workspace folder changes, active editor changes, and document opens.',
 	);
 
-	outputChannel.appendLine(`Priming token provider with open documents (${vscode.workspace.textDocuments.length})...`);
+	outputChannel.appendLine(
+		`Priming token provider with open documents (${vscode.workspace.textDocuments.length})...`,
+	);
 	for (const document of vscode.workspace.textDocuments) {
 		void tokenProvider.primeDocument(document);
 	}
@@ -46,7 +48,6 @@ export function activate(context: vscode.ExtensionContext): void {
 		vscode.languages.registerCompletionItemProvider(
 			languageSelector,
 			new ArborCompletionProvider(tokenProvider, outputChannel),
-			'-', // trigger character
 		),
 	);
 	outputChannel.appendLine('Registered completion item provider.');

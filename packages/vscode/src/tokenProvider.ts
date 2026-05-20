@@ -8,10 +8,11 @@ import {
 import { dirname } from 'path';
 import * as vscode from 'vscode';
 import { findConfigFile, loadConfigFile } from './configLoader.js';
+import { getTokenCompletions } from './tokenCompletions.js';
 
 /** Flat map of name->token */
 export type TokenMap = Map<string, Token | ArborFunction>;
-type CompletionValue = Token | ArborFunction | 'namespace';
+export type CompletionValue = Token | ArborFunction | 'namespace';
 
 interface ConfigState {
 	configPath: string;
@@ -94,18 +95,14 @@ export class TokenProvider {
 	): Promise<string | null> {
 		if (document.uri.scheme !== 'file') return null;
 
-		this.outputChannel.appendLine(`Finding config for ${document.uri.fsPath}`);
-
 		const fromDir = dirname(document.uri.fsPath);
 		if (this.configPathCache.has(fromDir)) {
-			this.outputChannel.appendLine(
-				`Found cached config path for ${fromDir}: ${this.configPathCache.get(
-					fromDir,
-				)}`,
-			);
 			return this.configPathCache.get(fromDir) ?? null;
 		}
 
+		this.outputChannel.appendLine(
+			`Searching for config path for document ${document.uri.fsPath}...`,
+		);
 		const configPath = await findConfigFile(fromDir);
 		this.configPathCache.set(fromDir, configPath);
 		if (!configPath) {
@@ -141,15 +138,18 @@ export class TokenProvider {
 	): Promise<ConfigState | null> {
 		try {
 			const preset = await loadConfigFile(configPath);
-			if (!preset) {
+			if (!preset || !('$' in preset)) {
 				this.outputChannel.appendLine(
 					`Failed to load config from ${configPath}: did not return valid config`,
+				);
+				this.outputChannel.appendLine(
+					`Loaded config content: ${JSON.stringify(preset)}`,
 				);
 				return null;
 			}
 
 			const tokenMap = new Map<string, Token | ArborFunction>();
-			for (const token of flattenToPropsList(preset)) {
+			for (const token of flattenToPropsList(preset.$)) {
 				tokenMap.set(token.name, token);
 			}
 			for (const func of preset.functions ?
@@ -224,42 +224,20 @@ export class TokenProvider {
 		tokenMap: TokenMap,
 		start: string,
 	): Array<{ name: string; value: CompletionValue }> {
-		const results = new Map<string, CompletionValue>();
 		this.outputChannel.appendLine(
 			`Getting completion segments for text "${start}"`,
 		);
 
-		for (const [p, token] of tokenMap) {
-			if (!p.startsWith(start)) continue;
-			const rest = p.slice(start.length);
-			// skip extended completion segments, focus on next items.
-			// i.e. when we get --color, we want to show --color-main or --color-action,
-			// not --color-main-ink etc
-			// to do this, we ignore any matches where there's more than 1 - in the remainder
-			const hyphenCount = (rest.match(/-/g) || []).length;
-			if (hyphenCount > 1) continue;
-			const partial = rest?.includes('-');
-
-			if (partial) {
-				const segment = start + rest.slice(0, rest.indexOf('-'));
-				results.set(segment, 'namespace');
-			} else {
-				results.set(token.name, token);
-			}
-		}
-
-		if (results.size === 0) {
+		const results = getTokenCompletions(tokenMap, start);
+		if (results.length === 0) {
 			this.outputChannel.appendLine(`No completions found for text "${start}"`);
 		} else {
 			this.outputChannel.appendLine(
-				`Found completions for text "${start}": ${[...results.keys()].join(', ')}`,
+				`Found completions for text "${start}": ${[...results].map((r) => r.name).join(', ')}`,
 			);
 		}
 
-		return Array.from(results.entries()).map(([name, value]) => ({
-			name,
-			value,
-		}));
+		return results;
 	}
 
 	dispose(): void {

@@ -9,7 +9,7 @@ body {
 
 .surface {
 	padding: var(--x-surface-padding);
-	border-radius: var(--x-surface-borderradius);
+	border-radius: var(--x-surface-borderRadius);
 
 	&[data-emphasis='primary'] {
 		background: var(--x-surface-primary-color-bg);
@@ -28,7 +28,7 @@ body {
 .button,
 button {
 	padding: var(--x-action-padding);
-	border-radius: var(--x-action-borderradius);
+	border-radius: var(--x-action-borderRadius);
 	border: 1px solid var(--x-system-fg);
 	font-size: var(--x-text-secondary-size);
 	font-weight: var(--x-text-secondary-weight);
@@ -79,11 +79,11 @@ button {
 .input,
 input {
 	padding: var(--x-control-padding);
-	border-radius: var(--x-control-borderradius);
+	border-radius: var(--x-control-borderRadius);
 	border: 1px solid var(--x-control-color-border);
 	font-size: var(--x-text-secondary-size);
 	font-weight: var(--x-text-secondary-weight);
-	line-height: var(--x-text-secondary-lineheight);
+	line-height: var(--x-text-secondary-lineHeight);
 	background: var(--x-control-color-bg);
 	color: var(--x-control-color-fg);
 	box-shadow: var(--x-system-ring), var(--x-system-shadow);
@@ -114,7 +114,7 @@ input {
 h1 {
 	font-size: var(--x-text-primary-size);
 	font-weight: var(--x-text-primary-weight);
-	line-height: var(--x-text-primary-lineheight);
+	line-height: var(--x-text-primary-lineHeight);
 	font-family: var(--x-text-primary-font);
 }
 
@@ -122,7 +122,7 @@ h1 {
 p {
 	font-size: var(--x-text-secondary-size);
 	font-weight: var(--x-text-secondary-weight);
-	line-height: var(--x-text-secondary-lineheight);
+	line-height: var(--x-text-secondary-lineHeight);
 	font-family: var(--x-text-secondary-font);
 }
 
@@ -130,6 +130,6 @@ p {
 small {
 	font-size: var(--x-text-ambient-size);
 	font-weight: var(--x-text-ambient-weight);
-	line-height: var(--x-text-ambient-lineheight);
+	line-height: var(--x-text-ambient-lineHeight);
 	font-family: var(--x-text-ambient-font);
 }

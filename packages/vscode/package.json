@@ -49,7 +49,9 @@
 		"build": "pnpm compile && pnpm vsce:package",
 		"watch": "node esbuild.mjs --watch",
 		"vsce:package": "vsce package --no-dependencies",
-		"prepublishOnly": "pnpm compile"
+		"prepublishOnly": "pnpm compile",
+		"test": "vitest",
+		"test:ci": "vitest --run"
 	},
 	"dependencies": {
 		"@arbor-css/core": "workspace:*",
@@ -61,6 +63,7 @@
 		"@types/vscode": "^1.90.0",
 		"@vscode/vsce": "^3.9.1",
 		"esbuild": "^0.28.0",
-		"typescript": "catalog:"
+		"typescript": "catalog:",
+		"vitest": "catalog:"
 	}
 }
