@@ -221,15 +221,3 @@ export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
 		},
 	};
 }
-
-export function createArborPreset<
-	TRanges extends Record<string, ColorRangeConfig<any>>,
-	TSchemes extends Record<string, SchemeDefinition> = Record<string, never>,
-	TFunctions extends PresetFunctions = PresetFunctions,
->(
-	inputConfig: CreateArborPresetConfig<TRanges, TSchemes>,
-): ArborPresetInstance<TRanges, TSchemes, ModesOfArborModeSchema, TFunctions> {
-	return createArbor({
-		tokenPrefix: inputConfig.tokenPrefix,
-	}).preset(inputConfig);
-}

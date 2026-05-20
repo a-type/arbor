@@ -8,7 +8,6 @@ export {
 export * from '@arbor-css/modes';
 export {
 	createArbor,
-	createArborPreset,
 	type ArborPresetInstance,
 	type CreateArborPresetConfig,
 	type ModesOfArborModeSchema,

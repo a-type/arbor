@@ -174,6 +174,9 @@ export class TokenProvider {
 			this.outputChannel.appendLine(
 				`Error loading config from ${configPath}: ${err}`,
 			);
+			this.outputChannel.appendLine(
+				err instanceof Error ? (err.stack ?? '<no stack trace>') : String(err),
+			);
 			return null;
 		}
 	}
