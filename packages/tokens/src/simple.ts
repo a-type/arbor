@@ -1,6 +1,14 @@
 import { CreateToken, Token, TokenPurpose } from './createToken.js';
 
 /**
+ * Simple token syntax for end users to quickly and easily
+ * define tokens without worrying about naming conventions,
+ * prefixes, etc.
+ *
+ * Used in all public-facing token creation: modes, mixin contributions, etc.
+ */
+
+/**
  * Defines the purpose of a token.
  */
 export type SimpleTokenDefinition = TokenPurpose;
