@@ -10,15 +10,19 @@ export function createPresetMixins(
 		definition: (css, { tokens }) => ({
 			[tokens.shadow.name]: css`0 0 0 0 transparent`,
 			[tokens.ring.name]: css`0 0 0 0 transparent`,
-			[tokens.ringOffset.name]: css`0 0 0 0 transparent`,
 			'box-shadow': css`
-				${tokens.ringOffset.var}, ${tokens.ring.var}, ${tokens.shadow.var}
+				${tokens.ring.var}, ${tokens.shadow.var}
 			`,
 		}),
 		contributeTokens: {
-			shadow: 'shadow',
-			ring: 'shadow',
-			ringOffset: 'shadow',
+			shadow: {
+				purpose: 'shadow',
+				description: 'The main stacked shadow layer used by the shadow mixin.',
+			},
+			ring: {
+				purpose: 'shadow',
+				description: 'The ring layer that sits in front of the shadow layer.',
+			},
 		},
 	});
 

@@ -11,7 +11,19 @@ import { CreateToken, Token, TokenPurpose } from './createToken.js';
 /**
  * Defines the purpose of a token.
  */
-export type SimpleTokenDefinition = TokenPurpose;
+export type SimpleTokenDefinition =
+	| TokenPurpose
+	| {
+			purpose: TokenPurpose;
+			description?: string;
+	  };
+
+type SimpleTokenDefinitionObject = Exclude<SimpleTokenDefinition, TokenPurpose>;
+
+type NestedSimpleTokenSchema<T> =
+	T extends SimpleTokenDefinitionObject ? never
+	: T extends SimpleTokenSchema ? T
+	: never;
 
 /**
  * A structured object of tokens.
@@ -31,16 +43,33 @@ export type SimpleTokensAsTokenDefinitions<T extends SimpleTokenSchema> =
 	T extends object ?
 		{
 			[P in keyof T]: NonNullable<T[P]> extends string ? Token
-			: NonNullable<T[P]> extends object ?
-				SimpleTokensAsTokenDefinitions<NonNullable<T[P]>>
-			:	never;
+			: NonNullable<T[P]> extends SimpleTokenDefinitionObject ? Token
+			: SimpleTokensAsTokenDefinitions<
+					NestedSimpleTokenSchema<NonNullable<T[P]>>
+				>;
 		}
 	:	never;
 
 function isProbablySimpleTokenDefinition(
 	value: any,
 ): value is SimpleTokenDefinition {
-	return value && typeof value === 'string';
+	return (
+		value &&
+		(typeof value === 'string' ||
+			(typeof value === 'object' &&
+				'purpose' in value &&
+				typeof value.purpose === 'string'))
+	);
+}
+
+function getSimpleTokenPurpose(value: SimpleTokenDefinition): TokenPurpose {
+	return typeof value === 'string' ? value : value.purpose;
+}
+
+function getSimpleTokenDescription(
+	value: SimpleTokenDefinition,
+): string | undefined {
+	return typeof value === 'string' ? undefined : value.description;
 }
 
 function convertSimpleToken(
@@ -49,7 +78,11 @@ function convertSimpleToken(
 	createTokenValue: CreateToken,
 	group?: string,
 ): Token {
-	return createTokenValue(name, { purpose: prop, group });
+	return createTokenValue(name, {
+		purpose: getSimpleTokenPurpose(prop),
+		description: getSimpleTokenDescription(prop),
+		group,
+	});
 }
 
 /**
