@@ -51,20 +51,20 @@ const defaultShadowYEquation = (step: number) =>
 	$.multiply($.val('1px'), $.fn('pow', $.val(2), $.val(step - 1)));
 const defaultShadowBlurEquation = (step: number, context: GlobalContext) =>
 	$.multiply(
-		$.val(context.$systemTokens.globals.shadowBlur.varFallback('0.5')),
-		$.val(context.$systemTokens.globals.baseSpacingSize.varFallback('0.5rem')),
+		$.val(context.$systemTokens.global.shadowBlur.varFallback('0.5')),
+		$.val(context.$systemTokens.global.baseSpacingSize.varFallback('0.5rem')),
 		$.val(0.25),
 		$.fn('pow', $.val(2), $.val(step - 1)),
 	);
 const defaultShadowSpreadEquation = (step: number, context: GlobalContext) =>
 	$.multiply(
-		$.val(context.$systemTokens.globals.shadowSpread.varFallback('1')),
+		$.val(context.$systemTokens.global.shadowSpread.varFallback('1')),
 		$.val('1px'),
 	);
 const defaultShadowColorEquation = (step: number, context: GlobalContext) =>
 	$.val(
 		context.$systemTokens.dynamic.shadowColor.varFallback(
-			context.$systemTokens.globals.defaultShadowColor.var,
+			context.$systemTokens.global.defaultShadowColor.var,
 		),
 	);
 

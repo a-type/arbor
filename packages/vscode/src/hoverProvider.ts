@@ -1,4 +1,4 @@
-import { isFunction, isToken } from '@arbor-css/core';
+import { isFunction, isMixin, isToken } from '@arbor-css/core';
 import * as vscode from 'vscode';
 import { createTokenRegex } from './regex.js';
 import {
@@ -70,6 +70,16 @@ export class ArborHoverProvider implements vscode.HoverProvider {
 					`**Arbor function:** \`${entry.name}(${entry.parameters.join(', ')})\``,
 				);
 				md.appendMarkdown(`\n\n${entry.description}`);
+			} else if (isMixin(entry)) {
+				md.appendMarkdown(
+					`**Arbor mixin:** \`${entry.name}(${entry.parameters.join(', ')})\``,
+				);
+				md.appendMarkdown(`\n\n${entry.description}`);
+				md.appendMarkdown(`\n\n**Contributed tokens:**`);
+				for (const tokenName in entry.contributeTokens) {
+					const token = entry.contributeTokens[tokenName];
+					md.appendMarkdown(`\n- \`${token.name}\`: ${token.purpose}`);
+				}
 			}
 
 			return new vscode.Hover(md, range);

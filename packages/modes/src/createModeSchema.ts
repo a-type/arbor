@@ -1,5 +1,13 @@
 import { Equation, isCalcEquation } from '@arbor-css/calc';
-import { CreateToken, isToken, Token, TokenPurpose } from '@arbor-css/tokens';
+import {
+	convertSimpleTokenSchema,
+	CreateToken,
+	isToken,
+	SimpleTokensAsTokenDefinitions,
+	SimpleTokenSchema,
+	Token,
+	TokenPurpose,
+} from '@arbor-css/tokens';
 
 export type ModePropertyType = TokenPurpose;
 export type ModeSchemaProperty =
@@ -9,58 +17,77 @@ export type ModeSchemaProperty =
 			fallback: string;
 	  };
 
-export type ModeSchemaLevel = {
-	/**
-	 * Special key: creates a token at the current group path without appending
-	 * a `-$root` segment. For example, `{ colors: { main: { $root: 'color', mid: 'color' } } }`
-	 * generates `--$-colors-main` (for `$root`) and `--$-colors-main-mid` (for `mid`).
-	 * Optional at any level.
-	 */
-	$root?: ModeSchemaProperty;
-	[Key: string]: ModeSchemaProperty | ModeSchemaLevel | undefined;
-};
-export type ModeSchema<TSchema extends ModeSchemaLevel = ModeSchemaLevel> = {
-	definition: TSchema;
-	tag: string;
-	$tokens: ModeTokens<TSchema>;
-	createBase: (def: ModeValues<TSchema>) => ModeInstance<TSchema>;
-	createPartial: (
-		name: string,
-		def: DeepPartial<ModeValues<TSchema>>,
-	) => PartialModeInstance<TSchema>;
-	extend: <TExtensionSchema extends ModeSchemaLevel>(
-		extension: TExtensionSchema,
-	) => ModeSchema<TSchema & TExtensionSchema>;
-	extraCss?: string;
-};
+export type ModeSchema<TSchema extends SimpleTokenSchema = SimpleTokenSchema> =
+	{
+		definition: TSchema;
+		tag: string;
+		$tokens: SimpleTokensAsTokenDefinitions<TSchema>;
+		createBase: (def: ModeValues<TSchema>) => ModeInstance<TSchema>;
+		createPartial: (
+			name: string,
+			def: DeepPartial<ModeValues<TSchema>>,
+		) => PartialModeInstance<TSchema>;
+		extend: <TExtensionSchema extends SimpleTokenSchema>(
+			extension: TExtensionSchema,
+		) => ModeSchema<TSchema & TExtensionSchema>;
+		extraCss?: string;
+	};
 
-function isModeSchemaProperty(value: any): value is ModeSchemaProperty {
+export type DeepPartial<T> = { [P in keyof T]?: DeepPartial<T[P]> | undefined };
+
+export type ModeValue = string | number | Token | Equation;
+export function isModeValue(value: any): value is ModeValue {
 	return (
+		isCalcEquation(value) ||
+		isToken(value) ||
 		typeof value === 'string' ||
-		(typeof value === 'object' &&
-			value !== null &&
-			'type' in value &&
-			value.type !== undefined)
+		typeof value === 'number'
 	);
 }
-function getModeSchemaPropertyAsPropertyDefinition(
-	name: string,
-	prop: ModeSchemaProperty,
-	createTokenValue: CreateToken,
-	group?: string,
-): Token {
-	if (typeof prop === 'string') {
-		return createTokenValue(name, { purpose: prop, group });
-	} else {
-		return createTokenValue(name, {
-			purpose: prop.type,
-			fallback: prop.fallback,
-			group,
-		});
-	}
+export type ModeValues<T extends SimpleTokenSchema> = {
+	[P in keyof T]: NonNullable<T[P]> extends ModeSchemaProperty ? ModeValue
+	: NonNullable<T[P]> extends SimpleTokenSchema ? ModeValues<NonNullable<T[P]>>
+	: never;
+};
+
+export interface ModeConfig {
+	name: string;
 }
 
-export function createModeSchema<T extends ModeSchemaLevel>(
+export type ModeInstance<T extends SimpleTokenSchema> = {
+	values: ModeValues<T>;
+	schema: ModeSchema<T>;
+	config: ModeConfig;
+};
+export type PartialModeInstance<T extends SimpleTokenSchema> = Omit<
+	ModeInstance<T>,
+	'values'
+> & {
+	values: DeepPartial<ModeValues<T>>;
+};
+
+export type ModeTokens<T> =
+	T extends object ?
+		{
+			[P in keyof T]: NonNullable<T[P]> extends string ? Token
+			: NonNullable<T[P]> extends object ? ModeTokens<NonNullable<T[P]>>
+			: never;
+		}
+	:	never;
+
+export function flattenToPropsList(obj: any): Token[] {
+	const propsList: Token[] = [];
+	for (const key in obj) {
+		if (isToken(obj[key])) {
+			propsList.push(obj[key]);
+		} else if (typeof obj[key] === 'object' && obj[key] !== null) {
+			propsList.push(...flattenToPropsList(obj[key]));
+		}
+	}
+	return propsList;
+}
+
+export function createModeSchema<T extends SimpleTokenSchema>(
 	input: T,
 	{
 		tag = '',
@@ -72,7 +99,7 @@ export function createModeSchema<T extends ModeSchemaLevel>(
 		createToken: CreateToken;
 	},
 ): ModeSchema<T> {
-	const PROPS = createModeTokens(input, tag, createTokenValue);
+	const PROPS = convertSimpleTokenSchema(input, tag, createTokenValue);
 	const schema = {
 		definition: input,
 		tag,
@@ -96,7 +123,7 @@ export function createModeSchema<T extends ModeSchemaLevel>(
 				},
 			};
 		},
-		extend: <TExtensionSchema extends ModeSchemaLevel>(
+		extend: <TExtensionSchema extends SimpleTokenSchema>(
 			extension: TExtensionSchema,
 		) => {
 			const extendedDefinition = {
@@ -110,100 +137,4 @@ export function createModeSchema<T extends ModeSchemaLevel>(
 		},
 	};
 	return schema;
-}
-
-export type DeepPartial<T> = { [P in keyof T]?: DeepPartial<T[P]> | undefined };
-
-export type ModeValue = string | number | Token | Equation;
-export function isModeValue(value: any): value is ModeValue {
-	return (
-		isCalcEquation(value) ||
-		isToken(value) ||
-		typeof value === 'string' ||
-		typeof value === 'number'
-	);
-}
-export type ModeValues<T extends ModeSchemaLevel> = {
-	[P in keyof T]: NonNullable<T[P]> extends ModeSchemaProperty ? ModeValue
-	: NonNullable<T[P]> extends ModeSchemaLevel ? ModeValues<NonNullable<T[P]>>
-	: never;
-};
-
-export interface ModeConfig {
-	name: string;
-}
-
-export type ModeInstance<T extends ModeSchemaLevel> = {
-	values: ModeValues<T>;
-	schema: ModeSchema<T>;
-	config: ModeConfig;
-};
-export type PartialModeInstance<T extends ModeSchemaLevel> = Omit<
-	ModeInstance<T>,
-	'values'
-> & {
-	values: DeepPartial<ModeValues<T>>;
-};
-
-export type ModeTokens<T> =
-	T extends object ?
-		{
-			[P in keyof T]: NonNullable<T[P]> extends string ? Token
-			: NonNullable<T[P]> extends object ? ModeTokens<NonNullable<T[P]>>
-			: never;
-		}
-	:	never;
-
-function createModeTokens<T extends ModeSchemaLevel>(
-	root: T,
-	tag: string,
-	createTokenValue: CreateToken,
-): ModeTokens<T> {
-	function generatePropsForSchemaLevel(
-		schemaLevel: any,
-		propPrefix: string,
-	): any {
-		const propsLevel: any = {};
-		for (const key in schemaLevel) {
-			const value = schemaLevel[key];
-			if (key === '$root') {
-				// $root generates a token at the current group path (no segment appended)
-				if (isModeSchemaProperty(value)) {
-					propsLevel.$root = getModeSchemaPropertyAsPropertyDefinition(
-						propPrefix,
-						value,
-						createTokenValue,
-						propPrefix,
-					);
-				}
-				continue;
-			}
-			const currentPrefix = [propPrefix, key].filter(Boolean).join('-');
-			if (isModeSchemaProperty(value)) {
-				const propertyDefinition = getModeSchemaPropertyAsPropertyDefinition(
-					currentPrefix,
-					value,
-					createTokenValue,
-					propPrefix,
-				);
-				propsLevel[key] = propertyDefinition;
-			} else if (typeof value === 'object' && value !== null) {
-				propsLevel[key] = generatePropsForSchemaLevel(value, currentPrefix);
-			}
-		}
-		return propsLevel;
-	}
-	return generatePropsForSchemaLevel(root, tag);
-}
-
-export function flattenToPropsList(obj: any): Token[] {
-	const propsList: Token[] = [];
-	for (const key in obj) {
-		if (isToken(obj[key])) {
-			propsList.push(obj[key]);
-		} else if (typeof obj[key] === 'object' && obj[key] !== null) {
-			propsList.push(...flattenToPropsList(obj[key]));
-		}
-	}
-	return propsList;
 }

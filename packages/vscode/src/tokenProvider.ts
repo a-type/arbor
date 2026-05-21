@@ -1,6 +1,7 @@
 import {
 	AnyArborPreset,
 	ArborFunction,
+	ArborMixin,
 	DEFAULT_TOKEN_PREFIX,
 	Token,
 	flattenToPropsList,
@@ -11,8 +12,15 @@ import { findConfigFile, loadConfigFile } from './configLoader.js';
 import { getTokenCompletions } from './tokenCompletions.js';
 
 /** Flat map of name->token */
-export type TokenMap = Map<string, Token | ArborFunction>;
-export type CompletionValue = Token | ArborFunction | 'namespace';
+export type TokenMap = Map<
+	string,
+	Token | ArborFunction | ArborMixin<any, any>
+>;
+export type CompletionValue =
+	| Token
+	| ArborFunction
+	| ArborMixin<any, any>
+	| 'namespace';
 
 export interface ConfigState {
 	configPath: string;
@@ -148,7 +156,10 @@ export class TokenProvider {
 				return null;
 			}
 
-			const tokenMap = new Map<string, Token | ArborFunction>();
+			const tokenMap = new Map<
+				string,
+				Token | ArborFunction | ArborMixin<any, any>
+			>();
 			for (const token of flattenToPropsList(preset.$)) {
 				tokenMap.set(token.name, token);
 			}
@@ -156,6 +167,9 @@ export class TokenProvider {
 				Object.values(preset.functions)
 			:	[]) {
 				tokenMap.set(func.name, func);
+			}
+			for (const mixin of preset.mixins ? Object.values(preset.mixins) : []) {
+				tokenMap.set(mixin.name, mixin);
 			}
 
 			this.ensureConfigWatcher(configPath);

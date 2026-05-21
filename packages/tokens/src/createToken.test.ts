@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { createTokenFactory } from './index.js';
+import { createTokenFactory } from './createToken.js';
 
 const createToken = createTokenFactory({ tokenPrefix: '--x-' });
 

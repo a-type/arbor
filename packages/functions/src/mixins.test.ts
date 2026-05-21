@@ -1,8 +1,10 @@
 import { printEquation } from '@arbor-css/calc';
+import { createTokenFactory } from '@arbor-css/tokens';
 import { describe, expect, it } from 'vitest';
 import { createMixinFactory, isMixin } from './mixins.js';
 
-const createMixin = createMixinFactory({ tokenPrefix: '--x-' });
+const createToken = createTokenFactory({ tokenPrefix: '--x-' });
+const createMixin = createMixinFactory({ tokenPrefix: '--x-', createToken });
 
 describe('createMixin', () => {
 	it('sets the CSS name with -- prefix', () => {
@@ -92,7 +94,7 @@ describe('createMixin', () => {
 	it('supports parameters in definitions', () => {
 		const mixin = createMixin('shadow', {
 			parameters: ['--default-ring-color'] as const,
-			definition: (css, defaultRingColor) => ({
+			definition: (css, { parameters: [defaultRingColor] }) => ({
 				'--x-system-shadow': css` 0 0 0 0 transparent`,
 				'--x-system-ring': css`0 0 0 0 ${defaultRingColor}`,
 				'box-shadow': css`var(--x-system-ring), var(--x-system-shadow)`,
@@ -101,6 +103,20 @@ describe('createMixin', () => {
 
 		expect(mixin.definition).toBe(
 			'@mixin --x-mixin-shadow(--default-ring-color) { --x-system-shadow: 0 0 0 0 transparent; --x-system-ring: 0 0 0 0 var(--default-ring-color); box-shadow: var(--x-system-ring), var(--x-system-shadow); }',
+		);
+	});
+
+	it('supports contributing tokens', () => {
+		const mixin = createMixin('colored-shadow', {
+			definition: (css, { tokens: { token } }) => ({
+				'--x-colored-shadow': css`0 0 0 0 ${token}`,
+			}),
+			contributeTokens: { token: 'color' },
+		});
+
+		expect(mixin.contributeTokens.token.name).toBe(`--x-colored-shadow-token`);
+		expect(mixin.definition).toBe(
+			`@mixin --x-mixin-colored-shadow { --x-colored-shadow: 0 0 0 0 ${mixin.contributeTokens.token.var}; }`,
 		);
 	});
 });

@@ -1,22 +1,24 @@
 import { createArbor } from '@arbor-css/core';
 
-const preset = createArbor().preset({
-	colors: {
-		ranges: {
-			brand: {
-				hue: 98,
+const preset = createArbor()
+	.preset({
+		colors: {
+			ranges: {
+				brand: {
+					hue: 98,
+				},
+				success: {
+					hue: 120,
+				},
 			},
-			success: {
-				hue: 120,
-			},
+			mainColor: 'brand',
 		},
-		mainColor: 'brand',
-	},
-	globals: {},
-}).withMode('success', (base) => ({
-	color: {
-		main: base.$.primitives.colors.success,
-	},
-}));
+		globals: {},
+	})
+	.withMode('success', (base) => ({
+		color: {
+			main: base.$.primitives.colors.success,
+		},
+	}));
 
 export default preset;

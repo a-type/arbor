@@ -35,8 +35,8 @@ button {
 	line-height: 1;
 	transition: all 0.2s ease;
 	cursor: pointer;
-	box-shadow: var(--x-system-ring), var(--x-system-shadow);
-	--x-system-shadow: var(--x-shadow-sm-compiled);
+	@apply --x-mixin-shadow;
+	--x-shadow-shadow: var(--x-shadow-md-compiled);
 
 	&[data-emphasis='primary'] {
 		background: var(--x-action-primary-color-bg);
@@ -52,7 +52,7 @@ button {
 		background: var(--x-action-ambient-color-bg);
 		color: var(--x-action-ambient-color-fg);
 		border-color: var(--x-action-ambient-color-border);
-		--x-system-shadow: 0 0 0 0 transparent;
+		--x-shadow-shadow: 0 0 0 0 transparent;
 
 		&:hover,
 		&:focus {
@@ -62,7 +62,7 @@ button {
 
 	&:hover {
 		--x-system-bg: --x-fn-darken-color(var(--x-system-bg-applied), 2);
-		--x-system-ring: 0 0 0 6px var(--x-system-bg);
+		--x-shadow-ring: 0 0 0 6px var(--x-system-bg);
 	}
 	&:active {
 		--x-system-bg: --x-fn-darken-color(var(--x-system-bg-applied), 4);
@@ -72,7 +72,7 @@ button {
 	}
 	&:focus-visible {
 		--x-system-bg: --x-fn-lighten-color(var(--x-system-bg-applied), 2);
-		--x-system-ring: 0 0 0 2px var(--x-color-main-ink);
+		--x-shadow-ring: 0 0 0 2px var(--x-color-main-ink);
 	}
 }
 
@@ -86,9 +86,9 @@ input {
 	line-height: var(--x-text-secondary-lineHeight);
 	background: var(--x-control-color-bg);
 	color: var(--x-control-color-fg);
-	box-shadow: var(--x-system-ring), var(--x-system-shadow);
-	--x-system-shadow: var(--x-shadow-sm-compiled);
-	--x-system-ring: 0 0 0 0 transparent;
+	box-shadow: var(--x-shadow-ring), var(--x-shadow-shadow);
+	--x-shadow-shadow: var(--x-shadow-sm-compiled);
+	--x-shadow-ring: 0 0 0 0 transparent;
 
 	&:hover {
 		--x-system-bg: --x-fn-darken-color(var(--x-control-color-bg), 1);
@@ -96,7 +96,7 @@ input {
 			var(--x-control-color-border),
 			2
 		);
-		--x-system-ring: 0 0 0 2px var(--x-system-borderColor-all);
+		--x-shadow-ring: 0 0 0 2px var(--x-system-borderColor-all);
 	}
 	&:focus {
 		outline: none;
@@ -106,7 +106,7 @@ input {
 			var(--x-control-color-border),
 			4
 		);
-		--x-system-ring: 0 0 0 6px --x-system-bg;
+		--x-shadow-ring: 0 0 0 6px --x-system-bg;
 	}
 }
 

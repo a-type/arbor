@@ -1,4 +1,5 @@
 import { createMixinFactory } from '@arbor-css/functions';
+import { createTokenFactory } from '@arbor-css/tokens';
 import postcss from 'postcss';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { createFunctionFactory } from '../../functions/dist/functions.js';
@@ -24,7 +25,8 @@ function makeConfigResult(preset: object) {
 }
 
 it('inlines @apply for an Arbor mixin', async () => {
-	const createMixin = createMixinFactory({ tokenPrefix: '--x-' });
+	const createToken = createTokenFactory({ tokenPrefix: '--x-' });
+	const createMixin = createMixinFactory({ tokenPrefix: '--x-', createToken });
 	const shadow = createMixin('shadow', {
 		description: 'Stacked shadow setup',
 		definition: (css) => [

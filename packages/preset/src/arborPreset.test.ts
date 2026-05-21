@@ -30,5 +30,5 @@ it('supports a custom token prefix', () => {
 
 	expect(preset.meta?.tokenPrefix).toBe('--acme-');
 	expect(preset.$.mode.color.main.$root.name.startsWith('--acme-')).toBe(true);
-	expect(preset.$.system.fg.$root.name.startsWith('--acme-')).toBe(true);
+	expect(preset.$.system.ref.fg.$root.name.startsWith('--acme-')).toBe(true);
 });

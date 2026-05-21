@@ -6,7 +6,14 @@ import {
 	isCalcEquation,
 	printEquation,
 } from '@arbor-css/calc';
-import { DEFAULT_TOKEN_PREFIX } from '@arbor-css/tokens';
+import {
+	convertSimpleTokenSchema,
+	CreateToken,
+	DEFAULT_TOKEN_PREFIX,
+	SimpleTokensAsTokenDefinitions,
+	SimpleTokenSchema,
+	TokenSchema,
+} from '@arbor-css/tokens';
 import {
 	FunctionParams,
 	paramsAsInterpolations,
@@ -54,13 +61,20 @@ function normalizeDeclarations(
 	}));
 }
 
-export interface CreateMixinParameters<TParams extends FunctionParams> {
+export interface CreateMixinParameters<
+	TParams extends FunctionParams,
+	TTokens extends SimpleTokenSchema = SimpleTokenSchema,
+> {
 	description?: string;
 	parameters?: TParams;
 	definition: (
 		css: Css,
-		...params: ParamsAsInterpolations<TParams>
+		inputs: {
+			parameters: ParamsAsInterpolations<TParams>;
+			tokens: SimpleTokensAsTokenDefinitions<TTokens>;
+		},
 	) => MixinBodyObject | MixinBodyList;
+	contributeTokens?: TTokens;
 }
 
 /**
@@ -82,29 +96,46 @@ export interface CreateMixinParameters<TParams extends FunctionParams> {
  *     'box-shadow': css`var(--ring), var(--shadow)`,
  *  }),
  */
-export type CreateMixin = <TParams extends FunctionParams>(
+export type CreateMixin = <
+	TParams extends FunctionParams,
+	TTokens extends SimpleTokenSchema,
+>(
 	name: string,
-	parameters: CreateMixinParameters<TParams>,
-) => ArborMixin;
+	parameters: CreateMixinParameters<TParams, TTokens>,
+) => ArborMixin<TParams, SimpleTokensAsTokenDefinitions<TTokens>>;
 
 export function createMixinFactory({
 	tokenPrefix = DEFAULT_TOKEN_PREFIX,
+	createToken,
 }: {
 	tokenPrefix?: string;
-} = {}) {
+	createToken: CreateToken;
+}) {
 	const mixinPrefix = `${tokenPrefix}mixin-`;
 
-	return function createMixin<TParams extends FunctionParams>(
+	return function createMixin<
+		TParams extends FunctionParams,
+		TTokens extends SimpleTokenSchema,
+	>(
 		name: string,
 		{
 			description,
 			definition,
 			parameters = [] as unknown as TParams,
-		}: CreateMixinParameters<TParams>,
-	): ArborMixin {
+			contributeTokens: contributeTokensInput = {} as unknown as TTokens,
+		}: CreateMixinParameters<TParams, TTokens>,
+	): ArborMixin<TParams, SimpleTokensAsTokenDefinitions<TTokens>> {
 		const cssName = `${mixinPrefix}${name}`;
+		const contributeTokens = convertSimpleTokenSchema(
+			contributeTokensInput,
+			name,
+			createToken,
+		);
 		const declarations = normalizeDeclarations(
-			definition(css, ...paramsAsInterpolations(parameters)),
+			definition(css, {
+				parameters: paramsAsInterpolations(parameters),
+				tokens: contributeTokens,
+			}),
 		);
 		const body = declarations
 			.map((decl) => `${decl.prop}: ${printEquation(decl.value)};`)
@@ -122,22 +153,48 @@ export function createMixinFactory({
 					value: decl.value,
 				})),
 			parameters,
+			contributeTokens,
 		};
-	} satisfies CreateMixin;
+	};
 }
 
-export type ArborMixin = {
+export type ArborMixin<
+	TParams extends FunctionParams = FunctionParams,
+	TTokens extends TokenSchema = TokenSchema,
+> = {
 	[MIXIN_BRAND]: true;
 	name: string;
 	description?: string;
 	declarations: ArborMixinDeclaration[];
 	definition: string;
 	inline: () => ArborMixinDeclaration[];
-	parameters: FunctionParams;
+	parameters: TParams;
+	contributeTokens: TTokens;
 };
 
 export type PresetMixins = Record<string, ArborMixin>;
 
 export function isMixin(value: unknown): value is ArborMixin {
 	return typeof value === 'object' && value !== null && MIXIN_BRAND in value;
+}
+
+export type MixinTokens<TMixins extends PresetMixins> = {
+	[K in keyof TMixins]: TMixins[K] extends ArborMixin<any, infer TTokens> ?
+		TTokens
+	:	never;
+};
+
+export function extractMixinTokens<TMixins extends PresetMixins>(
+	mixins: TMixins,
+): MixinTokens<TMixins> {
+	const tokens = {} as MixinTokens<TMixins>;
+
+	for (const key in mixins) {
+		const mixin = mixins[key];
+		if (isMixin(mixin)) {
+			tokens[key] = mixin.contributeTokens as any;
+		}
+	}
+
+	return tokens;
 }

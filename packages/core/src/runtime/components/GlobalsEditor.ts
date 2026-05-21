@@ -12,7 +12,7 @@ class GlobalsEditor extends ArborElement {
 
 		const globalsFolder = gui.addFolder('Globals');
 
-		for (const [globalKey, token] of Object.entries(config.$.system.globals)) {
+		for (const [globalKey, token] of Object.entries(config.$.system.global)) {
 			let entry =
 				token.type === 'color' ?
 					globalsFolder.addColor(config.primitives.globals, globalKey as any)

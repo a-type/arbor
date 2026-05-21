@@ -23,8 +23,8 @@ it('generates a map of mode, primitive, and system tokens with correct paths', (
 	expect(map.get('color.main')).toBe(preset.$.mode.color.main.$root);
 	expect(map.has('primitives.spacing.md')).toBe(true);
 	expect(map.get('primitives.spacing.md')).toBe(preset.$.primitives.spacing.md);
-	expect(map.has('system.fg')).toBe(true);
-	expect(map.get('system.fg')).toBe(preset.$.system.fg.$root);
+	expect(map.has('system.ref.fg')).toBe(true);
+	expect(map.get('system.ref.fg')).toBe(preset.$.system.ref.fg.$root);
 });
 
 it('applies descriptions to all built-in system and global tokens', () => {
@@ -46,10 +46,10 @@ it('applies descriptions to all built-in system and global tokens', () => {
 				typeof token.description === 'string' && token.description.length > 0,
 		),
 	).toBe(true);
-	expect(preset.$.system.globals.baseFontSize.description).toBe(
+	expect(preset.$.system.global.baseFontSize.description).toBe(
 		'Defines the root font size used to derive Arbor typography tokens.',
 	);
-	expect(preset.$.system.bg.$root.description).toBe(
+	expect(preset.$.system.ref.bg.$root.description).toBe(
 		'Stores the final background color value Arbor applies in CSS.',
 	);
 });

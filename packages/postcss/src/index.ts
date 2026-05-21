@@ -98,7 +98,9 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 			root.walkComments((comment) => {
 				if (comment.text.trim() === 'inline-arbor-base') {
 					const generatedCss = generateStylesheet(config.preset);
-					const generatedRoot = postcss.parse(generatedCss);
+					const generatedRoot = postcss.parse(generatedCss, {
+						from: config.configPath,
+					});
 					comment.replaceWith(...generatedRoot.nodes);
 				}
 			});
@@ -156,6 +158,12 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 
 			const systemAssignmentEntry = colorPropEntries[decl.prop];
 			if (systemAssignmentEntry) {
+				// Make sure we haven't already processed this assignment
+				if (
+					decl.value.toString().includes(`var(${systemAssignmentEntry.final})`)
+				) {
+					return;
+				}
 				// Inject system color props before this declaration
 				decl.cloneBefore({
 					prop: systemAssignmentEntry.applied,

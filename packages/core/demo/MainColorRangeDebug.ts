@@ -4,7 +4,7 @@ import arbor from './arbor.js';
 
 const oklchMatcher = /oklch\(([0-9.%]+),?\s?([0-9.%]+),?\s?([0-9.%]+)\)/;
 
-const globalPropsFlat = Object.values(arbor.$.system.globals);
+const globalPropsFlat = Object.values(arbor.$.system.global);
 
 class MainColorRangeDebug extends ArborElement {
 	constructor() {

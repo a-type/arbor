@@ -15,7 +15,7 @@ function lightDarkAlterations(
 		step: CalcInterpolation;
 	},
 ) {
-	return css`calc(1 + ${step} * (${[systemProps.scheme.whenLight, 1]} * ${light}) + (${[systemProps.scheme.whenDark, 1]} * ${dark}))`;
+	return css`calc(1 + ${step} * (${[systemProps.meta.scheme.whenLight, 1]} * ${light}) + (${[systemProps.meta.scheme.whenDark, 1]} * ${dark}))`;
 }
 
 export function createPresetFunctions(
@@ -40,14 +40,14 @@ export function createPresetFunctions(
 		description: 'Desaturates a color by a specified "step" value',
 		parameters: ['--color', '--step'] as const,
 		definition: (css, color, step) =>
-			css`oklch(from ${color} l calc(c * (1 + ${[systemProps.scheme.whenLight, 1]} * 0.05 * ${step})) h)`,
+			css`oklch(from ${color} l calc(c * (1 + ${[systemProps.meta.scheme.whenLight, 1]} * 0.05 * ${step})) h)`,
 	});
 
 	const saturateColor = createFunctionValue('saturate-color', {
 		description: 'Saturates a color by a specified "step" value',
 		parameters: ['--color', '--step'] as const,
 		definition: (css, color, step) =>
-			css`oklch(from ${color} l calc(c * (1 + ${[systemProps.scheme.whenLight, 1]} * -0.05 * ${step})) h)`,
+			css`oklch(from ${color} l calc(c * (1 + ${[systemProps.meta.scheme.whenLight, 1]} * -0.05 * ${step})) h)`,
 	});
 
 	return {

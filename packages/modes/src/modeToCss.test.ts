@@ -47,7 +47,7 @@ it('prints a base mode with derived values', () => {
 		[data-mode-base=""],
 		:where(.\\@mode-base [class^="\\@scheme-"]),
 		:where([data-mode-base=""] [class^="\\@scheme-"]) {
-			--x-system-mode: base;
+			--x-system-modeName: base;
 			--x-derived-once: color-mix(in hsl, var(--x-value), black);
 		--x-derived-twice: color-mix(in hsl, var(--x-derived-once), transparent);
 		--x-derived-again: color-mix(in hsl, var(--x-value), red);
@@ -65,7 +65,7 @@ it('prints a partial mode with derived dependencies it doesnt declare', () => {
 		[data-mode-partial=""],
 		:where(.\\@mode-partial [class^="\\@scheme-"]),
 		:where([data-mode-partial=""] [class^="\\@scheme-"]) {
-			--x-system-mode: partial;
+			--x-system-modeName: partial;
 			--x-derived-once: color-mix(in hsl, var(--x-value), black);
 		--x-derived-twice: color-mix(in hsl, var(--x-derived-once), transparent);
 		--x-derived-again: color-mix(in hsl, var(--x-value), red);
@@ -83,7 +83,7 @@ it('prints a partial mode which overrides derived dependencies from base and doe
 		[data-mode-underived=""],
 		:where(.\\@mode-underived [class^="\\@scheme-"]),
 		:where([data-mode-underived=""] [class^="\\@scheme-"]) {
-			--x-system-mode: underived;
+			--x-system-modeName: underived;
 			--x-derived-twice: color-mix(in hsl, var(--x-derived-once), transparent);
 		--x-derived-once: green;
 

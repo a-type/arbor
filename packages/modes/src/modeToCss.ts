@@ -1,11 +1,10 @@
 import { isCalcEquation, printEquation } from '@arbor-css/calc';
 import { SystemTokens } from '@arbor-css/globals';
-import { isToken, Token } from '@arbor-css/tokens';
+import { isToken, SimpleTokenSchema, Token } from '@arbor-css/tokens';
 import { toFlatKeys } from '@arbor-css/util';
 import {
 	isModeValue,
 	ModeInstance,
-	ModeSchemaLevel,
 	ModeValue,
 	PartialModeInstance,
 } from './createModeSchema.js';
@@ -56,7 +55,7 @@ function getBaseModeDependents(
 	return dependents;
 }
 
-export function modeToCss<TModeShape extends ModeSchemaLevel>(
+export function modeToCss<TModeShape extends SimpleTokenSchema>(
 	mode: PartialModeInstance<TModeShape>,
 	baseMode: ModeInstance<TModeShape>,
 	{
@@ -112,7 +111,7 @@ export function modeToCss<TModeShape extends ModeSchemaLevel>(
 [data-mode-${mode.config.name}=""],
 :where(.\\@mode-${mode.config.name} [class^="\\@scheme-"]),
 :where([data-mode-${mode.config.name}=""] [class^="\\@scheme-"]) {
-	${systemProps.labels.mode.assign(mode.config.name)}
+	${systemProps.meta.modeName.assign(mode.config.name)}
 	${content}
 }
 `;

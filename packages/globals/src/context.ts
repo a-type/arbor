@@ -37,7 +37,7 @@ export function createGlobalContext(config: GlobalContextConfig = {}) {
 	};
 	return {
 		createFunction: createFunctionFactory({ tokenPrefix }),
-		createMixin: createMixinFactory({ tokenPrefix }),
+		createMixin: createMixinFactory({ tokenPrefix, createToken }),
 		createToken,
 		tokenPrefix,
 		$systemTokens,
@@ -45,10 +45,8 @@ export function createGlobalContext(config: GlobalContextConfig = {}) {
 		getGlobalPropertyAssignments() {
 			const assignments: Record<string, string> = {};
 			let key: keyof GlobalConfig;
-			for (key of Object.keys(
-				$systemTokens.globals,
-			) as (keyof GlobalConfig)[]) {
-				const token = $systemTokens.globals[key];
+			for (key of Object.keys($systemTokens.global) as (keyof GlobalConfig)[]) {
+				const token = $systemTokens.global[key];
 				assignments[token.name] = globals[key].toString();
 			}
 			return assignments;

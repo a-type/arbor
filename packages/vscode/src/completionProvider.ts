@@ -1,4 +1,4 @@
-import { isFunction, isToken } from '@arbor-css/core';
+import { isFunction, isMixin, isToken } from '@arbor-css/core';
 import * as vscode from 'vscode';
 import { createTokenRegex } from './regex.js';
 import type { TokenProvider } from './tokenProvider.js';
@@ -70,6 +70,28 @@ export class ArborCompletionProvider implements vscode.CompletionItemProvider {
 					]
 						.filter(Boolean)
 						.join('\n\n'),
+				);
+				item.insertText = new vscode.SnippetString(
+					`${item.insertText!}${value.parameters.length > 0 ? `(${value.parameters.map((p, i) => `\${${i + 1}:${p}}`).join(', ')})` : ''}`,
+				);
+			} else if (isMixin(value)) {
+				item.detail = value.name + `(${value.parameters.join(', ')})`;
+				item.documentation = new vscode.MarkdownString(
+					[
+						`**CSS mixin:** \`${value.name}()\``,
+						value.description ? `**Description:** ${value.description}` : null,
+						'**Parameters:**',
+						...value.parameters.map((p) => `- \`${p}\``),
+						'**Contributed tokens:**',
+						...Object.values(value.contributeTokens).map(
+							(t) => `- \`${t.name}\`: ${t.purpose}`,
+						),
+					]
+						.filter(Boolean)
+						.join('\n\n'),
+				);
+				item.insertText = new vscode.SnippetString(
+					`${item.insertText!}${value.parameters.length > 0 ? `(${value.parameters.map((p, i) => `\${${i + 1}:${p}}`).join(', ')})` : ''}`,
 				);
 			} else {
 				item.detail = `Arbor token namespace`;

@@ -23,7 +23,7 @@ export function generateStylesheet(
 	const defaultScheme = config.primitives.defaultScheme ?? 'light';
 	const baseMode = config.modes.base;
 	const systemProps = config.$.system;
-	const globalProps = systemProps.globals;
+	const globalProps = systemProps.global;
 
 	/**
 	 * Each scheme generates a full set of CSS color properties
@@ -46,12 +46,12 @@ export function generateStylesheet(
 		const values = selfReferencedProps(config.$.primitives.colors, {
 			valuePrefix: config.primitives.schemeTags[schemeName] ?? schemeName,
 		});
-		return `${systemProps.labels.scheme.assign(schemeName)}
-	${systemProps.scheme.invertMultiplier.assign(scheme.isDark ? -1 : 1)}
-	${systemProps.scheme.whenDark.assign(scheme.isDark ? 1 : 0)}
-	${systemProps.scheme.whenLight.assign(scheme.isDark ? 0 : 1)}
-	${systemProps.scheme.trueLight.assign(scheme.isDark ? 'black' : 'white')}
-	${systemProps.scheme.trueHeavy.assign(scheme.isDark ? 'white' : 'black')}
+		return `${systemProps.meta.schemeName.assign(schemeName)}
+	${systemProps.meta.scheme.invertMultiplier.assign(scheme.isDark ? -1 : 1)}
+	${systemProps.meta.scheme.whenDark.assign(scheme.isDark ? 1 : 0)}
+	${systemProps.meta.scheme.whenLight.assign(scheme.isDark ? 0 : 1)}
+	${systemProps.meta.scheme.trueLight.assign(scheme.isDark ? 'black' : 'white')}
+	${systemProps.meta.scheme.trueHeavy.assign(scheme.isDark ? 'white' : 'black')}
 	${formatObjectToCss(values)}
 	`;
 	}

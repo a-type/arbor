@@ -108,7 +108,7 @@ export function createColorRange<RangeNames extends string = DefaultRangeName>(
 						$.val(config.saturation ?? 1),
 						$.val('0.4'),
 						chroma($, { step: i, rangeSize: size, midpoint }),
-						$.val(context.$systemTokens.globals.saturation.var),
+						$.val(context.$systemTokens.global.saturation.var),
 					),
 					$.val('0.4'),
 				),
@@ -254,7 +254,7 @@ export function createNeutralDerivedRange(
 	function chroma($: CalcOperations, source: OklchColorEquation) {
 		return $.multiply(
 			source.c,
-			$.val(context.$systemTokens.globals.saturation.var),
+			$.val(context.$systemTokens.global.saturation.var),
 			$.val('0.15'),
 		);
 	}

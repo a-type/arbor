@@ -8,7 +8,6 @@ import {
 } from '@arbor-css/colors';
 import {
 	createFunctionFactory,
-	createMixinFactory,
 	PresetFunctions,
 	PresetMixins,
 } from '@arbor-css/functions';
@@ -140,9 +139,7 @@ export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
 	);
 	const builtinMixins = createPresetMixins(
 		context.tokenPrefix,
-		createMixinFactory({
-			tokenPrefix: context.tokenPrefix,
-		}),
+		context.createMixin,
 	);
 
 	return {
@@ -200,7 +197,7 @@ export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
 					mainColor: normalizedConfig.colors.mainColor as any,
 					primitives,
 					modeSchema,
-					globalProps: context.$systemTokens.globals,
+					globalProps: context.$systemTokens.global,
 				}),
 				normalizedConfig.baseMode ?? {},
 			);

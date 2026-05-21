@@ -1,35 +1,42 @@
 import { CompiledColors } from '@arbor-css/colors';
-import { PresetFunctions, PresetMixins } from '@arbor-css/functions';
+import {
+	extractMixinTokens,
+	MixinTokens,
+	PresetFunctions,
+	PresetMixins,
+} from '@arbor-css/functions';
 import { GlobalContext, SystemTokens } from '@arbor-css/globals';
 import {
 	ModeInstance,
 	ModeSchema,
-	ModeSchemaLevel,
 	ModeTokens,
 	PartialModeInstance,
 } from '@arbor-css/modes';
 import { Primitives, PrimitiveTokens } from '@arbor-css/primitives';
 import { CompiledShadows } from '@arbor-css/shadows';
 import { CompiledSpacing } from '@arbor-css/spacing';
+import { SimpleTokenSchema } from '@arbor-css/tokens';
 import { CompiledTypography } from '@arbor-css/typography';
 
 /**
  * Collected tokens of the entire preset.
  */
 export type PresetTokens<
-	TModeShape extends ModeSchemaLevel,
+	TModeShape extends SimpleTokenSchema,
 	TCompiledColors extends CompiledColors<any, any>,
 	TTypography extends CompiledTypography<any>,
 	TSpacing extends CompiledSpacing<any>,
 	TShadows extends CompiledShadows<any>,
+	TMixins extends PresetMixins,
 > = {
 	mode: ModeTokens<TModeShape>;
 	primitives: PrimitiveTokens<TCompiledColors, TTypography, TSpacing, TShadows>;
 	system: SystemTokens;
+	mixins: MixinTokens<TMixins>;
 };
 
 export interface ArborPreset<
-	TModeShape extends ModeSchemaLevel = ModeSchemaLevel,
+	TModeShape extends SimpleTokenSchema = SimpleTokenSchema,
 	TModes extends Record<string, PartialModeInstance<TModeShape>> = Record<
 		string,
 		PartialModeInstance<TModeShape>
@@ -50,7 +57,14 @@ export interface ArborPreset<
 	/** Easy access to your mode schema */
 	mode: ModeSchema<TModeShape>;
 	/** All tokens in this preset. */
-	$: PresetTokens<TModeShape, TCompiledColors, TTypography, TSpacing, TShadows>;
+	$: PresetTokens<
+		TModeShape,
+		TCompiledColors,
+		TTypography,
+		TSpacing,
+		TShadows,
+		TMixins
+	>;
 	meta?: {
 		config?: unknown;
 	};
@@ -58,7 +72,7 @@ export interface ArborPreset<
 }
 
 export function definePreset<
-	TModeShape extends ModeSchemaLevel,
+	TModeShape extends SimpleTokenSchema,
 	TModes extends Record<string, PartialModeInstance<TModeShape>>,
 	TCompiledColors extends CompiledColors<any, any>,
 	TTypography extends CompiledTypography<any>,
@@ -100,6 +114,7 @@ export function definePreset<
 		mode: config.modes.base.schema.$tokens,
 		primitives: config.primitives.$tokens,
 		system: config.systemProps,
+		mixins: extractMixinTokens(config.mixins ?? ({} as TMixins)),
 	};
 	return {
 		functions: {} as TFunctions,

@@ -4,31 +4,30 @@ import { createGlobalContext, GlobalConfigProps } from '@arbor-css/globals';
 import {
 	createModeSchema,
 	ModeSchema,
-	ModeSchemaLevel,
 	ModeValues,
 	PartialModeInstance,
 } from '@arbor-css/modes';
 import { Primitives } from '@arbor-css/primitives';
-import { CreateToken } from '@arbor-css/tokens';
+import { CreateToken, SimpleTokenSchema } from '@arbor-css/tokens';
 
 const colorIntents = {
 	fg: 'color',
 	bg: 'color',
 	border: 'color',
-} satisfies ModeSchemaLevel;
+} satisfies SimpleTokenSchema;
 
 const boxIntents = {
 	$root: 'other',
 	inline: 'spacing',
 	block: 'spacing',
-} satisfies ModeSchemaLevel;
+} satisfies SimpleTokenSchema;
 
 const textIntents = {
 	size: 'font-size',
 	weight: 'font-weight',
 	lineHeight: 'line-height',
 	font: 'other',
-} satisfies ModeSchemaLevel;
+} satisfies SimpleTokenSchema;
 
 const shadowIntents = {
 	x: 'shadow-x',
@@ -37,7 +36,7 @@ const shadowIntents = {
 	spread: 'shadow-spread',
 	color: 'shadow-color',
 	compiled: 'shadow',
-} satisfies ModeSchemaLevel;
+} satisfies SimpleTokenSchema;
 
 export const arborModeDefinition = {
 	color: {
@@ -136,7 +135,7 @@ export const arborModeDefinition = {
 		lg: shadowIntents,
 		xl: shadowIntents,
 	},
-} satisfies ModeSchemaLevel;
+} satisfies SimpleTokenSchema;
 
 export function createArborModeSchema({
 	createToken,

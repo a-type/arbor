@@ -35,13 +35,13 @@ export function createSystemProps({
 	createToken: CreateToken;
 }) {
 	const $labelProps = {
-		mode: createTokenValue('mode', {
+		modeName: createTokenValue('modeName', {
 			description:
 				'Labels the currently applied mode name for debugging and styling hooks.',
 			tag: 'system',
 			type: 'string',
 		}),
-		scheme: createTokenValue('scheme', {
+		schemeName: createTokenValue('schemeName', {
 			description:
 				'Labels the active color scheme name for debugging and styling hooks.',
 			tag: 'system',
@@ -58,8 +58,7 @@ export function createSystemProps({
 			fallback: 'rgba(0, 0, 0, 0.1)',
 		}),
 		shadowReverse: createTokenValue('shadow-reverse', {
-			description:
-				'Flips shadow direction for inverse elevation treatments.',
+			description: 'Flips shadow direction for inverse elevation treatments.',
 			tag: 'system',
 			type: 'number',
 			fallback: 1,
@@ -102,17 +101,13 @@ export function createSystemProps({
 		}),
 	};
 
-	return {
-		labels: $labelProps,
-		dynamic: $dynamicProps,
-		scheme: $schemeProps,
-		globals: createGlobalProps({ createToken: createTokenValue }),
+	const $referenceProps = {
 		fg: makeSystemColorTokens('fg', 'foreground color', createTokenValue),
 		bg: {
 			...makeSystemColorTokens('bg', 'background color', createTokenValue),
-			contrast: createTokenValue(`bg-contrast`, {
+			contrast: createTokenValue(`bg-for-contrast`, {
 				description:
-					'Stores a contrast companion derived from the resolved background color.',
+					'When present, this color should be used as the color to compute a contrast foreground against.',
 				tag: 'system',
 				type: 'color',
 				inherits: true,
@@ -145,30 +140,21 @@ export function createSystemProps({
 				createTokenValue,
 			),
 		},
-		ring: {
-			...makeSystemColorTokens('ring', 'focus ring color', createTokenValue),
-			target: createTokenValue(`ring-target`, {
-				description:
-					'Captures the source color Arbor should use when deriving the focus ring color.',
-				tag: 'system',
-				type: 'color',
-				inherits: false,
-			}),
-		},
-		ringOffset: {
-			...makeSystemColorTokens(
-				'ring-offset',
-				'focus ring offset color',
-				createTokenValue,
-			),
-			target: createTokenValue(`ring-offset-target`, {
-				description:
-					'Captures the source color Arbor should use when deriving the focus ring offset color.',
-				tag: 'system',
-				type: 'color',
-				inherits: false,
-			}),
-		},
+		ringColor: makeSystemColorTokens(
+			'ring',
+			'focus ring color',
+			createTokenValue,
+		),
+		ringOffsetColor: makeSystemColorTokens(
+			'ring-offset',
+			'focus ring offset color',
+			createTokenValue,
+		),
+		shadowColor: makeSystemColorTokens(
+			'shadow',
+			'shadow color',
+			createTokenValue,
+		),
 		placeholder: makeSystemColorTokens(
 			'placeholder',
 			'placeholder color',
@@ -177,7 +163,21 @@ export function createSystemProps({
 		accent: makeSystemColorTokens('accent', 'accent color', createTokenValue),
 		fill: makeSystemColorTokens('fill', 'fill color', createTokenValue),
 		stroke: makeSystemColorTokens('stroke', 'stroke color', createTokenValue),
-		shadow: makeSystemColorTokens('shadow', 'shadow color', createTokenValue),
+	};
+
+	return {
+		// metadata
+		meta: {
+			...$labelProps,
+			scheme: $schemeProps,
+		},
+		// dynamic values
+		dynamic: $dynamicProps,
+		// scheme information
+		global: createGlobalProps({ createToken: createTokenValue }),
+		// references to applied values for use by mixins,
+		// functions, and userland styles
+		ref: $referenceProps,
 	};
 }
 
