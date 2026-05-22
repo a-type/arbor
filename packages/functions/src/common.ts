@@ -1,11 +1,23 @@
 import { $, CalcInterpolation } from '@arbor-css/calc';
-import { isToken } from '@arbor-css/tokens';
+import { isToken, TokenType } from '@arbor-css/tokens';
 
 export type CssProperty = `--${string}`;
-export type FunctionParams = readonly CssProperty[];
+export type FunctionParamWithMeta = {
+	name: CssProperty;
+	type?: TokenType;
+	fallback?: string;
+};
+export type FunctionParam = CssProperty | FunctionParamWithMeta;
+export type FunctionParams = readonly FunctionParam[];
 export type ParamsAsInterpolations<TParams extends FunctionParams> = {
 	[K in keyof TParams]: CalcInterpolation;
 };
+
+export function isFunctionParamWithMeta(
+	param: CssProperty | FunctionParamWithMeta,
+): param is FunctionParamWithMeta {
+	return typeof param === 'object' && 'name' in param;
+}
 
 export function paramsAsString<TParams extends FunctionParams>(
 	params: TParams,
@@ -33,6 +45,13 @@ export function paramsAsInterpolations<TParams extends FunctionParams>(
 	return params.map((p) => {
 		if (isToken(p)) {
 			return $.token(p);
+		}
+		if (isFunctionParamWithMeta(p)) {
+			const name = p.name;
+			if (p.fallback) {
+				return $.val(`var(${name}, ${p.fallback})`);
+			}
+			return $.val(`var(${name})`);
 		}
 		if (p.startsWith('--')) {
 			return $.val(`var(${p})`);

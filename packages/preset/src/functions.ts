@@ -50,11 +50,29 @@ export function createPresetFunctions(
 			css`oklch(from ${color} l calc(c * (1 + ${[systemProps.meta.scheme.whenLight, 1]} * -0.05 * ${step})) h)`,
 	});
 
+	const ring = createFunctionValue('ring', {
+		description: 'Creates a ring shadow. Should be used with the shadow mixin.',
+		parameters: [
+			'--color',
+			{
+				name: '--size',
+				fallback: '1px',
+			},
+			{
+				name: '--offset',
+				fallback: '0px',
+			},
+		] as const,
+		definition: (css, color, size, offset) =>
+			css`0 0 0 ${offset} ${systemProps.ref.bg.$root}, 0 0 0 calc(${size} + ${offset}) ${color}`,
+	});
+
 	return {
 		lightenColor,
 		darkenColor,
 		desaturateColor,
 		saturateColor,
+		ring,
 	} as const;
 }
 

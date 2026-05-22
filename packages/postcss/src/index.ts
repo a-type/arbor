@@ -1,6 +1,10 @@
 import { printEquation } from '@arbor-css/calc';
 import { AnyArborPreset, generateStylesheet } from '@arbor-css/core';
-import { isFunction, isMixin } from '@arbor-css/functions';
+import {
+	isFunction,
+	isFunctionParamWithMeta,
+	isMixin,
+} from '@arbor-css/functions';
 import { stat } from 'node:fs/promises';
 import postcss, { Plugin } from 'postcss';
 import { getColorPropEntries } from './colorSystemProps.js';
@@ -117,7 +121,7 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 			// Inline custom function calls: --fn-name(arg1, arg2, ...)
 			if (decl.value.includes(functionNamePrefix)) {
 				const fnCallRegex = new RegExp(
-					`(${escapeRegExp(functionNamePrefix)}[\\w-]+)\\(([^)]*)\\)`,
+					`(${escapeRegExp(functionNamePrefix)}[\\w-]+)\\(((?:[^()]|\\([^()]*\\))*)\\)`,
 					'g',
 				);
 				decl.value = decl.value.replace(
@@ -125,9 +129,7 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 					(match, fnName, argsStr) => {
 						const fn = Object.values(config.preset.functions ?? {}).find(
 							(f) => isFunction(f) && f.name === fnName,
-						) as
-							| import('../../functions/dist/functions.js').ArborFunction
-							| undefined;
+						);
 
 						if (!fn) {
 							helper.result.warn(`[arbor-css] Unknown function: ${fnName}`, {
@@ -143,13 +145,36 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 							.filter(Boolean);
 
 						const paramValues: Record<string, string> = {};
+						let invalid = false;
 						fn.parameters.forEach((param, i) => {
 							const paramName =
-								typeof param === 'string' ?
-									param.replace(/^--/, '')
-								:	((param as any).name?.replace(/^--/, '') ?? String(i));
+								isFunctionParamWithMeta(param) ? param.name : param;
+
+							const required =
+								!isFunctionParamWithMeta(param) || param.fallback === undefined;
+							if (i >= args.length && required) {
+								invalid = true;
+								helper.result.warn(
+									`[arbor-css] Missing argument for parameter "${paramName}" in function call: ${match}`,
+									{
+										plugin: PLUGIN_NAME,
+										node: decl,
+									},
+								);
+								return;
+							}
+
 							paramValues[paramName] = args[i] ?? '';
 						});
+
+						console.log(
+							`[arbor-css] Inlining function call: ${match} with values`,
+							paramValues,
+						);
+
+						if (invalid) {
+							return '/* Invalid function call */';
+						}
 
 						return fn.compute(paramValues);
 					},
@@ -204,8 +229,7 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 			const mixinName = atRule.params.trim();
 			const mixinNamePrefix =
 				config.preset.context.tokenPrefixes.mixinNamePrefix;
-			if (!mixinName.startsWith(mixinNamePrefix))
-				return;
+			if (!mixinName.startsWith(mixinNamePrefix)) return;
 
 			const mixin = Object.values(config.preset.mixins ?? {}).find(
 				(m) => isMixin(m) && m.name === mixinName,

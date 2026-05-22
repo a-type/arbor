@@ -1,135 +1,128 @@
-:root {
-	--x-system-ring: 0 0 0 0 transparent;
-}
-
 body {
-	background: var(--x-color-main-paper);
-	color: var(--x-color-main-ink);
+	background: var(--m-color-main-paper);
+	color: var(--m-color-main-ink);
 }
 
 .surface {
-	padding: var(--x-surface-padding);
-	border-radius: var(--x-surface-borderRadius);
+	padding: var(--m-surface-padding);
+	border-radius: var(--m-surface-borderRadius);
 
 	&[data-emphasis='primary'] {
-		background: var(--x-surface-primary-color-bg);
-		color: var(--x-surface-primary-color-fg);
+		background: var(--m-surface-primary-color-bg);
+		color: var(--m-surface-primary-color-fg);
 	}
 	&[data-emphasis='secondary'] {
-		background: var(--x-surface-secondary-color-bg);
-		color: var(--x-surface-secondary-color-fg);
+		background: var(--m-surface-secondary-color-bg);
+		color: var(--m-surface-secondary-color-fg);
 	}
 	&[data-emphasis='ambient'] {
-		background: var(--x-surface-ambient-color-bg);
-		color: var(--x-surface-ambient-color-fg);
+		background: var(--m-surface-ambient-color-bg);
+		color: var(--m-surface-ambient-color-fg);
 	}
 }
 
 .button,
 button {
-	padding: var(--x-action-padding);
-	border-radius: var(--x-action-borderRadius);
-	border: 1px solid var(--x-system-fg);
-	font-size: var(--x-text-secondary-size);
-	font-weight: var(--x-text-secondary-weight);
+	padding: var(--m-action-padding);
+	border-radius: var(--m-action-borderRadius);
+	border: 1px solid var(--ref-system-fg);
+	font-size: var(--m-text-secondary-size);
+	font-weight: var(--m-text-secondary-weight);
 	line-height: 1;
 	transition: all 0.2s ease;
 	cursor: pointer;
-	@apply --x-mixin-shadow;
-	--x-shadow-shadow: var(--x-shadow-md-compiled);
+	@apply --mx-shadow;
+	--mx-shadow-shadow: var(--m-shadow-md-compiled);
 
 	&[data-emphasis='primary'] {
-		background: var(--x-action-primary-color-bg);
-		color: var(--x-action-primary-color-fg);
-		border-color: var(--x-action-primary-color-border);
+		background: var(--m-action-primary-color-bg);
+		color: var(--m-action-primary-color-fg);
+		border-color: var(--m-action-primary-color-border);
 	}
 	&[data-emphasis='secondary'] {
-		background: var(--x-action-secondary-color-bg);
-		color: var(--x-action-secondary-color-fg);
-		border-color: var(--x-action-secondary-color-border);
+		background: var(--m-action-secondary-color-bg);
+		color: var(--m-action-secondary-color-fg);
+		border-color: var(--m-action-secondary-color-border);
 	}
 	&[data-emphasis='ambient'] {
-		background: var(--x-action-ambient-color-bg);
-		color: var(--x-action-ambient-color-fg);
-		border-color: var(--x-action-ambient-color-border);
-		--x-shadow-shadow: 0 0 0 0 transparent;
+		background: var(--m-action-ambient-color-bg);
+		color: var(--m-action-ambient-color-fg);
+		border-color: var(--m-action-ambient-color-border);
+		--mx-shadow-shadow: 0 0 0 0 transparent;
 
 		&:hover,
 		&:focus {
-			--x-system-bg-applied: inherit;
+			--ref-system-bg-applied: inherit;
 		}
 	}
 
 	&:hover {
-		--x-system-bg: --x-fn-darken-color(var(--x-system-bg-applied), 2);
-		--x-shadow-ring: 0 0 0 6px var(--x-system-bg);
+		--ref-system-bg: --fn-darken-color(var(--ref-system-bg-applied), 2);
+		--mx-shadow-ring: --fn-ring(var(--ref-system-bg), 4px);
 	}
 	&:active {
-		--x-system-bg: --x-fn-darken-color(var(--x-system-bg-applied), 4);
+		--ref-system-bg: --fn-darken-color(var(--ref-system-bg-applied), 4);
+		--mx-shadow-ring: --fn-ring(var(--ref-system-bg), 6px);
 	}
 	&:focus {
 		outline: none;
 	}
 	&:focus-visible {
-		--x-system-bg: --x-fn-lighten-color(var(--x-system-bg-applied), 2);
-		--x-shadow-ring: 0 0 0 2px var(--x-color-main-ink);
+		--ref-system-bg: --fn-lighten-color(var(--ref-system-bg-applied), 2);
+		--mx-shadow-ring: --fn-ring(var(--m-color-main-ink), 2px);
 	}
 }
 
 .input,
 input {
-	padding: var(--x-control-padding);
-	border-radius: var(--x-control-borderRadius);
-	border: 1px solid var(--x-control-color-border);
-	font-size: var(--x-text-secondary-size);
-	font-weight: var(--x-text-secondary-weight);
-	line-height: var(--x-text-secondary-lineHeight);
-	background: var(--x-control-color-bg);
-	color: var(--x-control-color-fg);
-	box-shadow: var(--x-shadow-ring), var(--x-shadow-shadow);
-	--x-shadow-shadow: var(--x-shadow-sm-compiled);
-	--x-shadow-ring: 0 0 0 0 transparent;
+	padding: var(--m-control-padding);
+	border-radius: var(--m-control-borderRadius);
+	border: 1px solid var(--m-control-color-border);
+	font-size: var(--m-text-secondary-size);
+	font-weight: var(--m-text-secondary-weight);
+	line-height: var(--m-text-secondary-lineHeight);
+	background: var(--m-control-color-bg);
+	color: var(--m-control-color-fg);
+
+	@apply --mx-shadow;
+	--mx-shadow-shadow: var(--m-shadow-sm-compiled);
 
 	&:hover {
-		--x-system-bg: --x-fn-darken-color(var(--x-control-color-bg), 1);
-		--x-system-borderColor-all: --x-fn-darken-color(
-			var(--x-control-color-border),
+		--ref-system-bg: --fn-darken-color(var(--m-control-color-bg), 1);
+		--ref-system-borderColor-all: --fn-darken-color(
+			var(--m-control-color-border),
 			2
 		);
-		--x-shadow-ring: 0 0 0 2px var(--x-system-borderColor-all);
+		--mx-shadow-ring: --fn-ring(var(--m-color-main-heavy), 2px);
 	}
 	&:focus {
 		outline: none;
 	}
 	&:focus-visible {
-		--x-system-borderColor-all: --x-fn-darken-color(
-			var(--x-control-color-border),
-			4
-		);
-		--x-shadow-ring: 0 0 0 6px --x-system-bg;
+		--mx-shadow-ring: --fn-ring(var(--m-color-main-heavy), 4px);
 	}
 }
 
 .title,
 h1 {
-	font-size: var(--x-text-primary-size);
-	font-weight: var(--x-text-primary-weight);
-	line-height: var(--x-text-primary-lineHeight);
-	font-family: var(--x-text-primary-font);
+	font-size: var(--m-text-primary-size);
+	font-weight: var(--m-text-primary-weight);
+	line-height: var(--m-text-primary-lineHeight);
+	font-family: var(--m-text-primary-font);
 }
 
 .p,
 p {
-	font-size: var(--x-text-secondary-size);
-	font-weight: var(--x-text-secondary-weight);
-	line-height: var(--x-text-secondary-lineHeight);
-	font-family: var(--x-text-secondary-font);
+	font-size: var(--m-text-secondary-size);
+	font-weight: var(--m-text-secondary-weight);
+	line-height: var(--m-text-secondary-lineHeight);
+	font-family: var(--m-text-secondary-font);
 }
 
 .caption,
 small {
-	font-size: var(--x-text-ambient-size);
-	font-weight: var(--x-text-ambient-weight);
-	line-height: var(--x-text-ambient-lineHeight);
-	font-family: var(--x-text-ambient-font);
+	font-size: var(--m-text-ambient-size);
+	font-weight: var(--m-text-ambient-weight);
+	line-height: var(--m-text-ambient-lineHeight);
+	font-family: var(--m-text-ambient-font);
 }

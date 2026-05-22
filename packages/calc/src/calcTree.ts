@@ -452,7 +452,12 @@ function evaluateLiteral(
 	context: CalcEvaluationContext,
 ): ComputationResult {
 	if (literal.startsWith('var(')) {
-		const propertyName = literal.slice(4, -1).trim();
+		// account for fallback in the var() case
+		let nameEnd = literal.indexOf(',');
+		if (nameEnd === -1) {
+			nameEnd = literal.length - 1;
+		}
+		const propertyName = literal.slice(4, nameEnd).trim();
 		const propertyValue = context.propertyValues[propertyName];
 		if (!propertyValue || context.skipBaking) {
 			return { type: 'calc', value: literal };

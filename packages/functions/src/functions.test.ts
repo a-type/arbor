@@ -80,7 +80,7 @@ describe('createFunction', () => {
 				definition: ($, base, factor) => $`calc(${base} * ${factor})`,
 			});
 			// TODO: make this resolve just '12'
-			expect(fn.compute({ base: 4, factor: 3 })).toBe('calc(12)');
+			expect(fn.compute({ '--base': 4, '--factor': 3 })).toBe('calc(12)');
 		});
 
 		it('computes an add expression', () => {
@@ -88,7 +88,7 @@ describe('createFunction', () => {
 				parameters: ['--a', '--b'],
 				definition: ($, a, b) => $`calc(${a} + ${b})`,
 			});
-			expect(fn.compute({ a: 10, b: 5 })).toBe('calc(15)');
+			expect(fn.compute({ '--a': 10, '--b': 5 })).toBe('calc(15)');
 		});
 
 		it('computes with string values that cannot be resolved numerically', () => {
@@ -96,7 +96,7 @@ describe('createFunction', () => {
 				parameters: ['--base', '--factor'],
 				definition: ($, base, factor) => $`calc(${base} * ${factor})`,
 			});
-			const result = fn.compute({ base: '8px', factor: 2 });
+			const result = fn.compute({ '--base': '8px', '--factor': 2 });
 			expect(result).toBe('calc(16px)');
 		});
 

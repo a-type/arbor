@@ -6,9 +6,9 @@ import {
 	printComputationResult,
 	printEquation,
 } from '@arbor-css/calc';
-import { isToken } from '@arbor-css/tokens';
 import {
 	FunctionParams,
+	isFunctionParamWithMeta,
 	ParamsAsInterpolations,
 	paramsAsInterpolations,
 	paramsAsString,
@@ -68,10 +68,6 @@ export function createFunctionFactory({
 		{ description, parameters, definition }: CreateFunctionParameters<TParams>,
 	): ArborFunction<TParams> {
 		const cssName = `${functionPrefix}${name}`;
-		const parameterNames = parameters.map((parameter) =>
-			isToken(parameter) ? parameter.name : parameter,
-		);
-
 		const paramsList = paramsAsString(parameters, true);
 
 		const equation = definition(css, ...paramsAsInterpolations(parameters));
@@ -90,11 +86,10 @@ export function createFunctionFactory({
 			compute(params: Record<string, string | number>): string {
 				const propertyValues: Record<string, string> = {};
 				for (let index = 0; index < parameters.length; index++) {
-					const cssParameterName = parameterNames[index];
-					const logicalName = cssParameterName.replace(/^--/, '');
-					if (logicalName in params) {
-						propertyValues[cssParameterName] = String(params[logicalName]);
-					}
+					const parameter = parameters[index];
+					const cssParameterName =
+						isFunctionParamWithMeta(parameter) ? parameter.name : parameter;
+					propertyValues[cssParameterName] = String(params[cssParameterName]);
 				}
 				const result = computeEquation(equation, {
 					propertyValues,
@@ -116,8 +111,10 @@ export type ArborFunction<TParams extends FunctionParams = FunctionParams> = {
 	inline: (...params: ParamsAsInterpolations<TParams>) => Equation;
 	compute: (params: Record<string, string | number>) => string;
 };
-export type PresetFunctions = Record<string, ArborFunction<any>>;
+export type PresetFunctions = Record<string, ArborFunction>;
 
-export function isFunction(value: unknown): value is ArborFunction {
+export function isFunction(
+	value: unknown,
+): value is ArborFunction<FunctionParams> {
 	return typeof value === 'object' && value !== null && FUNCTION_BRAND in value;
 }

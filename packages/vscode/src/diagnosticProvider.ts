@@ -1,3 +1,4 @@
+import { isFunction, isMixin } from '@arbor-css/core';
 import * as vscode from 'vscode';
 import { createTokenRegexes } from './regex.js';
 import { TokenProvider } from './tokenProvider.js';
@@ -75,6 +76,47 @@ export class ArborDiagnosticProvider {
 						);
 						diagnostic.source = 'arbor-css';
 						fileDiagnostics.push(diagnostic);
+					} else {
+						const matchedToken = state.tokenMap.get(path);
+						if (isFunction(matchedToken)) {
+							// functions and mixins may only appear as assignments, not
+							// properties
+							const afterMatch = line
+								.slice(match.index + match[0].length)
+								.trimStart();
+							if (afterMatch.startsWith(':')) {
+								const start = new vscode.Position(lineIndex, match.index);
+								const end = new vscode.Position(
+									lineIndex,
+									match.index + match[0].length,
+								);
+								const diagnostic = new vscode.Diagnostic(
+									new vscode.Range(start, end),
+									`Arbor functions cannot be used as property values: ${path}`,
+									vscode.DiagnosticSeverity.Error,
+								);
+								diagnostic.source = 'arbor-css';
+								fileDiagnostics.push(diagnostic);
+							}
+						}
+						if (isMixin(matchedToken)) {
+							// mixins must be preceeded by @apply
+							const beforeMatch = line.slice(0, match.index).trimEnd();
+							if (!beforeMatch.endsWith('@apply')) {
+								const start = new vscode.Position(lineIndex, match.index);
+								const end = new vscode.Position(
+									lineIndex,
+									match.index + match[0].length,
+								);
+								const diagnostic = new vscode.Diagnostic(
+									new vscode.Range(start, end),
+									`@apply must precede mixin: ${path}`,
+									vscode.DiagnosticSeverity.Error,
+								);
+								diagnostic.source = 'arbor-css';
+								fileDiagnostics.push(diagnostic);
+							}
+						}
 					}
 				}
 			}

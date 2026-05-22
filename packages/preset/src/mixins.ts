@@ -1,8 +1,6 @@
 import { CreateMixin } from '@arbor-css/functions';
 
-export function createPresetMixins(
-	createMixinValue: CreateMixin,
-) {
+export function createPresetMixins(createMixinValue: CreateMixin) {
 	const shadow = createMixinValue('shadow', {
 		description:
 			'Seeds stacked box-shadow layers so ring and shadow portions can be assigned independently.',
@@ -20,7 +18,8 @@ export function createPresetMixins(
 			},
 			ring: {
 				purpose: 'shadow',
-				description: 'The ring layer that sits in front of the shadow layer.',
+				description:
+					'A "ring" shadow, often used as a focus indicator. See the "ring" function.',
 			},
 		},
 	});

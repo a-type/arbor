@@ -49,6 +49,8 @@ export type ModeValues<T extends SimpleTokenSchema> = {
 	: NonNullable<T[P]> extends SimpleTokenSchema ? ModeValues<NonNullable<T[P]>>
 	: never;
 };
+export type ModeTokens<T extends SimpleTokenSchema> =
+	SimpleTokensAsTokenDefinitions<T>;
 
 export interface ModeConfig {
 	name: string;
@@ -65,15 +67,6 @@ export type PartialModeInstance<T extends SimpleTokenSchema> = Omit<
 > & {
 	values: DeepPartial<ModeValues<T>>;
 };
-
-export type ModeTokens<T> =
-	T extends object ?
-		{
-			[P in keyof T]: NonNullable<T[P]> extends string ? Token
-			: NonNullable<T[P]> extends object ? ModeTokens<NonNullable<T[P]>>
-			: never;
-		}
-	:	never;
 
 export function flattenToPropsList(obj: any): Token[] {
 	const propsList: Token[] = [];
