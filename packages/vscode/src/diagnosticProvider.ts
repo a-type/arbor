@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { createTokenRegex } from './regex.js';
+import { createTokenRegexes } from './regex.js';
 import { TokenProvider } from './tokenProvider.js';
 
 const supportedLanguages = ['css', 'scss', 'less'];
@@ -53,27 +53,29 @@ export class ArborDiagnosticProvider {
 			return;
 		}
 
-		const tokenRegex = createTokenRegex(state.tokenPrefix);
+		const tokenRegexes = createTokenRegexes(state.tokenPrefixes);
 		const fileDiagnostics: vscode.Diagnostic[] = [];
 
 		for (let lineIndex = 0; lineIndex < document.lineCount; lineIndex++) {
 			const line = document.lineAt(lineIndex).text;
-			for (const match of line.matchAll(tokenRegex.anywhere())) {
-				if (match.index === undefined) continue;
-				const path = match[1];
-				if (!state.tokenMap.has(path)) {
-					const start = new vscode.Position(lineIndex, match.index);
-					const end = new vscode.Position(
-						lineIndex,
-						match.index + match[0].length,
-					);
-					const diagnostic = new vscode.Diagnostic(
-						new vscode.Range(start, end),
-						`Unknown Arbor ${path.includes('fn-') ? 'function' : 'token'}: ${path}`,
-						vscode.DiagnosticSeverity.Error,
-					);
-					diagnostic.source = 'arbor-css';
-					fileDiagnostics.push(diagnostic);
+			for (const tokenRegex of tokenRegexes) {
+				for (const match of line.matchAll(tokenRegex.anywhere())) {
+					if (match.index === undefined) continue;
+					const path = match[1];
+					if (!state.tokenMap.has(path)) {
+						const start = new vscode.Position(lineIndex, match.index);
+						const end = new vscode.Position(
+							lineIndex,
+							match.index + match[0].length,
+						);
+						const diagnostic = new vscode.Diagnostic(
+							new vscode.Range(start, end),
+							`Unknown Arbor ${path.includes('fn-') ? 'function' : 'token'}: ${path}`,
+							vscode.DiagnosticSeverity.Error,
+						);
+						diagnostic.source = 'arbor-css';
+						fileDiagnostics.push(diagnostic);
+					}
 				}
 			}
 		}

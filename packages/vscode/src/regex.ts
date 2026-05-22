@@ -10,5 +10,9 @@ export function createTokenRegex(prefix: string) {
 	};
 }
 
+export function createTokenRegexes(prefixes: readonly string[]) {
+	return prefixes.map((prefix) => createTokenRegex(prefix));
+}
+
 /** Matches an OKLCH color value */
 export const OKLCH_RE = /^oklch\(/i;

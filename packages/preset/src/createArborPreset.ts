@@ -17,6 +17,7 @@ import {
 	GlobalConfig,
 	GlobalContext,
 	GlobalContextConfig,
+	type ArborPrefixConfig,
 } from '@arbor-css/globals';
 import { ModeValues, PartialModeInstance } from '@arbor-css/modes';
 import { createPrimitives } from '@arbor-css/primitives';
@@ -52,8 +53,7 @@ export interface CreateArborConfig extends GlobalContextConfig {}
 export interface CreateArborPresetConfig<
 	TRanges extends Record<string, ColorRangeConfig<any>>,
 	TSchemes extends Record<string, SchemeDefinition>,
-> {
-	tokenPrefix?: string;
+	> extends ArborPrefixConfig {
 	globals?: Partial<GlobalConfig>;
 	colors: {
 		ranges: TRanges;
@@ -103,7 +103,7 @@ export type ArborPresetInstance<
 		}
 	>;
 	meta: {
-		tokenPrefix: string;
+		tokenPrefixes: GlobalContext['tokenPrefixes'];
 		config: CreateArborPresetConfig<TRanges, TSchemes>;
 	};
 };
@@ -129,25 +129,28 @@ export interface ArborBuilder {
 export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
 	const context = createGlobalContext(config);
 	const modeSchema = createArborModeSchema({
-		createToken: context.createToken,
+		createToken: context.createModeToken,
 	});
 	const builtinFunctions = createPresetFunctions(
 		context.$systemTokens,
 		createFunctionFactory({
-			tokenPrefix: context.tokenPrefix,
+			namePrefix: context.tokenPrefixes.functionNamePrefix,
 		}),
 	);
-	const builtinMixins = createPresetMixins(
-		context.tokenPrefix,
-		context.createMixin,
-	);
+	const builtinMixins = createPresetMixins(context.createMixin);
 
 	return {
 		context,
 		preset: (inputConfig) => {
 			const normalizedConfig: CreateArborPresetConfig<any, any> = {
 				...inputConfig,
-				tokenPrefix: context.tokenPrefix,
+				modeTokenPrefix: context.tokenPrefixes.modeTokenPrefix,
+				primitiveTokenPrefix: context.tokenPrefixes.primitiveTokenPrefix,
+				metaTokenPrefix: context.tokenPrefixes.metaTokenPrefix,
+				refTokenPrefix: context.tokenPrefixes.refTokenPrefix,
+				functionNamePrefix: context.tokenPrefixes.functionNamePrefix,
+				mixinNamePrefix: context.tokenPrefixes.mixinNamePrefix,
+				mixinTokenPrefix: context.tokenPrefixes.mixinTokenPrefix,
 				colors: {
 					...inputConfig.colors,
 					schemes: {
@@ -189,7 +192,7 @@ export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
 				globals,
 				defaultScheme: normalizedConfig.colors.defaultScheme,
 				schemeTags: normalizedConfig.colors.schemeTags,
-				createToken: context.createToken,
+				createToken: context.createPrimitiveToken,
 			});
 
 			const baseModeValues: ArborModeValues = deepMerge(
@@ -232,7 +235,7 @@ export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
 				return preset as any;
 			};
 			(preset as any).meta = {
-				tokenPrefix: context.tokenPrefix,
+				tokenPrefixes: context.tokenPrefixes,
 				config: normalizedConfig,
 			};
 

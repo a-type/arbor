@@ -1,6 +1,6 @@
 import { isFunction, isMixin, isToken } from '@arbor-css/core';
 import * as vscode from 'vscode';
-import { createTokenRegex } from './regex.js';
+import { createTokenRegexes } from './regex.js';
 import type { TokenProvider } from './tokenProvider.js';
 
 export class ArborCompletionProvider implements vscode.CompletionItemProvider {
@@ -16,12 +16,15 @@ export class ArborCompletionProvider implements vscode.CompletionItemProvider {
 		const linePrefix = document
 			.lineAt(position)
 			.text.slice(0, position.character);
-		const tokenPrefix =
-			await this.tokenProvider.getTokenPrefixForDocument(document);
-		const match = createTokenRegex(tokenPrefix).end().exec(linePrefix);
+		const tokenPrefixes =
+			await this.tokenProvider.getTokenPrefixesForDocument(document);
+		const match = createTokenRegexes(tokenPrefixes)
+			.map((regex) => regex.end().exec(linePrefix))
+			.find(Boolean);
 		if (!match) return undefined;
 
-		const matched = match[1] ?? tokenPrefix;
+		const matched = match[1];
+		if (!matched) return undefined;
 		const segments = await this.tokenProvider.getCompletions(document, matched);
 		if (!segments.length) return undefined;
 

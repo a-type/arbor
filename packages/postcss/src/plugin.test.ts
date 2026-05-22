@@ -20,24 +20,37 @@ beforeEach(() => {
 function makeConfigResult(preset: object) {
 	return {
 		configPath: '/fake/arbor.config.ts',
-		preset,
+		preset: {
+			context: {
+				tokenPrefixes: {
+					modeTokenPrefix: '--m-',
+					primitiveTokenPrefix: '--p-',
+					metaTokenPrefix: '--_-',
+					refTokenPrefix: '--ref-',
+					functionNamePrefix: '--fn-',
+					mixinNamePrefix: '--mx-',
+					mixinTokenPrefix: '--mx-',
+				},
+			},
+			...preset,
+		},
 	} as any;
 }
 
 it('inlines @apply for an Arbor mixin', async () => {
-	const createToken = createTokenFactory({ tokenPrefix: '--x-' });
-	const createMixin = createMixinFactory({ tokenPrefix: '--x-', createToken });
+	const createToken = createTokenFactory({ tokenPrefix: '--mx-' });
+	const createMixin = createMixinFactory({ namePrefix: '--mx-', createToken });
 	const shadow = createMixin('shadow', {
 		description: 'Stacked shadow setup',
 		definition: (css) => [
 			{
-				prop: '--x-system-shadow',
+				prop: '--_-system-shadow',
 				value: css`
 					${'0 0 0 0 transparent'}
 				`,
 			},
 			{
-				prop: '--x-system-ring',
+				prop: '--_-system-ring',
 				value: css`
 					${'0 0 0 0 transparent'}
 				`,
@@ -45,7 +58,7 @@ it('inlines @apply for an Arbor mixin', async () => {
 			{
 				prop: 'box-shadow',
 				value: css`
-					${'var(--x-system-ring), var(--x-system-shadow)'}
+					${'var(--_-system-ring), var(--_-system-shadow)'}
 				`,
 			},
 		],
@@ -58,27 +71,42 @@ it('inlines @apply for an Arbor mixin', async () => {
 
 	const plugin = ArborPlugin({ cwd: '/fake' });
 	const result = await postcss([plugin]).process(
-		`.btn { @apply --x-mixin-shadow; color: red; }`,
+		`.btn { @apply --mx-shadow; color: red; }`,
 		{ from: undefined },
 	);
 
 	const output = result.css;
-	expect(output).toContain('--x-system-shadow: 0 0 0 0 transparent');
-	expect(output).toContain('--x-system-ring: 0 0 0 0 transparent');
+	expect(output).toContain('--_-system-shadow: 0 0 0 0 transparent');
+	expect(output).toContain('--_-system-ring: 0 0 0 0 transparent');
 	expect(output).toContain(
-		'box-shadow: var(--x-system-ring), var(--x-system-shadow)',
+		'box-shadow: var(--_-system-ring), var(--_-system-shadow)',
 	);
 	expect(output).not.toContain('@apply');
 });
 
 it('warns when @apply references an unknown mixin', async () => {
 	mockLoadConfig.mockResolvedValue(
-		makeConfigResult({ functions: {}, mixins: {}, $: undefined }),
+		makeConfigResult({
+			context: {
+				tokenPrefixes: {
+					modeTokenPrefix: '--m-',
+					primitiveTokenPrefix: '--p-',
+					metaTokenPrefix: '--_-',
+					refTokenPrefix: '--ref-',
+					functionNamePrefix: '--fn-',
+					mixinNamePrefix: '--mx-',
+					mixinTokenPrefix: '--mx-',
+				},
+			},
+			functions: {},
+			mixins: {},
+			$: undefined,
+		}),
 	);
 
 	const plugin = ArborPlugin({ cwd: '/fake' });
 	const result = await postcss([plugin]).process(
-		`.btn { @apply --x-mixin-unknown; }`,
+		`.btn { @apply --mx-unknown; }`,
 		{ from: undefined },
 	);
 
@@ -86,14 +114,29 @@ it('warns when @apply references an unknown mixin', async () => {
 		.filter((m) => m.type === 'warning')
 		.map((m) => (m as any).text as string);
 
-	expect(warnings.some((w) => w.includes('--x-mixin-unknown'))).toBe(true);
+	expect(warnings.some((w) => w.includes('--mx-unknown'))).toBe(true);
 	// The unresolved @apply should remain in the output
-	expect(result.css).toContain('@apply --x-mixin-unknown');
+	expect(result.css).toContain('@apply --mx-unknown');
 });
 
 it('does not touch @apply rules without the Arbor mixin prefix', async () => {
 	mockLoadConfig.mockResolvedValue(
-		makeConfigResult({ functions: {}, mixins: {}, $: undefined }),
+		makeConfigResult({
+			context: {
+				tokenPrefixes: {
+					modeTokenPrefix: '--m-',
+					primitiveTokenPrefix: '--p-',
+					metaTokenPrefix: '--_-',
+					refTokenPrefix: '--ref-',
+					functionNamePrefix: '--fn-',
+					mixinNamePrefix: '--mx-',
+					mixinTokenPrefix: '--mx-',
+				},
+			},
+			functions: {},
+			mixins: {},
+			$: undefined,
+		}),
 	);
 
 	const plugin = ArborPlugin({ cwd: '/fake' });
@@ -106,7 +149,7 @@ it('does not touch @apply rules without the Arbor mixin prefix', async () => {
 });
 
 it('inlines function calls in declaration values', async () => {
-	const createFunction = createFunctionFactory({ tokenPrefix: '--x-' });
+	const createFunction = createFunctionFactory({ namePrefix: '--fn-' });
 	const double = createFunction('double', {
 		description: 'Doubles a number',
 		parameters: ['--value'],
@@ -114,16 +157,31 @@ it('inlines function calls in declaration values', async () => {
 	});
 
 	mockLoadConfig.mockResolvedValue(
-		makeConfigResult({ functions: { double }, mixins: {}, $: undefined }),
+		makeConfigResult({
+			context: {
+				tokenPrefixes: {
+					modeTokenPrefix: '--m-',
+					primitiveTokenPrefix: '--p-',
+					metaTokenPrefix: '--_-',
+					refTokenPrefix: '--ref-',
+					functionNamePrefix: '--fn-',
+					mixinNamePrefix: '--mx-',
+					mixinTokenPrefix: '--mx-',
+				},
+			},
+			functions: { double },
+			mixins: {},
+			$: undefined,
+		}),
 	);
 
 	const plugin = ArborPlugin({ cwd: '/fake' });
 	const result = await postcss([plugin]).process(
-		`.btn { font-size: --x-fn-double(4); }`,
+		`.btn { font-size: --fn-double(4); }`,
 		{ from: undefined },
 	);
 
 	// The function call should be replaced with the computed value
-	expect(result.css).not.toContain('--x-fn-double(');
+	expect(result.css).not.toContain('--fn-double(');
 	expect(result.css).toContain('4');
 });

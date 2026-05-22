@@ -35,7 +35,7 @@ return {
 configPath: 'test',
 preset,
 tokenMap,
-tokenPrefix: preset.context.tokenPrefix,
+tokenPrefixes: ['--m-'],
 };
 }
 

@@ -2,7 +2,7 @@ import {
 	AnyArborPreset,
 	ArborFunction,
 	ArborMixin,
-	DEFAULT_TOKEN_PREFIX,
+	DEFAULT_MODE_TOKEN_PREFIX,
 	Token,
 	flattenToPropsList,
 } from '@arbor-css/core';
@@ -26,7 +26,7 @@ export interface ConfigState {
 	configPath: string;
 	preset: AnyArborPreset;
 	tokenMap: TokenMap;
-	tokenPrefix: string;
+	tokenPrefixes: string[];
 }
 
 /**
@@ -73,13 +73,12 @@ export class TokenProvider {
 		return await this.getConfigState(configPath);
 	}
 
-	async getTokenPrefixForDocument(
+	async getTokenPrefixesForDocument(
 		document: vscode.TextDocument,
-	): Promise<string> {
-		return (
-			(await this.getStateForDocument(document))?.tokenPrefix ??
-			DEFAULT_TOKEN_PREFIX
-		);
+	): Promise<string[]> {
+		return (await this.getStateForDocument(document))?.tokenPrefixes ?? [
+			DEFAULT_MODE_TOKEN_PREFIX,
+		];
 	}
 
 	async getCompletions(
@@ -177,12 +176,19 @@ export class TokenProvider {
 				`Loaded config from ${configPath} (${tokenMap.size} tokens / functions)`,
 			);
 			this.onChangeEmitter.fire();
+			const configuredPrefixes = Object.values(
+				preset.context.tokenPrefixes,
+			).filter((value): value is string => typeof value === 'string');
+			const tokenPrefixes = [...new Set(configuredPrefixes)];
+			if (tokenPrefixes.length === 0) {
+				tokenPrefixes.push(DEFAULT_MODE_TOKEN_PREFIX);
+			}
 
 			return {
 				configPath,
 				preset,
 				tokenMap,
-				tokenPrefix: preset.context.tokenPrefix,
+				tokenPrefixes,
 			};
 		} catch (err) {
 			this.outputChannel.appendLine(

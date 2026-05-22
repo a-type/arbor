@@ -112,10 +112,12 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 				return;
 			}
 
-			// Inline custom function calls: --x-fn-name(arg1, arg2, ...)
-			if (decl.value.includes(`${config.preset.context.tokenPrefix}fn-`)) {
+			const functionNamePrefix =
+				config.preset.context.tokenPrefixes.functionNamePrefix;
+			// Inline custom function calls: --fn-name(arg1, arg2, ...)
+			if (decl.value.includes(functionNamePrefix)) {
 				const fnCallRegex = new RegExp(
-					`(${escapeRegExp(`${config.preset.context.tokenPrefix}fn-`)}[\\w-]+)\\(([^)]*)\\)`,
+					`(${escapeRegExp(functionNamePrefix)}[\\w-]+)\\(([^)]*)\\)`,
 					'g',
 				);
 				decl.value = decl.value.replace(
@@ -200,7 +202,9 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 			if (!config) return;
 
 			const mixinName = atRule.params.trim();
-			if (!mixinName.startsWith(`${config.preset.context.tokenPrefix}mixin-`))
+			const mixinNamePrefix =
+				config.preset.context.tokenPrefixes.mixinNamePrefix;
+			if (!mixinName.startsWith(mixinNamePrefix))
 				return;
 
 			const mixin = Object.values(config.preset.mixins ?? {}).find(

@@ -2,7 +2,7 @@ import { printEquation } from '@arbor-css/calc';
 import { describe, expect, it } from 'vitest';
 import { createFunctionFactory, isFunction } from './functions.js';
 
-const createFunction = createFunctionFactory({ tokenPrefix: '--x-' });
+const createFunction = createFunctionFactory({ namePrefix: '--x-fn-' });
 
 describe('createFunction', () => {
 	it('sets the CSS name with -- prefix', () => {

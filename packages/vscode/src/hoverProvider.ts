@@ -1,6 +1,6 @@
 import { isFunction, isMixin, isToken } from '@arbor-css/core';
 import * as vscode from 'vscode';
-import { createTokenRegex } from './regex.js';
+import { createTokenRegexes } from './regex.js';
 import {
 	resolveColorTokenValue,
 	resolveTokenValue,
@@ -24,65 +24,69 @@ export class ArborHoverProvider implements vscode.HoverProvider {
 		const state = await this.tokenProvider.getStateForDocument(document);
 		if (!state) return undefined;
 
-		const tokenRegex = createTokenRegex(state.tokenPrefix);
+		const tokenRegexes = createTokenRegexes(state.tokenPrefixes);
 
 		// Find all token references on this line and see if the cursor is inside one
-		for (const match of line.matchAll(tokenRegex.anywhere())) {
-			if (match.index === undefined) continue;
-			const start = match.index;
-			const end = start + match[0].length;
-			if (position.character < start || position.character > end) continue;
+		for (const tokenRegex of tokenRegexes) {
+			for (const match of line.matchAll(tokenRegex.anywhere())) {
+				if (match.index === undefined) continue;
+				const start = match.index;
+				const end = start + match[0].length;
+				if (position.character < start || position.character > end) continue;
 
-			const path = match[1];
-			const entry = state.tokenMap.get(path);
+				const path = match[1];
+				const entry = state.tokenMap.get(path);
 
-			const range = new vscode.Range(position.line, start, position.line, end);
+				const range = new vscode.Range(position.line, start, position.line, end);
 
-			if (!entry) {
-				return new vscode.Hover(
-					new vscode.MarkdownString(
-						`⚠️ Unknown Arbor token/function: \`${path}\``,
-					),
-					range,
-				);
-			}
-
-			const md = new vscode.MarkdownString();
-			md.supportHtml = true;
-			md.appendMarkdown(`**Arbor token:** \`${entry.name}\`\n\n`);
-			if (isToken(entry)) {
-				md.appendMarkdown(`**Purpose:** ${entry.purpose}`);
-				if (entry.description) {
-					md.appendMarkdown(`\n\n${entry.description}`);
-				}
-				const resolved = resolveTokenValue(state, entry);
-				const resolvedColor = resolveColorTokenValue(state, entry);
-
-				if (resolvedColor) {
-					md.appendMarkdown(
-						`\n\n${makeColorSwatch(resolvedColor)} \`${resolvedColor}\``,
+				if (!entry) {
+					return new vscode.Hover(
+						new vscode.MarkdownString(
+							`⚠️ Unknown Arbor token/function: \`${path}\``,
+						),
+						range,
 					);
-				} else {
-					md.appendMarkdown(`\n\n**Value:** \`${resolved ?? 'unresolved'}\``);
 				}
-			} else if (isFunction(entry)) {
-				md.appendMarkdown(
-					`**Arbor function:** \`${entry.name}(${entry.parameters.join(', ')})\``,
-				);
-				md.appendMarkdown(`\n\n${entry.description}`);
-			} else if (isMixin(entry)) {
-				md.appendMarkdown(
-					`**Arbor mixin:** \`${entry.name}(${entry.parameters.join(', ')})\``,
-				);
-				md.appendMarkdown(`\n\n${entry.description}`);
-				md.appendMarkdown(`\n\n**Contributed tokens:**`);
-				for (const tokenName in entry.contributeTokens) {
-					const token = entry.contributeTokens[tokenName];
-					md.appendMarkdown(`\n- \`${token.name}\`: ${token.purpose}`);
-				}
-			}
 
-			return new vscode.Hover(md, range);
+				const md = new vscode.MarkdownString();
+				md.supportHtml = true;
+				md.appendMarkdown(`**Arbor token:** \`${entry.name}\`\n\n`);
+				if (isToken(entry)) {
+					md.appendMarkdown(`**Purpose:** ${entry.purpose}`);
+					if (entry.description) {
+						md.appendMarkdown(`\n\n${entry.description}`);
+					}
+					const resolved = resolveTokenValue(state, entry);
+					const resolvedColor = resolveColorTokenValue(state, entry);
+
+					if (resolvedColor) {
+						md.appendMarkdown(
+							`\n\n${makeColorSwatch(resolvedColor)} \`${resolvedColor}\``,
+						);
+					} else {
+						md.appendMarkdown(
+							`\n\n**Value:** \`${resolved ?? 'unresolved'}\``,
+						);
+					}
+				} else if (isFunction(entry)) {
+					md.appendMarkdown(
+						`**Arbor function:** \`${entry.name}(${entry.parameters.join(', ')})\``,
+					);
+					md.appendMarkdown(`\n\n${entry.description}`);
+				} else if (isMixin(entry)) {
+					md.appendMarkdown(
+						`**Arbor mixin:** \`${entry.name}(${entry.parameters.join(', ')})\``,
+					);
+					md.appendMarkdown(`\n\n${entry.description}`);
+					md.appendMarkdown(`\n\n**Contributed tokens:**`);
+					for (const tokenName in entry.contributeTokens) {
+						const token = entry.contributeTokens[tokenName];
+						md.appendMarkdown(`\n- \`${token.name}\`: ${token.purpose}`);
+					}
+				}
+
+				return new vscode.Hover(md, range);
+			}
 		}
 
 		return undefined;

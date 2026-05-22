@@ -6,13 +6,15 @@ import {
 	printComputationResult,
 	printEquation,
 } from '@arbor-css/calc';
-import { DEFAULT_TOKEN_PREFIX, isToken } from '@arbor-css/tokens';
+import { isToken } from '@arbor-css/tokens';
 import {
 	FunctionParams,
 	ParamsAsInterpolations,
 	paramsAsInterpolations,
 	paramsAsString,
 } from './common.js';
+
+export const DEFAULT_FUNCTION_NAME_PREFIX = '--fn-';
 
 export type ParameterSchema = {
 	name: string;
@@ -55,11 +57,11 @@ export type CreateFunction = (
 ) => ArborFunction<any>;
 
 export function createFunctionFactory({
-	tokenPrefix = DEFAULT_TOKEN_PREFIX,
+	namePrefix = DEFAULT_FUNCTION_NAME_PREFIX,
 }: {
-	tokenPrefix?: string;
+	namePrefix?: string;
 } = {}) {
-	const functionPrefix = `${tokenPrefix}fn-`;
+	const functionPrefix = namePrefix;
 
 	return function createFunction<TParams extends FunctionParams>(
 		name: string,
@@ -88,12 +90,8 @@ export function createFunctionFactory({
 			compute(params: Record<string, string | number>): string {
 				const propertyValues: Record<string, string> = {};
 				for (let index = 0; index < parameters.length; index++) {
-					const parameter = parameters[index];
 					const cssParameterName = parameterNames[index];
-					const logicalName =
-						isToken(parameter) && cssParameterName.startsWith(tokenPrefix) ?
-							cssParameterName.slice(tokenPrefix.length)
-						:	cssParameterName.replace(/^--/, '');
+					const logicalName = cssParameterName.replace(/^--/, '');
 					if (logicalName in params) {
 						propertyValues[cssParameterName] = String(params[logicalName]);
 					}

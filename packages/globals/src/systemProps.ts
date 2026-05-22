@@ -30,18 +30,20 @@ function makeSystemColorTokens(
 }
 
 export function createSystemProps({
-	createToken: createTokenValue,
+	createMetaToken,
+	createRefToken,
 }: {
-	createToken: CreateToken;
+	createMetaToken: CreateToken;
+	createRefToken: CreateToken;
 }) {
 	const $labelProps = {
-		modeName: createTokenValue('modeName', {
+		modeName: createMetaToken('modeName', {
 			description:
 				'Labels the currently applied mode name for debugging and styling hooks.',
 			tag: 'system',
 			type: 'string',
 		}),
-		schemeName: createTokenValue('schemeName', {
+		schemeName: createMetaToken('schemeName', {
 			description:
 				'Labels the active color scheme name for debugging and styling hooks.',
 			tag: 'system',
@@ -50,14 +52,14 @@ export function createSystemProps({
 	};
 
 	const $dynamicProps = {
-		shadowColor: createTokenValue('shadow-color', {
+		shadowColor: createMetaToken('shadow-color', {
 			description:
 				'Stores the computed shadow color currently applied to the element.',
 			tag: 'system',
 			type: 'color',
 			fallback: 'rgba(0, 0, 0, 0.1)',
 		}),
-		shadowReverse: createTokenValue('shadow-reverse', {
+		shadowReverse: createMetaToken('shadow-reverse', {
 			description: 'Flips shadow direction for inverse elevation treatments.',
 			tag: 'system',
 			type: 'number',
@@ -66,33 +68,33 @@ export function createSystemProps({
 	};
 
 	const $schemeProps = {
-		invertMultiplier: createTokenValue('scheme-invert-mult', {
+		invertMultiplier: createMetaToken('scheme-invert-mult', {
 			description:
 				'Switches scheme-aware calculations between light and dark behavior.',
 			tag: 'system',
 			type: 'number',
 			fallback: 1,
 		}),
-		whenDark: createTokenValue('scheme-when-dark', {
+		whenDark: createMetaToken('scheme-when-dark', {
 			description: 'Resolves to 1 in dark schemes and 0 in light schemes.',
 			tag: 'system',
 			type: 'number',
 			fallback: 0,
 		}),
-		whenLight: createTokenValue('scheme-when-light', {
+		whenLight: createMetaToken('scheme-when-light', {
 			description: 'Resolves to 1 in light schemes and 0 in dark schemes.',
 			tag: 'system',
 			type: 'number',
 			fallback: 1,
 		}),
-		trueLight: createTokenValue('scheme-true-light', {
+		trueLight: createMetaToken('scheme-true-light', {
 			description:
 				'Provides an absolute light reference color that does not change with scheme.',
 			tag: 'system',
 			type: 'color',
 			fallback: 'white',
 		}),
-		trueHeavy: createTokenValue('scheme-true-heavy', {
+		trueHeavy: createMetaToken('scheme-true-heavy', {
 			description:
 				'Provides an absolute dark reference color that does not change with scheme.',
 			tag: 'system',
@@ -102,10 +104,10 @@ export function createSystemProps({
 	};
 
 	const $referenceProps = {
-		fg: makeSystemColorTokens('fg', 'foreground color', createTokenValue),
+		fg: makeSystemColorTokens('fg', 'foreground color', createRefToken),
 		bg: {
-			...makeSystemColorTokens('bg', 'background color', createTokenValue),
-			contrast: createTokenValue(`bg-for-contrast`, {
+			...makeSystemColorTokens('bg', 'background color', createRefToken),
+			contrast: createRefToken(`bg-for-contrast`, {
 				description:
 					'When present, this color should be used as the color to compute a contrast foreground against.',
 				tag: 'system',
@@ -117,52 +119,52 @@ export function createSystemProps({
 			'': makeSystemColorTokens(
 				'borderColor-all',
 				'border color',
-				createTokenValue,
+				createRefToken,
 			),
 			bottom: makeSystemColorTokens(
 				'borderColor-bottom',
 				'bottom border color',
-				createTokenValue,
+				createRefToken,
 			),
 			top: makeSystemColorTokens(
 				'borderColor-top',
 				'top border color',
-				createTokenValue,
+				createRefToken,
 			),
 			left: makeSystemColorTokens(
 				'borderColor-left',
 				'left border color',
-				createTokenValue,
+				createRefToken,
 			),
 			right: makeSystemColorTokens(
 				'borderColor-right',
 				'right border color',
-				createTokenValue,
+				createRefToken,
 			),
 		},
 		ringColor: makeSystemColorTokens(
 			'ring',
 			'focus ring color',
-			createTokenValue,
+			createRefToken,
 		),
 		ringOffsetColor: makeSystemColorTokens(
 			'ring-offset',
 			'focus ring offset color',
-			createTokenValue,
+			createRefToken,
 		),
 		shadowColor: makeSystemColorTokens(
 			'shadow',
 			'shadow color',
-			createTokenValue,
+			createRefToken,
 		),
 		placeholder: makeSystemColorTokens(
 			'placeholder',
 			'placeholder color',
-			createTokenValue,
+			createRefToken,
 		),
-		accent: makeSystemColorTokens('accent', 'accent color', createTokenValue),
-		fill: makeSystemColorTokens('fill', 'fill color', createTokenValue),
-		stroke: makeSystemColorTokens('stroke', 'stroke color', createTokenValue),
+		accent: makeSystemColorTokens('accent', 'accent color', createRefToken),
+		fill: makeSystemColorTokens('fill', 'fill color', createRefToken),
+		stroke: makeSystemColorTokens('stroke', 'stroke color', createRefToken),
 	};
 
 	return {
@@ -174,7 +176,7 @@ export function createSystemProps({
 		// dynamic values
 		dynamic: $dynamicProps,
 		// scheme information
-		global: createGlobalProps({ createToken: createTokenValue }),
+		global: createGlobalProps({ createToken: createMetaToken }),
 		// references to applied values for use by mixins,
 		// functions, and userland styles
 		ref: $referenceProps,

@@ -16,8 +16,16 @@ it('compiles', () => {
 	expect(preset.primitives.colors.light.colors.primary).toBeDefined();
 });
 
-it('supports a custom token prefix', () => {
-	const preset = createArbor({ tokenPrefix: '--acme-' }).preset({
+it('supports custom prefixes per token type', () => {
+	const preset = createArbor({
+		modeTokenPrefix: '--acme-mode-',
+		primitiveTokenPrefix: '--acme-primitive-',
+		metaTokenPrefix: '--acme-meta-',
+		refTokenPrefix: '--acme-ref-',
+		functionNamePrefix: '--acme-fn-',
+		mixinNamePrefix: '--acme-mx-',
+		mixinTokenPrefix: '--acme-mx-',
+	}).preset({
 		colors: {
 			ranges: {
 				primary: {
@@ -28,7 +36,20 @@ it('supports a custom token prefix', () => {
 		},
 	});
 
-	expect(preset.meta?.tokenPrefix).toBe('--acme-');
-	expect(preset.$.mode.color.main.$root.name.startsWith('--acme-')).toBe(true);
-	expect(preset.$.system.ref.fg.$root.name.startsWith('--acme-')).toBe(true);
+	expect(preset.meta?.tokenPrefixes.modeTokenPrefix).toBe('--acme-mode-');
+	expect(preset.$.mode.color.main.$root.name.startsWith('--acme-mode-')).toBe(
+		true,
+	);
+	expect(
+		preset.$.primitives.spacing.$root.name.startsWith('--acme-primitive-'),
+	).toBe(true);
+	expect(preset.$.system.meta.modeName.name.startsWith('--acme-meta-')).toBe(
+		true,
+	);
+	expect(preset.$.system.ref.fg.$root.name.startsWith('--acme-ref-')).toBe(true);
+	expect(preset.functions.lightenColor.name.startsWith('--acme-fn-')).toBe(true);
+	expect(preset.mixins.shadow.name.startsWith('--acme-mx-')).toBe(true);
+	expect(
+		preset.$.mixins.shadow.shadow.name.startsWith('--acme-mx-'),
+	).toBe(true);
 });

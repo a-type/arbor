@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { createMixinFactory, isMixin } from './mixins.js';
 
 const createToken = createTokenFactory({ tokenPrefix: '--x-' });
-const createMixin = createMixinFactory({ tokenPrefix: '--x-', createToken });
+const createMixin = createMixinFactory({ namePrefix: '--x-mixin-', createToken });
 
 describe('createMixin', () => {
 	it('sets the CSS name with -- prefix', () => {

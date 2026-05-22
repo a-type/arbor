@@ -4,42 +4,70 @@ import {
 	CreateMixin,
 	createMixinFactory,
 } from '@arbor-css/functions';
-import {
-	CreateToken,
-	createTokenFactory,
-	DEFAULT_TOKEN_PREFIX,
-} from '@arbor-css/tokens';
+import { CreateToken, createTokenFactory } from '@arbor-css/tokens';
 import { defaultGlobals, GlobalConfig } from './globalProps.js';
+import { resolveArborPrefixes, type ArborPrefixConfig } from './prefixes.js';
 import { createSystemProps, SystemTokens } from './systemProps.js';
 
-export interface GlobalContextConfig {
-	tokenPrefix?: string;
+export interface GlobalContextConfig extends ArborPrefixConfig {
 	globals?: Partial<GlobalConfig>;
 }
 
 export interface GlobalContext {
+	createModeToken: CreateToken;
+	createPrimitiveToken: CreateToken;
+	createMetaToken: CreateToken;
+	createRefToken: CreateToken;
+	createMixinToken: CreateToken;
 	createToken: CreateToken;
 	createFunction: CreateFunction;
 	createMixin: CreateMixin;
-	tokenPrefix: string;
+	tokenPrefixes: ReturnType<typeof resolveArborPrefixes>;
 	globals: GlobalConfig;
 	$systemTokens: SystemTokens;
 	getGlobalPropertyAssignments(): Record<string, string>;
 }
 
 export function createGlobalContext(config: GlobalContextConfig = {}) {
-	const tokenPrefix = config.tokenPrefix ?? DEFAULT_TOKEN_PREFIX;
-	const createToken = createTokenFactory({ tokenPrefix });
-	const $systemTokens = createSystemProps({ createToken });
+	const tokenPrefixes = resolveArborPrefixes(config);
+	const createModeToken = createTokenFactory({
+		tokenPrefix: tokenPrefixes.modeTokenPrefix,
+	});
+	const createPrimitiveToken = createTokenFactory({
+		tokenPrefix: tokenPrefixes.primitiveTokenPrefix,
+	});
+	const createMetaToken = createTokenFactory({
+		tokenPrefix: tokenPrefixes.metaTokenPrefix,
+	});
+	const createRefToken = createTokenFactory({
+		tokenPrefix: tokenPrefixes.refTokenPrefix,
+	});
+	const createMixinToken = createTokenFactory({
+		tokenPrefix: tokenPrefixes.mixinTokenPrefix,
+	});
+	const $systemTokens = createSystemProps({
+		createMetaToken,
+		createRefToken,
+	});
 	const globals = {
 		...defaultGlobals,
 		...config.globals,
 	};
 	return {
-		createFunction: createFunctionFactory({ tokenPrefix }),
-		createMixin: createMixinFactory({ tokenPrefix, createToken }),
-		createToken,
-		tokenPrefix,
+		createModeToken,
+		createPrimitiveToken,
+		createMetaToken,
+		createRefToken,
+		createMixinToken,
+		createToken: createModeToken,
+		createFunction: createFunctionFactory({
+			namePrefix: tokenPrefixes.functionNamePrefix,
+		}),
+		createMixin: createMixinFactory({
+			namePrefix: tokenPrefixes.mixinNamePrefix,
+			createToken: createMixinToken,
+		}),
+		tokenPrefixes,
 		$systemTokens,
 		globals,
 		getGlobalPropertyAssignments() {

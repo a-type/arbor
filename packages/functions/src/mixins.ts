@@ -9,7 +9,6 @@ import {
 import {
 	convertSimpleTokenSchema,
 	CreateToken,
-	DEFAULT_TOKEN_PREFIX,
 	SimpleTokensAsTokenDefinitions,
 	SimpleTokenSchema,
 	TokenSchema,
@@ -20,6 +19,8 @@ import {
 	ParamsAsInterpolations,
 	paramsAsString,
 } from './common.js';
+
+export const DEFAULT_MIXIN_NAME_PREFIX = '--mx-';
 
 const MIXIN_BRAND = '@@MIXIN@@';
 
@@ -105,13 +106,13 @@ export type CreateMixin = <
 ) => ArborMixin<TParams, SimpleTokensAsTokenDefinitions<TTokens>>;
 
 export function createMixinFactory({
-	tokenPrefix = DEFAULT_TOKEN_PREFIX,
+	namePrefix = DEFAULT_MIXIN_NAME_PREFIX,
 	createToken,
 }: {
-	tokenPrefix?: string;
+	namePrefix?: string;
 	createToken: CreateToken;
 }) {
-	const mixinPrefix = `${tokenPrefix}mixin-`;
+	const mixinPrefix = namePrefix;
 
 	return function createMixin<
 		TParams extends FunctionParams,

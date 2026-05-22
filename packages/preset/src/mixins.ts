@@ -1,7 +1,6 @@
 import { CreateMixin } from '@arbor-css/functions';
 
 export function createPresetMixins(
-	tokenPrefix: string,
 	createMixinValue: CreateMixin,
 ) {
 	const shadow = createMixinValue('shadow', {

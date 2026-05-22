@@ -47,11 +47,11 @@ it('prints a base mode with derived values', () => {
 		[data-mode-base=""],
 		:where(.\\@mode-base [class^="\\@scheme-"]),
 		:where([data-mode-base=""] [class^="\\@scheme-"]) {
-			--x-system-modeName: base;
-			--x-derived-once: color-mix(in hsl, var(--x-value), black);
-		--x-derived-twice: color-mix(in hsl, var(--x-derived-once), transparent);
-		--x-derived-again: color-mix(in hsl, var(--x-value), red);
-		--x-value: red;
+			--_-system-modeName: base;
+			--m-derived-once: color-mix(in hsl, var(--m-value), black);
+		--m-derived-twice: color-mix(in hsl, var(--m-derived-once), transparent);
+		--m-derived-again: color-mix(in hsl, var(--m-value), red);
+		--m-value: red;
 
 		}
 		"
@@ -65,11 +65,11 @@ it('prints a partial mode with derived dependencies it doesnt declare', () => {
 		[data-mode-partial=""],
 		:where(.\\@mode-partial [class^="\\@scheme-"]),
 		:where([data-mode-partial=""] [class^="\\@scheme-"]) {
-			--x-system-modeName: partial;
-			--x-derived-once: color-mix(in hsl, var(--x-value), black);
-		--x-derived-twice: color-mix(in hsl, var(--x-derived-once), transparent);
-		--x-derived-again: color-mix(in hsl, var(--x-value), red);
-		--x-value: blue;
+			--_-system-modeName: partial;
+			--m-derived-once: color-mix(in hsl, var(--m-value), black);
+		--m-derived-twice: color-mix(in hsl, var(--m-derived-once), transparent);
+		--m-derived-again: color-mix(in hsl, var(--m-value), red);
+		--m-value: blue;
 
 		}
 		"
@@ -83,9 +83,9 @@ it('prints a partial mode which overrides derived dependencies from base and doe
 		[data-mode-underived=""],
 		:where(.\\@mode-underived [class^="\\@scheme-"]),
 		:where([data-mode-underived=""] [class^="\\@scheme-"]) {
-			--x-system-modeName: underived;
-			--x-derived-twice: color-mix(in hsl, var(--x-derived-once), transparent);
-		--x-derived-once: green;
+			--_-system-modeName: underived;
+			--m-derived-twice: color-mix(in hsl, var(--m-derived-once), transparent);
+		--m-derived-once: green;
 
 		}
 		"
@@ -118,14 +118,14 @@ const rootBase = rootSchema.createBase({
 
 it('$root at nested level generates CSS var at group path (no -$root suffix)', () => {
 	const css = modeToCss(rootBase, rootBase, { systemProps });
-	expect(css).toContain('--x-colors-main: oklch(0.5 0.1 240)');
-	expect(css).not.toContain('--x-colors-main-$root');
+	expect(css).toContain('--m-colors-main: oklch(0.5 0.1 240)');
+	expect(css).not.toContain('--m-colors-main-$root');
 });
 
 it('$root and sibling keys coexist and both emit correctly', () => {
 	const css = modeToCss(rootBase, rootBase, { systemProps });
-	expect(css).toContain('--x-colors-main: oklch(0.5 0.1 240)');
-	expect(css).toContain('--x-colors-main-mid: oklch(0.6 0.1 240)');
+	expect(css).toContain('--m-colors-main: oklch(0.5 0.1 240)');
+	expect(css).toContain('--m-colors-main-mid: oklch(0.6 0.1 240)');
 });
 
 it('partial mode override of $root maps correctly', () => {
@@ -137,8 +137,8 @@ it('partial mode override of $root maps correctly', () => {
 		},
 	});
 	const css = modeToCss(partial, rootBase, { systemProps });
-	expect(css).toContain('--x-colors-main: oklch(0.7 0.2 30)');
-	expect(css).not.toContain('--x-colors-main-mid');
+	expect(css).toContain('--m-colors-main: oklch(0.7 0.2 30)');
+	expect(css).not.toContain('--m-colors-main-mid');
 });
 
 it('throws with full token chain for circular derived dependencies', () => {
@@ -164,6 +164,6 @@ it('throws with full token chain for circular derived dependencies', () => {
 	});
 
 	expect(() => modeToCss(circularBase, circularBase, { systemProps })).toThrow(
-		/Circular dependency detected in mode base: .*--x-derived-a.*->.*--x-derived-b.*->.*--x-derived-a/,
+		/Circular dependency detected in mode base: .*--m-derived-a.*->.*--m-derived-b.*->.*--m-derived-a/,
 	);
 });

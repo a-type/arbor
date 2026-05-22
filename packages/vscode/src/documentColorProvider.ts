@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { parseCssColor } from './colorValue.js';
-import { createTokenRegex } from './regex.js';
+import { createTokenRegexes } from './regex.js';
 import { resolveColorTokenValueByName } from './resolvedTokenValue.js';
 import type { TokenProvider } from './tokenProvider.js';
 
@@ -17,12 +17,13 @@ export class ArborDocumentColorProvider
 			return [];
 		}
 
-		const tokenRegex = createTokenRegex(state.tokenPrefix);
+		const tokenRegexes = createTokenRegexes(state.tokenPrefixes);
 		const colors: vscode.ColorInformation[] = [];
 
 		for (let lineIndex = 0; lineIndex < document.lineCount; lineIndex++) {
 			const line = document.lineAt(lineIndex).text;
-			for (const match of line.matchAll(tokenRegex.anywhere())) {
+			for (const tokenRegex of tokenRegexes)
+				for (const match of line.matchAll(tokenRegex.anywhere())) {
 				if (match.index === undefined) {
 					continue;
 				}
@@ -50,7 +51,7 @@ export class ArborDocumentColorProvider
 						new vscode.Color(rgba.red, rgba.green, rgba.blue, rgba.alpha),
 					),
 				);
-			}
+				}
 		}
 
 		return colors;

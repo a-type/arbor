@@ -1,4 +1,5 @@
 export const DEFAULT_TOKEN_PREFIX = '--x-';
+export const DEFAULT_MIXIN_TOKEN_PREFIX = '--mx-';
 
 export interface TokenOptions {
 	/** Inferred from purpose if not provided, defaults to "*" */
