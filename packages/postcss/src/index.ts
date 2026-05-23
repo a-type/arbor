@@ -156,10 +156,6 @@ function computeFunctionCallValue({
 		return input;
 	}
 
-	console.log(
-		`[arbor-css] Inlining function call: ${input} with values`,
-		paramValues,
-	);
 	return fn.compute(paramValues);
 }
 
