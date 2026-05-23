@@ -21,9 +21,11 @@ function createRefColorMixin(
 ) {
 	return createMixinValue(name, {
 		description,
-		definition: (css, { tokens }) => {
+		parameters: ['--color'] as const,
+		definition: (css, { parameters: [color], tokens }) => {
 			const mixinTokens = tokens as any;
 			return {
+				[mixinTokens.applied.name]: css`${color}`,
 				[mixinTokens.final.name]: css`${mixinTokens.applied.var}`,
 				[mixinTokens.opacity.name]: css`1`,
 				...(mixinTokens.contrast ?

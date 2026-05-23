@@ -186,10 +186,22 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 			const config = await getConfig(helper);
 			if (!config) return;
 
-			const mixinName = atRule.params.trim();
+			const mixinApplyCall = atRule.params.trim();
 			const mixinNamePrefix =
 				config.preset.context.tokenPrefixes.mixinNamePrefix;
-			if (!mixinName.startsWith(mixinNamePrefix)) return;
+			if (!mixinApplyCall.startsWith(mixinNamePrefix)) return;
+
+			const mixinCallRegex = new RegExp(
+				`^(${escapeRegExp(mixinNamePrefix)}[\\w-]+)(?:\\(((?:[^()]|\\([^()]*\\))*)\\))?$`,
+			);
+			const mixinCallMatch = mixinApplyCall.match(mixinCallRegex);
+			if (!mixinCallMatch) return;
+			const mixinName = mixinCallMatch[1];
+			const mixinArgsString = mixinCallMatch[2] ?? '';
+			const mixinArgs = mixinArgsString
+				.split(',')
+				.map((a) => a.trim())
+				.filter(Boolean);
 
 			const mixin = Object.values(config.preset.mixins ?? {}).find(
 				(m) => isMixin(m) && m.name === mixinName,
@@ -203,10 +215,42 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 				return;
 			}
 
+			const mixinParamValues: Record<string, string> = {};
+			let invalidMixinCall = false;
+			mixin.parameters.forEach((param, i) => {
+				const paramName = isFunctionParamWithMeta(param) ? param.name : param;
+				const fallback =
+					isFunctionParamWithMeta(param) ? param.fallback?.toString() : undefined;
+				const required = fallback === undefined;
+				const value = mixinArgs[i] ?? fallback;
+
+				if (value === undefined && required) {
+					invalidMixinCall = true;
+					helper.result.warn(
+						`[arbor-css] Missing argument for parameter "${paramName}" in mixin apply: @apply ${mixinApplyCall}`,
+						{
+							plugin: PLUGIN_NAME,
+							node: atRule,
+						},
+					);
+					return;
+				}
+				if (value !== undefined) {
+					mixinParamValues[paramName] = value;
+				}
+			});
+			if (invalidMixinCall) {
+				return;
+			}
+
 			const declarations = mixin.inline();
 			for (const decl of declarations) {
+				let value = printEquation(decl.value);
+				for (const [paramName, paramValue] of Object.entries(mixinParamValues)) {
+					value = value.replaceAll(`var(${paramName})`, paramValue);
+				}
 				atRule.cloneBefore(
-					postcss.decl({ prop: decl.prop, value: printEquation(decl.value) }),
+					postcss.decl({ prop: decl.prop, value }),
 				);
 			}
 			atRule.remove();
