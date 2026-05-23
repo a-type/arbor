@@ -1,6 +1,13 @@
 import { SystemTokens } from '@arbor-css/globals';
 import { CreateMixin } from '@arbor-css/functions';
 
+type RefColorMixinTokens = {
+	applied: { name: string; var: string };
+	final: { name: string; var: string };
+	opacity: { name: string; var: string };
+	contrast?: { name: string; var: string };
+};
+
 function createRefColorMixin(
 	createMixinValue: CreateMixin,
 	systemRef: {
@@ -23,7 +30,7 @@ function createRefColorMixin(
 		description,
 		parameters: ['--color'] as const,
 		definition: (css, { parameters: [color], tokens }) => {
-			const mixinTokens = tokens as any;
+			const mixinTokens = tokens as RefColorMixinTokens;
 			return {
 				[mixinTokens.applied.name]: css`${color}`,
 				[mixinTokens.final.name]: css`${mixinTokens.applied.var}`,
