@@ -4,7 +4,6 @@ import { CreateMixin } from '@arbor-css/functions';
 type RefColorMixinTokens = {
 	applied: { name: string; var: string };
 	final: { name: string; var: string };
-	opacity: { name: string; var: string };
 	contrast?: { name: string; var: string };
 };
 
@@ -13,7 +12,6 @@ function createRefColorMixin(
 	systemRef: {
 		applied: { name: string; var: string };
 		$root: { name: string; var: string };
-		opacity: { name: string; var: string };
 		contrast?: { name: string; var: string };
 	},
 	{
@@ -34,13 +32,11 @@ function createRefColorMixin(
 			return {
 				[mixinTokens.applied.name]: css`${color}`,
 				[mixinTokens.final.name]: css`${mixinTokens.applied.var}`,
-				[mixinTokens.opacity.name]: css`1`,
 				...(mixinTokens.contrast ?
 					{ [mixinTokens.contrast.name]: css`${mixinTokens.applied.var}` }
 				:	{}),
 				[systemRef.applied.name]: css`${mixinTokens.applied.var}`,
 				[systemRef.$root.name]: css`${mixinTokens.final.var}`,
-				[systemRef.opacity.name]: css`${mixinTokens.opacity.var}`,
 				...(systemRef.contrast && mixinTokens.contrast ?
 					{ [systemRef.contrast.name]: css`${mixinTokens.contrast.var}` }
 				:	{}),
@@ -55,10 +51,6 @@ function createRefColorMixin(
 			final: {
 				purpose: 'color',
 				description: `The final ${property} value applied by Arbor.`,
-			},
-			opacity: {
-				purpose: 'other',
-				description: `The opacity Arbor applies to ${property}.`,
 			},
 			...(systemRef.contrast ? {
 				contrast: {

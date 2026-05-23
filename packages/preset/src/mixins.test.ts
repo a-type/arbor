@@ -36,7 +36,6 @@ it('exposes built-in ref color mixins with contributed tokens', () => {
 	expect(preset.mixins.fg.parameters).toEqual(['--color']);
 	expect(preset.$.mixins.bg.applied.description).toBeTruthy();
 	expect(preset.$.mixins.bg.final.description).toBeTruthy();
-	expect(preset.$.mixins.bg.opacity.description).toBeTruthy();
 	expect(preset.$.mixins.bg.contrast).toBeDefined();
 	expect(preset.$.mixins.bg.contrast?.description).toBeTruthy();
 });

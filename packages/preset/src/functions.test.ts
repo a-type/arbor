@@ -17,3 +17,13 @@ describe('ring function', () => {
 		);
 	});
 });
+
+describe('fade function', () => {
+	it('should compute the right value', () => {
+		const result = fns.fade.compute({
+			'--color': 'red',
+			'--opacity': '42%',
+		});
+		expect(result).toBe(`oklch(from red l c h / 42%)`);
+	});
+});

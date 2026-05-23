@@ -8,7 +8,7 @@ function makeSystemColorTokens(
 ) {
 	return {
 		applied: createTokenValue(`${name}-applied`, {
-			description: `Stores the resolved ${descriptionName} before Arbor applies opacity handling.`,
+			description: `Stores the resolved source ${descriptionName} before Arbor projects it into final CSS properties.`,
 			tag: 'system',
 			type: 'color',
 			inherits: true,
@@ -18,13 +18,6 @@ function makeSystemColorTokens(
 			tag: 'system',
 			type: 'color',
 			inherits: false,
-		}),
-		opacity: createTokenValue(`${name}-op`, {
-			description: `Controls the opacity Arbor applies to the ${descriptionName}.`,
-			tag: 'system',
-			type: 'number',
-			inherits: false,
-			fallback: '100%',
 		}),
 	};
 }

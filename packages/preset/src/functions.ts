@@ -50,6 +50,13 @@ export function createPresetFunctions(
 			css`oklch(from ${color} l calc(c * (1 + ${[systemProps.meta.scheme.whenLight, 1]} * -0.05 * ${step})) h)`,
 	});
 
+	const fade = createFunctionValue('fade', {
+		description:
+			'Applies an alpha channel to a source color using CSS relative color syntax.',
+		parameters: ['--color', '--opacity'] as const,
+		definition: (css, color, opacity) => css`oklch(from ${color} l c h / ${opacity})`,
+	});
+
 	const ring = createFunctionValue('ring', {
 		description: 'Creates a ring shadow. Should be used with the shadow mixin.',
 		parameters: [
@@ -72,6 +79,7 @@ export function createPresetFunctions(
 		darkenColor,
 		desaturateColor,
 		saturateColor,
+		fade,
 		ring,
 	} as const;
 }
