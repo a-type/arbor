@@ -76,25 +76,19 @@ function splitCallArguments(input: string) {
 			continue;
 		}
 		if (char === ')') {
-			depth = Math.max(0, depth - 1);
+			depth -= 1;
 			current += char;
 			continue;
 		}
 		if (char === ',' && depth === 0) {
-			const value = current.trim();
-			if (value) {
-				args.push(value);
-			}
+			args.push(current.trim());
 			current = '';
 			continue;
 		}
 		current += char;
 	}
 
-	const value = current.trim();
-	if (value) {
-		args.push(value);
-	}
+	args.push(current.trim());
 
 	return args;
 }
@@ -133,7 +127,11 @@ function computeFunctionCallValue({
 		const fallback =
 			isFunctionParamWithMeta(param) ? param.fallback?.toString() : undefined;
 		const required = fallback === undefined;
-		const value = parsedCall.args[i] ?? fallback;
+		const providedValue = parsedCall.args[i];
+		const value =
+			providedValue === undefined || providedValue === '' ?
+				fallback
+			:	providedValue;
 
 		if (value === undefined && required) {
 			invalid = true;
@@ -298,7 +296,11 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 				const fallback =
 					isFunctionParamWithMeta(param) ? param.fallback?.toString() : undefined;
 				const required = fallback === undefined;
-				const value = mixinArgs[i] ?? fallback;
+				const providedValue = mixinArgs[i];
+				const value =
+					providedValue === undefined || providedValue === '' ?
+						fallback
+					:	providedValue;
 
 				if (value === undefined && required) {
 					invalidMixinCall = true;
