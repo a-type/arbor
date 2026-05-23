@@ -4,9 +4,7 @@ packages:
   - playground
 allowBuilds:
   '@vscode/vsce-sign': true
-  esbuild: true
   keytar: true
-  sharp: true
 
 catalog:
   '@vitest/browser-playwright': ^4.1.5
