@@ -31,6 +31,138 @@ interface CachedConfig {
 	mtimeMs: number;
 }
 
+function parsePrefixedCall(input: string, namePrefix: string) {
+	const source = input.trim();
+	if (!source.startsWith(namePrefix)) return null;
+
+	let nameEnd = namePrefix.length;
+	while (nameEnd < source.length && /[\w-]/.test(source[nameEnd])) {
+		nameEnd += 1;
+	}
+	if (nameEnd === namePrefix.length) return null;
+
+	const name = source.slice(0, nameEnd);
+	if (nameEnd === source.length) {
+		return { name, args: [] as string[] };
+	}
+	if (source[nameEnd] !== '(' || source[source.length - 1] !== ')') {
+		return null;
+	}
+
+	let depth = 0;
+	for (let i = nameEnd; i < source.length; i += 1) {
+		const char = source[i];
+		if (char === '(') depth += 1;
+		if (char === ')') depth -= 1;
+		if (depth === 0 && i < source.length - 1) {
+			return null;
+		}
+		if (depth < 0) return null;
+	}
+	if (depth !== 0) return null;
+
+	return { name, args: splitCallArguments(source.slice(nameEnd + 1, -1)) };
+}
+
+function splitCallArguments(input: string) {
+	const args: string[] = [];
+	let depth = 0;
+	let current = '';
+
+	for (const char of input) {
+		if (char === '(') {
+			depth += 1;
+			current += char;
+			continue;
+		}
+		if (char === ')') {
+			depth = Math.max(0, depth - 1);
+			current += char;
+			continue;
+		}
+		if (char === ',' && depth === 0) {
+			const value = current.trim();
+			if (value) {
+				args.push(value);
+			}
+			current = '';
+			continue;
+		}
+		current += char;
+	}
+
+	const value = current.trim();
+	if (value) {
+		args.push(value);
+	}
+
+	return args;
+}
+
+function computeFunctionCallValue({
+	input,
+	config,
+	node,
+	helper,
+}: {
+	input: string;
+	config: CachedConfig;
+	node: postcss.Node;
+	helper: { result: postcss.Result };
+}) {
+	const functionNamePrefix =
+		config.preset.context.tokenPrefixes.functionNamePrefix;
+	const parsedCall = parsePrefixedCall(input, functionNamePrefix);
+	if (!parsedCall) return input;
+
+	const fn = Object.values(config.preset.functions ?? {}).find(
+		(f) => isFunction(f) && f.name === parsedCall.name,
+	);
+	if (!fn) {
+		helper.result.warn(`[arbor-css] Unknown function: ${parsedCall.name}`, {
+			plugin: PLUGIN_NAME,
+			node,
+		});
+		return input;
+	}
+
+	const paramValues: Record<string, string> = {};
+	let invalid = false;
+	fn.parameters.forEach((param, i) => {
+		const paramName = isFunctionParamWithMeta(param) ? param.name : param;
+		const fallback =
+			isFunctionParamWithMeta(param) ? param.fallback?.toString() : undefined;
+		const required = fallback === undefined;
+		const value = parsedCall.args[i] ?? fallback;
+
+		if (value === undefined && required) {
+			invalid = true;
+			helper.result.warn(
+				`[arbor-css] Missing argument for parameter "${paramName}" in function call: ${input}`,
+				{
+					plugin: PLUGIN_NAME,
+					node,
+				},
+			);
+			return;
+		}
+
+		if (value !== undefined) {
+			paramValues[paramName] = value;
+		}
+	});
+
+	if (invalid) {
+		return input;
+	}
+
+	console.log(
+		`[arbor-css] Inlining function call: ${input} with values`,
+		paramValues,
+	);
+	return fn.compute(paramValues);
+}
+
 export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 	const { configFile, cwd = process.cwd() } = options;
 	let cachedConfig: CachedConfig | null = null;
@@ -125,58 +257,13 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 				);
 				decl.value = decl.value.replace(
 					fnCallRegex,
-					(match, fnName, argsStr) => {
-						const fn = Object.values(config.preset.functions ?? {}).find(
-							(f) => isFunction(f) && f.name === fnName,
-						);
-
-						if (!fn) {
-							helper.result.warn(`[arbor-css] Unknown function: ${fnName}`, {
-								plugin: PLUGIN_NAME,
-								node: decl,
-							});
-							return match;
-						}
-
-						const args = argsStr
-							.split(',')
-							.map((a: string) => a.trim())
-							.filter(Boolean);
-
-						const paramValues: Record<string, string> = {};
-						let invalid = false;
-						fn.parameters.forEach((param, i) => {
-							const paramName =
-								isFunctionParamWithMeta(param) ? param.name : param;
-
-							const required =
-								!isFunctionParamWithMeta(param) || param.fallback === undefined;
-							if (i >= args.length && required) {
-								invalid = true;
-								helper.result.warn(
-									`[arbor-css] Missing argument for parameter "${paramName}" in function call: ${match}`,
-									{
-										plugin: PLUGIN_NAME,
-										node: decl,
-									},
-								);
-								return;
-							}
-
-							paramValues[paramName] = args[i] ?? '';
-						});
-
-						console.log(
-							`[arbor-css] Inlining function call: ${match} with values`,
-							paramValues,
-						);
-
-						if (invalid) {
-							return '/* Invalid function call */';
-						}
-
-						return fn.compute(paramValues);
-					},
+					(match) =>
+						computeFunctionCallValue({
+							input: match,
+							config,
+							node: decl,
+							helper,
+						}),
 				);
 			}
 
@@ -191,17 +278,10 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 				config.preset.context.tokenPrefixes.mixinNamePrefix;
 			if (!mixinApplyCall.startsWith(mixinNamePrefix)) return;
 
-			const mixinCallRegex = new RegExp(
-				`^(${escapeRegExp(mixinNamePrefix)}[\\w-]+)(?:\\(((?:[^()]|\\([^()]*\\))*)\\))?$`,
-			);
-			const mixinCallMatch = mixinApplyCall.match(mixinCallRegex);
-			if (!mixinCallMatch) return;
-			const mixinName = mixinCallMatch[1];
-			const mixinArgsString = mixinCallMatch[2] ?? '';
-			const mixinArgs = mixinArgsString
-				.split(',')
-				.map((a) => a.trim())
-				.filter(Boolean);
+			const parsedMixinCall = parsePrefixedCall(mixinApplyCall, mixinNamePrefix);
+			if (!parsedMixinCall) return;
+			const mixinName = parsedMixinCall.name;
+			const mixinArgs = parsedMixinCall.args;
 
 			const mixin = Object.values(config.preset.mixins ?? {}).find(
 				(m) => isMixin(m) && m.name === mixinName,
@@ -236,7 +316,12 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 					return;
 				}
 				if (value !== undefined) {
-					mixinParamValues[paramName] = value;
+					mixinParamValues[paramName] = computeFunctionCallValue({
+						input: value,
+						config,
+						node: atRule,
+						helper,
+					});
 				}
 			});
 			if (invalidMixinCall) {
