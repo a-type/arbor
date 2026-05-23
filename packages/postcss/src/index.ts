@@ -7,7 +7,6 @@ import {
 } from '@arbor-css/functions';
 import { stat } from 'node:fs/promises';
 import postcss, { Plugin } from 'postcss';
-import { getColorPropEntries } from './colorSystemProps.js';
 import { loadConfig } from './loadConfig.js';
 
 export interface ArborPluginOptions {
@@ -181,45 +180,6 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 				);
 			}
 
-			const colorPropEntries = getColorPropEntries(config.preset);
-
-			const systemAssignmentEntry = colorPropEntries[decl.prop];
-			if (systemAssignmentEntry) {
-				// Make sure we haven't already processed this assignment
-				if (
-					decl.value.toString().includes(`var(${systemAssignmentEntry.final})`)
-				) {
-					return;
-				}
-				// Inject system color props before this declaration
-				decl.cloneBefore({
-					prop: systemAssignmentEntry.applied,
-					value: decl.value,
-					raws: {},
-				});
-				decl.cloneBefore({
-					prop: systemAssignmentEntry.final,
-					value: `var(${systemAssignmentEntry.applied})`,
-					raws: {},
-				});
-				decl.cloneBefore({
-					prop: systemAssignmentEntry.opacity,
-					value: '1',
-					raws: {},
-				});
-				for (const extra of systemAssignmentEntry.extras ?? []) {
-					decl.cloneBefore({
-						prop: extra.prop,
-						value:
-							extra.value === 'applied' ?
-								`var(${systemAssignmentEntry.applied})`
-							:	extra.value,
-						raws: {},
-					});
-				}
-				// Point the actual CSS property at the system final var for runtime flexibility
-				decl.value = `var(${systemAssignmentEntry.final})`;
-			}
 		},
 		async AtRule(atRule, helper) {
 			if (atRule.name !== 'apply') return;

@@ -185,3 +185,23 @@ it('inlines function calls in declaration values', async () => {
 	expect(result.css).not.toContain('--fn-double(');
 	expect(result.css).toContain('4');
 });
+
+it('does not implicitly rewrite color declarations into ref system vars', async () => {
+	mockLoadConfig.mockResolvedValue(
+		makeConfigResult({
+			functions: {},
+			mixins: {},
+			$: undefined,
+		}),
+	);
+
+	const plugin = ArborPlugin({ cwd: '/fake' });
+	const result = await postcss([plugin]).process(
+		`.btn { color: red; background: blue; }`,
+		{ from: undefined },
+	);
+
+	expect(result.css).toContain('color: red');
+	expect(result.css).toContain('background: blue');
+	expect(result.css).not.toContain('--ref-');
+});

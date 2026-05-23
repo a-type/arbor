@@ -6,18 +6,20 @@ body {
 .surface {
 	padding: var(--m-surface-padding);
 	border-radius: var(--m-surface-borderRadius);
+	@apply --mx-bg;
+	@apply --mx-fg;
 
 	&[data-emphasis='primary'] {
-		background: var(--m-surface-primary-color-bg);
-		color: var(--m-surface-primary-color-fg);
+		--mx-bg-applied: var(--m-surface-primary-color-bg);
+		--mx-fg-applied: var(--m-surface-primary-color-fg);
 	}
 	&[data-emphasis='secondary'] {
-		background: var(--m-surface-secondary-color-bg);
-		color: var(--m-surface-secondary-color-fg);
+		--mx-bg-applied: var(--m-surface-secondary-color-bg);
+		--mx-fg-applied: var(--m-surface-secondary-color-fg);
 	}
 	&[data-emphasis='ambient'] {
-		background: var(--m-surface-ambient-color-bg);
-		color: var(--m-surface-ambient-color-fg);
+		--mx-bg-applied: var(--m-surface-ambient-color-bg);
+		--mx-fg-applied: var(--m-surface-ambient-color-fg);
 	}
 }
 
@@ -25,34 +27,37 @@ body {
 button {
 	padding: var(--m-action-padding);
 	border-radius: var(--m-action-borderRadius);
-	border: 1px solid var(--ref-system-fg);
+	border: 1px solid var(--ref-system-borderColor-all);
 	font-size: var(--m-text-secondary-size);
 	font-weight: var(--m-text-secondary-weight);
 	line-height: 1;
 	transition: all 0.2s ease;
 	cursor: pointer;
+	@apply --mx-bg;
+	@apply --mx-fg;
+	@apply --mx-border;
 	@apply --mx-shadow;
 	--mx-shadow-shadow: var(--m-shadow-md-compiled);
 
 	&[data-emphasis='primary'] {
-		background: var(--m-action-primary-color-bg);
-		color: var(--m-action-primary-color-fg);
-		border-color: var(--m-action-primary-color-border);
+		--mx-bg-applied: var(--m-action-primary-color-bg);
+		--mx-fg-applied: var(--m-action-primary-color-fg);
+		--mx-border-applied: var(--m-action-primary-color-border);
 	}
 	&[data-emphasis='secondary'] {
-		background: var(--m-action-secondary-color-bg);
-		color: var(--m-action-secondary-color-fg);
-		border-color: var(--m-action-secondary-color-border);
+		--mx-bg-applied: var(--m-action-secondary-color-bg);
+		--mx-fg-applied: var(--m-action-secondary-color-fg);
+		--mx-border-applied: var(--m-action-secondary-color-border);
 	}
 	&[data-emphasis='ambient'] {
-		background: var(--m-action-ambient-color-bg);
-		color: var(--m-action-ambient-color-fg);
-		border-color: var(--m-action-ambient-color-border);
+		--mx-bg-applied: var(--m-action-ambient-color-bg);
+		--mx-fg-applied: var(--m-action-ambient-color-fg);
+		--mx-border-applied: var(--m-action-ambient-color-border);
 		--mx-shadow-shadow: 0 0 0 0 transparent;
 
 		&:hover,
 		&:focus {
-			--ref-system-bg-applied: inherit;
+			--mx-bg-applied: inherit;
 		}
 	}
 
@@ -77,12 +82,16 @@ button {
 input {
 	padding: var(--m-control-padding);
 	border-radius: var(--m-control-borderRadius);
-	border: 1px solid var(--m-control-color-border);
+	border: 1px solid var(--ref-system-borderColor-all);
 	font-size: var(--m-text-secondary-size);
 	font-weight: var(--m-text-secondary-weight);
 	line-height: var(--m-text-secondary-lineHeight);
-	background: var(--m-control-color-bg);
-	color: var(--m-control-color-fg);
+	@apply --mx-bg;
+	@apply --mx-fg;
+	@apply --mx-border;
+	--mx-bg-applied: var(--m-control-color-bg);
+	--mx-fg-applied: var(--m-control-color-fg);
+	--mx-border-applied: var(--m-control-color-border);
 
 	@apply --mx-shadow;
 	--mx-shadow-shadow: var(--m-shadow-sm-compiled);

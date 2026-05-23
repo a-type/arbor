@@ -137,7 +137,10 @@ export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
 			namePrefix: context.tokenPrefixes.functionNamePrefix,
 		}),
 	);
-	const builtinMixins = createPresetMixins(context.createMixin);
+	const builtinMixins = createPresetMixins(
+		context.$systemTokens,
+		context.createMixin,
+	);
 
 	return {
 		context,
