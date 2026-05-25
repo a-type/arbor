@@ -2,7 +2,7 @@
 	"name": "@arbor-css/docs",
 	"type": "module",
 	"private": true,
-	"version": "0.0.63",
+	"version": "0.0.64",
 	"scripts": {
 		"dev": "astro dev",
 		"start": "astro dev",
