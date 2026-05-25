@@ -11,60 +11,156 @@ import { Primitives } from '@arbor-css/primitives';
 import { CreateToken, SimpleTokenSchema } from '@arbor-css/tokens';
 
 const colorIntents = {
-	fg: 'color',
-	bg: 'color',
-	border: 'color',
+	fg: {
+		purpose: 'color',
+		description: 'Intended for use as the foreground color',
+	},
+	bg: {
+		purpose: 'color',
+		description: 'Intended for use as the background color',
+	},
+	border: {
+		purpose: 'color',
+		description: 'Intended for use as the border color, if desired',
+	},
 } satisfies SimpleTokenSchema;
 
 const boxIntents = {
-	$root: 'other',
-	inline: 'spacing',
-	block: 'spacing',
+	$root: {
+		purpose: 'other',
+		description:
+			'Combines inline and block padding, can be passed directly to "padding"',
+	},
+	inline: {
+		purpose: 'spacing',
+		description: 'Inline (horizontal, usually) padding',
+	},
+	block: {
+		purpose: 'spacing',
+		description: 'Block (vertical, usually) padding',
+	},
 } satisfies SimpleTokenSchema;
 
 const textIntents = {
 	size: 'font-size',
 	weight: 'font-weight',
 	lineHeight: 'line-height',
-	font: 'other',
+	font: 'font-family',
 } satisfies SimpleTokenSchema;
 
 const shadowIntents = {
-	x: 'shadow-x',
-	y: 'shadow-y',
-	blur: 'shadow-blur',
-	spread: 'shadow-spread',
-	color: 'shadow-color',
-	compiled: 'shadow',
+	x: {
+		purpose: 'size',
+		description: 'Horizontal offset of the shadow',
+	},
+	y: {
+		purpose: 'size',
+		description: 'Vertical offset of the shadow',
+	},
+	blur: {
+		purpose: 'size',
+		description: 'Blur radius of the shadow',
+	},
+	spread: {
+		purpose: 'size',
+		description: 'Spread radius of the shadow',
+	},
+	color: {
+		purpose: 'color',
+		description: 'Color of the shadow',
+	},
+	$root: {
+		purpose: 'shadow',
+		description: 'Full shadow value, can be passed to "box-shadow"',
+	},
 } satisfies SimpleTokenSchema;
 
 export const arborModeDefinition = {
 	color: {
 		main: {
-			$root: 'color',
-			paper: 'color',
-			wash: 'color',
-			light: 'color',
-			mid: 'color',
-			heavy: 'color',
-			ink: 'color',
+			$root: {
+				purpose: 'color',
+				description: 'A convenient reference for the "mid" shade',
+			},
+			paper: {
+				purpose: 'color',
+				description: 'A very light shade, good for backgrounds and surfaces',
+			},
+			wash: {
+				purpose: 'color',
+				description:
+					'A very faint but colorful shade, good for backgrounds and surfaces',
+			},
+			light: {
+				purpose: 'color',
+				description:
+					"A light shade of the mode's main color, good for emphasized surfaces.",
+			},
+			mid: {
+				purpose: 'color',
+				description:
+					"The main shade of the mode's main color, good for primary actions and decoration.",
+			},
+			heavy: {
+				purpose: 'color',
+				description:
+					"A heavy shade of the mode's main color, good for text emphasis and accents.",
+			},
+			ink: {
+				purpose: 'color',
+				description:
+					"A very dark but still colorful shade of the mode's main color, good for text and high contrast elements.",
+			},
 		},
 		neutral: {
-			$root: 'color',
-			paper: 'color',
-			wash: 'color',
-			light: 'color',
-			mid: 'color',
-			heavy: 'color',
-			ink: 'color',
+			$root: {
+				purpose: 'color',
+				description: 'A convenient reference for the "mid" neutral shade',
+			},
+			paper: {
+				purpose: 'color',
+				description:
+					'A very light neutral shade, good for backgrounds and surfaces',
+			},
+			wash: {
+				purpose: 'color',
+				description: 'A faint neutral shade, good for backgrounds and surfaces',
+			},
+			light: {
+				purpose: 'color',
+				description: 'A light neutral shade, good for emphasized surfaces',
+			},
+			mid: {
+				purpose: 'color',
+				description:
+					'The main neutral shade, good for primary actions and decoration',
+			},
+			heavy: {
+				purpose: 'color',
+				description:
+					'A heavy neutral shade, good for low-emphasis text and accents',
+			},
+			ink: {
+				purpose: 'color',
+				description:
+					'A very dark neutral shade, good for text and high contrast elements',
+			},
 		},
 	},
 
 	// intents
 	action: {
 		padding: boxIntents,
-		roundness: 'other',
-		borderRadius: 'border-radius',
+		roundness: {
+			purpose: 'other',
+			description:
+				'This token controls the overall roundness of actions and stacks with the root roundness token',
+		},
+		borderRadius: {
+			purpose: 'border-radius',
+			description:
+				'This token captures the border-radius of actions, taking into account the overall roundness',
+		},
 		primary: {
 			color: colorIntents,
 		},
@@ -77,14 +173,30 @@ export const arborModeDefinition = {
 	},
 	control: {
 		padding: boxIntents,
-		roundness: 'other',
-		borderRadius: 'border-radius',
+		roundness: {
+			purpose: 'other',
+			description:
+				'This token controls the overall roundness of controls and stacks with the root roundness token',
+		},
+		borderRadius: {
+			purpose: 'border-radius',
+			description:
+				'This token captures the border-radius of controls, taking into account the overall roundness',
+		},
 		color: colorIntents,
 	},
 	surface: {
 		padding: boxIntents,
-		roundness: 'other',
-		borderRadius: 'border-radius',
+		roundness: {
+			purpose: 'other',
+			description:
+				'This token controls the overall roundness of surfaces and stacks with the root roundness token',
+		},
+		borderRadius: {
+			purpose: 'border-radius',
+			description:
+				'This token captures the border-radius of surfaces, taking into account the overall roundness',
+		},
 		primary: {
 			color: colorIntents,
 		},
@@ -102,9 +214,16 @@ export const arborModeDefinition = {
 	},
 
 	// density
-	density: 'other',
+	density: {
+		purpose: 'other',
+		description:
+			'A scaling factor for density. Higher density means smaller, tighter spacing and size',
+	},
 	spacing: {
-		$root: 'spacing',
+		$root: {
+			purpose: 'spacing',
+			description: 'A convenient reference for the "md" spacing size',
+		},
 		xs: 'spacing',
 		sm: 'spacing',
 		md: 'spacing',
@@ -114,13 +233,29 @@ export const arborModeDefinition = {
 
 	// other cosmetics
 	borderWidth: {
-		$root: 'border-width',
-		sm: 'border-width',
-		md: 'border-width',
-		lg: 'border-width',
+		$root: {
+			purpose: 'border-width',
+			description: 'A convenient reference for the "md" border width',
+		},
+		sm: {
+			purpose: 'border-width',
+			description:
+				'A hairline border width. Always >= 1px. If the global border width is small, this may be the same as "md"',
+		},
+		md: {
+			purpose: 'border-width',
+			description: 'A general-purpose border width',
+		},
+		lg: {
+			purpose: 'border-width',
+			description: 'A thicker border, good for emphasis',
+		},
 	},
 	borderRadius: {
-		$root: 'border-radius',
+		$root: {
+			purpose: 'border-radius',
+			description: 'A convenient reference for the "md" border radius',
+		},
 		xs: 'border-radius',
 		sm: 'border-radius',
 		md: 'border-radius',
@@ -128,8 +263,15 @@ export const arborModeDefinition = {
 		xl: 'border-radius',
 	},
 	shadow: {
-		$root: 'shadow',
-		color: 'color',
+		$root: {
+			purpose: 'shadow',
+			description: 'A convenient reference for the "md" shadow level',
+		},
+		color: {
+			purpose: 'color',
+			description:
+				'If specified, this token overrides shadow colors from primitives',
+		},
 		sm: shadowIntents,
 		md: shadowIntents,
 		lg: shadowIntents,
@@ -165,6 +307,12 @@ function createShadowIntentLevel(
 	modeSchema: ModeSchema<ArborModeSchemaDefinition>,
 ) {
 	return {
+		$root: css`
+			${modeSchema.$tokens.shadow[size].x} ${modeSchema.$tokens.shadow[size]
+				.y} ${modeSchema.$tokens.shadow[size].blur} ${modeSchema.$tokens.shadow[
+				size
+			].spread} ${modeSchema.$tokens.shadow[size].color}
+		`,
 		x: css`
 			${primitives.$tokens.shadows[size].x}
 		`,
@@ -181,12 +329,6 @@ function createShadowIntentLevel(
 			modeSchema.$tokens.shadow.color,
 			primitives.$tokens.shadows[size].color,
 		]} l c h / 15%)`,
-		compiled: css`
-			${modeSchema.$tokens.shadow[size].x} ${modeSchema.$tokens.shadow[size]
-				.y} ${modeSchema.$tokens.shadow[size].blur} ${modeSchema.$tokens.shadow[
-				size
-			].spread} ${modeSchema.$tokens.shadow[size].color}
-		`,
 	} satisfies ModeValues<typeof shadowIntents>;
 }
 
@@ -301,9 +443,7 @@ export function createArborModeValues<
 			},
 			ambient: {
 				color: {
-					bg: css`
-						${modeSchema.$tokens.color.main.light}
-					`,
+					bg: 'transparent',
 					fg: css`
 						${modeSchema.$tokens.color.main.ink}
 					`,

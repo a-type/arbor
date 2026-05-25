@@ -1,5 +1,5 @@
-import { isToken, resolveTokenReferences } from '@arbor-css/core';
 import type { ArborFunction, Token } from '@arbor-css/core';
+import { isToken, resolveTokenReferences } from '@arbor-css/core';
 import type { ConfigState } from './tokenProvider.js';
 
 export function resolveTokenValue(
@@ -30,6 +30,9 @@ export function resolveColorTokenValueByName(
 ): string | null {
 	const entry = state.tokenMap.get(tokenName);
 	if (!entry) {
+		return null;
+	}
+	if (!isToken(entry) || entry.purpose !== 'color') {
 		return null;
 	}
 

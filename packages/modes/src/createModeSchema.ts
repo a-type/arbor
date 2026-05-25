@@ -3,19 +3,13 @@ import {
 	convertSimpleTokenSchema,
 	CreateToken,
 	isToken,
+	SimpleTokenDefinition,
 	SimpleTokensAsTokenDefinitions,
 	SimpleTokenSchema,
 	Token,
-	TokenPurpose,
 } from '@arbor-css/tokens';
 
-export type ModePropertyType = TokenPurpose;
-export type ModeSchemaProperty =
-	| ModePropertyType
-	| {
-			type: ModePropertyType;
-			fallback: string;
-	  };
+export type ModeSchemaProperty = SimpleTokenDefinition;
 
 export type ModeSchema<TSchema extends SimpleTokenSchema = SimpleTokenSchema> =
 	{
