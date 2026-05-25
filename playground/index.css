@@ -55,7 +55,7 @@ button {
 
 		&:hover,
 		&:focus {
-			@apply --mx-bg(inherit);
+			--mx-bg-applied: inherit;
 		}
 	}
 
