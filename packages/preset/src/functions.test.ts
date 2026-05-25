@@ -19,7 +19,7 @@ describe('ring function', () => {
 			'--offset': '1px',
 		});
 		expect(result).toBe(
-			`0 0 0 1px ${mixins.shadow.contributeTokens.ring.varFallback(ctx.$systemTokens.meta.scheme.trueLight.var)}, 0 0 0 calc(3px) red`,
+			`0 0 0 1px ${ctx.$systemTokens.meta.scheme.trueLight.var}, 0 0 0 calc(3px) red`,
 		);
 	});
 });

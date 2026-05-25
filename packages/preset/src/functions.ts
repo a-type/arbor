@@ -74,7 +74,7 @@ export function createPresetFunctions(
 			},
 		] as const,
 		definition: (css, color, size, offset) =>
-			css`0 0 0 ${offset} ${[mixins.shadow.contributeTokens.ring, systemProps.meta.scheme.trueLight]}, 0 0 0 calc(${size} + ${offset}) ${color}`,
+			css`0 0 0 ${offset} ${systemProps.meta.scheme.trueLight}, 0 0 0 calc(${size} + ${offset}) ${color}`,
 	});
 
 	return {
