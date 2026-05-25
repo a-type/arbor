@@ -140,7 +140,6 @@ export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
 		createFunctionFactory({
 			namePrefix: context.tokenPrefixes.functionNamePrefix,
 		}),
-		builtinMixins,
 	);
 
 	return {

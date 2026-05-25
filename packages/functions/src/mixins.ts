@@ -131,6 +131,9 @@ export function createMixinFactory({
 			contributeTokensInput,
 			name,
 			createToken,
+			{
+				contributedBy: cssName,
+			},
 		);
 		const declarations = normalizeDeclarations(
 			definition(css, {

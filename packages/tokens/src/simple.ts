@@ -1,4 +1,9 @@
-import { CreateToken, Token, TokenPurpose } from './createToken.js';
+import {
+	CreateToken,
+	Token,
+	TokenOptions,
+	TokenPurpose,
+} from './createToken.js';
 
 /**
  * Simple token syntax for end users to quickly and easily
@@ -77,11 +82,13 @@ function convertSimpleToken(
 	prop: SimpleTokenDefinition,
 	createTokenValue: CreateToken,
 	group?: string,
+	applyMeta?: Partial<TokenOptions>,
 ): Token {
 	return createTokenValue(name, {
 		purpose: getSimpleTokenPurpose(prop),
 		description: getSimpleTokenDescription(prop),
 		group,
+		...applyMeta,
 	});
 }
 
@@ -93,6 +100,7 @@ export function convertSimpleTokenSchema<T extends SimpleTokenSchema>(
 	root: T,
 	tag: string,
 	createTokenValue: CreateToken,
+	applyMeta?: Partial<TokenOptions>,
 ): SimpleTokensAsTokenDefinitions<T> {
 	function generatePropsForSchemaLevel(
 		schemaLevel: any,
@@ -109,6 +117,7 @@ export function convertSimpleTokenSchema<T extends SimpleTokenSchema>(
 						value,
 						createTokenValue,
 						propPrefix,
+						applyMeta,
 					);
 				}
 				continue;

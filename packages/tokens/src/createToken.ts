@@ -16,6 +16,12 @@ export interface TokenOptions {
 	 * skip generating an @property
 	 */
 	forceDefinition?: boolean;
+	/**
+	 * Optional metadata, identifies where the token came from.
+	 * Useful for mixin-contributed tokens to tell the user what
+	 * mixin it relates to.
+	 */
+	contributedBy?: string;
 }
 
 /**
@@ -166,6 +172,7 @@ export function createTokenFactory({ tokenPrefix }: { tokenPrefix: string }) {
 			group,
 			description,
 			tag,
+			contributedBy,
 		}: TokenOptions = {},
 	) {
 		const taggedName = tag ? `${tag}-${name}` : name;
@@ -178,6 +185,7 @@ export function createTokenFactory({ tokenPrefix }: { tokenPrefix: string }) {
 			purpose,
 			group,
 			description,
+			contributedBy,
 			fallback,
 			var: `var(${resolvedName}${fallback ? `, ${fallback}` : ''})`,
 			varFallback: (fallbackOverride?: string | number) =>

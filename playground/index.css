@@ -1,5 +1,3 @@
-@layer reset, base, variants, state.base, state.variants, util;
-
 body {
 	background: var(--m-color-main-paper);
 	color: var(--m-color-main-ink);
@@ -8,6 +6,10 @@ body {
 .surface {
 	padding: var(--m-surface-padding);
 	border-radius: var(--m-surface-borderRadius);
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: var(--m-spacing-sm);
 
 	&[data-emphasis='primary'] {
 		@apply --mx-bg(var(--m-surface-primary-color-bg));
@@ -28,7 +30,8 @@ button {
 	/* basic shape */
 	padding: var(--m-action-padding);
 	border-radius: var(--m-action-borderRadius);
-	border: 1px solid var(--mx-fg-ref);
+	border-width: var(--m-borderWidth-md);
+	border-style: solid;
 
 	/* typography */
 	font-size: var(--m-text-secondary-size);
@@ -41,6 +44,8 @@ button {
 
 	/* use color-contrast to find a readable color against current bg (applied by variants) */
 	@apply --mx-fg(color-contrast(var(--mx-bg-ref)));
+	/* use applied fg color for the border, too */
+	@apply --mx-border(var(--mx-fg-ref));
 
 	/* apply ring+shadow base props, then set shadow to a default value */
 	@apply --mx-shadow;
@@ -48,13 +53,11 @@ button {
 
 	&[data-emphasis='primary'] {
 		@apply --mx-bg(var(--m-action-primary-color-bg));
-		@layer state.variants {
-			&:hover {
-				--mx-bg-ref: --fn-lighten-color(var(--mx-bg-applied), 2);
-			}
-			&:active {
-				--mx-bg-ref: --fn-lighten-color(var(--mx-bg-applied), 4);
-			}
+		&:hover {
+			@apply --mx-bg-lighten(2);
+		}
+		&:active {
+			@apply --mx-bg-lighten(4);
 		}
 	}
 	&,
@@ -74,11 +77,11 @@ button {
 	}
 
 	&:hover {
-		--mx-bg-ref: --fn-darken-color(var(--mx-bg-applied), 2);
+		@apply --mx-bg-darken(2);
 		--mx-shadow-ring: --fn-ring(var(--mx-bg-ref), 4px);
 	}
 	&:active {
-		--mx-bg-ref: --fn-darken-color(var(--mx-bg-applied), 4);
+		@apply --mx-bg-darken(4);
 		--mx-shadow-ring: --fn-ring(var(--mx-bg-ref), 6px);
 	}
 
@@ -86,7 +89,7 @@ button {
 		outline: none;
 	}
 	&:focus-visible {
-		--mx-bg-ref: --fn-lighten-color(var(--mx-bg-applied), 2);
+		@apply --mx-bg-lighten(2);
 		--mx-shadow-ring: --fn-ring(var(--m-color-main-ink), 2px);
 	}
 }
@@ -107,8 +110,8 @@ input {
 	--mx-shadow-shadow: var(--m-shadow-sm);
 
 	&:hover {
-		--mx-bg-ref: --fn-darken-color(var(--m-control-color-bg), 1);
-		--mx-border-ref: --fn-darken-color(var(--m-control-color-border), 2);
+		@apply --mx-bg-darken(1);
+		@apply --mx-border-darken(2);
 		--mx-shadow-ring: --fn-ring(var(--m-color-main-heavy), 2px);
 	}
 	&:focus {

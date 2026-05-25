@@ -8,6 +8,10 @@ export interface RgbaColor {
 export function parseCssColor(value: string): RgbaColor | null {
 	const trimmed = value.trim();
 
+	if (trimmed.toLowerCase() === 'transparent') {
+		return { red: 0, green: 0, blue: 0, alpha: 0 };
+	}
+
 	return (
 		parseHexColor(trimmed) ??
 		parseRgbColor(trimmed) ??
@@ -130,12 +134,7 @@ function parseOklchColor(value: string): RgbaColor | null {
 	const hue = parseHue(components[2]);
 	const alpha = alphaPart ? parseAlpha(alphaPart) : 1;
 
-	if (
-		lightness === null ||
-		chroma === null ||
-		hue === null ||
-		alpha === null
-	) {
+	if (lightness === null || chroma === null || hue === null || alpha === null) {
 		return null;
 	}
 
@@ -154,8 +153,7 @@ function parseOklchColor(value: string): RgbaColor | null {
 	const redLinear = 4.0767416621 * l3 - 3.3077115913 * m3 + 0.2309699292 * s3;
 	const greenLinear =
 		-1.2684380046 * l3 + 2.6097574011 * m3 - 0.3413193965 * s3;
-	const blueLinear =
-		-0.0041960863 * l3 - 0.7034186147 * m3 + 1.707614701 * s3;
+	const blueLinear = -0.0041960863 * l3 - 0.7034186147 * m3 + 1.707614701 * s3;
 
 	return {
 		red: clamp01(linearSrgbToSrgb(redLinear)),
@@ -179,11 +177,7 @@ function splitAlpha(value: string): [string, string | undefined] {
 }
 
 function splitComponents(value: string): string[] {
-	return (
-		value.includes(',') ?
-			value.split(',')
-		:	value.split(/\s+/u)
-	)
+	return (value.includes(',') ? value.split(',') : value.split(/\s+/u))
 		.map((part) => part.trim())
 		.filter(Boolean);
 }

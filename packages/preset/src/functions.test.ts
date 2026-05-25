@@ -1,15 +1,9 @@
 import { createGlobalContext } from '@arbor-css/globals';
 import { describe, expect, it } from 'vitest';
 import { createPresetFunctions } from './functions.js';
-import { createPresetMixins } from './mixins.js';
 
 const ctx = createGlobalContext();
-const mixins = createPresetMixins(ctx.$systemTokens, ctx.createMixin);
-const fns = createPresetFunctions(
-	ctx.$systemTokens,
-	ctx.createFunction,
-	mixins,
-);
+const fns = createPresetFunctions(ctx.$systemTokens, ctx.createFunction);
 
 describe('ring function', () => {
 	it('should compute the right value', () => {

@@ -137,11 +137,12 @@ ${Object.values(config.functions)
 	.filter(Boolean)
 	.join('\n\n')}
 
-/* Mixin definitions */
-${Object.values(config.mixins)
+${
+	/*Object.values(config.mixins)
 	.map((mixin) => mixin.definition)
 	.filter(Boolean)
-	.join('\n\n')}
+	.join('\n\n')*/ ''
+}
 
 /* Custom properties for each primitive color */
 ${allColorTokens

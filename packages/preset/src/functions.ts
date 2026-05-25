@@ -1,55 +1,43 @@
-import { CalcInterpolation, Css } from '@arbor-css/calc';
 import { CreateFunction } from '@arbor-css/functions';
 import { SystemTokens } from '@arbor-css/globals';
-import { BuiltinMixins } from './mixins.js';
-
-function lightDarkAlterations(
-	css: Css,
-	systemProps: SystemTokens,
-	{
-		light,
-		dark,
-		step,
-	}: {
-		light: number;
-		dark: number;
-		step: CalcInterpolation;
-	},
-) {
-	return css`calc(1 + ${step} * (${[systemProps.meta.scheme.whenLight, 1]} * ${light}) + (${[systemProps.meta.scheme.whenDark, 1]} * ${dark}))`;
-}
+import {
+	darkenColorAlteration,
+	desaturateColorAlteration,
+	fadeColorAlteration,
+	lightenColorAlteration,
+	saturateColorAlteration,
+} from './commonFunctions.js';
 
 export function createPresetFunctions(
 	systemProps: SystemTokens,
 	createFunctionValue: CreateFunction,
-	mixins: BuiltinMixins,
 ) {
 	const lightenColor = createFunctionValue('lighten-color', {
 		description: 'Lightens a color by a specified "step" value',
 		parameters: ['--color', '--step'] as const,
 		definition: (css, color, step) =>
-			css`oklch(from ${color} calc(l * ${lightDarkAlterations(css, systemProps, { light: 0.02, dark: -0.07, step })}) calc(c * ${lightDarkAlterations(css, systemProps, { light: -0.1, dark: -0.03, step })}) h)`,
+			lightenColorAlteration(css, systemProps, color, step),
 	});
 
 	const darkenColor = createFunctionValue('darken-color', {
 		description: 'Darkens a color by a specified "step" value',
 		parameters: ['--color', '--step'] as const,
 		definition: (css, color, step) =>
-			css`oklch(from ${color} calc(l * ${lightDarkAlterations(css, systemProps, { light: -0.02, dark: 0.12, step })}) calc(c * ${lightDarkAlterations(css, systemProps, { light: 0.01, dark: -0.09, step })}) h)`,
+			darkenColorAlteration(css, systemProps, color, step),
 	});
 
 	const desaturateColor = createFunctionValue('desaturate-color', {
 		description: 'Desaturates a color by a specified "step" value',
 		parameters: ['--color', '--step'] as const,
 		definition: (css, color, step) =>
-			css`oklch(from ${color} l calc(c * (1 + ${[systemProps.meta.scheme.whenLight, 1]} * 0.05 * ${step})) h)`,
+			desaturateColorAlteration(css, systemProps, color, step),
 	});
 
 	const saturateColor = createFunctionValue('saturate-color', {
 		description: 'Saturates a color by a specified "step" value',
 		parameters: ['--color', '--step'] as const,
 		definition: (css, color, step) =>
-			css`oklch(from ${color} l calc(c * (1 + ${[systemProps.meta.scheme.whenLight, 1]} * -0.05 * ${step})) h)`,
+			saturateColorAlteration(css, systemProps, color, step),
 	});
 
 	const fade = createFunctionValue('fade', {
@@ -57,7 +45,7 @@ export function createPresetFunctions(
 			'Applies an alpha channel to a source color using CSS relative color syntax.',
 		parameters: ['--color', '--opacity'] as const,
 		definition: (css, color, opacity) =>
-			css`oklch(from ${color} l c h / ${opacity})`,
+			fadeColorAlteration(css, color, opacity),
 	});
 
 	const ring = createFunctionValue('ring', {

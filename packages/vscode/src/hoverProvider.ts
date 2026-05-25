@@ -37,7 +37,12 @@ export class ArborHoverProvider implements vscode.HoverProvider {
 				const path = match[1];
 				const entry = state.tokenMap.get(path);
 
-				const range = new vscode.Range(position.line, start, position.line, end);
+				const range = new vscode.Range(
+					position.line,
+					start,
+					position.line,
+					end,
+				);
 
 				if (!entry) {
 					return new vscode.Hover(
@@ -53,6 +58,9 @@ export class ArborHoverProvider implements vscode.HoverProvider {
 				md.appendMarkdown(`**Arbor token:** \`${entry.name}\`\n\n`);
 				if (isToken(entry)) {
 					md.appendMarkdown(`**Purpose:** ${entry.purpose}`);
+					if (entry.contributedBy) {
+						md.appendMarkdown(`\n\n*Contributed by ${entry.contributedBy}*`);
+					}
 					if (entry.description) {
 						md.appendMarkdown(`\n\n${entry.description}`);
 					}
@@ -64,9 +72,7 @@ export class ArborHoverProvider implements vscode.HoverProvider {
 							`\n\n${makeColorSwatch(resolvedColor)} \`${resolvedColor}\``,
 						);
 					} else {
-						md.appendMarkdown(
-							`\n\n**Value:** \`${resolved ?? 'unresolved'}\``,
-						);
+						md.appendMarkdown(`\n\n**Value:** \`${resolved ?? 'unresolved'}\``);
 					}
 				} else if (isFunction(entry)) {
 					md.appendMarkdown(

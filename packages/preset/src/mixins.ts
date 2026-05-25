@@ -1,8 +1,15 @@
 import { CreateMixin } from '@arbor-css/functions';
 import { SystemTokens } from '@arbor-css/globals';
+import {
+	darkenColorAlteration,
+	desaturateColorAlteration,
+	lightenColorAlteration,
+	saturateColorAlteration,
+} from './commonFunctions.js';
 
-function createRefColorMixin(
+function createColorMixins(
 	createMixinValue: CreateMixin,
+	systemTokens: SystemTokens,
 	{
 		name,
 		property,
@@ -14,7 +21,7 @@ function createRefColorMixin(
 	},
 ) {
 	const includeContrast = property === 'background';
-	return createMixinValue(name, {
+	const refMixin = createMixinValue(name, {
 		description,
 		parameters: ['--color'] as const,
 		definition: (css, { parameters: [color], tokens }) => {
@@ -57,6 +64,86 @@ function createRefColorMixin(
 			:	{}),
 		},
 	});
+	const lightenMixin = createMixinValue(`${name}-lighten`, {
+		description: `Lightens the ${property} color for better contrast.`,
+		parameters: [
+			'--step',
+			{
+				name: '--source',
+				fallback: refMixin.contributeTokens.applied.var,
+			},
+		] as const,
+		definition: (css, { parameters: [step, source] }) => ({
+			[refMixin.contributeTokens.ref.name]: lightenColorAlteration(
+				css,
+				systemTokens,
+				source,
+				step,
+			),
+		}),
+	});
+	const darkenMixin = createMixinValue(`${name}-darken`, {
+		description: `Darkens the ${property} color for better contrast.`,
+		parameters: [
+			'--step',
+			{
+				name: '--source',
+				fallback: refMixin.contributeTokens.applied.var,
+			},
+		] as const,
+		definition: (css, { parameters: [step, source] }) => ({
+			[refMixin.contributeTokens.ref.name]: darkenColorAlteration(
+				css,
+				systemTokens,
+				source,
+				step,
+			),
+		}),
+	});
+	const desaturateMixin = createMixinValue(`${name}-desaturate`, {
+		description: `Desaturates the ${property} color for better contrast.`,
+		parameters: [
+			'--step',
+			{
+				name: '--source',
+				fallback: refMixin.contributeTokens.applied.var,
+			},
+		] as const,
+		definition: (css, { parameters: [step, source] }) => ({
+			[refMixin.contributeTokens.ref.name]: desaturateColorAlteration(
+				css,
+				systemTokens,
+				source,
+				step,
+			),
+		}),
+	});
+	const saturateMixin = createMixinValue(`${name}-saturate`, {
+		description: `Saturates the ${property} color for better contrast.`,
+		parameters: [
+			'--step',
+			{
+				name: '--source',
+				fallback: refMixin.contributeTokens.applied.var,
+			},
+		] as const,
+		definition: (css, { parameters: [step, source] }) => ({
+			[refMixin.contributeTokens.ref.name]: saturateColorAlteration(
+				css,
+				systemTokens,
+				source,
+				step,
+			),
+		}),
+	});
+
+	return {
+		ref: refMixin,
+		lighten: lightenMixin,
+		darken: darkenMixin,
+		desaturate: desaturateMixin,
+		saturate: saturateMixin,
+	};
 }
 
 export function createPresetMixins(
@@ -87,42 +174,42 @@ export function createPresetMixins(
 	});
 
 	// colors
-	const fg = createRefColorMixin(createMixinValue, {
+	const fgMixins = createColorMixins(createMixinValue, systemProps, {
 		name: 'fg',
 		property: 'color',
 		description:
 			'Routes color assignments through Arbor ref variables for runtime adjustments.',
 	});
 
-	const bg = createRefColorMixin(createMixinValue, {
+	const bgMixins = createColorMixins(createMixinValue, systemProps, {
 		name: 'bg',
 		property: 'background',
 		description:
 			'Routes background color assignments through Arbor ref variables for runtime adjustments.',
 	});
 
-	const border = createRefColorMixin(createMixinValue, {
+	const borderMixins = createColorMixins(createMixinValue, systemProps, {
 		name: 'border',
 		property: 'border-color',
 		description:
 			'Routes border color assignments through Arbor ref variables for runtime adjustments.',
 	});
 
-	const fill = createRefColorMixin(createMixinValue, {
+	const fillMixins = createColorMixins(createMixinValue, systemProps, {
 		name: 'fill',
 		property: 'fill',
 		description:
 			'Routes SVG fill assignments through Arbor ref variables for runtime adjustments.',
 	});
 
-	const stroke = createRefColorMixin(createMixinValue, {
+	const strokeMixins = createColorMixins(createMixinValue, systemProps, {
 		name: 'stroke',
 		property: 'stroke',
 		description:
 			'Routes SVG stroke assignments through Arbor ref variables for runtime adjustments.',
 	});
 
-	const accent = createRefColorMixin(createMixinValue, {
+	const accentMixins = createColorMixins(createMixinValue, systemProps, {
 		name: 'accent',
 		property: 'accent-color',
 		description:
@@ -130,13 +217,43 @@ export function createPresetMixins(
 	});
 
 	return {
-		accent,
-		bg,
-		border,
-		fill,
-		fg,
 		shadow,
-		stroke,
+
+		accent: accentMixins.ref,
+		accentLighten: accentMixins.lighten,
+		accentDarken: accentMixins.darken,
+		accentDesaturate: accentMixins.desaturate,
+		accentSaturate: accentMixins.saturate,
+
+		bg: bgMixins.ref,
+		bgLighten: bgMixins.lighten,
+		bgDarken: bgMixins.darken,
+		bgDesaturate: bgMixins.desaturate,
+		bgSaturate: bgMixins.saturate,
+
+		border: borderMixins.ref,
+		borderLighten: borderMixins.lighten,
+		borderDarken: borderMixins.darken,
+		borderDesaturate: borderMixins.desaturate,
+		borderSaturate: borderMixins.saturate,
+
+		fill: fillMixins.ref,
+		fillLighten: fillMixins.lighten,
+		fillDarken: fillMixins.darken,
+		fillDesaturate: fillMixins.desaturate,
+		fillSaturate: fillMixins.saturate,
+
+		fg: fgMixins.ref,
+		fgLighten: fgMixins.lighten,
+		fgDarken: fgMixins.darken,
+		fgDesaturate: fgMixins.desaturate,
+		fgSaturate: fgMixins.saturate,
+
+		stroke: strokeMixins.ref,
+		strokeLighten: strokeMixins.lighten,
+		strokeDarken: strokeMixins.darken,
+		strokeDesaturate: strokeMixins.desaturate,
+		strokeSaturate: strokeMixins.saturate,
 	} as const;
 }
 
