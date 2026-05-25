@@ -1,19 +1,8 @@
-import { SystemTokens } from '@arbor-css/globals';
 import { CreateMixin } from '@arbor-css/functions';
-
-type RefColorMixinTokens = {
-	applied: { name: string; var: string };
-	final: { name: string; var: string };
-	contrast?: { name: string; var: string };
-};
+import { SystemTokens } from '@arbor-css/globals';
 
 function createRefColorMixin(
 	createMixinValue: CreateMixin,
-	systemRef: {
-		applied: { name: string; var: string };
-		$root: { name: string; var: string };
-		contrast?: { name: string; var: string };
-	},
 	{
 		name,
 		property,
@@ -24,23 +13,41 @@ function createRefColorMixin(
 		description: string;
 	},
 ) {
+	const includeContrast = property === 'background';
 	return createMixinValue(name, {
 		description,
 		parameters: ['--color'] as const,
 		definition: (css, { parameters: [color], tokens }) => {
-			const mixinTokens = tokens as RefColorMixinTokens;
 			return {
-				[mixinTokens.applied.name]: css`${color}`,
-				[mixinTokens.final.name]: css`${mixinTokens.applied.var}`,
-				...(mixinTokens.contrast ?
-					{ [mixinTokens.contrast.name]: css`${mixinTokens.applied.var}` }
+				[tokens.applied.name]: css`
+					${color}
+				`,
+				[tokens.ref.name]: css`
+					${tokens.applied.var}
+				`,
+				...(tokens.contrast ?
+					{
+						[tokens.contrast.name]: css`
+							${tokens.applied.var}
+						`,
+					}
 				:	{}),
-				[systemRef.applied.name]: css`${mixinTokens.applied.var}`,
-				[systemRef.$root.name]: css`${mixinTokens.final.var}`,
-				...(systemRef.contrast && mixinTokens.contrast ?
-					{ [systemRef.contrast.name]: css`${mixinTokens.contrast.var}` }
+				[tokens.applied.name]: css`
+					${tokens.applied.var}
+				`,
+				[tokens.ref.name]: css`
+					${tokens.ref.var}
+				`,
+				...(tokens.contrast ?
+					{
+						[tokens.contrast.name]: css`
+							${tokens.applied.var}
+						`,
+					}
 				:	{}),
-				[property]: css`${systemRef.$root.var}`,
+				[property]: css`
+					${tokens.ref.var}
+				`,
 			};
 		},
 		contributeTokens: {
@@ -48,17 +55,19 @@ function createRefColorMixin(
 				purpose: 'color',
 				description: `The resolved source color for ${property}.`,
 			},
-			final: {
+			ref: {
 				purpose: 'color',
 				description: `The final ${property} value applied by Arbor.`,
 			},
-			...(systemRef.contrast ? {
-				contrast: {
-					purpose: 'color',
-					description:
-						'Color used when deriving a contrast foreground from the background.',
-				},
-			} : {}),
+			...(includeContrast ?
+				{
+					contrast: {
+						purpose: 'color',
+						description:
+							'Color used when deriving a contrast foreground from the background.',
+					},
+				}
+			:	{}),
 		},
 	});
 }
@@ -90,46 +99,43 @@ export function createPresetMixins(
 		},
 	});
 
-	const fg = createRefColorMixin(createMixinValue, systemProps.ref.fg, {
+	// colors
+	const fg = createRefColorMixin(createMixinValue, {
 		name: 'fg',
 		property: 'color',
 		description:
 			'Routes color assignments through Arbor ref variables for runtime adjustments.',
 	});
 
-	const bg = createRefColorMixin(createMixinValue, systemProps.ref.bg, {
+	const bg = createRefColorMixin(createMixinValue, {
 		name: 'bg',
 		property: 'background',
 		description:
 			'Routes background color assignments through Arbor ref variables for runtime adjustments.',
 	});
 
-	const border = createRefColorMixin(
-		createMixinValue,
-		systemProps.ref.borderColor[''],
-		{
-			name: 'border',
-			property: 'border-color',
-			description:
-				'Routes border color assignments through Arbor ref variables for runtime adjustments.',
-		},
-	);
+	const border = createRefColorMixin(createMixinValue, {
+		name: 'border',
+		property: 'border-color',
+		description:
+			'Routes border color assignments through Arbor ref variables for runtime adjustments.',
+	});
 
-	const fill = createRefColorMixin(createMixinValue, systemProps.ref.fill, {
+	const fill = createRefColorMixin(createMixinValue, {
 		name: 'fill',
 		property: 'fill',
 		description:
 			'Routes SVG fill assignments through Arbor ref variables for runtime adjustments.',
 	});
 
-	const stroke = createRefColorMixin(createMixinValue, systemProps.ref.stroke, {
+	const stroke = createRefColorMixin(createMixinValue, {
 		name: 'stroke',
 		property: 'stroke',
 		description:
 			'Routes SVG stroke assignments through Arbor ref variables for runtime adjustments.',
 	});
 
-	const accent = createRefColorMixin(createMixinValue, systemProps.ref.accent, {
+	const accent = createRefColorMixin(createMixinValue, {
 		name: 'accent',
 		property: 'accent-color',
 		description:

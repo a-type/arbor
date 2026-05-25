@@ -53,7 +53,7 @@ export interface CreateArborConfig extends GlobalContextConfig {}
 export interface CreateArborPresetConfig<
 	TRanges extends Record<string, ColorRangeConfig<any>>,
 	TSchemes extends Record<string, SchemeDefinition>,
-	> extends ArborPrefixConfig {
+> extends ArborPrefixConfig {
 	globals?: Partial<GlobalConfig>;
 	colors: {
 		ranges: TRanges;
@@ -131,15 +131,16 @@ export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
 	const modeSchema = createArborModeSchema({
 		createToken: context.createModeToken,
 	});
+	const builtinMixins = createPresetMixins(
+		context.$systemTokens,
+		context.createMixin,
+	);
 	const builtinFunctions = createPresetFunctions(
 		context.$systemTokens,
 		createFunctionFactory({
 			namePrefix: context.tokenPrefixes.functionNamePrefix,
 		}),
-	);
-	const builtinMixins = createPresetMixins(
-		context.$systemTokens,
-		context.createMixin,
+		builtinMixins,
 	);
 
 	return {

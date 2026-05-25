@@ -25,7 +25,7 @@ body {
 button {
 	padding: var(--m-action-padding);
 	border-radius: var(--m-action-borderRadius);
-	border: 1px solid var(--ref-system-borderColor-all);
+	border: 1px solid var(--mx-fg-ref);
 	font-size: var(--m-text-secondary-size);
 	font-weight: var(--m-text-secondary-weight);
 	line-height: 1;
@@ -60,18 +60,18 @@ button {
 	}
 
 	&:hover {
-		--ref-system-bg: --fn-darken-color(var(--ref-system-bg-applied), 2);
-		--mx-shadow-ring: --fn-ring(var(--ref-system-bg), 4px);
+		--mx-bg-ref: --fn-darken-color(var(--mx-bg-applied), 2);
+		--mx-shadow-ring: --fn-ring(var(--mx-bg-ref), 4px);
 	}
 	&:active {
-		--ref-system-bg: --fn-darken-color(var(--ref-system-bg-applied), 4);
-		--mx-shadow-ring: --fn-ring(var(--ref-system-bg), 6px);
+		--mx-bg-ref: --fn-darken-color(var(--mx-bg-applied), 4);
+		--mx-shadow-ring: --fn-ring(var(--mx-bg-ref), 6px);
 	}
 	&:focus {
 		outline: none;
 	}
 	&:focus-visible {
-		--ref-system-bg: --fn-lighten-color(var(--ref-system-bg-applied), 2);
+		--mx-bg-ref: --fn-lighten-color(var(--mx-bg-applied), 2);
 		--mx-shadow-ring: --fn-ring(var(--m-color-main-ink), 2px);
 	}
 }
@@ -80,7 +80,7 @@ button {
 input {
 	padding: var(--m-control-padding);
 	border-radius: var(--m-control-borderRadius);
-	border: 1px solid var(--ref-system-borderColor-all);
+	border: 1px solid var(--mx-border-ref);
 	font-size: var(--m-text-secondary-size);
 	font-weight: var(--m-text-secondary-weight);
 	line-height: var(--m-text-secondary-lineHeight);
@@ -92,11 +92,8 @@ input {
 	--mx-shadow-shadow: var(--m-shadow-sm-compiled);
 
 	&:hover {
-		--ref-system-bg: --fn-darken-color(var(--m-control-color-bg), 1);
-		--ref-system-borderColor-all: --fn-darken-color(
-			var(--m-control-color-border),
-			2
-		);
+		--mx-bg-ref: --fn-darken-color(var(--m-control-color-bg), 1);
+		--mx-border-ref: --fn-darken-color(var(--m-control-color-border), 2);
 		--mx-shadow-ring: --fn-ring(var(--m-color-main-heavy), 2px);
 	}
 	&:focus {

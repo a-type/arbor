@@ -21,7 +21,6 @@ it('supports custom prefixes per token type', () => {
 		modeTokenPrefix: '--acme-mode-',
 		primitiveTokenPrefix: '--acme-primitive-',
 		metaTokenPrefix: '--acme-meta-',
-		refTokenPrefix: '--acme-ref-',
 		functionNamePrefix: '--acme-fn-',
 		mixinNamePrefix: '--acme-mx-',
 		mixinTokenPrefix: '--acme-mx-',
@@ -46,10 +45,11 @@ it('supports custom prefixes per token type', () => {
 	expect(preset.$.system.meta.modeName.name.startsWith('--acme-meta-')).toBe(
 		true,
 	);
-	expect(preset.$.system.ref.fg.$root.name.startsWith('--acme-ref-')).toBe(true);
-	expect(preset.functions.lightenColor.name.startsWith('--acme-fn-')).toBe(true);
+	expect(preset.functions.lightenColor.name.startsWith('--acme-fn-')).toBe(
+		true,
+	);
 	expect(preset.mixins.shadow.name.startsWith('--acme-mx-')).toBe(true);
-	expect(
-		preset.$.mixins.shadow.shadow.name.startsWith('--acme-mx-'),
-	).toBe(true);
+	expect(preset.$.mixins.shadow.shadow.name.startsWith('--acme-mx-')).toBe(
+		true,
+	);
 });

@@ -1,9 +1,15 @@
 import { createGlobalContext } from '@arbor-css/globals';
 import { describe, expect, it } from 'vitest';
 import { createPresetFunctions } from './functions.js';
+import { createPresetMixins } from './mixins.js';
 
 const ctx = createGlobalContext();
-const fns = createPresetFunctions(ctx.$systemTokens, ctx.createFunction);
+const mixins = createPresetMixins(ctx.$systemTokens, ctx.createMixin);
+const fns = createPresetFunctions(
+	ctx.$systemTokens,
+	ctx.createFunction,
+	mixins,
+);
 
 describe('ring function', () => {
 	it('should compute the right value', () => {
@@ -13,7 +19,7 @@ describe('ring function', () => {
 			'--offset': '1px',
 		});
 		expect(result).toBe(
-			`0 0 0 1px ${ctx.$systemTokens.ref.bg.$root.var}, 0 0 0 calc(3px) red`,
+			`0 0 0 1px ${mixins.shadow.contributeTokens.ring.varFallback(ctx.$systemTokens.meta.scheme.trueLight)}, 0 0 0 calc(3px) red`,
 		);
 	});
 });
