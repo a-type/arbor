@@ -17,7 +17,6 @@ export interface GlobalContext {
 	createModeToken: CreateToken;
 	createPrimitiveToken: CreateToken;
 	createMetaToken: CreateToken;
-	createRefToken: CreateToken;
 	createMixinToken: CreateToken;
 	createToken: CreateToken;
 	createFunction: CreateFunction;
@@ -39,15 +38,11 @@ export function createGlobalContext(config: GlobalContextConfig = {}) {
 	const createMetaToken = createTokenFactory({
 		tokenPrefix: tokenPrefixes.metaTokenPrefix,
 	});
-	const createRefToken = createTokenFactory({
-		tokenPrefix: tokenPrefixes.refTokenPrefix,
-	});
 	const createMixinToken = createTokenFactory({
 		tokenPrefix: tokenPrefixes.mixinTokenPrefix,
 	});
 	const $systemTokens = createSystemProps({
 		createMetaToken,
-		createRefToken,
 	});
 	const globals = {
 		...defaultGlobals,
@@ -57,7 +52,6 @@ export function createGlobalContext(config: GlobalContextConfig = {}) {
 		createModeToken,
 		createPrimitiveToken,
 		createMetaToken,
-		createRefToken,
 		createMixinToken,
 		createToken: createModeToken,
 		createFunction: createFunctionFactory({

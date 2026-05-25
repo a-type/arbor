@@ -8,16 +8,16 @@ body {
 	border-radius: var(--m-surface-borderRadius);
 
 	&[data-emphasis='primary'] {
-		background: var(--m-surface-primary-color-bg);
-		color: var(--m-surface-primary-color-fg);
+		@apply --mx-bg(var(--m-surface-primary-color-bg));
+		@apply --mx-fg(var(--m-surface-primary-color-fg));
 	}
 	&[data-emphasis='secondary'] {
-		background: var(--m-surface-secondary-color-bg);
-		color: var(--m-surface-secondary-color-fg);
+		@apply --mx-bg(var(--m-surface-secondary-color-bg));
+		@apply --mx-fg(var(--m-surface-secondary-color-fg));
 	}
 	&[data-emphasis='ambient'] {
-		background: var(--m-surface-ambient-color-bg);
-		color: var(--m-surface-ambient-color-fg);
+		@apply --mx-bg(var(--m-surface-ambient-color-bg));
+		@apply --mx-fg(var(--m-surface-ambient-color-fg));
 	}
 }
 
@@ -25,50 +25,53 @@ body {
 button {
 	padding: var(--m-action-padding);
 	border-radius: var(--m-action-borderRadius);
-	border: 1px solid var(--ref-system-fg);
+	border: 1px solid var(--mx-fg-ref);
 	font-size: var(--m-text-secondary-size);
 	font-weight: var(--m-text-secondary-weight);
 	line-height: 1;
 	transition: all 0.2s ease;
 	cursor: pointer;
+	@apply --mx-bg(var(--m-action-primary-color-bg));
+	@apply --mx-fg(var(--m-action-primary-color-fg));
+	@apply --mx-border(var(--m-action-primary-color-border));
 	@apply --mx-shadow;
 	--mx-shadow-shadow: var(--m-shadow-md-compiled);
 
 	&[data-emphasis='primary'] {
-		background: var(--m-action-primary-color-bg);
-		color: var(--m-action-primary-color-fg);
-		border-color: var(--m-action-primary-color-border);
+		@apply --mx-bg(var(--m-action-primary-color-bg));
+		@apply --mx-fg(var(--m-action-primary-color-fg));
+		@apply --mx-border(var(--m-action-primary-color-border));
 	}
 	&[data-emphasis='secondary'] {
-		background: var(--m-action-secondary-color-bg);
-		color: var(--m-action-secondary-color-fg);
-		border-color: var(--m-action-secondary-color-border);
+		@apply --mx-bg(var(--m-action-secondary-color-bg));
+		@apply --mx-fg(var(--m-action-secondary-color-fg));
+		@apply --mx-border(var(--m-action-secondary-color-border));
 	}
 	&[data-emphasis='ambient'] {
-		background: var(--m-action-ambient-color-bg);
-		color: var(--m-action-ambient-color-fg);
-		border-color: var(--m-action-ambient-color-border);
+		@apply --mx-bg(var(--m-action-ambient-color-bg));
+		@apply --mx-fg(var(--m-action-ambient-color-fg));
+		@apply --mx-border(var(--m-action-ambient-color-border));
 		--mx-shadow-shadow: 0 0 0 0 transparent;
 
 		&:hover,
 		&:focus {
-			--ref-system-bg-applied: inherit;
+			@apply --mx-bg(inherit);
 		}
 	}
 
 	&:hover {
-		--ref-system-bg: --fn-darken-color(var(--ref-system-bg-applied), 2);
-		--mx-shadow-ring: --fn-ring(var(--ref-system-bg), 4px);
+		--mx-bg-ref: --fn-darken-color(var(--mx-bg-applied), 2);
+		--mx-shadow-ring: --fn-ring(var(--mx-bg-ref), 4px);
 	}
 	&:active {
-		--ref-system-bg: --fn-darken-color(var(--ref-system-bg-applied), 4);
-		--mx-shadow-ring: --fn-ring(var(--ref-system-bg), 6px);
+		--mx-bg-ref: --fn-darken-color(var(--mx-bg-applied), 4);
+		--mx-shadow-ring: --fn-ring(var(--mx-bg-ref), 6px);
 	}
 	&:focus {
 		outline: none;
 	}
 	&:focus-visible {
-		--ref-system-bg: --fn-lighten-color(var(--ref-system-bg-applied), 2);
+		--mx-bg-ref: --fn-lighten-color(var(--mx-bg-applied), 2);
 		--mx-shadow-ring: --fn-ring(var(--m-color-main-ink), 2px);
 	}
 }
@@ -77,22 +80,20 @@ button {
 input {
 	padding: var(--m-control-padding);
 	border-radius: var(--m-control-borderRadius);
-	border: 1px solid var(--m-control-color-border);
+	border: 1px solid var(--mx-border-ref);
 	font-size: var(--m-text-secondary-size);
 	font-weight: var(--m-text-secondary-weight);
 	line-height: var(--m-text-secondary-lineHeight);
-	background: var(--m-control-color-bg);
-	color: var(--m-control-color-fg);
+	@apply --mx-bg(var(--m-control-color-bg));
+	@apply --mx-fg(var(--m-control-color-fg));
+	@apply --mx-border(var(--m-control-color-border));
 
 	@apply --mx-shadow;
 	--mx-shadow-shadow: var(--m-shadow-sm-compiled);
 
 	&:hover {
-		--ref-system-bg: --fn-darken-color(var(--m-control-color-bg), 1);
-		--ref-system-borderColor-all: --fn-darken-color(
-			var(--m-control-color-border),
-			2
-		);
+		--mx-bg-ref: --fn-darken-color(var(--m-control-color-bg), 1);
+		--mx-border-ref: --fn-darken-color(var(--m-control-color-border), 2);
 		--mx-shadow-ring: --fn-ring(var(--m-color-main-heavy), 2px);
 	}
 	&:focus {

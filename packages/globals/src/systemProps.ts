@@ -1,40 +1,10 @@
 import { CreateToken } from '@arbor-css/tokens';
 import { createGlobalProps } from './globalProps.js';
 
-function makeSystemColorTokens(
-	name: string,
-	descriptionName: string,
-	createTokenValue: CreateToken,
-) {
-	return {
-		applied: createTokenValue(`${name}-applied`, {
-			description: `Stores the resolved ${descriptionName} before Arbor applies opacity handling.`,
-			tag: 'system',
-			type: 'color',
-			inherits: true,
-		}),
-		$root: createTokenValue(`${name}`, {
-			description: `Stores the final ${descriptionName} value Arbor applies in CSS.`,
-			tag: 'system',
-			type: 'color',
-			inherits: false,
-		}),
-		opacity: createTokenValue(`${name}-op`, {
-			description: `Controls the opacity Arbor applies to the ${descriptionName}.`,
-			tag: 'system',
-			type: 'number',
-			inherits: false,
-			fallback: '100%',
-		}),
-	};
-}
-
 export function createSystemProps({
 	createMetaToken,
-	createRefToken,
 }: {
 	createMetaToken: CreateToken;
-	createRefToken: CreateToken;
 }) {
 	const $labelProps = {
 		modeName: createMetaToken('modeName', {
@@ -103,70 +73,6 @@ export function createSystemProps({
 		}),
 	};
 
-	const $referenceProps = {
-		fg: makeSystemColorTokens('fg', 'foreground color', createRefToken),
-		bg: {
-			...makeSystemColorTokens('bg', 'background color', createRefToken),
-			contrast: createRefToken(`bg-for-contrast`, {
-				description:
-					'When present, this color should be used as the color to compute a contrast foreground against.',
-				tag: 'system',
-				type: 'color',
-				inherits: true,
-			}),
-		},
-		borderColor: {
-			'': makeSystemColorTokens(
-				'borderColor-all',
-				'border color',
-				createRefToken,
-			),
-			bottom: makeSystemColorTokens(
-				'borderColor-bottom',
-				'bottom border color',
-				createRefToken,
-			),
-			top: makeSystemColorTokens(
-				'borderColor-top',
-				'top border color',
-				createRefToken,
-			),
-			left: makeSystemColorTokens(
-				'borderColor-left',
-				'left border color',
-				createRefToken,
-			),
-			right: makeSystemColorTokens(
-				'borderColor-right',
-				'right border color',
-				createRefToken,
-			),
-		},
-		ringColor: makeSystemColorTokens(
-			'ring',
-			'focus ring color',
-			createRefToken,
-		),
-		ringOffsetColor: makeSystemColorTokens(
-			'ring-offset',
-			'focus ring offset color',
-			createRefToken,
-		),
-		shadowColor: makeSystemColorTokens(
-			'shadow',
-			'shadow color',
-			createRefToken,
-		),
-		placeholder: makeSystemColorTokens(
-			'placeholder',
-			'placeholder color',
-			createRefToken,
-		),
-		accent: makeSystemColorTokens('accent', 'accent color', createRefToken),
-		fill: makeSystemColorTokens('fill', 'fill color', createRefToken),
-		stroke: makeSystemColorTokens('stroke', 'stroke color', createRefToken),
-	};
-
 	return {
 		// metadata
 		meta: {
@@ -177,9 +83,6 @@ export function createSystemProps({
 		dynamic: $dynamicProps,
 		// scheme information
 		global: createGlobalProps({ createToken: createMetaToken }),
-		// references to applied values for use by mixins,
-		// functions, and userland styles
-		ref: $referenceProps,
 	};
 }
 

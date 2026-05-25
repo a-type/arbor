@@ -185,3 +185,111 @@ it('inlines function calls in declaration values', async () => {
 	expect(result.css).not.toContain('--fn-double(');
 	expect(result.css).toContain('4');
 });
+
+it('does not implicitly rewrite color declarations into ref system vars', async () => {
+	mockLoadConfig.mockResolvedValue(
+		makeConfigResult({
+			functions: {},
+			mixins: {},
+			$: undefined,
+		}),
+	);
+
+	const plugin = ArborPlugin({ cwd: '/fake' });
+	const result = await postcss([plugin]).process(
+		`.btn { color: red; background: blue; }`,
+		{ from: undefined },
+	);
+
+	expect(result.css).toContain('color: red');
+	expect(result.css).toContain('background: blue');
+	expect(result.css).not.toContain('--ref-');
+});
+
+it('inlines @apply mixin arguments into parameterized mixin declarations', async () => {
+	const createToken = createTokenFactory({ tokenPrefix: '--mx-' });
+	const createMixin = createMixinFactory({ namePrefix: '--mx-', createToken });
+	const fg = createMixin('fg', {
+		parameters: ['--color'] as const,
+		definition: (css, { parameters: [color] }) => ({
+			color: css`${color}`,
+		}),
+	});
+
+	mockLoadConfig.mockResolvedValue(
+		makeConfigResult({ functions: {}, mixins: { fg }, $: undefined }),
+	);
+
+	const plugin = ArborPlugin({ cwd: '/fake' });
+	const result = await postcss([plugin]).process(
+		`.btn { @apply --mx-fg(var(--m-color-main-ink)); }`,
+		{ from: undefined },
+	);
+
+	expect(result.css).toContain('color: var(--m-color-main-ink)');
+	expect(result.css).not.toContain('var(--color)');
+	expect(result.css).not.toContain('@apply');
+});
+
+it('inlines function results passed as @apply mixin arguments', async () => {
+	const createToken = createTokenFactory({ tokenPrefix: '--mx-' });
+	const createMixin = createMixinFactory({ namePrefix: '--mx-', createToken });
+	const createFunction = createFunctionFactory({ namePrefix: '--fn-' });
+
+	const fade = createFunction('fade', {
+		description: 'Writes alpha onto a color',
+		parameters: ['--color', '--opacity'] as const,
+		definition: (css, color, opacity) =>
+			css`oklch(from ${color} l c h / ${opacity})`,
+	});
+
+	const fg = createMixin('fg', {
+		parameters: ['--color'] as const,
+		definition: (css, { parameters: [color] }) => ({
+			color: css`${color}`,
+		}),
+	});
+
+	mockLoadConfig.mockResolvedValue(
+		makeConfigResult({ functions: { fade }, mixins: { fg }, $: undefined }),
+	);
+
+	const plugin = ArborPlugin({ cwd: '/fake' });
+	const result = await postcss([plugin]).process(
+		`.btn { @apply --mx-fg(--fn-fade(var(--m-color-main-ink), 42%)); }`,
+		{ from: undefined },
+	);
+
+	expect(result.css).toContain(
+		'color: oklch(from var(--m-color-main-ink) l c h / 42%)',
+	);
+	expect(result.css).not.toContain('--fn-fade(');
+	expect(result.css).not.toContain('@apply');
+});
+
+it('warns when @apply omits a required mixin argument', async () => {
+	const createToken = createTokenFactory({ tokenPrefix: '--mx-' });
+	const createMixin = createMixinFactory({ namePrefix: '--mx-', createToken });
+	const fg = createMixin('fg', {
+		parameters: ['--color'] as const,
+		definition: (css, { parameters: [color] }) => ({
+			color: css`${color}`,
+		}),
+	});
+	mockLoadConfig.mockResolvedValue(
+		makeConfigResult({ functions: {}, mixins: { fg }, $: undefined }),
+	);
+
+	const plugin = ArborPlugin({ cwd: '/fake' });
+	const result = await postcss([plugin]).process(
+		`.btn { @apply --mx-fg; }`,
+		{ from: undefined },
+	);
+
+	const warnings = result.messages
+		.filter((m) => m.type === 'warning')
+		.map((m) => (m as any).text as string);
+
+	expect(warnings.some((w) => w.includes('Missing argument'))).toBe(true);
+	expect(result.css).toContain('@apply --mx-fg');
+});

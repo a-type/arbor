@@ -1,6 +1,7 @@
 import { CalcInterpolation, Css } from '@arbor-css/calc';
 import { CreateFunction } from '@arbor-css/functions';
 import { SystemTokens } from '@arbor-css/globals';
+import { BuiltinMixins } from './mixins.js';
 
 function lightDarkAlterations(
 	css: Css,
@@ -21,6 +22,7 @@ function lightDarkAlterations(
 export function createPresetFunctions(
 	systemProps: SystemTokens,
 	createFunctionValue: CreateFunction,
+	mixins: BuiltinMixins,
 ) {
 	const lightenColor = createFunctionValue('lighten-color', {
 		description: 'Lightens a color by a specified "step" value',
@@ -50,6 +52,14 @@ export function createPresetFunctions(
 			css`oklch(from ${color} l calc(c * (1 + ${[systemProps.meta.scheme.whenLight, 1]} * -0.05 * ${step})) h)`,
 	});
 
+	const fade = createFunctionValue('fade', {
+		description:
+			'Applies an alpha channel to a source color using CSS relative color syntax.',
+		parameters: ['--color', '--opacity'] as const,
+		definition: (css, color, opacity) =>
+			css`oklch(from ${color} l c h / ${opacity})`,
+	});
+
 	const ring = createFunctionValue('ring', {
 		description: 'Creates a ring shadow. Should be used with the shadow mixin.',
 		parameters: [
@@ -64,7 +74,7 @@ export function createPresetFunctions(
 			},
 		] as const,
 		definition: (css, color, size, offset) =>
-			css`0 0 0 ${offset} ${systemProps.ref.bg.$root}, 0 0 0 calc(${size} + ${offset}) ${color}`,
+			css`0 0 0 ${offset} ${[mixins.shadow.contributeTokens.ring, systemProps.meta.scheme.trueLight]}, 0 0 0 calc(${size} + ${offset}) ${color}`,
 	});
 
 	return {
@@ -72,6 +82,7 @@ export function createPresetFunctions(
 		darkenColor,
 		desaturateColor,
 		saturateColor,
+		fade,
 		ring,
 	} as const;
 }
