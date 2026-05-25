@@ -203,6 +203,13 @@ describe('css template — functions', () => {
 		);
 	});
 
+	it('parses if() with style() clauses', () => {
+		const eq = css`if(style(--size: "2xl"): 1em; else: 0.25em;)`;
+		expect(printEquation(eq)).toBe(
+			`if(style(--size: "2xl"): 1em; else: 0.25em;)`,
+		);
+	});
+
 	it('parses an oklch color with all features', () => {
 		const eq = css`oklch(from ${tokenA} calc(l * 1.5) calc(c * 0.5) h / 30%)`;
 		expect(printEquation(eq)).toBe(
@@ -353,5 +360,134 @@ describe('css template — arithmetic still works', () => {
 		expect(printEquation(css`calc(${tokenA} + 10px)`)).toBe(
 			`calc((${tokenA.var} + 10px))`,
 		);
+	});
+});
+
+describe('css template — if() pre-baking', () => {
+	it('pre-bakes matching style() conditions when property value is known', () => {
+		const eq = css`if(style(--size: "2xl"): 1em; else: 0.25em;)`;
+		expect(
+			computeEquation(eq, {
+				propertyValues: {
+					'--size': '"2xl"',
+				},
+				skipBaking: false,
+			}),
+		).toEqual({ type: 'numeric', value: 1, unit: 'em' });
+	});
+
+	it('pre-bakes non-matching style() conditions to else branch', () => {
+		const eq = css`if(style(--size: "2xl"): 1em; else: 0.25em;)`;
+		expect(
+			computeEquation(eq, {
+				propertyValues: {
+					'--size': '"lg"',
+				},
+				skipBaking: false,
+			}),
+		).toEqual({ type: 'numeric', value: 0.25, unit: 'em' });
+	});
+
+	it('does not pre-bake style() when condition checks non-custom property', () => {
+		const eq = css`if(style(color: red): 1em; else: 0.25em;)`;
+		expect(
+			computeEquation(eq, {
+				propertyValues: {
+					color: 'red',
+				},
+				skipBaking: false,
+			}),
+		).toEqual({
+			type: 'calc',
+			value: 'if(style(color: red): 1em; else: 0.25em;)',
+		});
+	});
+
+	it('does not pre-bake if baking is disabled', () => {
+		const eq = css`if(style(--size: "2xl"): 1em; else: 0.25em;)`;
+		expect(
+			computeEquation(eq, {
+				propertyValues: {
+					'--size': '"2xl"',
+				},
+				skipBaking: true,
+			}),
+		).toEqual({
+			type: 'calc',
+			value: 'if(style(--size: "2xl"): 1em; else: 0.25em;)',
+		});
+	});
+
+	it('parses and prints multiple condition branches', () => {
+		const eq = css`if(style(--size: "2xl"): 1em; style(--size: "lg"): 0.75em; else: 0.5em;)`;
+		expect(printEquation(eq)).toBe(
+			'if(style(--size: "2xl"): 1em; style(--size: "lg"): 0.75em; else: 0.5em;)',
+		);
+	});
+
+	it('pre-bakes to the first matching branch', () => {
+		const eq = css`if(style(--size: "2xl"): 1em; style(--size: "lg"): 0.75em; else: 0.5em;)`;
+		expect(
+			computeEquation(eq, {
+				propertyValues: {
+					'--size': '"2xl"',
+				},
+				skipBaking: false,
+			}),
+		).toEqual({ type: 'numeric', value: 1, unit: 'em' });
+	});
+
+	it('pre-bakes to a later matching branch', () => {
+		const eq = css`if(style(--size: "2xl"): 1em; style(--size: "lg"): 0.75em; else: 0.5em;)`;
+		expect(
+			computeEquation(eq, {
+				propertyValues: {
+					'--size': '"lg"',
+				},
+				skipBaking: false,
+			}),
+		).toEqual({ type: 'numeric', value: 0.75, unit: 'em' });
+	});
+
+	it('pre-bakes to else when no branches match', () => {
+		const eq = css`if(style(--size: "2xl"): 1em; style(--size: "lg"): 0.75em; else: 0.5em;)`;
+		expect(
+			computeEquation(eq, {
+				propertyValues: {
+					'--size': '"sm"',
+				},
+				skipBaking: false,
+			}),
+		).toEqual({ type: 'numeric', value: 0.5, unit: 'em' });
+	});
+
+	it('keeps unknown branches and preserves later bakeable branches', () => {
+		const eq = css`if(style(color: red): 1em; style(--size: "lg"): 0.75em; else: 0.5em;)`;
+		expect(
+			computeEquation(eq, {
+				propertyValues: {
+					'--size': '"sm"',
+				},
+				skipBaking: false,
+			}),
+		).toEqual({
+			type: 'calc',
+			value: 'if(style(color: red): 1em; else: 0.5em;)',
+		});
+	});
+
+	it('keeps unknown branches and inlines matching later branch values', () => {
+		const eq = css`if(style(color: red): 1em; style(--size: "lg"): calc(0.5em + 0.25em); else: 0.5em;)`;
+		expect(
+			computeEquation(eq, {
+				propertyValues: {
+					'--size': '"sm"',
+				},
+				skipBaking: false,
+			}),
+		).toEqual({
+			type: 'calc',
+			value: 'if(style(color: red): 1em; else: 0.5em;)',
+		});
 	});
 });

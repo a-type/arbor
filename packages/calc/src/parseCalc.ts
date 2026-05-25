@@ -27,10 +27,13 @@ export type CalcInterpolation =
 
 type LexToken =
 	| { kind: 'number'; value: string; pos: number }
+	| { kind: 'string'; value: string; pos: number }
 	| { kind: 'plus'; pos: number }
 	| { kind: 'minus'; pos: number }
 	| { kind: 'star'; pos: number }
 	| { kind: 'slash'; pos: number }
+	| { kind: 'colon'; pos: number }
+	| { kind: 'semicolon'; pos: number }
 	| { kind: 'lparen'; pos: number }
 	| { kind: 'rparen'; pos: number }
 	| { kind: 'comma'; pos: number }
@@ -74,6 +77,33 @@ function tokenize(input: string): LexToken[] {
 			continue;
 		}
 
+		if (input[pos] === '"' || input[pos] === "'") {
+			const quote = input[pos];
+			pos++;
+			let value = quote;
+			let closed = false;
+			while (pos < input.length) {
+				const char = input[pos];
+				value += char;
+				if (char === '\\' && pos + 1 < input.length) {
+					pos++;
+					value += input[pos];
+				} else if (char === quote) {
+					closed = true;
+					pos++;
+					break;
+				}
+				pos++;
+			}
+			if (!closed) {
+				throw new SyntaxError(
+					`calc: unterminated string literal starting at position ${start}`,
+				);
+			}
+			tokens.push({ kind: 'string', value, pos: start });
+			continue;
+		}
+
 		// CSS custom property: --ident (e.g. --x-foo, --my-var)
 		const customPropMatch = input
 			.slice(pos)
@@ -104,6 +134,14 @@ function tokenize(input: string): LexToken[] {
 				continue;
 			case '/':
 				tokens.push({ kind: 'slash', pos: start });
+				pos++;
+				continue;
+			case ':':
+				tokens.push({ kind: 'colon', pos: start });
+				pos++;
+				continue;
+			case ';':
+				tokens.push({ kind: 'semicolon', pos: start });
 				pos++;
 				continue;
 			case '(':
@@ -199,6 +237,10 @@ class Parser {
 		return this.tokens[this.pos];
 	}
 
+	private peekNext(): LexToken {
+		return this.tokens[this.pos + 1] ?? this.tokens[this.tokens.length - 1];
+	}
+
 	private consume(): LexToken {
 		return this.tokens[this.pos++];
 	}
@@ -226,6 +268,8 @@ class Parser {
 			kind !== 'eof' &&
 			kind !== 'comma' &&
 			kind !== 'rparen' &&
+			kind !== 'colon' &&
+			kind !== 'semicolon' &&
 			kind !== 'plus' &&
 			kind !== 'minus' &&
 			kind !== 'star' &&
@@ -340,6 +384,11 @@ class Parser {
 			return $.val((next as Extract<LexToken, { kind: 'number' }>).value);
 		}
 
+		if (next.kind === 'string') {
+			this.consume();
+			return $.val((next as Extract<LexToken, { kind: 'string' }>).value);
+		}
+
 		if (next.kind === 'placeholder') {
 			this.consume();
 			const token = next as Extract<LexToken, { kind: 'placeholder' }>;
@@ -374,6 +423,14 @@ class Parser {
 
 	// fnCall := already consumed 'name(' — parse args then ')'
 	private parseFnCall(name: string, namePos: number): Equation {
+		if (name === 'if') {
+			return this.parseIfFunction(name, namePos);
+		}
+
+		if (name === 'style') {
+			return this.parseStyleFunction(name, namePos);
+		}
+
 		const args: Equation[] = [];
 
 		const savedDepth = this.mathFnDepth;
@@ -393,6 +450,64 @@ class Parser {
 		this.mathFnDepth = savedDepth;
 
 		this.expect('rparen', `to close '${name}('`);
+
+		return $.fn(name, ...args);
+	}
+
+	private parseStyleFunction(name: string, namePos: number): Equation {
+		const property = this.parseCssExpr();
+		if (this.peek().kind !== 'colon') {
+			throw new SyntaxError(
+				`calc: expected ':' in '${name}(' at position ${namePos}`,
+			);
+		}
+		this.consume();
+		const value = this.parseCssExpr();
+		this.expect('rparen', `to close '${name}('`);
+		return $.fn(name, property, value);
+	}
+
+	private parseIfFunction(name: string, namePos: number): Equation {
+		const args: Equation[] = [];
+
+		while (this.peek().kind !== 'rparen' && this.peek().kind !== 'eof') {
+			const isElseClause =
+				this.peek().kind === 'ident' &&
+				(this.peek() as Extract<LexToken, { kind: 'ident' }>).value === 'else' &&
+				this.peekNext().kind === 'colon';
+
+			if (isElseClause) {
+				this.consume();
+				this.expect('colon', `after else in '${name}('`);
+				const value = this.parseCssExpr();
+				args.push(value);
+				if (this.peek().kind === 'semicolon') {
+					this.consume();
+				}
+				break;
+			}
+
+			const condition = this.parseCssExpr();
+			this.expect('colon', `after condition in '${name}('`);
+			const value = this.parseCssExpr();
+			args.push(condition, value);
+
+			if (this.peek().kind === 'semicolon') {
+				this.consume();
+			} else if (this.peek().kind !== 'rparen') {
+				throw new SyntaxError(
+					`calc: expected ';' or ')' in '${name}(' at position ${this.peek().pos}`,
+				);
+			}
+		}
+
+		this.expect('rparen', `to close '${name}('`);
+
+		if (args.length === 0) {
+			throw new SyntaxError(
+				`calc: '${name}(' requires at least one clause at position ${namePos}`,
+			);
+		}
 
 		return $.fn(name, ...args);
 	}

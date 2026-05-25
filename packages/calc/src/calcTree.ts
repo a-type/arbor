@@ -160,6 +160,33 @@ export const $ = {
 };
 export type CalcOperations = typeof $;
 
+function printFunctionCall(
+	name: string,
+	args: string[],
+	argPrinter: (value: string) => string = (value) => value,
+): string {
+	if (name === 'style' && args.length === 2) {
+		return `style(${argPrinter(args[0])}: ${argPrinter(args[1])})`;
+	}
+
+	if (name === 'if') {
+		const clauses: string[] = [];
+		let index = 0;
+		while (index + 1 < args.length) {
+			clauses.push(
+				`${argPrinter(args[index])}: ${argPrinter(args[index + 1])};`,
+			);
+			index += 2;
+		}
+		if (index < args.length) {
+			clauses.push(`else: ${argPrinter(args[index])};`);
+		}
+		return `if(${clauses.join(' ')})`;
+	}
+
+	return `${name}(${args.map(argPrinter).join(', ')})`;
+}
+
 export function printEquation(equation: Equation): string {
 	switch (equation.type) {
 		case 'literal':
@@ -181,9 +208,10 @@ export function printEquation(equation: Equation): string {
 				equation.unit === '%' ? '100%' : '1'
 			})`;
 		case 'function':
-			return `${equation.name}(${equation.args
-				.map((v) => printEquation(v))
-				.join(', ')})`;
+			return printFunctionCall(
+				equation.name,
+				equation.args.map((v) => printEquation(v)),
+			);
 		case 'concatenate':
 			return equation.values
 				.map((v) => printEquation(v))
@@ -407,12 +435,96 @@ function fnCall(name: string, ...args: ComputationResult[]): ComputationResult {
 	if (isConcatenated) {
 		return {
 			type: 'concatenated',
-			value: `${name}(${args.map(printComputationResult).join(', ')})`,
+			value: printFunctionCall(name, args.map(printComputationResult)),
 		};
 	}
 	return {
 		type: 'calc',
-		value: `${name}(${args.map(printComputationResult).join(', ')})`,
+		value: printFunctionCall(name, args.map(printComputationResult)),
+	};
+}
+
+function evaluateStyleCondition(
+	args: Equation[],
+	context: CalcEvaluationContext,
+): { decision?: boolean; text: string } {
+	const computedArgs = args.map((arg) => computeEquation(arg, context));
+	const text = printFunctionCall('style', computedArgs.map(printComputationResult));
+
+	if (computedArgs.length !== 2 || context.skipBaking) {
+		return { text };
+	}
+
+	const propertyName = printComputationResult(computedArgs[0]);
+	if (!propertyName.startsWith('--')) {
+		return { text };
+	}
+
+	const expectedValue = printComputationResult(computedArgs[1]).trim();
+	const actualValue = context.propertyValues[propertyName];
+	if (actualValue === undefined) {
+		return { text };
+	}
+
+	return { decision: actualValue.trim() === expectedValue, text };
+}
+
+function computeIfFunction(
+	args: Equation[],
+	context: CalcEvaluationContext,
+): ComputationResult {
+	const clauses: string[] = [];
+	let hasUnknownCondition = false;
+
+	let index = 0;
+	while (index + 1 < args.length) {
+		const condition = args[index];
+		const value = args[index + 1];
+
+		if (condition.type === 'function' && condition.name === 'style') {
+			const style = evaluateStyleCondition(condition.args, context);
+			if (style.decision === true) {
+				return computeEquation(value, context);
+			}
+			if (style.decision === false) {
+				index += 2;
+				continue;
+			}
+
+			hasUnknownCondition = true;
+			const computedValue = computeEquation(value, context);
+			clauses.push(`${style.text}: ${printComputationResult(computedValue)};`);
+			index += 2;
+			continue;
+		}
+
+		hasUnknownCondition = true;
+		const computedCondition = computeEquation(condition, context);
+		const computedValue = computeEquation(value, context);
+		clauses.push(
+			`${printComputationResult(computedCondition)}: ${printComputationResult(computedValue)};`,
+		);
+		index += 2;
+	}
+
+	if (index < args.length) {
+		const elseValue = computeEquation(args[index], context);
+		if (!hasUnknownCondition) {
+			return elseValue;
+		}
+		clauses.push(`else: ${printComputationResult(elseValue)};`);
+	}
+
+	if (!hasUnknownCondition) {
+		return {
+			type: 'calc',
+			value: printFunctionCall('if', args.map((arg) => printEquation(arg))),
+		};
+	}
+
+	return {
+		type: 'calc',
+		value: `if(${clauses.join(' ')})`,
 	};
 }
 
@@ -538,6 +650,16 @@ export function computeEquation(
 			const innerValue = computeEquation(equation.value, context);
 			return cast(innerValue, equation.unit);
 		case 'function':
+			if (equation.name === 'if') {
+				return computeIfFunction(equation.args, context);
+			}
+			if (equation.name === 'style') {
+				const style = evaluateStyleCondition(equation.args, context);
+				return {
+					type: 'calc',
+					value: style.text,
+				};
+			}
 			const args = equation.args.map((arg) => computeEquation(arg, context));
 			return fnCall(equation.name, ...args);
 		case 'concatenate':
