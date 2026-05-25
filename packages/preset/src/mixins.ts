@@ -32,19 +32,6 @@ function createRefColorMixin(
 						`,
 					}
 				:	{}),
-				[tokens.applied.name]: css`
-					${tokens.applied.var}
-				`,
-				[tokens.ref.name]: css`
-					${tokens.ref.var}
-				`,
-				...(tokens.contrast ?
-					{
-						[tokens.contrast.name]: css`
-							${tokens.applied.var}
-						`,
-					}
-				:	{}),
 				[property]: css`
 					${tokens.ref.var}
 				`,

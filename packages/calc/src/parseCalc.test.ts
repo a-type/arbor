@@ -137,6 +137,7 @@ describe('css template — token interpolation', () => {
 		`;
 		expectSameAs(eq, $.token(tokenA, $.token(tokenB)));
 		expect(eq.tokens).toEqual([tokenA, tokenB]);
+		expect(printEquation(eq)).toBe(`${tokenA.varFallback(tokenB.var)}`);
 	});
 
 	it('supports token fallback to a literal', () => {
