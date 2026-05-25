@@ -249,18 +249,23 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 					`(${escapeRegExp(functionNamePrefix)}[\\w-]+)\\(((?:[^()]|\\([^()]*\\))*)\\)`,
 					'g',
 				);
-				decl.value = decl.value.replace(
-					fnCallRegex,
-					(match) =>
-						computeFunctionCallValue({
-							input: match,
-							config,
-							node: decl,
-							helper,
-						}),
+				const original = decl.value;
+				decl.value = decl.value.replace(fnCallRegex, (match) =>
+					computeFunctionCallValue({
+						input: match,
+						config,
+						node: decl,
+						helper,
+					}),
+				);
+
+				// add comment noting the original css
+				decl.before(
+					postcss.comment({
+						text: `inlined: ${original}`,
+					}),
 				);
 			}
-
 		},
 		async AtRule(atRule, helper) {
 			if (atRule.name !== 'apply') return;
@@ -272,7 +277,10 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 				config.preset.context.tokenPrefixes.mixinNamePrefix;
 			if (!mixinApplyCall.startsWith(mixinNamePrefix)) return;
 
-			const parsedMixinCall = parsePrefixedCall(mixinApplyCall, mixinNamePrefix);
+			const parsedMixinCall = parsePrefixedCall(
+				mixinApplyCall,
+				mixinNamePrefix,
+			);
 			if (!parsedMixinCall) return;
 			const mixinName = parsedMixinCall.name;
 			const mixinArgs = parsedMixinCall.args;
@@ -294,7 +302,9 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 			mixin.parameters.forEach((param, i) => {
 				const paramName = isFunctionParamWithMeta(param) ? param.name : param;
 				const fallback =
-					isFunctionParamWithMeta(param) ? param.fallback?.toString() : undefined;
+					isFunctionParamWithMeta(param) ?
+						param.fallback?.toString()
+					:	undefined;
 				const required = fallback === undefined;
 				const providedValue = mixinArgs[i];
 				const value =
@@ -326,16 +336,31 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 				return;
 			}
 
+			// add comment telling the user which mixin this was from
+			atRule.before(
+				postcss.comment({
+					text: `begin: ${mixinApplyCall}`,
+				}),
+			);
+
 			const declarations = mixin.inline();
 			for (const decl of declarations) {
 				let value = printEquation(decl.value);
-				for (const [paramName, paramValue] of Object.entries(mixinParamValues)) {
+				for (const [paramName, paramValue] of Object.entries(
+					mixinParamValues,
+				)) {
 					value = value.replaceAll(`var(${paramName})`, paramValue);
 				}
-				atRule.cloneBefore(
-					postcss.decl({ prop: decl.prop, value }),
-				);
+				atRule.cloneBefore(postcss.decl({ prop: decl.prop, value }));
 			}
+
+			// add comment telling the user which mixin this was from
+			atRule.before(
+				postcss.comment({
+					text: `end: ${mixinApplyCall}`,
+				}),
+			);
+
 			atRule.remove();
 		},
 	};
