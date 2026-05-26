@@ -1,10 +1,10 @@
 import { createArbor, definePreset } from '@arbor-css/core';
 
 const preset = createArbor().preset({
-	globals: {
+	global: {
 		saturation: 0.5,
 	},
-	colors: {
+	color: {
 		mainColor: 'summer',
 		ranges: {
 			winter: {
@@ -43,8 +43,8 @@ const rootMode = modeSchema.createBase({
 function makeSeasonMode(season: 'winter' | 'spring' | 'summer' | 'fall') {
 	return modeSchema.createPartial(season, {
 		color: {
-			main: preset.$.primitives.colors[season],
-			neutral: preset.$.primitives.colors[season].$neutral,
+			main: preset.$.primitives.color[season],
+			neutral: preset.$.primitives.color[season].$neutral,
 		},
 	});
 }

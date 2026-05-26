@@ -7,7 +7,7 @@ class SchemeSelector extends ArborElement {
 	}
 
 	render = () => {
-		const schemeNames = Object.keys(this.config.primitives.colors);
+		const schemeNames = Object.keys(this.config.primitives.color);
 		const selected = this.getAttribute('selected') || 'base';
 		this.shadowRoot!.innerHTML = `<div data-scheme-${selected}>
 			<select data-scheme-select name="scheme" aria-label="Select scheme" style="position: sticky; top: 0;">

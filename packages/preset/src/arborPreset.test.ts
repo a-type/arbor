@@ -3,7 +3,7 @@ import { createArbor } from './createArborPreset.js';
 
 it('compiles', () => {
 	const preset = createArbor().preset({
-		colors: {
+		color: {
 			ranges: {
 				primary: {
 					hue: 30,
@@ -13,7 +13,7 @@ it('compiles', () => {
 		},
 	});
 
-	expect(preset.primitives.colors.light.colors.primary).toBeDefined();
+	expect(preset.primitives.color.light.colors.primary).toBeDefined();
 });
 
 it('supports custom prefixes per token type', () => {
@@ -25,7 +25,7 @@ it('supports custom prefixes per token type', () => {
 		mixinNamePrefix: '--acme-mx-',
 		mixinTokenPrefix: '--acme-mx-',
 	}).preset({
-		colors: {
+		color: {
 			ranges: {
 				primary: {
 					hue: 30,

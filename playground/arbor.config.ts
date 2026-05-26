@@ -2,7 +2,7 @@ import { createArbor } from '@arbor-css/core';
 
 const preset = createArbor()
 	.preset({
-		colors: {
+		color: {
 			ranges: {
 				brand: {
 					hue: 98,
@@ -13,11 +13,11 @@ const preset = createArbor()
 			},
 			mainColor: 'brand',
 		},
-		globals: {},
+		global: {},
 	})
 	.withMode('success', (base) => ({
 		color: {
-			main: base.$.primitives.colors.success,
+			main: base.$.primitives.color.success,
 		},
 	}));
 

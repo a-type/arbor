@@ -15,8 +15,8 @@ class GlobalsEditor extends ArborElement {
 		for (const [globalKey, token] of Object.entries(config.$.system.global)) {
 			let entry =
 				token.type === 'color' ?
-					globalsFolder.addColor(config.primitives.globals, globalKey as any)
-				:	globalsFolder.add(config.primitives.globals, globalKey as any);
+					globalsFolder.addColor(config.primitives.global, globalKey as any)
+				:	globalsFolder.add(config.primitives.global, globalKey as any);
 
 			entry.name(globalKey).onChange((v: any) => {
 				document.documentElement.style.setProperty(token.name, v.toString());
@@ -37,7 +37,7 @@ class GlobalsEditor extends ArborElement {
 			entry.name(key).onChange((v: any) => {
 				document.documentElement.style.setProperty(token.name, v.toString());
 				// and all scheme permutations...
-				for (const scheme of Object.keys(config.primitives.colors)) {
+				for (const scheme of Object.keys(config.primitives.color)) {
 					const prefix = config.primitives.schemeTags[scheme] ?? scheme;
 					document.documentElement.style.setProperty(
 						token.prefixed(prefix).name,

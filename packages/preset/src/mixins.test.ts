@@ -3,7 +3,7 @@ import { createArbor } from './createArborPreset.js';
 
 it('adds descriptions to the built-in shadow mixin tokens', () => {
 	const preset = createArbor().preset({
-		colors: {
+		color: {
 			ranges: {
 				primary: {
 					hue: 30,
@@ -19,7 +19,7 @@ it('adds descriptions to the built-in shadow mixin tokens', () => {
 
 it('exposes built-in ref color mixins with contributed tokens', () => {
 	const preset = createArbor().preset({
-		colors: {
+		color: {
 			ranges: {
 				primary: {
 					hue: 30,

@@ -354,20 +354,20 @@ function createShadowIntentLevel(
 			].spread} ${modeSchema.$tokens.shadow[size].color}
 		`,
 		x: css`
-			${primitives.$tokens.shadows[size].x}
+			${primitives.$tokens.shadow[size].x}
 		`,
 		y: css`
-			${primitives.$tokens.shadows[size].y}
+			${primitives.$tokens.shadow[size].y}
 		`,
 		blur: css`
-			${primitives.$tokens.shadows[size].blur}
+			${primitives.$tokens.shadow[size].blur}
 		`,
 		spread: css`
-			${primitives.$tokens.shadows[size].spread}
+			${primitives.$tokens.shadow[size].spread}
 		`,
 		color: css`oklch(from ${[
 			modeSchema.$tokens.shadow.color,
-			primitives.$tokens.shadows[size].color,
+			primitives.$tokens.shadow[size].color,
 		]} l c h / 15%)`,
 	} satisfies ModeValues<typeof shadowIntents>;
 }
@@ -384,9 +384,9 @@ export function createArborModeValues<
 	// broken...
 	const modeSchema = config.modeSchema ?? arborModeSchema;
 	const globalProps = config.globalProps;
-	const mainColor: any = config.primitives.$tokens.colors[config.mainColor];
+	const mainColor: any = config.primitives.$tokens.color[config.mainColor];
 	const spacingRoot = config.primitives.$tokens.spacing.$root;
-	const shadowRoot = config.primitives.$tokens.shadows.$root;
+	const shadowRoot = config.primitives.$tokens.shadow.$root;
 
 	return {
 		color: {

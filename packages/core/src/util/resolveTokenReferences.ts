@@ -10,15 +10,15 @@ export function resolveTokenReferences(
 ): string | undefined {
 	const flat = flattenAndApplyTokenValues(
 		{
-			colors: preset.$.primitives.colors,
-			shadows: preset.$.primitives.shadows,
+			colors: preset.$.primitives.color,
+			shadows: preset.$.primitives.shadow,
 			spacing: preset.$.primitives.spacing,
 			typography: preset.$.primitives.typography,
 			mode: preset.$.mode,
 		},
 		{
-			colors: preset.primitives.colors[colorScheme].colors,
-			shadows: preset.primitives.shadows.levels,
+			colors: preset.primitives.color[colorScheme].colors,
+			shadows: preset.primitives.shadow.levels,
 			spacing: preset.primitives.spacing.levels,
 			typography: preset.primitives.typography.levels,
 			mode: preset.modes.base.values,

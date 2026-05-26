@@ -54,8 +54,8 @@ export interface CreateArborPresetConfig<
 	TRanges extends Record<string, ColorRangeConfig<any>>,
 	TSchemes extends Record<string, SchemeDefinition>,
 > extends ArborPrefixConfig {
-	globals?: Partial<GlobalConfig>;
-	colors: {
+	global?: Partial<GlobalConfig>;
+	color: {
 		ranges: TRanges;
 		schemes?: TSchemes;
 		mainColor: keyof TRanges;
@@ -64,9 +64,9 @@ export interface CreateArborPresetConfig<
 	};
 	typography?: Omit<TypographyConfig, 'context'>;
 	spacing?: Omit<SpacingConfig, 'context'>;
-	shadows?: Omit<ShadowConfig, 'context'>;
+	shadow?: Omit<ShadowConfig, 'context'>;
 	easing?: Record<string, string>;
-	durations?: Record<string, string>;
+	duration?: Record<string, string>;
 	baseMode?: DeepPartial<ModeValues<ArborModeSchemaDefinition>>;
 	functions?: PresetFunctions;
 	mixins?: PresetMixins;
@@ -145,17 +145,17 @@ export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
 				functionNamePrefix: context.tokenPrefixes.functionNamePrefix,
 				mixinNamePrefix: context.tokenPrefixes.mixinNamePrefix,
 				mixinTokenPrefix: context.tokenPrefixes.mixinTokenPrefix,
-				colors: {
-					...inputConfig.colors,
+				color: {
+					...inputConfig.color,
 					schemes: {
 						light: defaultLightScheme,
 						dark: defaultDarkScheme,
-						...inputConfig.colors.schemes,
+						...inputConfig.color.schemes,
 					},
 				},
 			};
 
-			const globals = createGlobals(normalizedConfig.globals ?? {});
+			const globals = createGlobals(normalizedConfig.global ?? {});
 
 			const modeSchema = createArborModeSchema({
 				createToken: context.createModeToken,
@@ -172,8 +172,8 @@ export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
 			);
 
 			const colors = compileColors({
-				ranges: normalizedConfig.colors.ranges,
-				schemes: normalizedConfig.colors.schemes,
+				ranges: normalizedConfig.color.ranges,
+				schemes: normalizedConfig.color.schemes,
 				context,
 			});
 
@@ -188,7 +188,7 @@ export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
 			});
 
 			const shadows = compileShadows({
-				...normalizedConfig.shadows,
+				...normalizedConfig.shadow,
 				context,
 			});
 
@@ -198,28 +198,28 @@ export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
 				loose: `cubic-bezier(0.4, 0, 0.2, 1)`,
 			};
 
-			const durations = normalizedConfig.durations ?? {
+			const durations = normalizedConfig.duration ?? {
 				fast: `100ms`,
 				medium: `250ms`,
 				slow: `500ms`,
 			};
 
 			const primitives = createPrimitives({
-				colors,
+				color: colors,
 				typography,
 				spacing,
-				shadows,
+				shadow: shadows,
 				easing,
-				durations,
-				globals,
-				defaultScheme: normalizedConfig.colors.defaultScheme,
-				schemeTags: normalizedConfig.colors.schemeTags,
+				duration: durations,
+				global: globals,
+				defaultScheme: normalizedConfig.color.defaultScheme,
+				schemeTags: normalizedConfig.color.schemeTags,
 				createToken: context.createPrimitiveToken,
 			});
 
 			const baseModeValues: ArborModeValues = deepMerge(
 				createArborModeValues({
-					mainColor: normalizedConfig.colors.mainColor as any,
+					mainColor: normalizedConfig.color.mainColor as any,
 					primitives,
 					modeSchema,
 					globalProps: context.$systemTokens.global,

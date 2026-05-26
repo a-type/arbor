@@ -33,8 +33,8 @@ export function generateStylesheet(
 	 */
 	function getSchemeRootPropertiesCss(schemeName: string) {
 		const values = flattenAndApplyTokenValues(
-			config.$.primitives.colors,
-			config.primitives.colors[schemeName].colors,
+			config.$.primitives.color,
+			config.primitives.color[schemeName].colors,
 			{ prefix: config.primitives.schemeTags[schemeName] ?? schemeName },
 		);
 
@@ -42,8 +42,8 @@ export function generateStylesheet(
 	}
 
 	function schemeApplicationCss(schemeName: string) {
-		const scheme = config.primitives.colors[schemeName];
-		const values = selfReferencedProps(config.$.primitives.colors, {
+		const scheme = config.primitives.color[schemeName];
+		const values = selfReferencedProps(config.$.primitives.color, {
 			valuePrefix: config.primitives.schemeTags[schemeName] ?? schemeName,
 		});
 		return `${systemProps.meta.schemeName.assign(schemeName)}
@@ -66,10 +66,10 @@ export function generateStylesheet(
 	);
 
 	// replace scheme names with their tags if they are provided
-	const schemeColorsWithTags = Object.keys(config.primitives.colors).reduce(
+	const schemeColorsWithTags = Object.keys(config.primitives.color).reduce(
 		(acc, scheme) => {
 			const key = config.primitives.schemeTags[scheme] ?? scheme;
-			acc[key] = config.primitives.colors[scheme].colors;
+			acc[key] = config.primitives.color[scheme].colors;
 			return acc;
 		},
 		{} as Record<string, Record<string, any>>,
@@ -86,12 +86,12 @@ export function generateStylesheet(
 ${cascadeLayerName ? `@layer ${cascadeLayerName} {` : ''}
 :root {
 	/* Assign user globals */
-	${printTokens(globalProps, config.primitives.globals)}
+	${printTokens(globalProps, config.primitives.global)}
 	/* By default we set the font size */
 	font-size: ${globalProps.baseFontSize.var};
 
 	/* Raw scheme ranges */
-	${Object.keys(config.primitives.colors)
+	${Object.keys(config.primitives.color)
 		.map((schemeName) => getSchemeRootPropertiesCss(schemeName))
 		.join('\n')}
 
@@ -111,11 +111,13 @@ ${cascadeLayerName ? `@layer ${cascadeLayerName} {` : ''}
 	/* Other primitives */
 	${printTokens(config.$.primitives.typography, config.primitives.typography.levels)}
 	${printTokens(config.$.primitives.spacing, config.primitives.spacing.levels)}
-	${printTokens(config.$.primitives.shadows, config.primitives.shadows.levels)}
+	${printTokens(config.$.primitives.shadow, config.primitives.shadow.levels)}
+	${printTokens(config.$.primitives.easing, config.primitives.easing.levels)}
+	${printTokens(config.$.primitives.duration, config.primitives.duration.levels)}
 }
 
 /* Scheme classes */
-${Object.keys(config.primitives.colors)
+${Object.keys(config.primitives.color)
 	.map(
 		(schemeName) => `.\\@scheme-${schemeName}, [data-scheme-${schemeName}=""] {
 	${schemeApplicationCss(schemeName)}

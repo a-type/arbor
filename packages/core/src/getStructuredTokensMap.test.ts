@@ -5,7 +5,7 @@ import { getStructuredTokensMap } from './getStructuredTokensMap.js';
 
 it('generates a map of mode, primitive, and system tokens with correct paths', () => {
 	const preset = createArbor().preset({
-		colors: {
+		color: {
 			ranges: {
 				brand: {
 					hue: 80,
@@ -14,7 +14,7 @@ it('generates a map of mode, primitive, and system tokens with correct paths', (
 			mainColor: 'brand',
 		},
 	});
-	preset.primitives.colors.light.colors.brand.mid;
+	preset.primitives.color.light.colors.brand.mid;
 	const map = getStructuredTokensMap(preset);
 
 	expect(map.has('color.main.mid')).toBe(true);
@@ -27,7 +27,7 @@ it('generates a map of mode, primitive, and system tokens with correct paths', (
 
 it('applies descriptions to all built-in system and global tokens', () => {
 	const preset = createArbor().preset({
-		colors: {
+		color: {
 			ranges: {
 				brand: {
 					hue: 80,

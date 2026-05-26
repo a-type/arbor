@@ -3,7 +3,7 @@ import { expect, it } from 'vitest';
 import { resolveTokenReferences } from './resolveTokenReferences.js';
 
 const preset = createArbor().preset({
-	colors: {
+	color: {
 		mainColor: 'red',
 		ranges: {
 			red: {
@@ -15,7 +15,7 @@ const preset = createArbor().preset({
 
 it('resolves a indirect token values', () => {
 	expect(
-		resolveTokenReferences(preset, preset.$.primitives.colors.red.$root.name),
+		resolveTokenReferences(preset, preset.$.primitives.color.red.$root.name),
 	).toBe('oklch(90% 0.15000000000000002 0)');
 });
 

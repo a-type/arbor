@@ -16,15 +16,15 @@ export interface PrimitivesConfig<
 	TCompiledEasingFunctions extends Record<string, string>,
 	TDurations extends Record<string, string>,
 > {
-	colors: TCompiledColors;
+	color: TCompiledColors;
 	typography: TCompiledTypography;
 	spacing: TCompiledSpacing;
-	shadows: TCompiledShadows;
+	shadow: TCompiledShadows;
 	easing: TCompiledEasingFunctions;
-	durations: TDurations;
+	duration: TDurations;
 	defaultScheme?: keyof TCompiledColors;
 	schemeTags?: Record<string, string>;
-	globals?: Partial<GlobalConfig>;
+	global?: Partial<GlobalConfig>;
 	createToken: CreateToken;
 }
 
@@ -46,10 +46,10 @@ export type PrimitiveTokens<
 	TEasingFunctions extends Record<string, string>,
 	TDurations extends Record<string, string>,
 > = {
-	colors: LiteralsToTokens<TCompiledColors[keyof TCompiledColors]['colors']>;
+	color: LiteralsToTokens<TCompiledColors[keyof TCompiledColors]['colors']>;
 	typography: LiteralsToTokens<TTypography['levels']>;
 	spacing: LiteralsToTokens<TSpacing['levels']>;
-	shadows: LiteralsToTokens<TShadows['levels']>;
+	shadow: LiteralsToTokens<TShadows['levels']>;
 	easing: LiteralsToTokens<TEasingFunctions>;
 	duration: LiteralsToTokens<TDurations>;
 };
@@ -70,14 +70,15 @@ export type Primitives<
 	 * Each entry is the same structure: a record of color name keys
 	 * and string values which represent CSS colors.
 	 */
-	colors: TCompiledColors;
+	color: TCompiledColors;
 	typography: TCompiledTypography;
 	spacing: TCompiledSpacing;
-	shadows: TCompiledShadows;
+	shadow: TCompiledShadows;
 	easing: TCompiledEasingFunctions;
+	duration: TDurations;
 	defaultScheme: keyof TCompiledColors;
 	schemeTags: Record<string, string>;
-	globals: GlobalConfig;
+	global: GlobalConfig;
 	$tokens: PrimitiveTokens<
 		TCompiledColors,
 		TCompiledTypography,
@@ -112,9 +113,9 @@ export function createPrimitives<
 	TCompiledEasingFunctions
 > {
 	const {
-		colors,
+		color: colors,
 		defaultScheme,
-		globals: userGlobals,
+		global: userGlobals,
 		createToken: createPrimitiveToken,
 	} = config;
 	const arbitraryScheme = Object.values(colors)[0];
@@ -131,7 +132,6 @@ export function createPrimitives<
 				type: 'color',
 				purpose: 'color',
 				group: path.slice(0, -1).join('-'),
-				tag: 'primitive',
 			}),
 	);
 
@@ -143,13 +143,11 @@ export function createPrimitives<
 				type: 'length',
 				purpose: 'font-size',
 				group: path.join('-'),
-				tag: 'primitive',
 			}),
 			weight: createPrimitiveToken(`typography-${path.join('-')}-weight`, {
 				type: '*',
 				purpose: 'font-weight',
 				group: path.join('-'),
-				tag: 'primitive',
 			}),
 			lineHeight: createPrimitiveToken(
 				`typography-${path.join('-')}-line-height`,
@@ -157,7 +155,6 @@ export function createPrimitives<
 					type: '*',
 					purpose: 'line-height',
 					group: path.join('-'),
-					tag: 'primitive',
 				},
 			),
 		}),
@@ -171,43 +168,37 @@ export function createPrimitives<
 			createPrimitiveToken(`spacing-${path.join('-')}`, {
 				type: 'length',
 				purpose: 'spacing',
-				tag: 'primitive',
 			}),
 	);
 
 	const $shadowProps = convertStructure(
-		config.shadows.levels,
+		config.shadow.levels,
 		isCompiledShadowLevel,
 		(_, path) => ({
 			x: createPrimitiveToken(`shadow-${path.join('-')}-x`, {
 				type: 'length',
 				purpose: 'shadow-x',
 				group: path.join('-'),
-				tag: 'primitive',
 			}),
 			y: createPrimitiveToken(`shadow-${path.join('-')}-y`, {
 				type: 'length',
 				purpose: 'shadow-y',
 				group: path.join('-'),
-				tag: 'primitive',
 			}),
 			blur: createPrimitiveToken(`shadow-${path.join('-')}-blur`, {
 				type: 'length',
 				purpose: 'shadow-blur',
 				group: path.join('-'),
-				tag: 'primitive',
 			}),
 			spread: createPrimitiveToken(`shadow-${path.join('-')}-spread`, {
 				type: 'length',
 				purpose: 'shadow-spread',
 				group: path.join('-'),
-				tag: 'primitive',
 			}),
 			color: createPrimitiveToken(`shadow-${path.join('-')}-color`, {
 				type: 'color',
 				purpose: 'shadow-color',
 				group: path.join('-'),
-				tag: 'primitive',
 			}),
 		}),
 	);
@@ -220,19 +211,17 @@ export function createPrimitives<
 				type: 'string',
 				purpose: 'easing-function',
 				group: path.join('-'),
-				tag: 'primitive',
 			}),
 	);
 
 	const $durationProps = convertStructure(
-		config.durations,
+		config.duration,
 		(value): value is string => typeof value === 'string',
 		(_, path) =>
 			createPrimitiveToken(`duration-${path.join('-')}`, {
 				type: 'string',
 				purpose: 'duration',
 				group: path.join('-'),
-				tag: 'primitive',
 			}),
 	);
 
@@ -247,20 +236,22 @@ export function createPrimitives<
 		...config.schemeTags,
 	};
 
+	console.log(config.easing, $easingProps);
 	return {
 		defaultScheme: defaultScheme ?? defaultDefaultScheme,
 		schemeTags,
-		globals,
-		colors,
+		global: globals,
+		color: colors,
 		typography: config.typography,
 		spacing: config.spacing,
-		shadows: config.shadows,
+		shadow: config.shadow,
 		easing: config.easing,
+		duration: config.duration,
 		$tokens: {
-			colors: $colorProps,
+			color: $colorProps,
 			typography: $typographyProps,
 			spacing: $spacingProps,
-			shadows: $shadowProps,
+			shadow: $shadowProps,
 			easing: $easingProps,
 			duration: $durationProps,
 		},
