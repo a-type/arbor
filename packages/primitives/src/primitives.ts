@@ -13,11 +13,15 @@ export interface PrimitivesConfig<
 	TCompiledTypography extends CompiledTypography<any>,
 	TCompiledSpacing extends CompiledSpacing<any>,
 	TCompiledShadows extends CompiledShadows<any>,
+	TCompiledEasingFunctions extends Record<string, string>,
+	TDurations extends Record<string, string>,
 > {
 	colors: TCompiledColors;
 	typography: TCompiledTypography;
 	spacing: TCompiledSpacing;
 	shadows: TCompiledShadows;
+	easing: TCompiledEasingFunctions;
+	durations: TDurations;
 	defaultScheme?: keyof TCompiledColors;
 	schemeTags?: Record<string, string>;
 	globals?: Partial<GlobalConfig>;
@@ -39,11 +43,15 @@ export type PrimitiveTokens<
 	TTypography extends CompiledTypography,
 	TSpacing extends CompiledSpacing,
 	TShadows extends CompiledShadows,
+	TEasingFunctions extends Record<string, string>,
+	TDurations extends Record<string, string>,
 > = {
 	colors: LiteralsToTokens<TCompiledColors[keyof TCompiledColors]['colors']>;
 	typography: LiteralsToTokens<TTypography['levels']>;
 	spacing: LiteralsToTokens<TSpacing['levels']>;
 	shadows: LiteralsToTokens<TShadows['levels']>;
+	easing: LiteralsToTokens<TEasingFunctions>;
+	duration: LiteralsToTokens<TDurations>;
 };
 
 export type Primitives<
@@ -51,6 +59,11 @@ export type Primitives<
 	TCompiledTypography extends CompiledTypography = CompiledTypography,
 	TCompiledSpacing extends CompiledSpacing = CompiledSpacing,
 	TCompiledShadows extends CompiledShadows = CompiledShadows,
+	TCompiledEasingFunctions extends Record<string, string> = Record<
+		string,
+		string
+	>,
+	TDurations extends Record<string, string> = Record<string, string>,
 > = {
 	/**
 	 * A map of color values, keyed by scheme name.
@@ -61,6 +74,7 @@ export type Primitives<
 	typography: TCompiledTypography;
 	spacing: TCompiledSpacing;
 	shadows: TCompiledShadows;
+	easing: TCompiledEasingFunctions;
 	defaultScheme: keyof TCompiledColors;
 	schemeTags: Record<string, string>;
 	globals: GlobalConfig;
@@ -68,7 +82,9 @@ export type Primitives<
 		TCompiledColors,
 		TCompiledTypography,
 		TCompiledSpacing,
-		TCompiledShadows
+		TCompiledShadows,
+		TCompiledEasingFunctions,
+		TDurations
 	>;
 };
 
@@ -77,18 +93,23 @@ export function createPrimitives<
 	TCompiledTypography extends CompiledTypography,
 	TCompiledSpacing extends CompiledSpacing,
 	TCompiledShadows extends CompiledShadows,
+	TCompiledEasingFunctions extends Record<string, string>,
+	TCompiledDurations extends Record<string, string>,
 >(
 	config: PrimitivesConfig<
 		TCompiledColors,
 		TCompiledTypography,
 		TCompiledSpacing,
-		TCompiledShadows
+		TCompiledShadows,
+		TCompiledEasingFunctions,
+		TCompiledDurations
 	>,
 ): Primitives<
 	TCompiledColors,
 	TCompiledTypography,
 	TCompiledSpacing,
-	TCompiledShadows
+	TCompiledShadows,
+	TCompiledEasingFunctions
 > {
 	const {
 		colors,
@@ -130,12 +151,15 @@ export function createPrimitives<
 				group: path.join('-'),
 				tag: 'primitive',
 			}),
-			lineHeight: createPrimitiveToken(`typography-${path.join('-')}-line-height`, {
-				type: '*',
-				purpose: 'line-height',
-				group: path.join('-'),
-				tag: 'primitive',
-			}),
+			lineHeight: createPrimitiveToken(
+				`typography-${path.join('-')}-line-height`,
+				{
+					type: '*',
+					purpose: 'line-height',
+					group: path.join('-'),
+					tag: 'primitive',
+				},
+			),
 		}),
 	);
 
@@ -188,6 +212,30 @@ export function createPrimitives<
 		}),
 	);
 
+	const $easingProps = convertStructure(
+		config.easing,
+		(value): value is string => typeof value === 'string',
+		(_, path) =>
+			createPrimitiveToken(`easing-${path.join('-')}`, {
+				type: 'string',
+				purpose: 'easing-function',
+				group: path.join('-'),
+				tag: 'primitive',
+			}),
+	);
+
+	const $durationProps = convertStructure(
+		config.durations,
+		(value): value is string => typeof value === 'string',
+		(_, path) =>
+			createPrimitiveToken(`duration-${path.join('-')}`, {
+				type: 'string',
+				purpose: 'duration',
+				group: path.join('-'),
+				tag: 'primitive',
+			}),
+	);
+
 	const globals: GlobalConfig = {
 		...defaultGlobals,
 		...userGlobals,
@@ -207,11 +255,14 @@ export function createPrimitives<
 		typography: config.typography,
 		spacing: config.spacing,
 		shadows: config.shadows,
+		easing: config.easing,
 		$tokens: {
 			colors: $colorProps,
 			typography: $typographyProps,
 			spacing: $spacingProps,
 			shadows: $shadowProps,
+			easing: $easingProps,
+			duration: $durationProps,
 		},
 	};
 }

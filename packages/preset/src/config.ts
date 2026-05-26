@@ -26,11 +26,20 @@ export type PresetTokens<
 	TCompiledColors extends CompiledColors<any, any>,
 	TTypography extends CompiledTypography<any>,
 	TSpacing extends CompiledSpacing<any>,
+	TEasingFunctions extends Record<string, string>,
+	TDurations extends Record<string, string>,
 	TShadows extends CompiledShadows<any>,
 	TMixins extends PresetMixins,
 > = {
 	mode: ModeTokens<TModeShape>;
-	primitives: PrimitiveTokens<TCompiledColors, TTypography, TSpacing, TShadows>;
+	primitives: PrimitiveTokens<
+		TCompiledColors,
+		TTypography,
+		TSpacing,
+		TShadows,
+		TEasingFunctions,
+		TDurations
+	>;
 	system: SystemTokens;
 	mixins: MixinTokens<TMixins>;
 };
@@ -45,10 +54,19 @@ export interface ArborPreset<
 	TTypography extends CompiledTypography = CompiledTypography,
 	TSpacing extends CompiledSpacing = CompiledSpacing,
 	TShadows extends CompiledShadows = CompiledShadows,
+	TEasingFunctions extends Record<string, string> = Record<string, string>,
+	TDurations extends Record<string, string> = Record<string, string>,
 	TFunctions extends PresetFunctions = PresetFunctions,
 	TMixins extends PresetMixins = PresetMixins,
 > {
-	primitives: Primitives<TCompiledColors, TTypography, TSpacing, TShadows>;
+	primitives: Primitives<
+		TCompiledColors,
+		TTypography,
+		TSpacing,
+		TShadows,
+		TEasingFunctions,
+		TDurations
+	>;
 	modes: {
 		base: ModeInstance<TModeShape>;
 	} & TModes;
@@ -62,6 +80,8 @@ export interface ArborPreset<
 		TCompiledColors,
 		TTypography,
 		TSpacing,
+		TEasingFunctions,
+		TDurations,
 		TShadows,
 		TMixins
 	>;
@@ -78,6 +98,8 @@ export function definePreset<
 	TTypography extends CompiledTypography<any>,
 	TSpacing extends CompiledSpacing<any>,
 	TShadows extends CompiledShadows<any>,
+	TEasingFunctions extends Record<string, string>,
+	TDurations extends Record<string, string>,
 	TFunctions extends PresetFunctions,
 	TMixins extends PresetMixins,
 >(
@@ -89,6 +111,8 @@ export function definePreset<
 			TTypography,
 			TSpacing,
 			TShadows,
+			TEasingFunctions,
+			TDurations,
 			TFunctions,
 			TMixins
 		>,
@@ -107,6 +131,8 @@ export function definePreset<
 	TTypography,
 	TSpacing,
 	TShadows,
+	TEasingFunctions,
+	TDurations,
 	TFunctions,
 	TMixins
 > {
@@ -129,6 +155,8 @@ export function definePreset<
 export type AnyArborPreset = ArborPreset<
 	any,
 	Record<string, PartialModeInstance<any>>,
+	any,
+	any,
 	any,
 	any,
 	any,

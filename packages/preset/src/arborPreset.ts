@@ -152,7 +152,7 @@ export const arborModeDefinition = {
 	action: {
 		padding: boxIntents,
 		roundness: {
-			purpose: 'other',
+			purpose: 'scalar',
 			description:
 				'This token controls the overall roundness of actions and stacks with the root roundness token',
 		},
@@ -174,7 +174,7 @@ export const arborModeDefinition = {
 	control: {
 		padding: boxIntents,
 		roundness: {
-			purpose: 'other',
+			purpose: 'scalar',
 			description:
 				'This token controls the overall roundness of controls and stacks with the root roundness token',
 		},
@@ -188,7 +188,7 @@ export const arborModeDefinition = {
 	surface: {
 		padding: boxIntents,
 		roundness: {
-			purpose: 'other',
+			purpose: 'scalar',
 			description:
 				'This token controls the overall roundness of surfaces and stacks with the root roundness token',
 		},
@@ -215,7 +215,7 @@ export const arborModeDefinition = {
 
 	// density
 	density: {
-		purpose: 'other',
+		purpose: 'scalar',
 		description:
 			'A scaling factor for density. Higher density means smaller, tighter spacing and size',
 	},
@@ -276,6 +276,46 @@ export const arborModeDefinition = {
 		md: shadowIntents,
 		lg: shadowIntents,
 		xl: shadowIntents,
+	},
+	easing: {
+		$root: {
+			purpose: 'easing-function',
+			description: 'A convenient reference for the "medium" easing',
+		},
+		tight: {
+			purpose: 'easing-function',
+			description: 'A short, snappy easing, good for tight interactions',
+		},
+		medium: {
+			purpose: 'easing-function',
+			description: 'A medium easing, good for general use',
+		},
+		loose: {
+			purpose: 'easing-function',
+			description:
+				'A long, relaxed easing, good for slow interactions and animations',
+		},
+	},
+	duration: {
+		$root: {
+			purpose: 'duration',
+			description: 'A convenient reference for the "medium" duration',
+		},
+		fast: {
+			purpose: 'duration',
+			description:
+				'A short, snappy duration, good for fast interactions and large animations',
+		},
+		medium: {
+			purpose: 'duration',
+			description:
+				'A medium duration, good for general use, fast enough for interactions',
+		},
+		slow: {
+			purpose: 'duration',
+			description:
+				'A long, relaxed duration, good for slow interactions and animations',
+		},
 	},
 } satisfies SimpleTokenSchema;
 
@@ -534,6 +574,34 @@ export function createArborModeValues<
 			md: createShadowIntentLevel(config.primitives, 'md', modeSchema),
 			lg: createShadowIntentLevel(config.primitives, 'lg', modeSchema),
 			xl: createShadowIntentLevel(config.primitives, 'xl', modeSchema),
+		},
+		easing: {
+			$root: css`
+				${config.primitives.$tokens.easing.medium}
+			`,
+			tight: css`
+				${config.primitives.$tokens.easing.tight}
+			`,
+			medium: css`
+				${config.primitives.$tokens.easing.medium}
+			`,
+			loose: css`
+				${config.primitives.$tokens.easing.loose}
+			`,
+		},
+		duration: {
+			$root: css`
+				${config.primitives.$tokens.duration.medium}
+			`,
+			fast: css`
+				${config.primitives.$tokens.duration.fast}
+			`,
+			medium: css`
+				${config.primitives.$tokens.duration.medium}
+			`,
+			slow: css`
+				${config.primitives.$tokens.duration.slow}
+			`,
 		},
 	} satisfies ModeValues<ArborModeSchemaDefinition>;
 }

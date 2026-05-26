@@ -65,6 +65,8 @@ export interface CreateArborPresetConfig<
 	typography?: Omit<TypographyConfig, 'context'>;
 	spacing?: Omit<SpacingConfig, 'context'>;
 	shadows?: Omit<ShadowConfig, 'context'>;
+	easing?: Record<string, string>;
+	durations?: Record<string, string>;
 	baseMode?: DeepPartial<ModeValues<ArborModeSchemaDefinition>>;
 	functions?: PresetFunctions;
 	mixins?: PresetMixins;
@@ -83,6 +85,8 @@ export type ArborPresetInstance<
 	CompiledTypography,
 	CompiledSpacing,
 	CompiledShadows,
+	{ tight: string; medium: string; loose: string },
+	{ fast: string; medium: string; slow: string },
 	BuiltinFunctions & TFunctions,
 	BuiltinMixins & TMixins
 > & {
@@ -128,19 +132,6 @@ export interface ArborBuilder {
 
 export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
 	const context = createGlobalContext(config);
-	const modeSchema = createArborModeSchema({
-		createToken: context.createModeToken,
-	});
-	const builtinMixins = createPresetMixins(
-		context.$systemTokens,
-		context.createMixin,
-	);
-	const builtinFunctions = createPresetFunctions(
-		context.$systemTokens,
-		createFunctionFactory({
-			namePrefix: context.tokenPrefixes.functionNamePrefix,
-		}),
-	);
 
 	return {
 		context,
@@ -166,6 +157,20 @@ export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
 
 			const globals = createGlobals(normalizedConfig.globals ?? {});
 
+			const modeSchema = createArborModeSchema({
+				createToken: context.createModeToken,
+			});
+			const builtinMixins = createPresetMixins(
+				context.$systemTokens,
+				context.createMixin,
+			);
+			const builtinFunctions = createPresetFunctions(
+				context.$systemTokens,
+				createFunctionFactory({
+					namePrefix: context.tokenPrefixes.functionNamePrefix,
+				}),
+			);
+
 			const colors = compileColors({
 				ranges: normalizedConfig.colors.ranges,
 				schemes: normalizedConfig.colors.schemes,
@@ -187,11 +192,25 @@ export function createArbor(config: CreateArborConfig = {}): ArborBuilder {
 				context,
 			});
 
+			const easing = normalizedConfig.easing ?? {
+				tight: `cubic-bezier(0.4, 0, 0.2, 1)`,
+				medium: `cubic-bezier(0.4, 0, 0.2, 1)`,
+				loose: `cubic-bezier(0.4, 0, 0.2, 1)`,
+			};
+
+			const durations = normalizedConfig.durations ?? {
+				fast: `100ms`,
+				medium: `250ms`,
+				slow: `500ms`,
+			};
+
 			const primitives = createPrimitives({
 				colors,
 				typography,
 				spacing,
 				shadows,
+				easing,
+				durations,
 				globals,
 				defaultScheme: normalizedConfig.colors.defaultScheme,
 				schemeTags: normalizedConfig.colors.schemeTags,

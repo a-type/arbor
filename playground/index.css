@@ -39,7 +39,7 @@ button {
 	line-height: 1;
 
 	/* interaction */
-	transition: all 0.2s ease;
+	transition: all var(--m-duration) var(--m-easing);
 	cursor: pointer;
 
 	/* use color-contrast to find a readable color against current bg (applied by variants) */

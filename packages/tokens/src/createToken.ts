@@ -131,6 +131,9 @@ export type TokenPurpose =
 	| 'shadow-spread'
 	| 'shadow-color'
 	| 'size'
+	| 'easing-function'
+	| 'duration'
+	| 'scalar'
 	| 'other';
 
 export function getTypeFromPurpose(purpose: TokenPurpose): PropertyType {
