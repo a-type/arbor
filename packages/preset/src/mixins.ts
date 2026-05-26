@@ -3,6 +3,7 @@ import { SystemTokens } from '@arbor-css/globals';
 import {
 	darkenColorAlteration,
 	desaturateColorAlteration,
+	fadeColorAlteration,
 	lightenColorAlteration,
 	saturateColorAlteration,
 } from './commonFunctions.js';
@@ -136,6 +137,23 @@ function createColorMixins(
 			),
 		}),
 	});
+	const fadeMixin = createMixinValue(`${name}-fade`, {
+		description: `Fades the ${property} color for better contrast.`,
+		parameters: [
+			'--opacity',
+			{
+				name: '--source',
+				fallback: refMixin.contributeTokens.applied.var,
+			},
+		] as const,
+		definition: (css, { parameters: [opacity, source] }) => ({
+			[refMixin.contributeTokens.ref.name]: fadeColorAlteration(
+				css,
+				source,
+				opacity,
+			),
+		}),
+	});
 
 	return {
 		ref: refMixin,
@@ -143,6 +161,7 @@ function createColorMixins(
 		darken: darkenMixin,
 		desaturate: desaturateMixin,
 		saturate: saturateMixin,
+		fade: fadeMixin,
 	};
 }
 
@@ -224,36 +243,42 @@ export function createPresetMixins(
 		accentDarken: accentMixins.darken,
 		accentDesaturate: accentMixins.desaturate,
 		accentSaturate: accentMixins.saturate,
+		accentFade: accentMixins.fade,
 
 		bg: bgMixins.ref,
 		bgLighten: bgMixins.lighten,
 		bgDarken: bgMixins.darken,
 		bgDesaturate: bgMixins.desaturate,
 		bgSaturate: bgMixins.saturate,
+		bgFade: bgMixins.fade,
 
 		border: borderMixins.ref,
 		borderLighten: borderMixins.lighten,
 		borderDarken: borderMixins.darken,
 		borderDesaturate: borderMixins.desaturate,
 		borderSaturate: borderMixins.saturate,
+		borderFade: borderMixins.fade,
 
 		fill: fillMixins.ref,
 		fillLighten: fillMixins.lighten,
 		fillDarken: fillMixins.darken,
 		fillDesaturate: fillMixins.desaturate,
 		fillSaturate: fillMixins.saturate,
+		fillFade: fillMixins.fade,
 
 		fg: fgMixins.ref,
 		fgLighten: fgMixins.lighten,
 		fgDarken: fgMixins.darken,
 		fgDesaturate: fgMixins.desaturate,
 		fgSaturate: fgMixins.saturate,
+		fgFade: fgMixins.fade,
 
 		stroke: strokeMixins.ref,
 		strokeLighten: strokeMixins.lighten,
 		strokeDarken: strokeMixins.darken,
 		strokeDesaturate: strokeMixins.desaturate,
 		strokeSaturate: strokeMixins.saturate,
+		strokeFade: strokeMixins.fade,
 	} as const;
 }
 
