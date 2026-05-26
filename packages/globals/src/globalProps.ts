@@ -10,7 +10,7 @@ export interface GlobalConfig {
 	shadowBlur: number;
 	arrowWidth: string;
 	arrowHeight: string;
-	borderWidth: string;
+	lineWidth: string;
 }
 
 export const defaultGlobals: GlobalConfig = {
@@ -23,7 +23,7 @@ export const defaultGlobals: GlobalConfig = {
 	shadowBlur: 0.5,
 	arrowWidth: '1rem',
 	arrowHeight: '0.5rem',
-	borderWidth: '1px',
+	lineWidth: '1px',
 };
 
 export function createGlobalProps({
@@ -34,7 +34,7 @@ export function createGlobalProps({
 	return {
 		saturation: createTokenValue('sat', {
 			description:
-				'Controls the overall saturation intensity used when deriving Arbor colors.',
+				'Controls the overall saturation intensity used when deriving colors.',
 			tag: 'system',
 			type: 'number',
 		}),
@@ -46,13 +46,13 @@ export function createGlobalProps({
 		}),
 		baseFontSize: createTokenValue('base-font-size', {
 			description:
-				'Defines the root font size used to derive Arbor typography tokens.',
+				'Defines the root font size used to derive typography tokens.',
 			tag: 'system',
 			type: 'length',
 		}),
 		baseSpacingSize: createTokenValue('base-spacing-size', {
 			description:
-				'Defines the base spacing unit used to derive Arbor spacing and layout tokens.',
+				'Defines the base spacing unit used to derive spacing and layout tokens.',
 			tag: 'system',
 			type: 'length',
 		}),
@@ -86,9 +86,8 @@ export function createGlobalProps({
 			tag: 'system',
 			type: 'length',
 		}),
-		borderWidth: createTokenValue('border-width', {
-			description:
-				'Defines the default border width used by Arbor border tokens.',
+		lineWidth: createTokenValue('line-width', {
+			description: 'Adjust line widths used by borders, etc',
 			tag: 'system',
 			type: 'length',
 		}),

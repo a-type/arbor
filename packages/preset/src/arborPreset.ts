@@ -156,7 +156,7 @@ export const arborModeDefinition = {
 			description:
 				'This token controls the overall roundness of actions and stacks with the root roundness token',
 		},
-		borderRadius: {
+		radius: {
 			purpose: 'border-radius',
 			description:
 				'This token captures the border-radius of actions, taking into account the overall roundness',
@@ -178,7 +178,7 @@ export const arborModeDefinition = {
 			description:
 				'This token controls the overall roundness of controls and stacks with the root roundness token',
 		},
-		borderRadius: {
+		radius: {
 			purpose: 'border-radius',
 			description:
 				'This token captures the border-radius of controls, taking into account the overall roundness',
@@ -192,7 +192,7 @@ export const arborModeDefinition = {
 			description:
 				'This token controls the overall roundness of surfaces and stacks with the root roundness token',
 		},
-		borderRadius: {
+		radius: {
 			purpose: 'border-radius',
 			description:
 				'This token captures the border-radius of surfaces, taking into account the overall roundness',
@@ -232,7 +232,7 @@ export const arborModeDefinition = {
 	},
 
 	// other cosmetics
-	borderWidth: {
+	lineWidth: {
 		$root: {
 			purpose: 'border-width',
 			description: 'A convenient reference for the "md" border width',
@@ -251,7 +251,7 @@ export const arborModeDefinition = {
 			description: 'A thicker border, good for emphasis',
 		},
 	},
-	borderRadius: {
+	radius: {
 		$root: {
 			purpose: 'border-radius',
 			description: 'A convenient reference for the "md" border radius',
@@ -403,7 +403,7 @@ export function createArborModeValues<
 				inline: css`calc(${modeSchema.$tokens.spacing.lg} * max(1, ${modeSchema.$tokens.surface.roundness} * ${globalProps.roundness}))`,
 			},
 			roundness: 1,
-			borderRadius: css`calc(${modeSchema.$tokens.borderRadius.md} * ${modeSchema.$tokens.surface.roundness})`,
+			radius: css`calc(${modeSchema.$tokens.radius.md} * ${modeSchema.$tokens.surface.roundness})`,
 			primary: {
 				color: {
 					bg: css`
@@ -454,7 +454,7 @@ export function createArborModeValues<
 				inline: css`calc((${config.primitives.$tokens.spacing.lg} + ${globalProps.roundness} * ${config.primitives.$tokens.spacing.sm}) / ${modeSchema.$tokens.density})`,
 			},
 			roundness: 1,
-			borderRadius: css`calc(${modeSchema.$tokens.borderRadius.sm} * ${modeSchema.$tokens.action.roundness})`,
+			radius: css`calc(${modeSchema.$tokens.radius.sm} * ${modeSchema.$tokens.action.roundness})`,
 			primary: {
 				color: {
 					bg: css`
@@ -501,7 +501,7 @@ export function createArborModeValues<
 				inline: css`calc((${config.primitives.$tokens.spacing.sm} + ${globalProps.roundness} * ${config.primitives.$tokens.spacing.xs}) / ${modeSchema.$tokens.density})`,
 			},
 			roundness: 1,
-			borderRadius: css`calc(${modeSchema.$tokens.borderRadius.sm} * ${modeSchema.$tokens.control.roundness})`,
+			radius: css`calc(${modeSchema.$tokens.radius.sm} * ${modeSchema.$tokens.control.roundness})`,
 			color: {
 				bg: css`
 					${modeSchema.$tokens.color.neutral.paper}
@@ -543,9 +543,9 @@ export function createArborModeValues<
 				font: 'sans-serif',
 			},
 		},
-		borderRadius: {
+		radius: {
 			$root: css`
-				${modeSchema.$tokens.borderRadius.md}
+				${modeSchema.$tokens.radius.md}
 			`,
 			xs: css`calc(${globalProps.roundness} * ${config.primitives.$tokens.spacing.sm} * 2 / ${modeSchema.$tokens.density})`,
 			sm: css`calc(${globalProps.roundness} * ${config.primitives.$tokens.spacing.md} * 2 / ${modeSchema.$tokens.density})`,
@@ -553,15 +553,15 @@ export function createArborModeValues<
 			lg: css`calc(${globalProps.roundness} * ${config.primitives.$tokens.spacing.xl} * 2 / ${modeSchema.$tokens.density})`,
 			xl: css`calc(${globalProps.roundness} * ${config.primitives.$tokens.spacing['2xl']} * 2 / ${modeSchema.$tokens.density})`,
 		},
-		borderWidth: {
+		lineWidth: {
 			$root: css`
-				${globalProps.borderWidth}
+				${globalProps.lineWidth}
 			`,
-			sm: css`calc(max(1px, ${globalProps.borderWidth} / 2))`,
+			sm: css`calc(max(1px, ${globalProps.lineWidth} / 2))`,
 			md: css`
-				${globalProps.borderWidth}
+				${globalProps.lineWidth}
 			`,
-			lg: css`calc(${globalProps.borderWidth} * 2)`,
+			lg: css`calc(${globalProps.lineWidth} * 2)`,
 		},
 		shadow: {
 			$root: css`

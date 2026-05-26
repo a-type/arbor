@@ -5,7 +5,7 @@ body {
 
 .surface {
 	padding: var(--m-surface-padding);
-	border-radius: var(--m-surface-borderRadius);
+	border-radius: var(--m-surface-radius);
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
@@ -29,8 +29,8 @@ body {
 button {
 	/* basic shape */
 	padding: var(--m-action-padding);
-	border-radius: var(--m-action-borderRadius);
-	border-width: var(--m-borderWidth-md);
+	border-radius: var(--m-action-radius);
+	border-width: var(--m-lineWidth-md);
 	border-style: solid;
 
 	/* typography */
@@ -97,7 +97,7 @@ button {
 .input,
 input {
 	padding: var(--m-control-padding);
-	border-radius: var(--m-control-borderRadius);
+	border-radius: var(--m-control-radius);
 	border: 1px solid var(--mx-border-ref);
 	font-size: var(--m-text-secondary-size);
 	font-weight: var(--m-text-secondary-weight);
