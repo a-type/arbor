@@ -1,4 +1,4 @@
-import { isFunction, isMixin, isToken } from '@arbor-css/core';
+import { FunctionParam, isFunction, isMixin, isToken } from '@arbor-css/core';
 import * as vscode from 'vscode';
 import type { TokenProvider } from './tokenProvider.js';
 
@@ -65,13 +65,22 @@ export class ArborCompletionProvider implements vscode.CompletionItemProvider {
 						`**CSS function:** \`${value.name}()\``,
 						value.description ? `**Description:** ${value.description}` : null,
 						'**Parameters:**',
-						...value.parameters.map((p) => `- \`${p}\``),
+						...value.parameters
+							.map(paramToCompletionInline)
+							.map((p) => `- \`${p}\``),
 					]
 						.filter(Boolean)
 						.join('\n\n'),
 				);
 				item.insertText = new vscode.SnippetString(
-					`${item.insertText!}${value.parameters.length > 0 ? `(${value.parameters.map((p, i) => `\${${i + 1}:${p}}`).join(', ')})` : ''}`,
+					`${item.insertText!}${
+						value.parameters.length > 0 ?
+							`(${value.parameters
+								.map(paramToCompletionInline)
+								.map((p, i) => `\${${i + 1}:${p}}`)
+								.join(', ')})`
+						:	''
+					}`,
 				);
 			} else if (isMixin(value)) {
 				item.detail = value.name + `(${value.parameters.join(', ')})`;
@@ -80,7 +89,9 @@ export class ArborCompletionProvider implements vscode.CompletionItemProvider {
 						`**CSS mixin:** \`${value.name}()\``,
 						value.description ? `**Description:** ${value.description}` : null,
 						'**Parameters:**',
-						...value.parameters.map((p) => `- \`${p}\``),
+						...value.parameters
+							.map(paramToCompletionInline)
+							.map((p) => `- \`${p}\``),
 						'**Contributed tokens:**',
 						...Object.values(value.contributeTokens).map(
 							(t) => `- \`${t.name}\`: ${t.purpose}`,
@@ -90,7 +101,14 @@ export class ArborCompletionProvider implements vscode.CompletionItemProvider {
 						.join('\n\n'),
 				);
 				item.insertText = new vscode.SnippetString(
-					`${item.insertText!}${value.parameters.length > 0 ? `(${value.parameters.map((p, i) => `\${${i + 1}:${p}}`).join(', ')})` : ''}`,
+					`${item.insertText!}${
+						value.parameters.length > 0 ?
+							`(${value.parameters
+								.map(paramToCompletionInline)
+								.map((p, i) => `\${${i + 1}:${p}}`)
+								.join(', ')})`
+						:	''
+					}`,
 				);
 			} else {
 				item.detail = `Arbor token namespace`;
@@ -104,4 +122,11 @@ export class ArborCompletionProvider implements vscode.CompletionItemProvider {
 			return item;
 		});
 	}
+}
+
+function paramToCompletionInline(param: FunctionParam): string {
+	if (typeof param === 'string') {
+		return param;
+	}
+	return param.name;
 }
