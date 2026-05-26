@@ -112,8 +112,8 @@ ${cascadeLayerName ? `@layer ${cascadeLayerName} {` : ''}
 	${printTokens(config.$.primitives.typography, config.primitives.typography.levels)}
 	${printTokens(config.$.primitives.spacing, config.primitives.spacing.levels)}
 	${printTokens(config.$.primitives.shadow, config.primitives.shadow.levels)}
-	${printTokens(config.$.primitives.easing, config.primitives.easing.levels)}
-	${printTokens(config.$.primitives.duration, config.primitives.duration.levels)}
+	${printTokens(config.$.primitives.easing, config.primitives.easing)}
+	${printTokens(config.$.primitives.duration, config.primitives.duration)}
 }
 
 /* Scheme classes */
