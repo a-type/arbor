@@ -35,37 +35,6 @@ const SKIPPED_DIRECTORIES = new Set([
 	'.astro',
 ]);
 
-async function collectCssFiles(rootDir: string): Promise<string[]> {
-	const files: string[] = [];
-
-	async function walk(currentDir: string): Promise<void> {
-		const entries = await fs.promises.readdir(currentDir, {
-			withFileTypes: true,
-		});
-		for (const entry of entries) {
-			const entryPath = path.join(currentDir, entry.name);
-			if (entry.isDirectory()) {
-				if (SKIPPED_DIRECTORIES.has(entry.name)) {
-					continue;
-				}
-				await walk(entryPath);
-				continue;
-			}
-
-			if (!entry.isFile()) {
-				continue;
-			}
-
-			if (CSS_EXTENSIONS.has(path.extname(entry.name).toLowerCase())) {
-				files.push(entryPath);
-			}
-		}
-	}
-
-	await walk(rootDir);
-	return files;
-}
-
 yargs(hideBin(process.argv))
 	.command(
 		'build',
