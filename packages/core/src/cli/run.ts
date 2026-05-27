@@ -1,4 +1,3 @@
-#!/usr/bin/node
 /// <reference types="node" />
 
 import { createJiti } from 'jiti';
@@ -99,9 +98,7 @@ yargs(hideBin(process.argv))
 					console.log(content);
 				}
 			} catch (error) {
-				console.error(
-					error instanceof Error ? error.message : String(error),
-				);
+				console.error(error instanceof Error ? error.message : String(error));
 				process.exit(1);
 			}
 		},
@@ -130,7 +127,7 @@ yargs(hideBin(process.argv))
 						providedFiles.map((file) =>
 							path.isAbsolute(file) ? file : path.join(process.cwd(), file),
 						)
-					: 	await collectCssFiles(process.cwd());
+					:	await collectCssFiles(process.cwd());
 
 				if (files.length === 0) {
 					console.error('No CSS files found to validate.');
@@ -150,7 +147,8 @@ yargs(hideBin(process.argv))
 				let totalIssues = 0;
 
 				for (const filePath of files) {
-					const displayPath = path.relative(process.cwd(), filePath) || filePath;
+					const displayPath =
+						path.relative(process.cwd(), filePath) || filePath;
 					let cssContent = '';
 					try {
 						cssContent = await fs.promises.readFile(filePath, 'utf-8');
@@ -187,9 +185,7 @@ yargs(hideBin(process.argv))
 
 				console.log(`Validation passed for ${files.length} file(s).`);
 			} catch (error) {
-				console.error(
-					error instanceof Error ? error.message : String(error),
-				);
+				console.error(error instanceof Error ? error.message : String(error));
 				process.exit(1);
 			}
 		},
