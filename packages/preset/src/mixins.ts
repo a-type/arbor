@@ -1,3 +1,4 @@
+import { Css, Equation } from '@arbor-css/calc';
 import { CreateMixin } from '@arbor-css/functions';
 import { SystemTokens } from '@arbor-css/globals';
 import {
@@ -15,10 +16,12 @@ function createColorMixins(
 		name,
 		property,
 		description,
+		defineExtraProperties,
 	}: {
 		name: string;
 		property: string;
 		description: string;
+		defineExtraProperties?: (css: Css) => Record<string, Equation>;
 	},
 ) {
 	const includeContrast = property === 'background';
@@ -43,6 +46,7 @@ function createColorMixins(
 				[property]: css`
 					${tokens.ref.var}
 				`,
+				...defineExtraProperties?.(css),
 			};
 		},
 		contributeTokens: {
@@ -212,6 +216,12 @@ export function createPresetMixins(
 		property: 'border-color',
 		description:
 			'Routes border color assignments through Arbor ref variables for runtime adjustments.',
+		defineExtraProperties: (css) => ({
+			'border-style': css`solid`,
+			'border-width': css`
+				${systemProps.global.lineWidth}
+			`,
+		}),
 	});
 
 	const fillMixins = createColorMixins(createMixinValue, systemProps, {
