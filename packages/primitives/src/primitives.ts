@@ -139,24 +139,24 @@ export function createPrimitives<
 		config.typography.levels,
 		isTypographyLevel,
 		(_, path) => ({
-			size: createPrimitiveToken(`typography-${path.join('-')}-size`, {
+			size: createPrimitiveToken(`${path.join('-')}-size`, {
 				type: 'length',
 				purpose: 'font-size',
 				group: path.join('-'),
+				tag: 'typography',
 			}),
-			weight: createPrimitiveToken(`typography-${path.join('-')}-weight`, {
+			weight: createPrimitiveToken(`${path.join('-')}-weight`, {
 				type: '*',
 				purpose: 'font-weight',
 				group: path.join('-'),
+				tag: 'typography',
 			}),
-			lineHeight: createPrimitiveToken(
-				`typography-${path.join('-')}-line-height`,
-				{
-					type: '*',
-					purpose: 'line-height',
-					group: path.join('-'),
-				},
-			),
+			lineHeight: createPrimitiveToken(`${path.join('-')}-line-height`, {
+				type: '*',
+				purpose: 'line-height',
+				group: path.join('-'),
+				tag: 'typography',
+			}),
 		}),
 	);
 
@@ -165,9 +165,10 @@ export function createPrimitives<
 		(value): value is string | number =>
 			typeof value === 'string' || typeof value === 'number',
 		(_, path) =>
-			createPrimitiveToken(`spacing-${path.join('-')}`, {
+			createPrimitiveToken(`${path.join('-')}`, {
 				type: 'length',
 				purpose: 'spacing',
+				tag: 'spacing',
 			}),
 	);
 
@@ -175,30 +176,35 @@ export function createPrimitives<
 		config.shadow.levels,
 		isCompiledShadowLevel,
 		(_, path) => ({
-			x: createPrimitiveToken(`shadow-${path.join('-')}-x`, {
+			x: createPrimitiveToken(`${path.join('-')}-x`, {
 				type: 'length',
 				purpose: 'shadow-x',
 				group: path.join('-'),
+				tag: 'shadow',
 			}),
-			y: createPrimitiveToken(`shadow-${path.join('-')}-y`, {
+			y: createPrimitiveToken(`${path.join('-')}-y`, {
 				type: 'length',
 				purpose: 'shadow-y',
 				group: path.join('-'),
+				tag: 'shadow',
 			}),
-			blur: createPrimitiveToken(`shadow-${path.join('-')}-blur`, {
+			blur: createPrimitiveToken(`${path.join('-')}-blur`, {
 				type: 'length',
 				purpose: 'shadow-blur',
 				group: path.join('-'),
+				tag: 'shadow',
 			}),
-			spread: createPrimitiveToken(`shadow-${path.join('-')}-spread`, {
+			spread: createPrimitiveToken(`${path.join('-')}-spread`, {
 				type: 'length',
 				purpose: 'shadow-spread',
 				group: path.join('-'),
+				tag: 'shadow',
 			}),
-			color: createPrimitiveToken(`shadow-${path.join('-')}-color`, {
+			color: createPrimitiveToken(`${path.join('-')}-color`, {
 				type: 'color',
 				purpose: 'shadow-color',
 				group: path.join('-'),
+				tag: 'shadow',
 			}),
 		}),
 	);
@@ -207,10 +213,11 @@ export function createPrimitives<
 		config.easing,
 		(value): value is string => typeof value === 'string',
 		(_, path) =>
-			createPrimitiveToken(`easing-${path.join('-')}`, {
+			createPrimitiveToken(`${path.join('-')}`, {
 				type: 'string',
 				purpose: 'easing-function',
 				group: path.join('-'),
+				tag: 'easing',
 			}),
 	);
 
@@ -218,10 +225,11 @@ export function createPrimitives<
 		config.duration,
 		(value): value is string => typeof value === 'string',
 		(_, path) =>
-			createPrimitiveToken(`duration-${path.join('-')}`, {
+			createPrimitiveToken(`${path.join('-')}`, {
 				type: 'string',
 				purpose: 'duration',
 				group: path.join('-'),
+				tag: 'duration',
 			}),
 	);
 

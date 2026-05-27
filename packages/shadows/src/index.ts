@@ -58,15 +58,11 @@ const defaultShadowBlurEquation = (step: number, context: GlobalContext) =>
 	);
 const defaultShadowSpreadEquation = (step: number, context: GlobalContext) =>
 	$.multiply(
-		$.val(context.$systemTokens.global.shadowSpread.varFallback('1')),
+		$.token(context.$systemTokens.global.shadowSpread, $.val('1')),
 		$.val('1px'),
 	);
 const defaultShadowColorEquation = (step: number, context: GlobalContext) =>
-	$.val(
-		context.$systemTokens.dynamic.shadowColor.varFallback(
-			context.$systemTokens.global.defaultShadowColor.var,
-		),
-	);
+	$.token(context.$systemTokens.global.defaultShadowColor);
 
 export function compileShadows<
 	TShadowLevel extends string = DefaultShadowLevel,

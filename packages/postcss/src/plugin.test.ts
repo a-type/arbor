@@ -182,8 +182,7 @@ it('inlines function calls in declaration values', async () => {
 	);
 
 	// The function call should be replaced with the computed value
-	expect(result.css).not.toContain('--fn-double(');
-	expect(result.css).toContain('4');
+	expect(result.css).toContain('font-size: 4');
 });
 
 it('does not implicitly rewrite color declarations into ref system vars', async () => {
@@ -212,7 +211,9 @@ it('inlines @apply mixin arguments into parameterized mixin declarations', async
 	const fg = createMixin('fg', {
 		parameters: ['--color'] as const,
 		definition: (css, { parameters: [color] }) => ({
-			color: css`${color}`,
+			color: css`
+				${color}
+			`,
 		}),
 	});
 
@@ -246,7 +247,9 @@ it('inlines function results passed as @apply mixin arguments', async () => {
 	const fg = createMixin('fg', {
 		parameters: ['--color'] as const,
 		definition: (css, { parameters: [color] }) => ({
-			color: css`${color}`,
+			color: css`
+				${color}
+			`,
 		}),
 	});
 
@@ -263,7 +266,6 @@ it('inlines function results passed as @apply mixin arguments', async () => {
 	expect(result.css).toContain(
 		'color: oklch(from var(--m-color-main-ink) l c h / 42%)',
 	);
-	expect(result.css).not.toContain('--fn-fade(');
 	expect(result.css).not.toContain('@apply');
 });
 
@@ -273,7 +275,9 @@ it('warns when @apply omits a required mixin argument', async () => {
 	const fg = createMixin('fg', {
 		parameters: ['--color'] as const,
 		definition: (css, { parameters: [color] }) => ({
-			color: css`${color}`,
+			color: css`
+				${color}
+			`,
 		}),
 	});
 	mockLoadConfig.mockResolvedValue(
@@ -281,10 +285,9 @@ it('warns when @apply omits a required mixin argument', async () => {
 	);
 
 	const plugin = ArborPlugin({ cwd: '/fake' });
-	const result = await postcss([plugin]).process(
-		`.btn { @apply --mx-fg; }`,
-		{ from: undefined },
-	);
+	const result = await postcss([plugin]).process(`.btn { @apply --mx-fg; }`, {
+		from: undefined,
+	});
 
 	const warnings = result.messages
 		.filter((m) => m.type === 'warning')

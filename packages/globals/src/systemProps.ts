@@ -21,50 +21,34 @@ export function createSystemProps({
 		}),
 	};
 
-	const $dynamicProps = {
-		shadowColor: createMetaToken('shadow-color', {
-			description:
-				'Stores the computed shadow color currently applied to the element.',
-			tag: 'system',
-			type: 'color',
-			fallback: 'rgba(0, 0, 0, 0.1)',
-		}),
-		shadowReverse: createMetaToken('shadow-reverse', {
-			description: 'Flips shadow direction for inverse elevation treatments.',
-			tag: 'system',
-			type: 'number',
-			fallback: 1,
-		}),
-	};
-
 	const $schemeProps = {
-		invertMultiplier: createMetaToken('scheme-invert-mult', {
+		invertMultiplier: createMetaToken('schemeInvertMult', {
 			description:
 				'Switches scheme-aware calculations between light and dark behavior.',
 			tag: 'system',
 			type: 'number',
 			fallback: 1,
 		}),
-		whenDark: createMetaToken('scheme-when-dark', {
+		whenDark: createMetaToken('schemeWhenDark', {
 			description: 'Resolves to 1 in dark schemes and 0 in light schemes.',
 			tag: 'system',
 			type: 'number',
 			fallback: 0,
 		}),
-		whenLight: createMetaToken('scheme-when-light', {
+		whenLight: createMetaToken('schemeWhenLight', {
 			description: 'Resolves to 1 in light schemes and 0 in dark schemes.',
 			tag: 'system',
 			type: 'number',
 			fallback: 1,
 		}),
-		trueLight: createMetaToken('scheme-true-light', {
+		trueLight: createMetaToken('schemeTrueLight', {
 			description:
 				'Provides an absolute light reference color that does not change with scheme.',
 			tag: 'system',
 			type: 'color',
 			fallback: 'white',
 		}),
-		trueHeavy: createMetaToken('scheme-true-heavy', {
+		trueHeavy: createMetaToken('schemeTrueHeavy', {
 			description:
 				'Provides an absolute dark reference color that does not change with scheme.',
 			tag: 'system',
@@ -79,8 +63,6 @@ export function createSystemProps({
 			...$labelProps,
 			scheme: $schemeProps,
 		},
-		// dynamic values
-		dynamic: $dynamicProps,
 		// scheme information
 		global: createGlobalProps({ createToken: createMetaToken }),
 	};
