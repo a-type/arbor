@@ -2,6 +2,7 @@
 
 import { createJiti } from 'jiti';
 import fs from 'node:fs';
+import { glob } from 'node:fs/promises';
 import path from 'node:path';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
@@ -104,15 +105,15 @@ yargs(hideBin(process.argv))
 		},
 	)
 	.command(
-		'validate [files...]',
+		'validate [globs...]',
 		'Validate Arbor-prefixed CSS declarations, function calls, and @apply mixins',
 		(y) =>
 			y
-				.positional('files', {
+				.positional('globs', {
 					type: 'string',
 					array: true,
 					default: [],
-					description: 'CSS files to validate',
+					description: 'CSS file globs to validate',
 				})
 				.option('config', {
 					alias: 'c',
@@ -121,13 +122,23 @@ yargs(hideBin(process.argv))
 				}),
 		async (argv) => {
 			try {
-				const providedFiles = (argv.files as string[]) ?? [];
-				const files =
-					providedFiles.length > 0 ?
-						providedFiles.map((file) =>
-							path.isAbsolute(file) ? file : path.join(process.cwd(), file),
-						)
-					:	await collectCssFiles(process.cwd());
+				const providedGlobs = (argv.globs as string[]) ?? [];
+
+				const globsToSearch =
+					providedGlobs.length > 0 ? providedGlobs : ['**/*.{css,scss,less}'];
+				const globOptions = {
+					cwd: process.cwd(),
+					ignore: Array.from(SKIPPED_DIRECTORIES).map((dir) => `${dir}/**`),
+					absolute: true,
+				};
+
+				const filesSet = new Set<string>();
+				for (const globPattern of globsToSearch) {
+					for await (const file of glob(globPattern, globOptions)) {
+						filesSet.add(file);
+					}
+				}
+				const files = Array.from(filesSet);
 
 				if (files.length === 0) {
 					console.error('No CSS files found to validate.');
