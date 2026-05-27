@@ -1,6 +1,7 @@
 import { printEquation } from '@arbor-css/calc';
 import { AnyArborPreset, generateStylesheet } from '@arbor-css/core';
 import {
+	type ArborMixinBodyEntry,
 	isFunction,
 	isFunctionParamWithMeta,
 	isMixin,
@@ -155,6 +156,44 @@ function computeFunctionCallValue({
 	}
 
 	return fn.compute(paramValues);
+}
+
+function resolveMixinValue(
+	value: string,
+	paramValues: Record<string, string>,
+): string {
+	let resolved = value;
+	for (const [paramName, paramValue] of Object.entries(paramValues)) {
+		resolved = resolved.replaceAll(`var(${paramName})`, paramValue);
+	}
+
+	return resolved;
+}
+
+function cloneScopedMixinEntry(
+	entry: ArborMixinBodyEntry,
+	mixinParamValues: Record<string, string>,
+): postcss.Node {
+	if ('prop' in entry) {
+		return postcss.decl({
+			prop: entry.prop,
+			value: resolveMixinValue(printEquation(entry.value), mixinParamValues),
+		});
+	}
+
+	const parsed = postcss.parse(`${entry.scope} {}`);
+	const [scopedNode] = parsed.nodes;
+
+	if (!scopedNode || (scopedNode.type !== 'atrule' && scopedNode.type !== 'rule')) {
+		throw new Error(`Invalid mixin scope: ${entry.scope}`);
+	}
+	const scopedContainer = scopedNode.clone();
+
+	for (const child of entry.children) {
+		scopedContainer.append(cloneScopedMixinEntry(child, mixinParamValues));
+	}
+
+	return scopedContainer;
 }
 
 export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
@@ -343,15 +382,9 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 				}),
 			);
 
-			const declarations = mixin.inline();
-			for (const decl of declarations) {
-				let value = printEquation(decl.value);
-				for (const [paramName, paramValue] of Object.entries(
-					mixinParamValues,
-				)) {
-					value = value.replaceAll(`var(${paramName})`, paramValue);
-				}
-				atRule.cloneBefore(postcss.decl({ prop: decl.prop, value }));
+			const body = mixin.inlineBody();
+			for (const entry of body) {
+				atRule.cloneBefore(cloneScopedMixinEntry(entry, mixinParamValues));
 			}
 
 			// add comment telling the user which mixin this was from

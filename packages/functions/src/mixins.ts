@@ -29,12 +29,30 @@ export type ArborMixinDeclaration = {
 	value: Equation;
 };
 
+export type ArborMixinScope = {
+	scope: string;
+	children: ArborMixinBody;
+};
+
+export type ArborMixinBodyEntry = ArborMixinDeclaration | ArborMixinScope;
+export type ArborMixinBody = ArborMixinBodyEntry[];
+
 type MixinValue = CalcInterpolation | Equation;
-type MixinBodyObject = Record<string, MixinValue>;
-type MixinBodyList = readonly {
-	prop: string;
-	value: MixinValue;
-}[];
+type MixinScopedBodyObject = Record<string, MixinValue>;
+type MixinBodyObject = Record<
+	string,
+	MixinValue | MixinScopedBodyObject | MixinBodyList
+>;
+type MixinBodyListItem =
+	| {
+			prop: string;
+			value: MixinValue;
+	  }
+	| {
+			scope: string;
+			children: MixinBodyObject | MixinBodyList;
+	  };
+type MixinBodyList = readonly MixinBodyListItem[];
 
 function toEquation(value: MixinValue): Equation {
 	if (isCalcEquation(value)) {
@@ -46,20 +64,63 @@ function toEquation(value: MixinValue): Equation {
 	`;
 }
 
-function normalizeDeclarations(
-	body: MixinBodyObject | MixinBodyList,
-): ArborMixinDeclaration[] {
+function normalizeBody(body: MixinBodyObject | MixinBodyList): ArborMixinBody {
 	if (Array.isArray(body)) {
-		return body.map((decl) => ({
-			prop: decl.prop,
-			value: toEquation(decl.value),
-		}));
+		return body.map((item) => {
+			if ('scope' in item) {
+				return {
+					scope: item.scope,
+					children: normalizeBody(item.children),
+				};
+			}
+
+			return {
+				prop: item.prop,
+				value: toEquation(item.value),
+			};
+		});
 	}
 
-	return Object.entries(body).map(([prop, value]) => ({
-		prop,
-		value: toEquation(value),
-	}));
+	return Object.entries(body).map(([propOrScope, value]) => {
+		if (typeof value === 'object' && value !== null && !isCalcEquation(value)) {
+			return {
+				scope: propOrScope,
+				children: normalizeBody(value as MixinBodyObject | MixinBodyList),
+			};
+		}
+
+		return {
+			prop: propOrScope,
+			value: toEquation(value as MixinValue),
+		};
+	});
+}
+
+function collectDeclarations(body: ArborMixinBody): ArborMixinDeclaration[] {
+	const declarations: ArborMixinDeclaration[] = [];
+
+	for (const entry of body) {
+		if ('prop' in entry) {
+			declarations.push(entry);
+			continue;
+		}
+
+		declarations.push(...collectDeclarations(entry.children));
+	}
+
+	return declarations;
+}
+
+function printBody(body: ArborMixinBody): string {
+	return body
+		.map((entry) => {
+			if ('prop' in entry) {
+				return `${entry.prop}: ${printEquation(entry.value)};`;
+			}
+
+			return `${entry.scope} { ${printBody(entry.children)} }`;
+		})
+		.join(' ');
 }
 
 export interface CreateMixinParameters<
@@ -135,27 +196,39 @@ export function createMixinFactory({
 				contributedBy: cssName,
 			},
 		);
-		const declarations = normalizeDeclarations(
+		const body = normalizeBody(
 			definition(css, {
 				parameters: paramsAsInterpolations(parameters),
 				tokens: contributeTokens,
 			}),
 		);
-		const body = declarations
-			.map((decl) => `${decl.prop}: ${printEquation(decl.value)};`)
-			.join(' ');
+		const declarations = collectDeclarations(body);
+		const cssBody = printBody(body);
 
 		return {
 			[MIXIN_BRAND]: true as const,
 			name: cssName,
 			description,
+			body,
 			declarations,
-			definition: `@mixin ${cssName}${paramsAsString(parameters)} { ${body} }`,
+			definition: `@mixin ${cssName}${paramsAsString(parameters)} { ${cssBody} }`,
 			inline: () =>
 				declarations.map((decl) => ({
 					prop: decl.prop,
 					value: decl.value,
 				})),
+			inlineBody: () =>
+				body.map((entry) =>
+					'prop' in entry ?
+						{
+							prop: entry.prop,
+							value: entry.value,
+						}
+					:	{
+							scope: entry.scope,
+							children: entry.children,
+						},
+				),
 			parameters,
 			contributeTokens,
 		};
@@ -169,9 +242,11 @@ export type ArborMixin<
 	[MIXIN_BRAND]: true;
 	name: string;
 	description?: string;
+	body: ArborMixinBody;
 	declarations: ArborMixinDeclaration[];
 	definition: string;
 	inline: () => ArborMixinDeclaration[];
+	inlineBody: () => ArborMixinBody;
 	parameters: TParams;
 	contributeTokens: TTokens;
 };

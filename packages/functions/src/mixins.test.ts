@@ -4,7 +4,10 @@ import { describe, expect, it } from 'vitest';
 import { createMixinFactory, isMixin } from './mixins.js';
 
 const createToken = createTokenFactory({ tokenPrefix: '--x-' });
-const createMixin = createMixinFactory({ namePrefix: '--x-mixin-', createToken });
+const createMixin = createMixinFactory({
+	namePrefix: '--x-mixin-',
+	createToken,
+});
 
 describe('createMixin', () => {
 	it('sets the CSS name with -- prefix', () => {
@@ -68,6 +71,61 @@ describe('createMixin', () => {
 		expect(mixin.declarations.map((decl) => decl.prop)).toEqual([
 			'--x-system-shadow',
 			'box-shadow',
+		]);
+	});
+
+	it('supports scoped declarations in object definitions', () => {
+		const mixin = createMixin('responsive-bg', {
+			definition: () => ({
+				'@media (max-width: 400px)': {
+					background: 'red',
+				},
+				'.parent': {
+					color: 'blue',
+				},
+			}),
+		});
+
+		expect(mixin.definition).toBe(
+			'@mixin --x-mixin-responsive-bg { @media (max-width: 400px) { background: red; } .parent { color: blue; } }',
+		);
+		expect(mixin.inlineBody()).toEqual([
+			{
+				scope: '@media (max-width: 400px)',
+				children: [{ prop: 'background', value: mixin.inline()[0].value }],
+			},
+			{
+				scope: '.parent',
+				children: [{ prop: 'color', value: mixin.inline()[1].value }],
+			},
+		]);
+		expect(mixin.inline().map((decl) => decl.prop)).toEqual([
+			'background',
+			'color',
+		]);
+	});
+
+	it('supports scoped declarations in list definitions', () => {
+		const mixin = createMixin('responsive-fg', {
+			definition: () => [
+				{ prop: 'color', value: 'blue' },
+				{
+					scope: '@media (max-width: 400px)',
+					children: [
+						{ prop: 'color', value: 'red' },
+						{ prop: 'background', value: 'black' },
+					],
+				},
+			],
+		});
+
+		expect(mixin.definition).toBe(
+			'@mixin --x-mixin-responsive-fg { color: blue; @media (max-width: 400px) { color: red; background: black; } }',
+		);
+		expect(mixin.inline().map((decl) => decl.prop)).toEqual([
+			'color',
+			'color',
+			'background',
 		]);
 	});
 

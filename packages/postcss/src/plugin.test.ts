@@ -296,3 +296,62 @@ it('warns when @apply omits a required mixin argument', async () => {
 	expect(warnings.some((w) => w.includes('Missing argument'))).toBe(true);
 	expect(result.css).toContain('@apply --mx-fg');
 });
+
+it('inlines scoped mixin declarations under at-rules', async () => {
+	const createToken = createTokenFactory({ tokenPrefix: '--mx-' });
+	const createMixin = createMixinFactory({ namePrefix: '--mx-', createToken });
+	const responsiveBg = createMixin('responsive-bg', {
+		definition: () => ({
+			'@media (max-width: 400px)': {
+				background: 'red',
+			},
+		}),
+	});
+
+	mockLoadConfig.mockResolvedValue(
+		makeConfigResult({
+			functions: {},
+			mixins: { responsiveBg },
+			$: undefined,
+		}),
+	);
+
+	const plugin = ArborPlugin({ cwd: '/fake' });
+	const result = await postcss([plugin]).process(`.btn { @apply --mx-responsive-bg; }`, {
+		from: undefined,
+	});
+
+	expect(result.css).toContain('@media (max-width: 400px)');
+	expect(result.css).toContain('background: red');
+	expect(result.css).not.toContain('@apply --mx-responsive-bg');
+});
+
+it('inlines scoped mixin declarations from list syntax with parameter values', async () => {
+	const createToken = createTokenFactory({ tokenPrefix: '--mx-' });
+	const createMixin = createMixinFactory({ namePrefix: '--mx-', createToken });
+	const responsiveFg = createMixin('responsive-fg', {
+		parameters: ['--color'] as const,
+		definition: (css, { parameters: [color] }) => [
+			{ prop: 'color', value: css`${color}` },
+			{
+				scope: '@media (max-width: 400px)',
+				children: [{ prop: 'color', value: css`${color}` }],
+			},
+		],
+	});
+
+	mockLoadConfig.mockResolvedValue(
+		makeConfigResult({ functions: {}, mixins: { responsiveFg }, $: undefined }),
+	);
+
+	const plugin = ArborPlugin({ cwd: '/fake' });
+	const result = await postcss([plugin]).process(
+		`.btn { @apply --mx-responsive-fg(var(--m-color-main-ink)); }`,
+		{ from: undefined },
+	);
+
+	expect(result.css).toContain('color: var(--m-color-main-ink)');
+	expect(result.css).toContain('@media (max-width: 400px)');
+	expect(result.css).not.toContain('var(--color)');
+	expect(result.css).not.toContain('@apply');
+});
