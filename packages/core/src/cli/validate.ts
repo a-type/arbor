@@ -57,7 +57,7 @@ function indexToLineColumn(
 		const nextLineStart =
 			mid + 1 < lineStarts.length ?
 				lineStarts[mid + 1]
-			: 	Number.POSITIVE_INFINITY;
+			:	Number.POSITIVE_INFINITY;
 		if (index < lineStart) {
 			high = mid - 1;
 			continue;
@@ -167,6 +167,27 @@ export function validateCssContent({
 	const lineStarts = getLineStarts(content);
 
 	for (const prefix of prefixConfig.tokenPrefixes) {
+		const generalPropertyUsageRegex = new RegExp(
+			`[\\s(](${escapeRegex(prefix)}[\\w-]+)[\\s)]`,
+			'gm',
+		);
+		for (const match of content.matchAll(generalPropertyUsageRegex)) {
+			if (match.index === undefined) {
+				continue;
+			}
+			const propertyName = match[1];
+			const index = match.index;
+			const matchedValue = tokenMap.get(propertyName);
+			if (!matchedValue) {
+				addIssue(issues, seen, lineStarts, {
+					name: propertyName,
+					kind: 'token',
+					message: `Unknown CSS property or Arbor token: ${propertyName}`,
+					index,
+				});
+			}
+		}
+
 		const declarationRegex = new RegExp(
 			`(^|[;{\\s])(${escapeRegex(prefix)}[\\w-]+)\\s*:`,
 			'gm',

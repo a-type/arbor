@@ -5,7 +5,9 @@
 	"scripts": {
 		"dev": "vite --port 5222",
 		"build": "vite build",
-		"preview": "vite preview"
+		"preview": "vite preview",
+		"test": "node ../packages/core/dist/cli/run.js validate",
+		"test:ci": "pnpm test"
 	},
 	"dependencies": {
 		"@arbor-css/core": "workspace:^",

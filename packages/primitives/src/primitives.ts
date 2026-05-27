@@ -244,7 +244,6 @@ export function createPrimitives<
 		...config.schemeTags,
 	};
 
-	console.log(config.easing, $easingProps);
 	return {
 		defaultScheme: defaultScheme ?? defaultDefaultScheme,
 		schemeTags,

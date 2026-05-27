@@ -161,15 +161,9 @@ export const arborModeDefinition = {
 			description:
 				'This token captures the border-radius of actions, taking into account the overall roundness',
 		},
-		primary: {
-			color: colorIntents,
-		},
-		secondary: {
-			color: colorIntents,
-		},
-		ambient: {
-			color: colorIntents,
-		},
+		primary: colorIntents,
+		secondary: colorIntents,
+		ambient: colorIntents,
 	},
 	control: {
 		padding: boxIntents,
@@ -183,7 +177,7 @@ export const arborModeDefinition = {
 			description:
 				'This token captures the border-radius of controls, taking into account the overall roundness',
 		},
-		color: colorIntents,
+		...colorIntents,
 	},
 	surface: {
 		padding: boxIntents,
@@ -197,15 +191,9 @@ export const arborModeDefinition = {
 			description:
 				'This token captures the border-radius of surfaces, taking into account the overall roundness',
 		},
-		primary: {
-			color: colorIntents,
-		},
-		secondary: {
-			color: colorIntents,
-		},
-		ambient: {
-			color: colorIntents,
-		},
+		primary: colorIntents,
+		secondary: colorIntents,
+		ambient: colorIntents,
 	},
 	text: {
 		primary: textIntents,
@@ -405,43 +393,37 @@ export function createArborModeValues<
 			roundness: 1,
 			radius: css`calc(${modeSchema.$tokens.radius.md} * ${modeSchema.$tokens.surface.roundness})`,
 			primary: {
-				color: {
-					bg: css`
-						${modeSchema.$tokens.color.main.light}
-					`,
-					fg: css`
-						${modeSchema.$tokens.color.main.ink}
-					`,
-					border: css`
-						${modeSchema.$tokens.color.main.heavy}
-					`,
-				},
+				bg: css`
+					${modeSchema.$tokens.color.main.light}
+				`,
+				fg: css`
+					${modeSchema.$tokens.color.main.ink}
+				`,
+				border: css`
+					${modeSchema.$tokens.color.main.heavy}
+				`,
 			},
 			secondary: {
-				color: {
-					bg: css`
-						${modeSchema.$tokens.color.main.wash}
-					`,
-					fg: css`
-						${modeSchema.$tokens.color.neutral.ink}
-					`,
-					border: css`
-						${modeSchema.$tokens.color.main.ink}
-					`,
-				},
+				bg: css`
+					${modeSchema.$tokens.color.main.wash}
+				`,
+				fg: css`
+					${modeSchema.$tokens.color.neutral.ink}
+				`,
+				border: css`
+					${modeSchema.$tokens.color.main.ink}
+				`,
 			},
 			ambient: {
-				color: {
-					bg: css`
-						${modeSchema.$tokens.color.neutral.paper}
-					`,
-					fg: css`
-						${modeSchema.$tokens.color.neutral.ink}
-					`,
-					border: css`
-						${modeSchema.$tokens.color.neutral.heavy}
-					`,
-				},
+				bg: css`
+					${modeSchema.$tokens.color.neutral.paper}
+				`,
+				fg: css`
+					${modeSchema.$tokens.color.neutral.ink}
+				`,
+				border: css`
+					${modeSchema.$tokens.color.neutral.heavy}
+				`,
 			},
 		},
 		action: {
@@ -456,39 +438,33 @@ export function createArborModeValues<
 			roundness: 1,
 			radius: css`calc(${modeSchema.$tokens.radius.sm} * ${modeSchema.$tokens.action.roundness})`,
 			primary: {
-				color: {
-					bg: css`
-						${modeSchema.$tokens.color.main.mid}
-					`,
-					fg: css`
-						${modeSchema.$tokens.color.main.ink}
-					`,
-					border: css`
-						${modeSchema.$tokens.color.main.heavy}
-					`,
-				},
+				bg: css`
+					${modeSchema.$tokens.color.main.mid}
+				`,
+				fg: css`
+					${modeSchema.$tokens.color.main.ink}
+				`,
+				border: css`
+					${modeSchema.$tokens.color.main.heavy}
+				`,
 			},
 			secondary: {
-				color: {
-					bg: css`
-						${modeSchema.$tokens.color.neutral.paper}
-					`,
-					fg: css`
-						${modeSchema.$tokens.color.neutral.ink}
-					`,
-					border: css`
-						${modeSchema.$tokens.color.neutral.heavy}
-					`,
-				},
+				bg: css`
+					${modeSchema.$tokens.color.neutral.paper}
+				`,
+				fg: css`
+					${modeSchema.$tokens.color.neutral.ink}
+				`,
+				border: css`
+					${modeSchema.$tokens.color.neutral.heavy}
+				`,
 			},
 			ambient: {
-				color: {
-					bg: 'transparent',
-					fg: css`
-						${modeSchema.$tokens.color.main.ink}
-					`,
-					border: 'transparent',
-				},
+				bg: 'transparent',
+				fg: css`
+					${modeSchema.$tokens.color.main.ink}
+				`,
+				border: 'transparent',
 			},
 		},
 		control: {
@@ -502,17 +478,15 @@ export function createArborModeValues<
 			},
 			roundness: 1,
 			radius: css`calc(${modeSchema.$tokens.radius.sm} * ${modeSchema.$tokens.control.roundness})`,
-			color: {
-				bg: css`
-					${modeSchema.$tokens.color.neutral.paper}
-				`,
-				fg: css`
-					${modeSchema.$tokens.color.neutral.ink}
-				`,
-				border: css`
-					${modeSchema.$tokens.color.neutral.heavy}
-				`,
-			},
+			bg: css`
+				${modeSchema.$tokens.color.neutral.paper}
+			`,
+			fg: css`
+				${modeSchema.$tokens.color.neutral.ink}
+			`,
+			border: css`
+				${modeSchema.$tokens.color.neutral.heavy}
+			`,
 		},
 		density: 1,
 		spacing: {

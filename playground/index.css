@@ -12,16 +12,16 @@ body {
 	gap: var(--m-spacing-sm);
 
 	&[data-emphasis='primary'] {
-		@apply --mx-bg(var(--m-surface-primary-color-bg));
-		@apply --mx-fg(var(--m-surface-primary-color-fg));
+		@apply --mx-bg(var(--m-surface-primary-bg));
+		@apply --mx-fg(var(--m-surface-primary-fg));
 	}
 	&[data-emphasis='secondary'] {
-		@apply --mx-bg(var(--m-surface-secondary-color-bg));
-		@apply --mx-fg(var(--m-surface-secondary-color-fg));
+		@apply --mx-bg(var(--m-surface-secondary-bg));
+		@apply --mx-fg(var(--m-surface-secondary-fg));
 	}
 	&[data-emphasis='ambient'] {
-		@apply --mx-bg(var(--m-surface-ambient-color-bg));
-		@apply --mx-fg(var(--m-surface-ambient-color-fg));
+		@apply --mx-bg(var(--m-surface-ambient-bg));
+		@apply --mx-fg(var(--m-surface-ambient-fg));
 	}
 }
 
@@ -52,7 +52,7 @@ button {
 	--mx-shadow-shadow: var(--m-shadow-sm);
 
 	&[data-emphasis='primary'] {
-		@apply --mx-bg(var(--m-action-primary-color-bg));
+		@apply --mx-bg(var(--m-action-primary-bg));
 		&:hover {
 			@apply --mx-bg-lighten(2);
 		}
@@ -62,11 +62,11 @@ button {
 	}
 	&,
 	&[data-emphasis='secondary'] {
-		@apply --mx-bg(var(--m-action-secondary-color-bg));
+		@apply --mx-bg(var(--m-action-secondary-bg));
 	}
 	&[data-emphasis='ambient'] {
-		@apply --mx-bg(var(--m-action-ambient-color-bg));
-		@apply --mx-fg(var(--m-action-ambient-color-fg));
+		@apply --mx-bg(var(--m-action-ambient-bg));
+		@apply --mx-fg(var(--m-action-ambient-fg));
 		@apply --mx-border(transparent);
 		--mx-shadow-shadow: 0 0 0 0 transparent;
 
@@ -102,9 +102,9 @@ input {
 	font-size: var(--m-text-secondary-size);
 	font-weight: var(--m-text-secondary-weight);
 	line-height: var(--m-text-secondary-lineHeight);
-	@apply --mx-bg(var(--m-control-color-bg));
-	@apply --mx-fg(var(--m-control-color-fg));
-	@apply --mx-border(var(--m-control-color-border));
+	@apply --mx-bg(var(--m-control-bg));
+	@apply --mx-fg(var(--m-control-fg));
+	@apply --mx-border(var(--m-control-border));
 
 	@apply --mx-shadow;
 	--mx-shadow-shadow: var(--m-shadow-sm);
