@@ -19,10 +19,10 @@
 			"default": "./dist/index.js"
 		},
 		"./config": {
-			"import": "./dist/config.js",
-			"node": "./dist/config.js",
-			"types": "./dist/config.d.ts",
-			"default": "./dist/config.js"
+			"import": "./dist/define.js",
+			"node": "./dist/define.js",
+			"types": "./dist/define.d.ts",
+			"default": "./dist/define.js"
 		}
 	},
 	"sideEffects": false,

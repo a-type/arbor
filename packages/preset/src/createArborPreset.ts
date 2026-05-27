@@ -44,7 +44,7 @@ import {
 	createArborModeValues,
 	ModesOfArborModeSchema,
 } from './arborPreset.js';
-import { ArborPreset, definePreset } from './config.js';
+import { ArborPreset, definePreset } from './define.js';
 import { BuiltinFunctions, createPresetFunctions } from './functions.js';
 import { BuiltinMixins, createPresetMixins } from './mixins.js';
 
