@@ -1,8 +1,5 @@
 import { definePreset } from '@arbor-css/core';
-import {
-	createArborModeValues,
-	presetArbor,
-} from '@arbor-css/core/preset-arbor';
+import { presetArbor } from '@arbor-css/core/preset-arbor';
 
 const basePreset = presetArbor({
 	config: {
@@ -41,14 +38,9 @@ const preset = definePreset({
 	modeSchema: {
 		decoration: 'other',
 	},
-});
-
-preset.baseMode({
-	...createArborModeValues({
-		mainColor: 'summer',
-		tokens: preset.$,
+	baseMode: () => ({
+		decoration: 'none',
 	}),
-	decoration: 'none',
 });
 
 function makeSeasonMode(season: 'winter' | 'spring' | 'summer' | 'fall') {
