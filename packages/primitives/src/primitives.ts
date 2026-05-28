@@ -1,5 +1,4 @@
 import { ColorRangeItem, CompiledColors } from '@arbor-css/colors';
-import { defaultGlobals, GlobalConfig } from '@arbor-css/globals';
 import { CompiledShadows, isCompiledShadowLevel } from '@arbor-css/shadows';
 import { CompiledSpacing } from '@arbor-css/spacing';
 import { CreateToken, Token } from '@arbor-css/tokens';
@@ -24,7 +23,6 @@ export interface PrimitivesConfig<
 	duration: TDurations;
 	defaultScheme?: keyof TCompiledColors;
 	schemeTags?: Record<string, string>;
-	global?: Partial<GlobalConfig>;
 	createToken: CreateToken;
 }
 
@@ -78,7 +76,6 @@ export type Primitives<
 	duration: TDurations;
 	defaultScheme: keyof TCompiledColors;
 	schemeTags: Record<string, string>;
-	global: GlobalConfig;
 	$tokens: PrimitiveTokens<
 		TCompiledColors,
 		TCompiledTypography,
@@ -115,7 +112,6 @@ export function createPrimitives<
 	const {
 		color: colors,
 		defaultScheme,
-		global: userGlobals,
 		createToken: createPrimitiveToken,
 	} = config;
 	const arbitraryScheme = Object.values(colors)[0];
@@ -233,11 +229,6 @@ export function createPrimitives<
 			}),
 	);
 
-	const globals: GlobalConfig = {
-		...defaultGlobals,
-		...userGlobals,
-	};
-
 	const schemeTags = {
 		light: 'light',
 		dark: 'dark',
@@ -247,7 +238,6 @@ export function createPrimitives<
 	return {
 		defaultScheme: defaultScheme ?? defaultDefaultScheme,
 		schemeTags,
-		global: globals,
 		color: colors,
 		typography: config.typography,
 		spacing: config.spacing,

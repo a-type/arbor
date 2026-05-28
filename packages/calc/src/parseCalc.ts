@@ -473,7 +473,8 @@ class Parser {
 		while (this.peek().kind !== 'rparen' && this.peek().kind !== 'eof') {
 			const isElseClause =
 				this.peek().kind === 'ident' &&
-				(this.peek() as Extract<LexToken, { kind: 'ident' }>).value === 'else' &&
+				(this.peek() as Extract<LexToken, { kind: 'ident' }>).value ===
+					'else' &&
 				this.peekNext().kind === 'colon';
 
 			if (isElseClause) {
@@ -534,7 +535,7 @@ function interpolationToEquation(
 	if (typeof value === 'number') return $.val(value);
 	if (typeof value === 'string') return $.val(value);
 	throw new SyntaxError(
-		`calc: unsupported interpolated value type at position ${pos}`,
+		`calc: unsupported interpolated value type at position ${pos} (${JSON.stringify(value)})`,
 	);
 }
 

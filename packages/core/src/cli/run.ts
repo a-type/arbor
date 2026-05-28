@@ -26,7 +26,6 @@ async function loadArborConfig(configPath: string) {
 	return arbor;
 }
 
-const CSS_EXTENSIONS = new Set(['.css', '.scss', '.less']);
 const SKIPPED_DIRECTORIES = new Set([
 	'.git',
 	'node_modules',
@@ -81,13 +80,18 @@ yargs(hideBin(process.argv))
 				.positional('globs', {
 					type: 'string',
 					array: true,
-					default: [],
+					default: ['**/*.{css,scss,less}'],
 					description: 'CSS file globs to validate',
 				})
 				.option('config', {
 					alias: 'c',
 					type: 'string',
 					description: 'Path to the configuration file',
+				})
+				.option('verbose', {
+					alias: 'v',
+					type: 'boolean',
+					description: 'Enable verbose output',
 				}),
 		async (argv) => {
 			try {
@@ -120,6 +124,10 @@ yargs(hideBin(process.argv))
 				);
 				const arbor = await loadArborConfig(resolvedConfigPath);
 				const tokenMap = createTokenMap(arbor);
+				if (argv.verbose) {
+					console.log('Loaded Arbor configuration from:', resolvedConfigPath);
+					console.log('Tokens:', [...tokenMap.keys()].join(', '));
+				}
 				const prefixConfig = createPrefixValidationConfig(
 					arbor.context.tokenPrefixes,
 				);
@@ -140,6 +148,16 @@ yargs(hideBin(process.argv))
 						continue;
 					}
 
+					if (argv.verbose) {
+						console.log('Validating content with the following prefixes:');
+						console.log(
+							`  Token prefixes: ${prefixConfig.tokenPrefixes.join(', ')}`,
+						);
+						console.log(
+							`  Function name prefix: ${prefixConfig.functionNamePrefix}`,
+						);
+						console.log(`  Mixin name prefix: ${prefixConfig.mixinNamePrefix}`);
+					}
 					const issues = validateCssContent({
 						content: cssContent,
 						tokenMap,

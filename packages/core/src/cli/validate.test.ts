@@ -1,4 +1,5 @@
-import { createArbor } from '@arbor-css/preset';
+import { compileColors } from '@arbor-css/colors';
+import { definePreset } from '@arbor-css/preset';
 import { expect, it } from 'vitest';
 import {
 	createPrefixValidationConfig,
@@ -7,40 +8,51 @@ import {
 } from './validate.js';
 
 function createTestPreset() {
-	const builder = createArbor({
-		modeTokenPrefix: '--x-',
-		primitiveTokenPrefix: '--xp-',
-		metaTokenPrefix: '--x_-',
-		refTokenPrefix: '--xref-',
-		functionNamePrefix: '--x-fn-',
-		mixinNamePrefix: '--x-mx-',
-		mixinTokenPrefix: '--x-mx-',
-	});
+	const preset = definePreset({
+		modeSchema: {
+			spacing: {
+				md: 'spacing',
+			},
+		},
+		name: 'test-preset',
+		primitives: (context) => ({
+			color: compileColors({
+				ranges: {
+					brand: {
+						hue: 120,
+					},
+				},
+				context,
+			}),
+		}),
+		config: {
+			modeTokenPrefix: '--x-',
+			primitiveTokenPrefix: '--xp-',
+			metaTokenPrefix: '--x_-',
+			refTokenPrefix: '--xref-',
+			functionNamePrefix: '--x-fn-',
+			mixinNamePrefix: '--x-mx-',
+			mixinTokenPrefix: '--x-mx-',
+		},
 
-	const double = builder.context.createFunction('double', {
-		parameters: ['--value'] as const,
-		definition: ($, value) => $`${value}`,
-	});
+		functions: (create) => ({
+			double: create('double', {
+				parameters: ['--value'] as const,
+				definition: ($, value) => $`${value}`,
+			}),
+		}),
 
-	const fg = builder.context.createMixin('fg', {
-		parameters: ['--color'] as const,
-		definition: (css, { parameters: [color] }) => ({
-			color: css`${color}`,
+		mixins: (create) => ({
+			fg: create('fg', {
+				parameters: ['--color'] as const,
+				definition: ($, { parameters: [color] }) => ({
+					color: $`${color}`,
+				}),
+			}),
 		}),
 	});
 
-	return builder.preset({
-		color: {
-			mainColor: 'brand',
-			ranges: {
-				brand: {
-					hue: 120,
-				},
-			},
-		},
-		functions: { double },
-		mixins: { fg },
-	});
+	return preset;
 }
 
 it('reports unknown declarations, functions, and mixins for configured prefixes', () => {
@@ -70,12 +82,9 @@ it('reports unknown declarations, functions, and mixins for configured prefixes'
 it('reports misuse when functions or mixins are used as declarations', () => {
 	const preset = createTestPreset();
 	const issues = validateCssContent({
-		content: [
-			'.card {',
-			'  --x-fn-double: 1;',
-			'  --x-mx-fg: red;',
-			'}',
-		].join('\n'),
+		content: ['.card {', '  --x-fn-double: 1;', '  --x-mx-fg: red;', '}'].join(
+			'\n',
+		),
 		tokenMap: createTokenMap(preset),
 		prefixConfig: createPrefixValidationConfig(preset.context.tokenPrefixes),
 	});

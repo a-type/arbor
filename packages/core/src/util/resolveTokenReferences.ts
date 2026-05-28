@@ -1,5 +1,5 @@
 import { isCalcEquation, printEquation } from '@arbor-css/calc';
-import { ArborPreset } from '@arbor-css/preset/config';
+import { ArborPreset, getInternals } from '@arbor-css/preset/config';
 import { isToken } from '@arbor-css/tokens';
 import { flattenAndApplyTokenValues } from './flattenAndApplyTokenValues.js';
 
@@ -8,6 +8,7 @@ export function resolveTokenReferences(
 	tokenName: string,
 	colorScheme: string = 'light',
 ): string | undefined {
+	const internals = getInternals(preset);
 	const flat = flattenAndApplyTokenValues(
 		{
 			colors: preset.$.primitives.color,
@@ -17,11 +18,11 @@ export function resolveTokenReferences(
 			mode: preset.$.mode,
 		},
 		{
-			colors: preset.primitives.color[colorScheme].colors,
-			shadows: preset.primitives.shadow.levels,
-			spacing: preset.primitives.spacing.levels,
-			typography: preset.primitives.typography.levels,
-			mode: preset.modes.base.values,
+			colors: internals.primitiveValues.color[colorScheme].colors,
+			shadows: internals.primitiveValues.shadow.levels,
+			spacing: internals.primitiveValues.spacing.levels,
+			typography: internals.primitiveValues.typography.levels,
+			mode: internals.modes.base.values,
 		},
 	);
 

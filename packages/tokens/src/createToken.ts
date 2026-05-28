@@ -160,7 +160,13 @@ export function getTypeFromPurpose(purpose: TokenPurpose): PropertyType {
 const TOKEN_BRAND = '@@TOKEN@@';
 
 function normalizeName(name: string) {
-	return name.replaceAll('$', '').replace(/\s+/g, '-');
+	return (
+		name
+			// remove all -$root - a special key that represents
+			// the root level
+			.replaceAll('-$root', '')
+			.replace(/\s+/g, '-')
+	);
 }
 
 export function createTokenFactory({ tokenPrefix }: { tokenPrefix: string }) {

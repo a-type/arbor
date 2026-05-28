@@ -1,4 +1,5 @@
-import { createArbor, flattenToPropsList } from '@arbor-css/core';
+import { flattenToPropsList } from '@arbor-css/core';
+import { presetArbor } from '@arbor-css/core/preset-arbor';
 import { expect, it } from 'vitest';
 import { parseCssColor } from './colorValue.js';
 import {
@@ -19,7 +20,7 @@ function expectColor(
 }
 
 function createTestState(): ConfigState {
-	const preset = createArbor().preset({
+	const preset = presetArbor({
 		color: {
 			mainColor: 'red',
 			ranges: {
@@ -80,7 +81,7 @@ it('parses oklch colors into rgba channels', () => {
 
 it('resolves Arbor color tokens through the shared helper', () => {
 	const state = createTestState();
-	const colorToken = state.preset.$.mode.color.main.$root;
+	const colorToken = (state.preset.$.mode.color as any).main.$root;
 	const spacingToken = state.preset.$.primitives.spacing.$root;
 
 	expect(resolveTokenValue(state, colorToken)).toBe(

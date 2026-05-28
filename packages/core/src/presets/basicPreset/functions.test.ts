@@ -1,26 +1,22 @@
-import { createGlobalContext } from '@arbor-css/globals';
 import { describe, expect, it } from 'vitest';
-import { createPresetFunctions } from './functions.js';
-
-const ctx = createGlobalContext();
-const fns = createPresetFunctions(ctx.$systemTokens, ctx.createFunction);
+import { presetBasic } from './preset.js';
 
 describe('ring function', () => {
 	it('should compute the right value', () => {
-		const result = fns.ring.compute({
+		const result = presetBasic.functions.ring.compute({
 			'--color': 'red',
 			'--size': '2px',
 			'--offset': '1px',
 		});
 		expect(result).toBe(
-			`0 0 0 1px ${ctx.$systemTokens.meta.scheme.trueLight.var}, 0 0 0 calc(3px) red`,
+			`0 0 0 1px ${presetBasic.$.system.meta.scheme.trueLight.var}, 0 0 0 calc(3px) red`,
 		);
 	});
 });
 
 describe('fade function', () => {
 	it('should compute the right value', () => {
-		const result = fns.fade.compute({
+		const result = presetBasic.functions.fade.compute({
 			'--color': 'red',
 			'--opacity': '42%',
 		});

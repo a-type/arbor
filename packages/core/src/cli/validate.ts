@@ -182,7 +182,7 @@ export function validateCssContent({
 				addIssue(issues, seen, lineStarts, {
 					name: propertyName,
 					kind: 'token',
-					message: `Unknown CSS property or Arbor token: ${propertyName}`,
+					message: `Unknown Arbor token: ${propertyName}`,
 					index,
 				});
 			}

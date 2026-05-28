@@ -1,3 +1,4 @@
+import { getInternals } from '@arbor-css/preset';
 import { ArborElement } from './BaseElement.js';
 
 class ModeSelector extends ArborElement {
@@ -7,7 +8,8 @@ class ModeSelector extends ArborElement {
 	}
 
 	render = () => {
-		const modeNames = Object.keys(this.config.modes);
+		const internals = getInternals(this.config);
+		const modeNames = Object.keys(internals.modes);
 		const selected = this.getAttribute('selected') || 'base';
 		this.shadowRoot.innerHTML = `<div data-mode-${selected}>
 			<select data-mode-select name="mode" aria-label="Select mode" style="position: sticky; top: 16px;">

@@ -1,31 +1,12 @@
 import { Equation, isCalcEquation } from '@arbor-css/calc';
 import {
-	convertSimpleTokenSchema,
-	CreateToken,
 	isToken,
 	SimpleTokenDefinition,
-	SimpleTokensAsTokenDefinitions,
 	SimpleTokenSchema,
 	Token,
 } from '@arbor-css/tokens';
 
 export type ModeSchemaProperty = SimpleTokenDefinition;
-
-export type ModeSchema<TSchema extends SimpleTokenSchema = SimpleTokenSchema> =
-	{
-		definition: TSchema;
-		tag: string;
-		$tokens: SimpleTokensAsTokenDefinitions<TSchema>;
-		createBase: (def: ModeValues<TSchema>) => ModeInstance<TSchema>;
-		createPartial: (
-			name: string,
-			def: DeepPartial<ModeValues<TSchema>>,
-		) => PartialModeInstance<TSchema>;
-		extend: <TExtensionSchema extends SimpleTokenSchema>(
-			extension: TExtensionSchema,
-		) => ModeSchema<TSchema & TExtensionSchema>;
-		extraCss?: string;
-	};
 
 export type DeepPartial<T> = { [P in keyof T]?: DeepPartial<T[P]> | undefined };
 
@@ -43,8 +24,6 @@ export type ModeValues<T extends SimpleTokenSchema> = {
 	: NonNullable<T[P]> extends SimpleTokenSchema ? ModeValues<NonNullable<T[P]>>
 	: never;
 };
-export type ModeTokens<T extends SimpleTokenSchema> =
-	SimpleTokensAsTokenDefinitions<T>;
 
 export interface ModeConfig {
 	name: string;
@@ -52,7 +31,7 @@ export interface ModeConfig {
 
 export type ModeInstance<T extends SimpleTokenSchema> = {
 	values: ModeValues<T>;
-	schema: ModeSchema<T>;
+	schema: T;
 	config: ModeConfig;
 };
 export type PartialModeInstance<T extends SimpleTokenSchema> = Omit<
@@ -74,54 +53,30 @@ export function flattenToPropsList(obj: any): Token[] {
 	return propsList;
 }
 
-export function createModeSchema<T extends SimpleTokenSchema>(
-	input: T,
-	{
-		tag = '',
-		extraCss,
-		createToken: createTokenValue,
-	}: {
-		tag?: string;
-		extraCss?: string;
-		createToken: CreateToken;
-	},
-): ModeSchema<T> {
-	const PROPS = convertSimpleTokenSchema(input, tag, createTokenValue);
-	const schema = {
-		definition: input,
-		tag,
-		$tokens: PROPS,
-		extraCss,
-		createBase: (def: ModeValues<T>) => {
-			return {
-				values: def,
-				schema,
-				config: {
-					name: 'base',
-				},
-			};
-		},
-		createPartial: (name: string, def: DeepPartial<ModeValues<T>>) => {
-			return {
-				values: def,
-				schema,
-				config: {
-					name,
-				},
-			};
-		},
-		extend: <TExtensionSchema extends SimpleTokenSchema>(
-			extension: TExtensionSchema,
-		) => {
-			const extendedDefinition = {
-				...schema.definition,
-				...extension,
-			} as T & TExtensionSchema;
-			return createModeSchema(extendedDefinition, {
-				tag: schema.tag,
-				createToken: createTokenValue,
-			});
-		},
+export function createModeSchema<T extends SimpleTokenSchema>(input: T): T {
+	return input;
+}
+
+export function createModeInstance<T extends SimpleTokenSchema>(
+	schema: T,
+	values: ModeValues<T>,
+	config: ModeConfig,
+): ModeInstance<T> {
+	return {
+		schema,
+		values,
+		config,
 	};
-	return schema;
+}
+
+export function createPartialModeInstance<T extends SimpleTokenSchema>(
+	schema: T,
+	values: DeepPartial<ModeValues<T>>,
+	config: ModeConfig,
+): PartialModeInstance<T> {
+	return {
+		schema,
+		values,
+		config,
+	};
 }

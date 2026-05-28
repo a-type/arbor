@@ -1,6 +1,11 @@
 import { isCalcEquation, printEquation } from '@arbor-css/calc';
 import { SystemTokens } from '@arbor-css/globals';
-import { isToken, SimpleTokenSchema, Token } from '@arbor-css/tokens';
+import {
+	isToken,
+	SimpleTokensAsTokenDefinitions,
+	SimpleTokenSchema,
+	Token,
+} from '@arbor-css/tokens';
 import { toFlatKeys } from '@arbor-css/util';
 import {
 	isModeValue,
@@ -20,6 +25,7 @@ import {
 function getBaseModeDependents(
 	baseMode: ModeInstance<any>,
 	token: Token,
+	modeTokens: SimpleTokensAsTokenDefinitions<any>,
 	visiting: string[] = [],
 ): Record<string, string> {
 	const cycleStart = visiting.findIndex((name) => name === token.name);
@@ -32,7 +38,7 @@ function getBaseModeDependents(
 	const nextVisiting = [...visiting, token.name];
 	const dependents: Record<string, string> = {};
 	const flatBase = toFlatKeys(baseMode.values, isModeValue, { separator: '-' });
-	const flatTokens = toFlatKeys<Token>(baseMode.schema.$tokens, isToken, {
+	const flatTokens = toFlatKeys<Token>(modeTokens, isToken, {
 		separator: '-',
 	});
 	for (const key in flatBase) {
@@ -47,7 +53,12 @@ function getBaseModeDependents(
 				// recurse to find any values that depend on this dependent as well
 				Object.assign(
 					dependents,
-					getBaseModeDependents(baseMode, tokenForKey, nextVisiting),
+					getBaseModeDependents(
+						baseMode,
+						tokenForKey,
+						modeTokens,
+						nextVisiting,
+					),
 				);
 			}
 		}
@@ -57,17 +68,20 @@ function getBaseModeDependents(
 
 export function modeToCss<TModeShape extends SimpleTokenSchema>(
 	mode: PartialModeInstance<TModeShape>,
+	// TODO: move to core, use Preset instead of these options
 	baseMode: ModeInstance<TModeShape>,
 	{
 		systemProps,
+		modeTokens,
 	}: {
 		systemProps: SystemTokens;
+		modeTokens: SimpleTokensAsTokenDefinitions<TModeShape>;
 	},
 ): string {
 	const flatValues = toFlatKeys<ModeValue>(mode.values, isModeValue, {
 		separator: '-',
 	});
-	const flatTokens = toFlatKeys<Token>(mode.schema.$tokens, isToken, {
+	const flatTokens = toFlatKeys<Token>(modeTokens, isToken, {
 		separator: '-',
 	});
 
@@ -97,7 +111,7 @@ export function modeToCss<TModeShape extends SimpleTokenSchema>(
 		}
 
 		// If this value corresponds to a token in the base mode, we need to check if any other base mode values depend on it and include them as well since CSS custom properties are eagerly evaluated.
-		const baseDeps = getBaseModeDependents(baseMode, tokenVar);
+		const baseDeps = getBaseModeDependents(baseMode, tokenVar, modeTokens);
 		Object.assign(lowPriorityVars, baseDeps);
 	}
 

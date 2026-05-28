@@ -1,3 +1,4 @@
+import { getInternals } from '@arbor-css/preset';
 import { isToken, Token } from '@arbor-css/tokens';
 import GUI from 'lil-gui';
 import { readProperties } from '../readProperties.js';
@@ -10,13 +11,15 @@ class GlobalsEditor extends ArborElement {
 		gui.close();
 		const config = getConfig();
 
+		const internals = getInternals(config);
+
 		const globalsFolder = gui.addFolder('Globals');
 
 		for (const [globalKey, token] of Object.entries(config.$.system.global)) {
 			let entry =
 				token.type === 'color' ?
-					globalsFolder.addColor(config.primitives.global, globalKey as any)
-				:	globalsFolder.add(config.primitives.global, globalKey as any);
+					globalsFolder.addColor(config.context.globals, globalKey as any)
+				:	globalsFolder.add(config.context.globals, globalKey as any);
 
 			entry.name(globalKey).onChange((v: any) => {
 				document.documentElement.style.setProperty(token.name, v.toString());
@@ -37,8 +40,8 @@ class GlobalsEditor extends ArborElement {
 			entry.name(key).onChange((v: any) => {
 				document.documentElement.style.setProperty(token.name, v.toString());
 				// and all scheme permutations...
-				for (const scheme of Object.keys(config.primitives.color)) {
-					const prefix = config.primitives.schemeTags[scheme] ?? scheme;
+				for (const scheme of Object.keys(internals.primitiveValues.color)) {
+					const prefix = scheme;
 					document.documentElement.style.setProperty(
 						token.prefixed(prefix).name,
 						v.toString(),

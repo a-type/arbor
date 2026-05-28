@@ -1,5 +1,5 @@
 import { flattenToPropsList, modeToCss } from '@arbor-css/modes';
-import { AnyArborPreset } from '@arbor-css/preset/config';
+import { AnyArborPreset, getInternals } from '@arbor-css/preset/config';
 import {
 	isToken,
 	selfReferencedProps,
@@ -20,8 +20,7 @@ export function generateStylesheet(
 		layer?: string | false;
 	} = {},
 ): string {
-	const defaultScheme = config.primitives.defaultScheme ?? 'light';
-	const baseMode = config.modes.base;
+	const { defaultScheme, modes, primitiveValues } = getInternals(config);
 	const systemProps = config.$.system;
 	const globalProps = systemProps.global;
 
@@ -34,17 +33,17 @@ export function generateStylesheet(
 	function getSchemeRootPropertiesCss(schemeName: string) {
 		const values = flattenAndApplyTokenValues(
 			config.$.primitives.color,
-			config.primitives.color[schemeName].colors,
-			{ prefix: config.primitives.schemeTags[schemeName] ?? schemeName },
+			primitiveValues.color[schemeName].colors,
+			{ prefix: schemeName },
 		);
 
 		return formatObjectToCss(values);
 	}
 
 	function schemeApplicationCss(schemeName: string) {
-		const scheme = config.primitives.color[schemeName];
+		const scheme = primitiveValues.color[schemeName];
 		const values = selfReferencedProps(config.$.primitives.color, {
-			valuePrefix: config.primitives.schemeTags[schemeName] ?? schemeName,
+			valuePrefix: schemeName,
 		});
 		return `${systemProps.meta.schemeName.assign(schemeName)}
 	${systemProps.meta.scheme.invertMultiplier.assign(scheme.isDark ? -1 : 1)}
@@ -58,7 +57,7 @@ export function generateStylesheet(
 
 	const allModeProps = Array.from(
 		new Set(
-			Object.values(config.modes).flatMap((mode) => {
+			Object.values(modes).flatMap((mode) => {
 				const shape = mode.schema.$tokens;
 				return flattenToPropsList(shape);
 			}),
@@ -66,10 +65,9 @@ export function generateStylesheet(
 	);
 
 	// replace scheme names with their tags if they are provided
-	const schemeColorsWithTags = Object.keys(config.primitives.color).reduce(
-		(acc, scheme) => {
-			const key = config.primitives.schemeTags[scheme] ?? scheme;
-			acc[key] = config.primitives.color[scheme].colors;
+	const schemeColorsWithTags = Object.keys(primitiveValues.color).reduce(
+		(acc, key) => {
+			acc[key] = primitiveValues.color[key].colors;
 			return acc;
 		},
 		{} as Record<string, Record<string, any>>,
@@ -86,12 +84,12 @@ export function generateStylesheet(
 ${cascadeLayerName ? `@layer ${cascadeLayerName} {` : ''}
 :root {
 	/* Assign user globals */
-	${printTokens(globalProps, config.primitives.global)}
+	${printTokens(globalProps, config.context.globals)}
 	/* By default we set the font size */
 	font-size: ${globalProps.baseFontSize.var};
 
 	/* Raw scheme ranges */
-	${Object.keys(config.primitives.color)
+	${Object.keys(primitiveValues.color)
 		.map((schemeName) => getSchemeRootPropertiesCss(schemeName))
 		.join('\n')}
 
@@ -109,15 +107,15 @@ ${cascadeLayerName ? `@layer ${cascadeLayerName} {` : ''}
 	}
 
 	/* Other primitives */
-	${printTokens(config.$.primitives.typography, config.primitives.typography.levels)}
-	${printTokens(config.$.primitives.spacing, config.primitives.spacing.levels)}
-	${printTokens(config.$.primitives.shadow, config.primitives.shadow.levels)}
-	${printTokens(config.$.primitives.easing, config.primitives.easing)}
-	${printTokens(config.$.primitives.duration, config.primitives.duration)}
+	${printTokens(config.$.primitives.typography, primitiveValues.typography.levels)}
+	${printTokens(config.$.primitives.spacing, primitiveValues.spacing.levels)}
+	${printTokens(config.$.primitives.shadow, primitiveValues.shadow.levels)}
+	${printTokens(config.$.primitives.easing, primitiveValues.easing)}
+	${printTokens(config.$.primitives.duration, primitiveValues.duration)}
 }
 
 /* Scheme classes */
-${Object.keys(config.primitives.color)
+${Object.keys(primitiveValues.color)
 	.map(
 		(schemeName) => `.\\@scheme-${schemeName}, [data-scheme-${schemeName}=""] {
 	${schemeApplicationCss(schemeName)}
@@ -125,10 +123,10 @@ ${Object.keys(config.primitives.color)
 	)
 	.join('\n\n')}
 
-${Object.entries(config.modes)
+${Object.entries(modes)
 	.map(([modeName, modeValue]) => {
 		return `/* Mode: ${modeName} */
-${modeName === 'base' ? ':root, :root [class^="\\@scheme-"], ' : ''}${modeToCss(modeValue, baseMode, { systemProps })}
+${modeName === 'base' ? ':root, :root [class^="\\@scheme-"], ' : ''}${modeToCss(modeValue, modes.base, { systemProps, modeTokens: config.$.mode })}
 `;
 	})
 	.join('\n\n')}

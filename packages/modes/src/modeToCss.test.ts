@@ -1,47 +1,67 @@
 import { css } from '@arbor-css/calc';
 import { createGlobalContext } from '@arbor-css/globals';
+import { convertSimpleTokenSchema } from '@arbor-css/tokens';
 import { expect, it } from 'vitest';
-import { createModeSchema } from './createModeSchema.js';
+import {
+	createModeInstance,
+	createModeSchema,
+	createPartialModeInstance,
+} from './createModeSchema.js';
 import { modeToCss } from './modeToCss.js';
 
 const ctx = createGlobalContext();
 const systemProps = ctx.$systemTokens;
 
-const testSchema = createModeSchema(
+const testSchema = createModeSchema({
+	value: 'color',
+	derived: {
+		once: 'color',
+		twice: 'color',
+		again: 'color',
+	},
+});
+
+const $mode = convertSimpleTokenSchema(testSchema, '', ctx.createModeToken);
+
+const baseMode = createModeInstance(
+	testSchema,
 	{
-		value: 'color',
+		value: 'red',
 		derived: {
-			once: 'color',
-			twice: 'color',
-			again: 'color',
+			once: css`color-mix(in hsl, ${$mode.value}, black)`,
+			twice: css`color-mix(in hsl, ${$mode.derived.once}, transparent)`,
+			again: css`color-mix(in hsl, ${$mode.value}, red)`,
 		},
 	},
 	{
-		createToken: ctx.createToken,
+		name: 'base',
 	},
 );
 
-const baseMode = testSchema.createBase({
-	value: 'red',
-	derived: {
-		once: css`color-mix(in hsl, ${testSchema.$tokens.value}, black)`,
-		twice: css`color-mix(in hsl, ${testSchema.$tokens.derived.once}, transparent)`,
-		again: css`color-mix(in hsl, ${testSchema.$tokens.value}, red)`,
+const partialMode = createPartialModeInstance(
+	testSchema,
+	{
+		value: 'blue',
 	},
-});
-
-const partialMode = testSchema.createPartial('partial', {
-	value: 'blue',
-});
-
-const underivedMode = testSchema.createPartial('underived', {
-	derived: {
-		once: 'green',
+	{
+		name: 'partial',
 	},
-});
+);
+
+const underivedMode = createPartialModeInstance(
+	testSchema,
+	{
+		derived: {
+			once: 'green',
+		},
+	},
+	{
+		name: 'underived',
+	},
+);
 
 it('prints a base mode with derived values', () => {
-	const css = modeToCss(baseMode, baseMode, { systemProps });
+	const css = modeToCss(baseMode, baseMode, { systemProps, modeTokens: $mode });
 	expect(css).toMatchInlineSnapshot(`
 		".\\@mode-base,
 		[data-mode-base=""],
@@ -59,7 +79,10 @@ it('prints a base mode with derived values', () => {
 });
 
 it('prints a partial mode with derived dependencies it doesnt declare', () => {
-	const css = modeToCss(partialMode, baseMode, { systemProps });
+	const css = modeToCss(partialMode, baseMode, {
+		systemProps,
+		modeTokens: $mode,
+	});
 	expect(css).toMatchInlineSnapshot(`
 		".\\@mode-partial,
 		[data-mode-partial=""],
@@ -77,7 +100,10 @@ it('prints a partial mode with derived dependencies it doesnt declare', () => {
 });
 
 it('prints a partial mode which overrides derived dependencies from base and doesnt go upstream from there, but does go downstream to further derivations', () => {
-	const css = modeToCss(underivedMode, baseMode, { systemProps });
+	const css = modeToCss(underivedMode, baseMode, {
+		systemProps,
+		modeTokens: $mode,
+	});
 	expect(css).toMatchInlineSnapshot(`
 		".\\@mode-underived,
 		[data-mode-underived=""],
@@ -93,77 +119,107 @@ it('prints a partial mode which overrides derived dependencies from base and doe
 });
 
 // $root tests
-const rootSchema = createModeSchema(
-	{
-		colors: {
-			main: {
-				$root: 'color',
-				mid: 'color',
-			},
-		},
-	},
-	{
-		createToken: ctx.createToken,
-	},
-);
-
-const rootBase = rootSchema.createBase({
+const rootSchema = createModeSchema({
 	colors: {
 		main: {
-			$root: 'oklch(0.5 0.1 240)',
-			mid: 'oklch(0.6 0.1 240)',
+			$root: 'color',
+			mid: 'color',
 		},
 	},
 });
 
+const $rootMode = convertSimpleTokenSchema(rootSchema, '', ctx.createModeToken);
+
+const rootBase = createModeInstance(
+	rootSchema,
+	{
+		colors: {
+			main: {
+				$root: 'oklch(0.5 0.1 240)',
+				mid: 'oklch(0.6 0.1 240)',
+			},
+		},
+	},
+	{
+		name: 'rootBase',
+	},
+);
+
 it('$root at nested level generates CSS var at group path (no -$root suffix)', () => {
-	const css = modeToCss(rootBase, rootBase, { systemProps });
+	const css = modeToCss(rootBase, rootBase, {
+		systemProps,
+		modeTokens: $rootMode,
+	});
 	expect(css).toContain('--m-colors-main: oklch(0.5 0.1 240)');
 	expect(css).not.toContain('--m-colors-main-$root');
 });
 
 it('$root and sibling keys coexist and both emit correctly', () => {
-	const css = modeToCss(rootBase, rootBase, { systemProps });
+	const css = modeToCss(rootBase, rootBase, {
+		systemProps,
+		modeTokens: $rootMode,
+	});
 	expect(css).toContain('--m-colors-main: oklch(0.5 0.1 240)');
 	expect(css).toContain('--m-colors-main-mid: oklch(0.6 0.1 240)');
 });
 
 it('partial mode override of $root maps correctly', () => {
-	const partial = rootSchema.createPartial('alt', {
-		colors: {
-			main: {
-				$root: 'oklch(0.7 0.2 30)',
+	const partial = createPartialModeInstance(
+		rootSchema,
+		{
+			colors: {
+				main: {
+					$root: 'oklch(0.7 0.2 30)',
+				},
 			},
 		},
+		{
+			name: 'partial',
+		},
+	);
+	const css = modeToCss(partial, rootBase, {
+		systemProps,
+		modeTokens: $rootMode,
 	});
-	const css = modeToCss(partial, rootBase, { systemProps });
 	expect(css).toContain('--m-colors-main: oklch(0.7 0.2 30)');
 	expect(css).not.toContain('--m-colors-main-mid');
 });
 
 it('throws with full token chain for circular derived dependencies', () => {
-	const circularSchema = createModeSchema(
-		{
-			value: 'color',
-			derived: {
-				a: 'color',
-				b: 'color',
-			},
-		},
-		{
-			createToken: ctx.createToken,
-		},
-	);
-
-	const circularBase = circularSchema.createBase({
-		value: 'red',
+	const circularSchema = createModeSchema({
+		value: 'color',
 		derived: {
-			a: css`color-mix(in hsl, ${circularSchema.$tokens.derived.b}, white)`,
-			b: css`color-mix(in hsl, ${circularSchema.$tokens.derived.a}, black)`,
+			a: 'color',
+			b: 'color',
 		},
 	});
 
-	expect(() => modeToCss(circularBase, circularBase, { systemProps })).toThrow(
-		/Circular dependency detected in mode base: .*--m-derived-a.*->.*--m-derived-b.*->.*--m-derived-a/,
+	const $circularMode = convertSimpleTokenSchema(
+		circularSchema,
+		'',
+		ctx.createModeToken,
+	);
+
+	const circularBase = createModeInstance(
+		circularSchema,
+		{
+			value: 'red',
+			derived: {
+				a: css`color-mix(in hsl, ${$circularMode.derived.b}, white)`,
+				b: css`color-mix(in hsl, ${$circularMode.derived.a}, black)`,
+			},
+		},
+		{
+			name: 'circularBase',
+		},
+	);
+
+	expect(() =>
+		modeToCss(circularBase, circularBase, {
+			systemProps,
+			modeTokens: $circularMode,
+		}),
+	).toThrow(
+		/Circular dependency detected in mode circularBase: .*--m-derived-a.*->.*--m-derived-b.*->.*--m-derived-a/,
 	);
 });

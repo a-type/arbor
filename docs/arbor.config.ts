@@ -1,8 +1,14 @@
-import { createArbor, definePreset } from '@arbor-css/core';
+import { definePreset } from '@arbor-css/core';
+import {
+	createArborModeValues,
+	presetArbor,
+} from '@arbor-css/core/preset-arbor';
 
-const preset = createArbor().preset({
-	global: {
-		saturation: 0.5,
+const basePreset = presetArbor({
+	config: {
+		globals: {
+			saturation: 0.5,
+		},
 	},
 	color: {
 		mainColor: 'summer',
@@ -29,19 +35,24 @@ const preset = createArbor().preset({
 	},
 });
 
-const { primitives } = preset;
-
-export const modeSchema = preset.modes.base.schema.extend({
-	decoration: 'other',
+const preset = definePreset({
+	name: 'arbor-docs',
+	extends: [basePreset],
+	modeSchema: {
+		decoration: 'other',
+	},
 });
 
-const rootMode = modeSchema.createBase({
-	...preset.modes.base.values,
+preset.baseMode({
+	...createArborModeValues({
+		mainColor: 'summer',
+		tokens: preset.$,
+	}),
 	decoration: 'none',
 });
 
 function makeSeasonMode(season: 'winter' | 'spring' | 'summer' | 'fall') {
-	return modeSchema.createPartial(season, {
+	preset.bundleMode(season, {
 		color: {
 			main: preset.$.primitives.color[season],
 			neutral: preset.$.primitives.color[season].$neutral,
@@ -49,19 +60,19 @@ function makeSeasonMode(season: 'winter' | 'spring' | 'summer' | 'fall') {
 	});
 }
 
-const winterMode = makeSeasonMode('winter');
-const springMode = makeSeasonMode('spring');
-const summerMode = makeSeasonMode('summer');
-const fallMode = makeSeasonMode('fall');
+makeSeasonMode('winter');
+makeSeasonMode('spring');
+makeSeasonMode('summer');
+makeSeasonMode('fall');
 
-const structureMode = modeSchema.createPartial('structure', {
+preset.bundleMode('structure', {
 	decoration: 'url("/images/structure.svg")',
 });
-const creativityMode = modeSchema.createPartial('creativity', {
+preset.bundleMode('creativity', {
 	decoration: 'url("/images/creativity.svg")',
 });
 
-const heroMode = modeSchema.createPartial('hero', {
+preset.bundleMode('hero', {
 	density: 0.5,
 	text: {
 		primary: preset.$.primitives.typography['4xl'],
@@ -70,18 +81,4 @@ const heroMode = modeSchema.createPartial('hero', {
 	},
 });
 
-export const arbor = definePreset({
-	primitives,
-	modes: {
-		base: rootMode,
-		winter: winterMode,
-		spring: springMode,
-		summer: summerMode,
-		fall: fallMode,
-		structure: structureMode,
-		creativity: creativityMode,
-		hero: heroMode,
-	},
-	systemProps: preset.$.system,
-	meta: preset.meta,
-});
+export default preset;

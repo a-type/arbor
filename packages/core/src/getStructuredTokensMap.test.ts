@@ -1,10 +1,10 @@
-import { createArbor } from '@arbor-css/preset';
 import { tokenSchemaToList } from '@arbor-css/tokens';
 import { expect, it } from 'vitest';
 import { getStructuredTokensMap } from './getStructuredTokensMap.js';
+import { presetArbor } from './presets/arborPreset/preset.js';
 
 it('generates a map of mode, primitive, and system tokens with correct paths', () => {
-	const preset = createArbor().preset({
+	const preset = presetArbor({
 		color: {
 			ranges: {
 				brand: {
@@ -14,7 +14,6 @@ it('generates a map of mode, primitive, and system tokens with correct paths', (
 			mainColor: 'brand',
 		},
 	});
-	preset.primitives.color.light.colors.brand.mid;
 	const map = getStructuredTokensMap(preset);
 
 	expect(map.has('color.main.mid')).toBe(true);
@@ -26,7 +25,7 @@ it('generates a map of mode, primitive, and system tokens with correct paths', (
 });
 
 it('applies descriptions to all built-in system and global tokens', () => {
-	const preset = createArbor().preset({
+	const preset = presetArbor({
 		color: {
 			ranges: {
 				brand: {

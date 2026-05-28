@@ -1,8 +1,8 @@
-import { createArbor } from '@arbor-css/preset';
 import { expect, it } from 'vitest';
+import { presetArbor } from '../presets/arborPreset/preset.js';
 import { resolveTokenReferences } from './resolveTokenReferences.js';
 
-const preset = createArbor().preset({
+const preset = presetArbor({
 	color: {
 		mainColor: 'red',
 		ranges: {

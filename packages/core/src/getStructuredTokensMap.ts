@@ -13,13 +13,13 @@ export function getStructuredTokensMap(
 	const map = new Map<string, Token>();
 
 	// Mode tokens from base mode schema
-	const modeTokens = preset?.modes?.base?.schema?.$tokens;
+	const modeTokens = preset.$.mode;
 	if (modeTokens) {
 		walkTokenTree(modeTokens, '', map, { delimiter });
 	}
 
 	// Primitive tokens — prefix with "primitives."
-	const primitiveTokens = preset?.primitives?.$tokens;
+	const primitiveTokens = preset.$.primitives;
 	if (primitiveTokens) {
 		walkTokenTree(primitiveTokens, 'primitives', map, { delimiter });
 	}

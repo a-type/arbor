@@ -6,64 +6,26 @@ layout: '../../layouts/Doc.astro'
 
 Let's get set up with a brand new Arbor styling system. Along the way, we'll cover what decisions you can make to influence your styles and the tools Arbor provides to make that easier.
 
-## Setting some globals
+## Create an `arbor.config.ts`
 
-Before we begin, we need a few global config values. You can tweak these later, but all the other tools utilize them to generate your system.
+Start by putting an `arbor.config.ts` file in your workspace's root. This file will export your preset.
 
-Let's just go with these for now:
-
-```ts
-import { createGlobals } from '@arbor-css/core';
-
-const globals = createGlobals({
-	baseFontSize: '16px',
-	baseSpacingSize: '8px',
-	saturation: 0.5,
-	roundness: 0.5,
-});
-```
-
-## Choosing some colors
-
-I don't know about you, but this is usually where I begin. Arbor cares about colors a lot, and a lot of its configuration revolves around them, but all we need to begin is a single OKLCH hue.
+`preset-arbor` will set you up with Arbor's opinionated primitives and modes.
 
 ```ts
-import { compileColors } from '@arbor-css/preset';
+import { presetArbor } from '@arbor-css/core/preset-arbor';
 
-const colors = compileColors({
-	ranges: {
-		primary: {
-			hue: 158,
-		},
-	},
-	globals,
-});
-```
-
-## One-step preset quick start
-
-If you just want a working Arbor setup fast, `core` now exposes a one-step scaffold helper.
-
-```ts
-import { createArborPreset } from '@arbor-css/core';
-
-const { primitives, baseMode, modeSchema } = createArborPreset({
-	globals: {
-		baseFontSize: '16px',
-		baseSpacingSize: '8px',
-		saturation: 0.5,
-		roundness: 0.5,
-	},
-	colors: {
-		mainColor: 'primary',
+export default presetArbor({
+	color: {
 		ranges: {
-			primary: { hue: 158 },
+			brand: { hue: 80 },
 		},
+		mainColor: 'brand',
 	},
 });
 ```
 
-Use `@arbor-css/preset` when you want to manually tweak the compile steps (`compileColors`, `compileSpacing`, etc).
+You need at least one color range. It's recommended to name colors semantically, not by their literal color name. Color hues are OKLCH hue values.
 
 Arbor will generate light and dark color ranges for you from this hue, and it will also create a matching tinted gray range called `$neutral` to go with them.
 
@@ -77,8 +39,6 @@ Out of the box, Arbor has some opinions about what the shades of these ranges sh
 - `ink`: Paper's complement, this is a high-contrast value meant for text and other neutral foreground material.
 
 This may not look like color palettes you've used before. Particularly the "heavy" nomenclature. Arbor uses these "brightness-neutral" terms because it maps these color values to both light and dark schemes using the same name. I chose names which I felt were more aligned to the user's perception of a value, not its proximity to white or black, so that "lighter" or "heavy" can mean a dark color in light scheme or a bright color in dark scheme without contradictions.
-
-This range and naming scheme are customizable by you, though.
 
 ### Color schemes
 
@@ -95,107 +55,70 @@ Arbor has fewer opinions about other design tokens which aren't colors. It still
 Arbor's `createTypography` helper will give you some default text scales to work with.
 
 ```ts
-const typography = createTypography({
-	globals,
+presetArbor({
+	typography: {
+		// set min/max sizes for automatic scaling
+		minSize: '12px',
+		maxSize: '80px',
+		levels: {
+			// you can override the typography levels if you want
+			md: {
+				size: '16px',
+				lineHeight: '1.5',
+				weight: '400',
+			},
+			// ...
+		},
+	},
 });
 ```
-
-There are more config options if you want to tweak things, but at a certain point you can just toss this helper aside and implement the `Typography` type yourself.
 
 ### Spacing
 
-You can quickly whip up a spacing scale with the `createSpacing` helper. This creates a focused and opinionated scale of values. These are all expressed in pixels right now - Arbor will convert them to `rem` for you when you assemble everything together, using your `typography` values.
-
 ```ts
-const spacing = createSpacing({
-	globals,
+presetArbor({
+	spacing: {
+		levels: {
+			lg: '2rem',
+			// ....
+		},
+	},
 });
 ```
 
-## Constructing primitive tokens
+### Shadows
 
-Now that we have some colors, we can create a set of primitive tokens. This will be the heart of our design system, a single place for every primitive token reference used.
+TODO
 
-```ts
-const primitives = createPrimitives({
-	globals,
-	colors, // from compiledColors
-	spacing,
-	typography,
-	defaultScheme: 'light',
-});
-```
+### Easing
+
+TODO
+
+### Duration
+
+TODO
 
 ## Modes
 
-Now that we have our primitives set up, it's time to get to the good part: modes.
+Now that we have our preset set up, it's time to get to the good part: modes.
 
 Modes are the expressive layer of Arbor systems. They're how you map primitive tokens to most parts of your UI.
 
-Modes are personal. You'll probably want to come up with your own schema. But we can begin with Arbor's built-in recommendation.
+Modes are personal. You'll probably want to come up with your own schema. But we can begin with Arbor's built-in preset.
 
-With a schema in hand, your job is now to fill it in to create your Base Mode. The Base is the only one that needs to specify _every_ property -- other modes can focus on things they care about.
-
-This snippet ain't short, nor should it really be. These are some of the core expressive decisions you make in your design. Feel free to copy this as a starting point, but each value here is a distinct opportunity to make your mark!
+With a schema in hand, your job is now to decide on some modes which are represented in your design system. Not sure what that means? Here's some examples:
 
 ```ts
-import { arborModeSchema } from '@arbor-css/preset';
-
-const { $tokens } = primitives;
-
-const baseMode = arborModeSchema.createBase({
+preset.bundleMode('danger', {
 	colors: {
-		main: $tokens.color.primary,
-		neutral: $tokens.color.primary.$neutral,
+		main: preset.$.primitives.color.danger,
 	},
-	action: {
-		primary: {
-			bg: $tokens.color.primary.mid,
-			fg: $tokens.color.primary.ink,
-			border: $tokens.color.primary.heavy,
-		},
-		secondary: {
-			bg: $tokens.color.primary.$neutral.lighter,
-			fg: $tokens.color.primary.$neutral.ink,
-			border: $tokens.color.primary.$neutral.heavy,
-		},
-		ambient: {
-			bg: $tokens.color.primary.wash,
-			fg: $tokens.color.primary.ink,
-			border: 'transparent',
-		}
-	},
-	surface: {
-		primary: {
-			bg: $tokens.color.primary.wash,
-			fg: $tokens.color.primary.ink,
-			border: 'transparent',
-		},
-		secondary: {
-			bg: $tokens.color.primary.paper,
-			fg: $tokens.color.primary.$neutral.ink,
-			border: 'transparent',
-		},
-		ambient: {
-			bg: $tokens.color.primary.$neutral.paper,
-			fg: $tokens.color.primary.$neutral.ink,
-			border: 'transparent',
-		}
-	},
-	control: {
-		bg: $tokens.color.primary.$neutral.paper,
-		fg: $tokens.color.primary.$neutral.ink,
-		border: $tokens.color.primary.$neutral.heavy,
-	},
-	text: {
-		primary: {
-			size: $tokens.typography.
-		}
-	}
+});
+
+preset.bundleMode('dense', {
+	density: 1.5,
 });
 ```
-
-> Want to add more tokens? You can `.extend` the `arborModeSchema`.
 
 ## Let's see it!
 
@@ -217,14 +140,24 @@ You should see a collection of color swatches and other bits showing what your s
 
 You probably don't want Arbor in your runtime code, though. You just want some CSS. So let's move away from the runtime demo and get set up for real.
 
-First, use the CLI to generate your CSS.
+### PostCSS
 
-```sh
-$ npx arbor -c arbor.ts
+If you're using Vite or RSBuild, you already have PostCSS in your bundler. Just make a `postcss.config.mjs` file in your root and add Arbor's plugin:
+
+```js
+import { ArborPlugin } from '@arbor-css/postcss';
+
+export default {
+	plugins: [ArborPlugin()],
+};
 ```
 
-Point it to your `arbor.ts` file and optionally add `-o` to specify what the destination CSS file should be.
+Now any CSS file you author can utilize Arbor tokens, functions, and mixins. Arbor's PostCSS plugin transpiles future CSS features like functions and mixins automatically for you.
 
-This will generate a single CSS file which contains your whole Arbor system: primitives, schemes, and modes.
+### CLI
 
-Now, it's time to actually use it to style _your_ UI.
+TODO
+
+## Editor integration
+
+Arbor has a VS Code plugin, and it's vital to getting the best experience. While Arbor is just CSS, the existence of a preset and mode schema means we can type-check and validate your CSS as you write, and suggest completions.
