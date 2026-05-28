@@ -67,7 +67,6 @@
 		"@arbor-css/colors": "workspace:*",
 		"@arbor-css/modes": "workspace:*",
 		"@arbor-css/typography": "workspace:*",
-		"@arbor-css/primitives": "workspace:*",
 		"@arbor-css/spacing": "workspace:*",
 		"@arbor-css/shadows": "workspace:*",
 		"@arbor-css/util": "workspace:*",

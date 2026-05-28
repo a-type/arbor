@@ -41,7 +41,6 @@
 		"@arbor-css/colors": "workspace:*",
 		"@arbor-css/globals": "workspace:*",
 		"@arbor-css/modes": "workspace:*",
-		"@arbor-css/primitives": "workspace:*",
 		"@arbor-css/shadows": "workspace:*",
 		"@arbor-css/spacing": "workspace:*",
 		"@arbor-css/tokens": "workspace:*",
