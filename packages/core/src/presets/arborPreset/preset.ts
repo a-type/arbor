@@ -44,6 +44,11 @@ export const presetArbor = <
 	const preset = definePreset({
 		name: 'arbor',
 		modeSchema: arborModeSchema,
+		baseMode: ($) =>
+			createArborModeValues({
+				tokens: $,
+				mainColor: config.color.mainColor as any,
+			}),
 		primitives: (ctx) => ({
 			color: compileColors({ ...config.color, context: ctx }),
 			typography: compileTypography({
@@ -72,13 +77,6 @@ export const presetArbor = <
 		config: config.config,
 		extends: [presetBasic],
 	});
-
-	preset.baseMode(
-		createArborModeValues({
-			tokens: preset.$,
-			mainColor: config.color.mainColor as any,
-		}),
-	);
 
 	return preset;
 };

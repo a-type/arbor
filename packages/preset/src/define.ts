@@ -13,12 +13,7 @@ import {
 	GlobalContextConfig,
 	SystemTokens,
 } from '@arbor-css/globals';
-import {
-	createModeInstance,
-	ModeInstance,
-	ModeValues,
-	PartialModeInstance,
-} from '@arbor-css/modes';
+import { createModeInstance, ModeInstance, ModeValues } from '@arbor-css/modes';
 import { CompiledShadows } from '@arbor-css/shadows';
 import { CompiledSpacing } from '@arbor-css/spacing';
 import {
@@ -63,7 +58,10 @@ export type ExtendedConfigPrimitiveTokens<TExtends extends AnyArborPreset[]> =
 
 // if no extends exist, this is an implicit base type
 type EmptyPreset = ArborPreset<
-	{},
+	// empty object
+	// TODO: use some kind of sentinel type which can avoid allowing
+	// arbitrary keys but doesn't leak dummy keys into tokens.
+	Record<never, never>,
 	CompiledColors<any, any>,
 	CompiledTypography<any>,
 	CompiledSpacing<any>,
@@ -126,6 +124,7 @@ export interface ArborPreset<
 	mixins: TMixins;
 	/** Easy access to your mode schema */
 	modeSchema: TModeSchema;
+	baseMode: ModeInstance<TModeSchema>;
 	/** All tokens in this preset. */
 	$: PresetTokens<
 		TModeSchema,
@@ -158,29 +157,23 @@ export interface ArborPreset<
 	>;
 
 	/**
-	 * Define the base mode values for your preset. You must provide a
-	 * base value for every token in the mode schema.
-	 */
-	baseMode(mode: ModeValues<TModeSchema>): ModeInstance<TModeSchema>;
-
-	/**
 	 * Add a 'bundled' mode to this preset. Bundled modes are included in the
 	 * generated CSS stylesheet when this preset is passed to generateStylesheet.
 	 */
-	bundleMode(
+	bundleMode<TMode extends ModeInstance<TModeSchema>>(
 		name: string,
 		mode: DeepPartial<ModeValues<TModeSchema>>,
-	): PartialModeInstance<TModeSchema>;
+	): TMode;
 	/**
 	 * Create a free-standing mode from your mode schema with full typing
 	 * support. A mode created with this method isn't bundled into the
 	 * generated CSS stylesheet when this preset is passed to generateStylesheet.
 	 * You can use this to create a mode with CSS that's loaded lazily.
 	 */
-	createMode(
+	createMode<TMode extends ModeInstance<TModeSchema>>(
 		name: string,
 		mode: DeepPartial<ModeValues<TModeSchema>>,
-	): PartialModeInstance<TModeSchema>; // TODO:
+	): TMode;
 
 	meta: {
 		name: string;
@@ -207,6 +200,15 @@ export interface DefinePresetConfigPrimitives<
 	duration?: TDurations;
 }
 
+export type BaseModeValues<
+	TModeSchema extends SimpleTokenSchema,
+	TExtends extends AnyArborPreset[],
+> =
+	Record<never, never> extends ExtendedConfigModeSchema<TExtends> ?
+		ModeValues<TModeSchema>
+	:	DeepPartial<ModeValues<ExtendedConfigModeSchema<TExtends>>> &
+			ModeValues<TModeSchema>;
+
 export interface DefinePresetConfig<
 	TModeSchema extends SimpleTokenSchema,
 	TColors extends CompiledColors<any, any>,
@@ -221,6 +223,18 @@ export interface DefinePresetConfig<
 > {
 	name: string;
 	modeSchema: TModeSchema;
+	baseMode: (
+		$tokens: PresetTokens<
+			TModeSchema,
+			TColors,
+			TTypography,
+			TSpacing,
+			TEasingFunctions,
+			TDurations,
+			TShadows,
+			TMixins
+		>,
+	) => BaseModeValues<TModeSchema, TExtends>;
 	primitives?: (
 		context: GlobalContext,
 	) => DefinePresetConfigPrimitives<
@@ -264,45 +278,45 @@ export interface DefinePresetConfig<
 	config?: GlobalContextConfig;
 }
 
-const emptyPreset: ArborPreset = {
-	functions: {} as any,
-	mixins: {} as any,
-	modeSchema: {} as any,
-	$: {
-		mode: {},
-		mixins: {},
-		primitives: {
-			color: {},
-			duration: {},
-			easing: {},
-			shadow: {},
-			spacing: {},
-			typography: {},
-		} as any,
-		system: {
-			global: {},
-			meta: {},
-		} as any,
-	},
-	context: {} as any,
-	extends: [],
-	withConfig() {
-		return this;
-	},
-	meta: {
-		name: 'empty',
-		init: {} as any,
-	},
-	baseMode() {
-		return {} as any;
-	},
-	bundleMode() {
-		return {} as any;
-	},
-	createMode() {
-		return {} as any;
-	},
-};
+function emptyPreset(): ArborPreset {
+	return {
+		functions: {} as any,
+		mixins: {} as any,
+		modeSchema: {} as any,
+		baseMode: {} as any,
+		$: {
+			mode: {},
+			mixins: {},
+			primitives: {
+				color: {},
+				duration: {},
+				easing: {},
+				shadow: {},
+				spacing: {},
+				typography: {},
+			} as any,
+			system: {
+				global: {},
+				meta: {},
+			} as any,
+		},
+		context: {} as any,
+		extends: [],
+		withConfig() {
+			return this;
+		},
+		meta: {
+			name: 'empty',
+			init: {} as any,
+		},
+		bundleMode() {
+			return {} as any;
+		},
+		createMode() {
+			return {} as any;
+		},
+	};
+}
 
 export function definePreset<
 	TModeSchema extends SimpleTokenSchema,
@@ -366,10 +380,16 @@ export function definePreset<
 				context,
 				extends: [...acc.extends, presetWithConfig],
 				// merge everything together. higher presets override duplicates.
-				$: deepMerge(acc.$ || {}, presetWithConfig.$),
+				$: deepMerge({}, acc.$ || {}, presetWithConfig.$),
 				modeSchema: deepMerge(
+					{},
 					acc.modeSchema || {},
 					presetWithConfig.modeSchema,
+				),
+				baseMode: deepMerge(
+					{},
+					acc.baseMode || {},
+					presetWithConfig.baseMode || {},
 				),
 				functions: {
 					...acc.functions,
@@ -383,8 +403,8 @@ export function definePreset<
 					// no-op
 					return acc as any;
 				},
-			};
-		}, emptyPreset);
+			} as any;
+		}, emptyPreset());
 
 		const composedPrimitiveValues = extended.reduce((acc, preset) => {
 			return deepMerge(acc || {}, preset.meta.init.primitives || {});
@@ -399,6 +419,7 @@ export function definePreset<
 			primitives:
 				presetOptions.primitives ?
 					deepMerge(
+						{},
 						composedPresets.$?.primitives || {},
 						createPrimitiveTokens({
 							createToken: context.createPrimitiveToken,
@@ -407,6 +428,7 @@ export function definePreset<
 					)
 				:	composedPresets.$?.primitives || {},
 			mode: deepMerge(
+				{},
 				composedPresets.$.mode || {},
 				convertSimpleTokenSchema(
 					presetOptions.modeSchema,
@@ -427,7 +449,7 @@ export function definePreset<
 				...$tokensWithoutMixins.mixins,
 				...extractMixinTokens(mixins),
 			},
-		};
+		} as any;
 
 		const functions =
 			createFunctions ?
@@ -435,16 +457,28 @@ export function definePreset<
 			:	({} as TFunctions);
 
 		const internals = {
-			modes: {
-				base: {} as any,
-			},
+			modes: [],
 			defaultScheme: presetOptions.defaultScheme ?? 'light',
-			primitiveValues: deepMerge(composedPrimitiveValues, resolvedPrimitives),
+			primitiveValues: deepMerge(
+				{},
+				composedPrimitiveValues,
+				resolvedPrimitives,
+			) as any,
 		} as PresetInternals;
 
 		const modeSchema = deepMerge(
+			{},
 			composedPresets.modeSchema,
 			presetOptions.modeSchema,
+		);
+
+		const baseMode = createModeInstance(
+			'base',
+			deepMerge(
+				{},
+				composedPresets.baseMode as any,
+				presetOptions.baseMode($tokens as any) as any,
+			) as any,
 		);
 
 		return {
@@ -472,26 +506,16 @@ export function definePreset<
 
 			withConfig,
 
-			baseMode(mode: ModeValues<TModeSchema>) {
-				return (internals.modes.base = createModeInstance(modeSchema, mode, {
-					name: 'base',
-				}));
-			},
+			baseMode,
 
 			bundleMode(name: string, mode: DeepPartial<ModeValues<TModeSchema>>) {
-				return (internals.modes[name] = createModeInstance(
-					modeSchema,
-					mode as any,
-					{
-						name,
-					},
-				));
+				const instance = createModeInstance(name, mode);
+				internals.modes.push(instance);
+				return instance;
 			},
 
 			createMode(name: string, mode: DeepPartial<ModeValues<TModeSchema>>) {
-				return createModeInstance(modeSchema, mode as any, {
-					name,
-				});
+				return createModeInstance(name, mode);
 			},
 		} as any;
 	}
@@ -500,10 +524,7 @@ export function definePreset<
 }
 
 export interface PresetInternals {
-	modes: {
-		base: ModeInstance<any>;
-		[name: string]: PartialModeInstance<any>;
-	};
+	modes: ModeInstance<any>[];
 	defaultScheme: string;
 	primitiveValues: {
 		color: CompiledColors<any, any>;

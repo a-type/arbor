@@ -25,58 +25,22 @@ export type ModeValues<T extends SimpleTokenSchema> = {
 	: never;
 };
 
-export interface ModeConfig {
-	name: string;
-}
-
-export type ModeInstance<T extends SimpleTokenSchema> = {
-	values: ModeValues<T>;
-	schema: T;
-	config: ModeConfig;
-};
-export type PartialModeInstance<T extends SimpleTokenSchema> = Omit<
-	ModeInstance<T>,
-	'values'
-> & {
-	values: DeepPartial<ModeValues<T>>;
-};
-
-export function flattenToPropsList(obj: any): Token[] {
-	const propsList: Token[] = [];
-	for (const key in obj) {
-		if (isToken(obj[key])) {
-			propsList.push(obj[key]);
-		} else if (typeof obj[key] === 'object' && obj[key] !== null) {
-			propsList.push(...flattenToPropsList(obj[key]));
-		}
-	}
-	return propsList;
-}
-
 export function createModeSchema<T extends SimpleTokenSchema>(input: T): T {
 	return input;
 }
 
+export type ModeInstance<T extends SimpleTokenSchema> = DeepPartial<
+	ModeValues<T>
+> & {
+	$name: string;
+};
+
 export function createModeInstance<T extends SimpleTokenSchema>(
-	schema: T,
-	values: ModeValues<T>,
-	config: ModeConfig,
+	name: string,
+	values: DeepPartial<ModeValues<T>>,
 ): ModeInstance<T> {
 	return {
-		schema,
-		values,
-		config,
-	};
-}
-
-export function createPartialModeInstance<T extends SimpleTokenSchema>(
-	schema: T,
-	values: DeepPartial<ModeValues<T>>,
-	config: ModeConfig,
-): PartialModeInstance<T> {
-	return {
-		schema,
-		values,
-		config,
+		...values,
+		$name: name,
 	};
 }

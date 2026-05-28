@@ -8,9 +8,8 @@ import {
 	DEFAULT_MODE_TOKEN_PREFIX,
 	type ArborResolvedPrefixes,
 } from '@arbor-css/globals';
-import { flattenToPropsList } from '@arbor-css/modes';
 import type { AnyArborPreset } from '@arbor-css/preset/config';
-import type { Token } from '@arbor-css/tokens';
+import { flattenTokenSchema, type Token } from '@arbor-css/tokens';
 
 type TokenMapValue = Token | ArborFunction | ArborMixin<any, any>;
 
@@ -113,7 +112,7 @@ function addIssue(
 export function createTokenMap(preset: AnyArborPreset): TokenMap {
 	const tokenMap: TokenMap = new Map();
 
-	for (const token of flattenToPropsList(preset.$)) {
+	for (const token of flattenTokenSchema(preset.$)) {
 		tokenMap.set(token.name, token);
 	}
 

@@ -3,8 +3,8 @@ import {
 	ArborFunction,
 	ArborMixin,
 	DEFAULT_MODE_TOKEN_PREFIX,
+	flattenTokenSchema,
 	Token,
-	flattenToPropsList,
 } from '@arbor-css/core';
 import { dirname } from 'path';
 import * as vscode from 'vscode';
@@ -76,9 +76,11 @@ export class TokenProvider {
 	async getTokenPrefixesForDocument(
 		document: vscode.TextDocument,
 	): Promise<string[]> {
-		return (await this.getStateForDocument(document))?.tokenPrefixes ?? [
-			DEFAULT_MODE_TOKEN_PREFIX,
-		];
+		return (
+			(await this.getStateForDocument(document))?.tokenPrefixes ?? [
+				DEFAULT_MODE_TOKEN_PREFIX,
+			]
+		);
 	}
 
 	async getCompletions(
@@ -159,7 +161,7 @@ export class TokenProvider {
 				string,
 				Token | ArborFunction | ArborMixin<any, any>
 			>();
-			for (const token of flattenToPropsList(preset.$)) {
+			for (const token of flattenTokenSchema(preset.$)) {
 				tokenMap.set(token.name, token);
 			}
 			for (const func of preset.functions ?

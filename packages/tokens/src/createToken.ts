@@ -165,6 +165,7 @@ function normalizeName(name: string) {
 			// remove all -$root - a special key that represents
 			// the root level
 			.replaceAll('-$root', '')
+			.replaceAll('$', '_')
 			.replace(/\s+/g, '-')
 	);
 }

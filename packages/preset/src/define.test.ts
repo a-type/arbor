@@ -13,6 +13,9 @@ it('defines a simple preset', () => {
 		modeSchema: createModeSchema({
 			color: 'color',
 		}),
+		baseMode: () => ({
+			color: 'red',
+		}),
 		primitives: () => ({
 			duration: {
 				long: '300ms',
@@ -45,6 +48,9 @@ it('allows defining functions or mixins using available tokens', () => {
 		},
 		modeSchema: createModeSchema({
 			color: 'color',
+		}),
+		baseMode: () => ({
+			color: 'red',
 		}),
 		primitives: () => ({
 			duration: {
@@ -106,6 +112,9 @@ it('composes presets', () => {
 		modeSchema: {
 			color: 'color',
 		},
+		baseMode: () => ({
+			color: 'red',
+		}),
 		primitives: () => ({
 			color: compileColors({
 				context: createGlobalContext({}),
@@ -136,6 +145,9 @@ it('composes presets', () => {
 		modeSchema: {
 			size: 'size',
 		},
+		baseMode: () => ({
+			size: '16px',
+		}),
 		primitives: () => ({
 			spacing: {
 				levels: {
@@ -169,6 +181,9 @@ it('allows changing global config on all extended presets', () => {
 		modeSchema: createModeSchema({
 			color: 'color',
 		}),
+		baseMode: () => ({
+			color: 'red',
+		}),
 		primitives: () => ({
 			color: compileColors({
 				context: createGlobalContext({}),
@@ -198,6 +213,11 @@ it('allows changing global config on all extended presets', () => {
 		name: 'extended-preset',
 		modeSchema: createModeSchema({
 			size: 'size',
+		}),
+		baseMode: () => ({
+			size: '16px',
+			color: 'blue',
+			foo: 'bar',
 		}),
 		primitives: () => ({
 			spacing: {
@@ -232,6 +252,9 @@ it('allows creating modes from the final mode schema', () => {
 		modeSchema: createModeSchema({
 			color: 'color',
 		}),
+		baseMode: () => ({
+			color: 'red',
+		}),
 		primitives: () => ({
 			duration: {
 				long: '300ms',
@@ -249,25 +272,18 @@ it('allows creating modes from the final mode schema', () => {
 		}),
 	});
 
-	const mode = preset.baseMode({
-		color: 'red',
-		// @ts-expect-error - make sure arbitrary keys are not allowed
-		foo: 'bar',
-	});
-
-	expect(mode.values.color).toBe('red');
-	expect(getInternals(preset).modes.base).toBe(mode);
+	expect(preset.baseMode.color).toBe('red');
 
 	preset.bundleMode('blue', {
 		color: 'blue',
 	});
 
-	expect(getInternals(preset).modes.blue.values.color).toBe('blue');
+	expect(getInternals(preset).modes[0].color).toBe('blue');
 
 	const freeMode = preset.createMode('free', {
 		color: 'green',
 	});
 
-	expect(freeMode.values.color).toBe('green');
-	expect(getInternals(preset).modes.free).not.toBeDefined();
+	expect(freeMode.color).toBe('green');
+	expect(getInternals(preset).modes[1]).not.toBeDefined();
 });

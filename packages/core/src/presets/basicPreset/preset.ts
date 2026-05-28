@@ -9,6 +9,7 @@ import { createPresetMixins } from './mixins.js';
 export const presetBasic = definePreset({
 	name: 'arbor-base',
 	modeSchema: {},
+	baseMode: () => ({}),
 	mixins: (create, $) => createPresetMixins($.system, create),
 	functions: (create, $) => createPresetFunctions($.system, create),
 });

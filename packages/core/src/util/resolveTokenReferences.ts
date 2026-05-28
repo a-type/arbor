@@ -22,7 +22,7 @@ export function resolveTokenReferences(
 			shadows: internals.primitiveValues.shadow.levels,
 			spacing: internals.primitiveValues.spacing.levels,
 			typography: internals.primitiveValues.typography.levels,
-			mode: internals.modes.base.values,
+			mode: preset.baseMode,
 		},
 	);
 

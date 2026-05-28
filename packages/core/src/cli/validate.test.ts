@@ -14,6 +14,11 @@ function createTestPreset() {
 				md: 'spacing',
 			},
 		},
+		baseMode: () => ({
+			spacing: {
+				md: '16px',
+			},
+		}),
 		name: 'test-preset',
 		primitives: (context) => ({
 			color: compileColors({

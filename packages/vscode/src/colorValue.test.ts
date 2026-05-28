@@ -1,4 +1,4 @@
-import { flattenToPropsList } from '@arbor-css/core';
+import { flattenTokenSchema } from '@arbor-css/core';
 import { presetArbor } from '@arbor-css/core/preset-arbor';
 import { expect, it } from 'vitest';
 import { parseCssColor } from './colorValue.js';
@@ -32,7 +32,7 @@ function createTestState(): ConfigState {
 	});
 
 	const tokenMap: TokenMap = new Map(
-		flattenToPropsList(preset.$).map((token) => [token.name, token]),
+		flattenTokenSchema(preset.$).map((token) => [token.name, token]),
 	);
 
 	return {

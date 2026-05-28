@@ -1,6 +1,6 @@
-import { flattenToPropsList, modeToCss } from '@arbor-css/modes';
 import { AnyArborPreset, getInternals } from '@arbor-css/preset/config';
 import {
+	flattenTokenSchema,
 	isToken,
 	selfReferencedProps,
 	tokenSchemaToList,
@@ -9,6 +9,7 @@ import { convertStructure } from '@arbor-css/util';
 import { flattenAndApplyTokenValues } from '../util/flattenAndApplyTokenValues.js';
 import { formatObjectToCss } from '../util/formatObjectToCss.js';
 import { printTokens } from '../util/printTokens.js';
+import { modeToCss } from './modeToCss.js';
 
 const noPreference = `, (prefers-color-scheme: no-preference)`;
 
@@ -55,14 +56,7 @@ export function generateStylesheet(
 	`;
 	}
 
-	const allModeProps = Array.from(
-		new Set(
-			Object.values(modes).flatMap((mode) => {
-				const shape = mode.schema.$tokens;
-				return flattenToPropsList(shape);
-			}),
-		),
-	);
+	const allModeProps = flattenTokenSchema(config.$.mode);
 
 	// replace scheme names with their tags if they are provided
 	const schemeColorsWithTags = Object.keys(primitiveValues.color).reduce(
@@ -126,7 +120,7 @@ ${Object.keys(primitiveValues.color)
 ${Object.entries(modes)
 	.map(([modeName, modeValue]) => {
 		return `/* Mode: ${modeName} */
-${modeName === 'base' ? ':root, :root [class^="\\@scheme-"], ' : ''}${modeToCss(modeValue, modes.base, { systemProps, modeTokens: config.$.mode })}
+${modeName === 'base' ? ':root, :root [class^="\\@scheme-"], ' : ''}${modeToCss(modeValue, config)}
 `;
 	})
 	.join('\n\n')}
