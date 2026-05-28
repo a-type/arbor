@@ -167,7 +167,6 @@ it('composes presets', () => {
 
 	extendedPreset.modeSchema;
 
-	// TODO: restore this.
 	// @ts-expect-error - mode extension does not fail to arbitrary shapes
 	extendedPreset.$.mode.foo;
 

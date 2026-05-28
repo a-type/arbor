@@ -61,7 +61,7 @@ type EmptyPreset = ArborPreset<
 	// empty object
 	// TODO: use some kind of sentinel type which can avoid allowing
 	// arbitrary keys but doesn't leak dummy keys into tokens.
-	Record<never, never>,
+	{},
 	CompiledColors<any, any>,
 	CompiledTypography<any>,
 	CompiledSpacing<any>,
