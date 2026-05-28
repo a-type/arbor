@@ -114,6 +114,8 @@ it('composes presets', () => {
 		},
 		baseMode: () => ({
 			color: 'red',
+			// TODO: prevent arbitrary keys.
+			foo: 'bar',
 		}),
 		primitives: () => ({
 			color: compileColors({
@@ -166,7 +168,7 @@ it('composes presets', () => {
 	extendedPreset.modeSchema;
 
 	// TODO: restore this.
-	// -@ts-expect-error - mode extension does not fail to arbitrary shapes
+	// @ts-expect-error - mode extension does not fail to arbitrary shapes
 	extendedPreset.$.mode.foo;
 
 	expect(extendedPreset.$.primitives.color.primary.$root.name).toBe(

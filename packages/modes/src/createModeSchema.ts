@@ -5,10 +5,9 @@ import {
 	SimpleTokenSchema,
 	Token,
 } from '@arbor-css/tokens';
+import { DeepPartial } from '@arbor-css/util';
 
 export type ModeSchemaProperty = SimpleTokenDefinition;
-
-export type DeepPartial<T> = { [P in keyof T]?: DeepPartial<T[P]> | undefined };
 
 export type ModeValue = string | number | Token | Equation;
 export function isModeValue(value: any): value is ModeValue {

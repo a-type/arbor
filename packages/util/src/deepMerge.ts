@@ -21,3 +21,5 @@ function isObject(item: any): item is Record<string, any> {
 export type DeepPartial<T> = {
 	[P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };
+
+type Test = DeepPartial<{ foo: string; bar?: number; baz?: { qux: boolean } }>;
