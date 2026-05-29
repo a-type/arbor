@@ -9,6 +9,7 @@ import {
 import {
 	convertSimpleTokenSchema,
 	CreateToken,
+	isToken,
 	SimpleTokensAsTokenDefinitions,
 	SimpleTokenSchema,
 	TokenSchema,
@@ -82,7 +83,12 @@ function normalizeBody(body: MixinBodyObject | MixinBodyList): ArborMixinBody {
 	}
 
 	return Object.entries(body).map(([propOrScope, value]) => {
-		if (typeof value === 'object' && value !== null && !isCalcEquation(value)) {
+		if (
+			typeof value === 'object' &&
+			value !== null &&
+			!isCalcEquation(value) &&
+			!isToken(value)
+		) {
 			return {
 				scope: propOrScope,
 				children: normalizeBody(value as MixinBodyObject | MixinBodyList),
