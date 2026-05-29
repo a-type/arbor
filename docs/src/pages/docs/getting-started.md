@@ -162,6 +162,10 @@ Arbor ships with a CLI via `@arbor-css/core` that can build your stylesheet, val
 # list all tokens in an AI-friendly tab-separated table
 pnpm exec arbor tokens list
 
+# list all functions and mixins
+pnpm exec arbor functions list
+pnpm exec arbor mixins list
+
 # only include specific levels
 pnpm exec arbor tokens list --filter primitives
 pnpm exec arbor tokens list --filter primitives,mode
@@ -170,7 +174,7 @@ pnpm exec arbor tokens list --filter primitives,mode
 pnpm exec arbor token info --m-spacing-md
 ```
 
-The `tokens list` output includes CSS custom property name, level, type, purpose, group, and description. This makes it straightforward for both humans and agents to reason about your specific preset.
+The introspection list commands output tab-separated rows that are easy for humans and agents to parse. `tokens list` includes name, level, type, purpose, group, and description; `functions list` includes name, parameters, and description; `mixins list` includes name, parameters, declaration count, and description.
 
 ## Editor integration
 

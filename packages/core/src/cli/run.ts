@@ -10,8 +10,12 @@ import { generateStylesheet } from '../stylesheet/generateStylesheet.js';
 import {
 	findTokenRecord,
 	findTokenSuggestions,
+	formatFunctionList,
+	formatMixinList,
 	formatTokenInfo,
 	formatTokenList,
+	listFunctionRecords,
+	listMixinRecords,
 	listTokenRecords,
 	parseTokenLevelFilter,
 } from './introspection.js';
@@ -105,6 +109,54 @@ yargs(hideBin(process.argv))
 				const levels = parseTokenLevelFilter(argv.filter as string | undefined);
 				const records = listTokenRecords(arbor, { levels });
 				console.log(formatTokenList(records));
+			} catch (error) {
+				console.error(error instanceof Error ? error.message : String(error));
+				process.exit(1);
+			}
+		},
+	)
+	.command(
+		'functions list',
+		'List all Arbor functions in the config',
+		(y) =>
+			y.option('config', {
+				alias: 'c',
+				type: 'string',
+				description: 'Path to the configuration file',
+			}),
+		async (argv) => {
+			try {
+				const resolvedConfigPath = path.join(
+					process.cwd(),
+					argv.config || 'arbor.config.ts',
+				);
+				const arbor = await loadArborConfig(resolvedConfigPath);
+				const records = listFunctionRecords(arbor);
+				console.log(formatFunctionList(records));
+			} catch (error) {
+				console.error(error instanceof Error ? error.message : String(error));
+				process.exit(1);
+			}
+		},
+	)
+	.command(
+		'mixins list',
+		'List all Arbor mixins in the config',
+		(y) =>
+			y.option('config', {
+				alias: 'c',
+				type: 'string',
+				description: 'Path to the configuration file',
+			}),
+		async (argv) => {
+			try {
+				const resolvedConfigPath = path.join(
+					process.cwd(),
+					argv.config || 'arbor.config.ts',
+				);
+				const arbor = await loadArborConfig(resolvedConfigPath);
+				const records = listMixinRecords(arbor);
+				console.log(formatMixinList(records));
 			} catch (error) {
 				console.error(error instanceof Error ? error.message : String(error));
 				process.exit(1);

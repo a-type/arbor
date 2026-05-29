@@ -1,3 +1,9 @@
+import {
+	isFunctionParamWithMeta,
+	type ArborFunction,
+	type ArborMixin,
+	type FunctionParam,
+} from '@arbor-css/functions';
 import type { AnyArborPreset } from '@arbor-css/preset/config';
 import { isToken, type Token } from '@arbor-css/tokens';
 
@@ -6,6 +12,16 @@ export type TokenLevel = 'mode' | 'primitives' | 'system' | 'mixins';
 export interface TokenRecord {
 	level: TokenLevel;
 	token: Token;
+}
+
+export interface FunctionRecord {
+	name: string;
+	fn: ArborFunction;
+}
+
+export interface MixinRecord {
+	name: string;
+	mixin: ArborMixin;
 }
 
 const DEFAULT_LEVELS: TokenLevel[] = ['mode', 'primitives', 'system', 'mixins'];
@@ -114,6 +130,26 @@ function printable(value: unknown): string {
 	return String(value).replace(/[\t\r\n]+/g, ' ').trim();
 }
 
+function formatParam(param: FunctionParam): string {
+	if (isToken(param)) {
+		const type = printable(param.type);
+		return type ? `${param.name}<${type}>` : param.name;
+	}
+	if (isFunctionParamWithMeta(param)) {
+		const typeSuffix = param.type ? `<${param.type}>` : '';
+		const fallbackSuffix = param.fallback ? `=${param.fallback}` : '';
+		return `${param.name}${typeSuffix}${fallbackSuffix}`;
+	}
+	return param;
+}
+
+function formatParams(params: readonly FunctionParam[]): string {
+	if (params.length === 0) {
+		return '(none)';
+	}
+	return params.map((param) => formatParam(param)).join(', ');
+}
+
 export function formatTokenList(records: TokenRecord[]): string {
 	const header = 'name\tlevel\ttype\tpurpose\tgroup\tdescription';
 	const rows = records.map((record) => {
@@ -175,4 +211,49 @@ export function formatTokenInfo(record: TokenRecord): string {
 	];
 
 	return lines.join('\n');
+}
+
+export function listFunctionRecords(preset: AnyArborPreset): FunctionRecord[] {
+	return Object.values(preset.functions)
+		.map((fn) => ({
+			name: fn.name,
+			fn,
+		}))
+		.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+export function formatFunctionList(records: FunctionRecord[]): string {
+	const header = 'name\tparameters\tdescription';
+	const rows = records.map((record) =>
+		[
+			record.name,
+			formatParams(record.fn.parameters),
+			printable(record.fn.description),
+		].join('\t'),
+	);
+
+	return [header, ...rows].join('\n');
+}
+
+export function listMixinRecords(preset: AnyArborPreset): MixinRecord[] {
+	return Object.values(preset.mixins)
+		.map((mixin) => ({
+			name: mixin.name,
+			mixin,
+		}))
+		.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+export function formatMixinList(records: MixinRecord[]): string {
+	const header = 'name\tparameters\tdeclarations\tdescription';
+	const rows = records.map((record) =>
+		[
+			record.name,
+			formatParams(record.mixin.parameters),
+			record.mixin.declarations.length,
+			printable(record.mixin.description),
+		].join('\t'),
+	);
+
+	return [header, ...rows].join('\n');
 }

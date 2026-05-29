@@ -70,7 +70,7 @@ function createColorMixins(
 		},
 	});
 	const lightenMixin = createMixinValue(`${name}-lighten`, {
-		description: `Lightens the ${property} color for better contrast.`,
+		description: `Lightens the ${property} color applied to ${refMixin.name} by a number of steps.`,
 		parameters: [
 			'--step',
 			{
@@ -88,7 +88,7 @@ function createColorMixins(
 		}),
 	});
 	const darkenMixin = createMixinValue(`${name}-darken`, {
-		description: `Darkens the ${property} color for better contrast.`,
+		description: `Darkens the ${property} color applied to ${refMixin.name} by a number of steps.`,
 		parameters: [
 			'--step',
 			{
@@ -106,7 +106,7 @@ function createColorMixins(
 		}),
 	});
 	const desaturateMixin = createMixinValue(`${name}-desaturate`, {
-		description: `Desaturates the ${property} color for better contrast.`,
+		description: `Desaturates the ${property} color applied to ${refMixin.name} by a number of steps.`,
 		parameters: [
 			'--step',
 			{
@@ -124,7 +124,7 @@ function createColorMixins(
 		}),
 	});
 	const saturateMixin = createMixinValue(`${name}-saturate`, {
-		description: `Saturates the ${property} color for better contrast.`,
+		description: `Saturates the ${property} color applied to ${refMixin.name} by a number of steps.`,
 		parameters: [
 			'--step',
 			{
@@ -142,7 +142,7 @@ function createColorMixins(
 		}),
 	});
 	const fadeMixin = createMixinValue(`${name}-fade`, {
-		description: `Fades the ${property} color for better contrast.`,
+		description: `Sets the ${property} color applied to ${refMixin.name} to a specific opacity.`,
 		parameters: [
 			'--opacity',
 			{
@@ -175,7 +175,7 @@ export function createPresetMixins(
 ) {
 	const shadow = createMixinValue('shadow', {
 		description:
-			'Seeds stacked box-shadow layers so ring and shadow portions can be assigned independently.',
+			'Applies stacked box-shadow layers as assignable tokens, so ring and shadow portions can be assigned independently.',
 		definition: (css, { tokens }) => ({
 			[tokens.shadow.name]: css`0 0 0 0 transparent`,
 			[tokens.ring.name]: css`0 0 0 0 transparent`,
@@ -201,21 +201,21 @@ export function createPresetMixins(
 		name: 'fg',
 		property: 'color',
 		description:
-			'Routes color assignments through Arbor ref variables for runtime adjustments.',
+			'Routes color assignments through intermediate tokens to allow for runtime adjustments and cross-color references.',
 	});
 
 	const bgMixins = createColorMixins(createMixinValue, systemProps, {
 		name: 'bg',
 		property: 'background',
 		description:
-			'Routes background color assignments through Arbor ref variables for runtime adjustments.',
+			'Routes background color assignments through intermediate tokens to allow for runtime adjustments and cross-color references.',
 	});
 
 	const borderMixins = createColorMixins(createMixinValue, systemProps, {
 		name: 'border',
 		property: 'border-color',
 		description:
-			'Routes border color assignments through Arbor ref variables for runtime adjustments.',
+			'Routes border color assignments through intermediate tokens to allow for runtime adjustments and cross-color references.',
 		defineExtraProperties: (css) => ({
 			'border-style': css`solid`,
 			'border-width': css`
@@ -228,21 +228,21 @@ export function createPresetMixins(
 		name: 'fill',
 		property: 'fill',
 		description:
-			'Routes SVG fill assignments through Arbor ref variables for runtime adjustments.',
+			'Routes SVG fill assignments through intermediate tokens to allow for runtime adjustments and cross-color references.',
 	});
 
 	const strokeMixins = createColorMixins(createMixinValue, systemProps, {
 		name: 'stroke',
 		property: 'stroke',
 		description:
-			'Routes SVG stroke assignments through Arbor ref variables for runtime adjustments.',
+			'Routes SVG stroke assignments through intermediate tokens to allow for runtime adjustments and cross-color references.',
 	});
 
 	const accentMixins = createColorMixins(createMixinValue, systemProps, {
 		name: 'accent',
 		property: 'accent-color',
 		description:
-			'Routes accent-color assignments through Arbor ref variables for runtime adjustments.',
+			'Routes accent-color assignments through intermediate tokens to allow for runtime adjustments and cross-color references.',
 	});
 
 	return {
