@@ -463,7 +463,7 @@ export function definePreset<
 		}, emptyPreset());
 
 		const composedPrimitiveValues = extended.reduce((acc, preset) => {
-			return deepMerge(acc || {}, preset.meta.init.primitives || {});
+			return deepMerge(acc || {}, getInternals(preset).primitiveValues || {});
 		}, {});
 
 		const resolvedPrimitives =
