@@ -1,6 +1,7 @@
 import { compileColors } from '@arbor-css/colors';
 import { createGlobalContext } from '@arbor-css/globals';
 import { createModeSchema } from '@arbor-css/modes';
+import { compileShadows } from '@arbor-css/shadows';
 import { expect, it } from 'vitest';
 import { definePreset, getInternals } from './define.js';
 
@@ -117,7 +118,7 @@ it('composes presets', () => {
 			// TODO: prevent arbitrary keys.
 			foo: 'bar',
 		}),
-		primitives: () => ({
+		primitives: (ctx) => ({
 			color: compileColors({
 				context: createGlobalContext({}),
 				ranges: {
@@ -139,6 +140,37 @@ it('composes presets', () => {
 				},
 				defaultLevel: 'md',
 			},
+			shadow: compileShadows({
+				levels: {
+					custom: {
+						blur: '4px',
+						color: 'rgba(0, 0, 0, 0.25)',
+						x: '0px',
+						y: '2px',
+						spread: '0px',
+					},
+				},
+				context: ctx,
+			}),
+		}),
+		mixins: (create) => ({
+			demo: create('demo', {
+				parameters: [] as const,
+				definition: (css, { tokens }) => ({
+					color: css`
+						${tokens.inputColor}
+					`,
+				}),
+				contributeTokens: {
+					inputColor: 'color',
+				},
+			}),
+		}),
+		functions: (create) => ({
+			demo: create('demo', {
+				parameters: [] as const,
+				definition: (css) => css`red`,
+			}),
 		}),
 	});
 
@@ -160,6 +192,27 @@ it('composes presets', () => {
 			},
 		}),
 		extends: [basePreset],
+		mixins: (create, $) => ({
+			usesDemo: create('uses-demo', {
+				parameters: [] as const,
+				definition: (css) => ({
+					color: css`
+						${$.mixins.demo.inputColor}
+					`,
+				}),
+				contributeTokens: {
+					usesDemoInputColor: 'color',
+				},
+			}),
+		}),
+		functions: (create, $) => ({
+			another: create('another', {
+				parameters: [] as const,
+				definition: (css) => css`
+					${$.mixins.demo.inputColor}
+				`,
+			}),
+		}),
 	});
 
 	expect(extendedPreset.$.mode.color.name).toBe('--m-color');
@@ -175,6 +228,18 @@ it('composes presets', () => {
 	);
 	expect(extendedPreset.$.primitives.spacing.sm.name).toBe('--p-spacing-sm');
 	expect(extendedPreset.$.primitives.spacing.lg.name).toBe('--p-spacing-lg');
+
+	expect(extendedPreset.$.mixins.demo).toBeDefined();
+	expect(extendedPreset.mixins.usesDemo).toBeDefined();
+	expect(extendedPreset.$.mixins.usesDemo.usesDemoInputColor.name).toBe(
+		'--mx2-uses-demo-inputColor',
+	);
+
+	// typing checks
+	extendedPreset.$.primitives.shadow.custom;
+	extendedPreset.$.mixins.demo.inputColor.name;
+	extendedPreset.functions.demo;
+	extendedPreset.functions.another;
 });
 
 it('allows changing global config on all extended presets', () => {

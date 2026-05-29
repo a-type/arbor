@@ -79,6 +79,62 @@ export type ExtendedConfigModeSchema<TExtends extends AnyArborPreset[]> =
 		TModeSchema
 	:	{};
 
+export type ExtendedConfigColors<TExtends extends AnyArborPreset[]> =
+	TExtends[number] extends (
+		ArborPreset<any, infer TColors, any, any, any, any, any, any, any>
+	) ?
+		TColors
+	:	CompiledColors<any, any>;
+
+export type ExtendedConfigTypography<TExtends extends AnyArborPreset[]> =
+	TExtends[number] extends (
+		ArborPreset<any, any, infer TTypography, any, any, any, any, any, any>
+	) ?
+		TTypography
+	:	CompiledTypography<any>;
+
+export type ExtendedConfigSpacing<TExtends extends AnyArborPreset[]> =
+	TExtends[number] extends (
+		ArborPreset<any, any, any, infer TSpacing, any, any, any, any, any>
+	) ?
+		TSpacing
+	:	CompiledSpacing<any>;
+
+export type ExtendedConfigShadows<TExtends extends AnyArborPreset[]> =
+	TExtends[number] extends (
+		ArborPreset<any, any, any, any, infer TShadows, any, any, any, any>
+	) ?
+		TShadows
+	:	CompiledShadows<any>;
+
+export type ExtendedConfigEasingFunctions<TExtends extends AnyArborPreset[]> =
+	TExtends[number] extends (
+		ArborPreset<any, any, any, any, any, infer TEasingFunctions, any, any, any>
+	) ?
+		TEasingFunctions
+	:	Record<string, string>;
+
+export type ExtendedConfigDurations<TExtends extends AnyArborPreset[]> =
+	TExtends[number] extends (
+		ArborPreset<any, any, any, any, any, any, infer TDurations, any, any>
+	) ?
+		TDurations
+	:	Record<string, string>;
+
+export type ExtendedConfigFunctions<TExtends extends AnyArborPreset[]> =
+	TExtends[number] extends (
+		ArborPreset<any, any, any, any, any, any, any, infer TFunctions, any>
+	) ?
+		TFunctions
+	:	PresetFunctions;
+
+export type ExtendedConfigMixins<TExtends extends AnyArborPreset[]> =
+	TExtends[number] extends (
+		ArborPreset<any, any, any, any, any, any, any, any, infer TMixins>
+	) ?
+		TMixins
+	:	PresetMixins;
+
 /**
  * Collected tokens of the entire preset.
  */
@@ -225,53 +281,53 @@ export interface DefinePresetConfig<
 	modeSchema: TModeSchema;
 	baseMode: (
 		$tokens: PresetTokens<
-			TModeSchema,
-			TColors,
-			TTypography,
-			TSpacing,
-			TEasingFunctions,
-			TDurations,
-			TShadows,
-			TMixins
+			ExtendedConfigModeSchema<TExtends> & TModeSchema,
+			ExtendedConfigColors<TExtends> & TColors,
+			ExtendedConfigTypography<TExtends> & TTypography,
+			ExtendedConfigSpacing<TExtends> & TSpacing,
+			ExtendedConfigEasingFunctions<TExtends> & TEasingFunctions,
+			ExtendedConfigDurations<TExtends> & TDurations,
+			ExtendedConfigShadows<TExtends> & TShadows,
+			ExtendedConfigMixins<TExtends> & TMixins
 		>,
 	) => BaseModeValues<TModeSchema, TExtends>;
 	primitives?: (
 		context: GlobalContext,
 	) => DefinePresetConfigPrimitives<
-		TColors,
-		TTypography,
-		TSpacing,
-		TShadows,
-		TEasingFunctions,
-		TDurations
+		DeepPartial<ExtendedConfigColors<TExtends>> & TColors,
+		DeepPartial<ExtendedConfigTypography<TExtends>> & TTypography,
+		DeepPartial<ExtendedConfigSpacing<TExtends>> & TSpacing,
+		DeepPartial<ExtendedConfigShadows<TExtends>> & TShadows,
+		DeepPartial<ExtendedConfigEasingFunctions<TExtends>> & TEasingFunctions,
+		DeepPartial<ExtendedConfigDurations<TExtends>> & TDurations
 	>;
 	defaultScheme?: keyof TColors;
 	mixins?: (
 		create: CreateMixin,
 		$: PresetTokens<
-			TModeSchema,
-			TColors,
-			TTypography,
-			TSpacing,
-			TEasingFunctions,
-			TDurations,
-			TShadows,
+			ExtendedConfigModeSchema<TExtends> & TModeSchema,
+			ExtendedConfigColors<TExtends> & TColors,
+			ExtendedConfigTypography<TExtends> & TTypography,
+			ExtendedConfigSpacing<TExtends> & TSpacing,
+			ExtendedConfigEasingFunctions<TExtends> & TEasingFunctions,
+			ExtendedConfigDurations<TExtends> & TDurations,
+			ExtendedConfigShadows<TExtends> & TShadows,
 			// Do not include mixin tokens when defining mixins -
 			// this would be circular logic
-			{}
+			ExtendedConfigMixins<TExtends>
 		>,
 	) => TMixins;
 	functions?: (
 		create: CreateFunction,
 		$: PresetTokens<
-			TModeSchema,
-			TColors,
-			TTypography,
-			TSpacing,
-			TEasingFunctions,
-			TDurations,
-			TShadows,
-			TMixins
+			ExtendedConfigModeSchema<TExtends> & TModeSchema,
+			ExtendedConfigColors<TExtends> & TColors,
+			ExtendedConfigTypography<TExtends> & TTypography,
+			ExtendedConfigSpacing<TExtends> & TSpacing,
+			ExtendedConfigEasingFunctions<TExtends> & TEasingFunctions,
+			ExtendedConfigDurations<TExtends> & TDurations,
+			ExtendedConfigShadows<TExtends> & TShadows,
+			ExtendedConfigMixins<TExtends> & TMixins
 		>,
 	) => TFunctions;
 	extends?: TExtends;
@@ -347,14 +403,14 @@ export function definePreset<
 	TExtends
 >): ArborPreset<
 	ExtendedConfigModeSchema<TExtends> & TModeSchema,
-	TCompiledColors,
-	TTypography,
-	TSpacing,
-	TShadows,
-	TEasingFunctions,
-	TDurations,
-	TFunctions,
-	TMixins
+	ExtendedConfigColors<TExtends> & TCompiledColors,
+	ExtendedConfigTypography<TExtends> & TTypography,
+	ExtendedConfigSpacing<TExtends> & TSpacing,
+	ExtendedConfigShadows<TExtends> & TShadows,
+	ExtendedConfigEasingFunctions<TExtends> & TEasingFunctions,
+	ExtendedConfigDurations<TExtends> & TDurations,
+	ExtendedConfigFunctions<TExtends> & TFunctions,
+	ExtendedConfigMixins<TExtends> & TMixins
 > {
 	function withConfig(
 		options: GlobalContextConfig,
