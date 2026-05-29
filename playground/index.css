@@ -101,7 +101,7 @@ input {
 	border: 1px solid var(--mx-border-ref);
 	font-size: var(--m-text-secondary-size);
 	font-weight: var(--m-text-secondary-weight);
-	line-height: var(--m-text-secondary-lineHeight);
+	line-height: 1;
 	@apply --mx-bg(var(--m-control-bg));
 	@apply --mx-fg(var(--m-control-fg));
 	@apply --mx-border(var(--m-control-border));

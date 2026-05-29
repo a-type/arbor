@@ -39,6 +39,25 @@ it('defines a simple preset', () => {
 	expect(preset.$.primitives.spacing.lg.name).toBe('--p-spacing-lg');
 });
 
+it('applies global config tokens', () => {
+	const preset = definePreset({
+		name: 'test-preset',
+		config: {
+			globals: {
+				roundness: 1,
+			},
+		},
+		modeSchema: createModeSchema({
+			color: 'color',
+		}),
+		baseMode: () => ({
+			color: 'red',
+		}),
+	});
+
+	expect(preset.context.globals.roundness).toBe(1);
+});
+
 it('allows defining functions or mixins using available tokens', () => {
 	const preset = definePreset({
 		name: 'test-preset',

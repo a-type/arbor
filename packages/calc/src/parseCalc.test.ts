@@ -1,6 +1,12 @@
 import { createTokenFactory } from '@arbor-css/tokens';
 import { describe, expect, it } from 'vitest';
-import { $, computeEquation, Equation, printEquation } from './index.js';
+import {
+	$,
+	computeEquation,
+	Equation,
+	printComputationResult,
+	printEquation,
+} from './index.js';
 import { css } from './parseCalc.js';
 
 const createToken = createTokenFactory({ tokenPrefix: '--x-' });
@@ -367,13 +373,15 @@ describe('css template — if() pre-baking', () => {
 	it('pre-bakes matching style() conditions when property value is known', () => {
 		const eq = css`if(style(--size: "2xl"): 1em; else: 0.25em;)`;
 		expect(
-			computeEquation(eq, {
-				propertyValues: {
-					'--size': '"2xl"',
-				},
-				skipBaking: false,
-			}),
-		).toEqual({ type: 'numeric', value: 1, unit: 'em' });
+			printComputationResult(
+				computeEquation(eq, {
+					propertyValues: {
+						'--size': '"2xl"',
+					},
+					skipBaking: false,
+				}),
+			),
+		).toEqual('1em');
 	});
 
 	it('pre-bakes non-matching style() conditions to else branch', () => {

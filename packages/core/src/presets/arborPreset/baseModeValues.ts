@@ -151,7 +151,7 @@ export function createArborModeValues<
 					${$.mode.control.padding.block} ${$.mode.control.padding.inline}
 				`,
 				block: css`calc(${$.primitives.spacing.sm} / ${$.mode.density})`,
-				inline: css`calc((${$.primitives.spacing.sm} + ${$.system.global.roundness} * ${$.primitives.spacing.xs}) / ${$.mode.density})`,
+				inline: css`calc((${$.primitives.spacing.md} + ${$.system.global.roundness} * ${$.primitives.spacing.sm}) / ${$.mode.density})`,
 			},
 			roundness: 1,
 			radius: css`calc(${$.mode.radius.sm} * ${$.mode.control.roundness})`,
