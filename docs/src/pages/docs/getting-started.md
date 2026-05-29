@@ -156,7 +156,21 @@ Now any CSS file you author can utilize Arbor tokens, functions, and mixins. Arb
 
 ### CLI
 
-TODO
+Arbor ships with a CLI via `@arbor-css/core` that can build your stylesheet, validate usage in CSS files, and inspect your project's resolved token model.
+
+```bash
+# list all tokens in an AI-friendly tab-separated table
+pnpm exec arbor tokens list
+
+# only include specific levels
+pnpm exec arbor tokens list --filter primitives
+pnpm exec arbor tokens list --filter primitives,mode
+
+# inspect one token by CSS variable name
+pnpm exec arbor token info --m-spacing-md
+```
+
+The `tokens list` output includes CSS custom property name, level, type, purpose, group, and description. This makes it straightforward for both humans and agents to reason about your specific preset.
 
 ## Editor integration
 

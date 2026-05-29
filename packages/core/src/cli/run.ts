@@ -8,6 +8,14 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { generateStylesheet } from '../stylesheet/generateStylesheet.js';
 import {
+	findTokenRecord,
+	findTokenSuggestions,
+	formatTokenInfo,
+	formatTokenList,
+	listTokenRecords,
+	parseTokenLevelFilter,
+} from './introspection.js';
+import {
 	createPrefixValidationConfig,
 	createTokenMap,
 	validateCssContent,
@@ -66,6 +74,76 @@ yargs(hideBin(process.argv))
 				} else {
 					console.log(content);
 				}
+			} catch (error) {
+				console.error(error instanceof Error ? error.message : String(error));
+				process.exit(1);
+			}
+		},
+	)
+	.command(
+		'tokens list',
+		'List all tokens in the Arbor config',
+		(y) =>
+			y
+				.option('config', {
+					alias: 'c',
+					type: 'string',
+					description: 'Path to the configuration file',
+				})
+				.option('filter', {
+					type: 'string',
+					description:
+						'Filter token levels by comma-separated values (mode,primitives,system,mixins)',
+				}),
+		async (argv) => {
+			try {
+				const resolvedConfigPath = path.join(
+					process.cwd(),
+					argv.config || 'arbor.config.ts',
+				);
+				const arbor = await loadArborConfig(resolvedConfigPath);
+				const levels = parseTokenLevelFilter(argv.filter as string | undefined);
+				const records = listTokenRecords(arbor, { levels });
+				console.log(formatTokenList(records));
+			} catch (error) {
+				console.error(error instanceof Error ? error.message : String(error));
+				process.exit(1);
+			}
+		},
+	)
+	.command(
+		'token info',
+		'Show detailed info for a token. Pass a token name as a positional argument.',
+		(y) =>
+			y.option('config', {
+				alias: 'c',
+				type: 'string',
+				description: 'Path to the configuration file',
+			}),
+		async (argv) => {
+			try {
+				const resolvedConfigPath = path.join(
+					process.cwd(),
+					argv.config || 'arbor.config.ts',
+				);
+				const arbor = await loadArborConfig(resolvedConfigPath);
+				const records = listTokenRecords(arbor);
+				const tokenName = String(argv._.pop() || '').trim();
+				const record = findTokenRecord(records, tokenName);
+
+				if (!record) {
+					const suggestions = findTokenSuggestions(records, tokenName);
+					console.error(`Token not found: ${tokenName}`);
+					if (suggestions.length > 0) {
+						console.error('Did you mean:');
+						for (const suggestion of suggestions) {
+							console.error(`  - ${suggestion}`);
+						}
+					}
+					process.exit(1);
+				}
+
+				console.log(formatTokenInfo(record));
 			} catch (error) {
 				console.error(error instanceof Error ? error.message : String(error));
 				process.exit(1);
@@ -190,4 +268,8 @@ yargs(hideBin(process.argv))
 	)
 	.demandCommand(1, 'You need to specify a command')
 	.help()
+	.parserConfiguration({
+		'unknown-options-as-args': true,
+		'nargs-eats-options': true,
+	})
 	.parse();
