@@ -117,7 +117,7 @@ ${Object.keys(primitiveValues.color)
 	)
 	.join('\n\n')}
 
-${Object.entries(modes)
+${[['base', config.baseMode] as const, ...Object.entries(modes)]
 	.map(([modeName, modeValue]) => {
 		return `/* Mode: ${modeName} */
 ${modeName === 'base' ? ':root, :root [class^="\\@scheme-"], ' : ''}${modeToCss(modeValue, config)}
@@ -138,18 +138,17 @@ ${
 	.join('\n\n')*/ ''
 }
 
-/* Custom properties for each primitive color */
 ${allColorTokens
 	.map((token) => token.definition)
 	.filter(Boolean)
 	.join('\n')}
-
-/* Custom properties for each mode property */
 ${allModeProps
 	.map((PROP) => PROP.definition)
 	.filter(Boolean)
 	.join('\n\n')}
 
 ${cascadeLayerName ? `}` : ''}
-`.trim();
+`
+		.trim()
+		.replace(/\n+$/, '\n');
 }
