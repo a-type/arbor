@@ -73,6 +73,28 @@ describe('calc computeEquation', () => {
 		const result = computeEquation(equation, { propertyValues: {} });
 		expect(result).toEqual({ value: 50, unit: 'px', type: 'numeric' });
 	});
+
+	it('resolves property values defined as equations', () => {
+		const result = computeEquation($.val(`var(${tokenA.name})`), {
+			propertyValues: {
+				[tokenA.name]: $.add($.val('10px'), $.val('5px')),
+			},
+		});
+		expect(result).toEqual({ value: 15, type: 'numeric', unit: 'px' });
+	});
+
+	it('avoids infinite recursion for cyclic equation property values', () => {
+		const result = computeEquation($.val(`var(${tokenA.name})`), {
+			propertyValues: {
+				[tokenA.name]: $.val(`var(${tokenB.name})`),
+				[tokenB.name]: $.val(`var(${tokenA.name})`),
+			},
+		});
+		expect(result).toEqual({
+			value: `var(${tokenA.name})`,
+			type: 'calc',
+		});
+	});
 });
 
 describe('token tracking', () => {

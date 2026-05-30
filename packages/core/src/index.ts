@@ -22,4 +22,5 @@ export * from '@arbor-css/tokens';
 export * from '@arbor-css/typography';
 export * from './getStructuredTokensMap.js';
 export { generateStylesheet } from './stylesheet/generateStylesheet.js';
+export { resolveComputedTokenValue } from './util/resolveComputedTokenValue.js';
 export { resolveTokenReferences } from './util/resolveTokenReferences.js';

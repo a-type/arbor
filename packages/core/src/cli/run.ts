@@ -7,6 +7,7 @@ import path from 'node:path';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { generateStylesheet } from '../stylesheet/generateStylesheet.js';
+import { resolveComputedTokenValue } from '../util/resolveComputedTokenValue.js';
 import {
 	findTokenRecord,
 	findTokenSuggestions,
@@ -196,6 +197,51 @@ yargs(hideBin(process.argv))
 				}
 
 				console.log(formatTokenInfo(record));
+			} catch (error) {
+				console.error(error instanceof Error ? error.message : String(error));
+				process.exit(1);
+			}
+		},
+	)
+	.command(
+		'token resolve',
+		'Resolve and print a token value using default scheme and base mode.',
+		(y) =>
+			y.option('config', {
+				alias: 'c',
+				type: 'string',
+				description: 'Path to the configuration file',
+			}),
+		async (argv) => {
+			try {
+				const resolvedConfigPath = path.join(
+					process.cwd(),
+					argv.config || 'arbor.config.ts',
+				);
+				const arbor = await loadArborConfig(resolvedConfigPath);
+				const records = listTokenRecords(arbor);
+				const tokenName = String(argv._.pop() || '').trim();
+				const record = findTokenRecord(records, tokenName);
+
+				if (!record) {
+					const suggestions = findTokenSuggestions(records, tokenName);
+					console.error(`Token not found: ${tokenName}`);
+					if (suggestions.length > 0) {
+						console.error('Did you mean:');
+						for (const suggestion of suggestions) {
+							console.error(`  - ${suggestion}`);
+						}
+					}
+					process.exit(1);
+				}
+
+				const resolved = resolveComputedTokenValue(arbor, record.token.name);
+				if (resolved === undefined) {
+					console.error(`Token could not be resolved: ${record.token.name}`);
+					process.exit(1);
+				}
+
+				console.log(resolved);
 			} catch (error) {
 				console.error(error instanceof Error ? error.message : String(error));
 				process.exit(1);

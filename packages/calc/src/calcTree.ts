@@ -2,9 +2,11 @@ import { Token } from '@arbor-css/tokens';
 import { functionResolvers } from './functions.js';
 
 export interface CalcEvaluationContext {
-	propertyValues: Record<string, string | undefined>;
+	propertyValues: Record<string, string | Equation | undefined>;
 	/** Prevents the baking of known literals into calculations. */
 	skipBaking?: boolean;
+	/** @internal Tracks nested property evaluation to prevent cycles. */
+	resolvingProperties?: Set<string>;
 }
 
 export function isCalcEquation(value: any): value is Equation {
@@ -461,7 +463,11 @@ function evaluateStyleCondition(
 	}
 
 	const expectedValue = printComputationResult(computedArgs[1]).trim();
-	const actualValue = context.propertyValues[propertyName];
+	const actualValue = evaluatePropertyValue(
+		propertyName,
+		context.propertyValues[propertyName],
+		context,
+	);
 	if (actualValue === undefined) {
 		return { text };
 	}
@@ -570,12 +576,24 @@ function evaluateLiteral(
 			nameEnd = literal.length - 1;
 		}
 		const propertyName = literal.slice(4, nameEnd).trim();
-		const propertyValue = context.propertyValues[propertyName];
+		const propertyValue = evaluatePropertyValue(
+			propertyName,
+			context.propertyValues[propertyName],
+			context,
+		);
 		if (!propertyValue || context.skipBaking) {
 			return { type: 'calc', value: literal };
-		} else {
+		}
+		if (context.resolvingProperties?.has(propertyName)) {
+			return { type: 'calc', value: `var(${propertyName})` };
+		}
+
+		context.resolvingProperties?.add(propertyName);
+		try {
 			// replace literal with known value from context
 			return evaluateLiteral(propertyValue, context);
+		} finally {
+			context.resolvingProperties?.delete(propertyName);
 		}
 	} else if (literal === 'PI') {
 		return { type: 'numeric', value: Math.PI, unit: '' };
@@ -585,6 +603,31 @@ function evaluateLiteral(
 			return parsed;
 		}
 		return { type: 'calc', value: literal };
+	}
+}
+
+function evaluatePropertyValue(
+	propertyName: string,
+	propertyValue: string | Equation | undefined,
+	context: CalcEvaluationContext,
+): string | undefined {
+	if (propertyValue === undefined) {
+		return undefined;
+	}
+
+	if (typeof propertyValue === 'string') {
+		return propertyValue;
+	}
+
+	if (context.resolvingProperties?.has(propertyName)) {
+		return `var(${propertyName})`;
+	}
+
+	context.resolvingProperties?.add(propertyName);
+	try {
+		return printComputationResult(computeEquation(propertyValue, context));
+	} finally {
+		context.resolvingProperties?.delete(propertyName);
 	}
 }
 
@@ -598,6 +641,7 @@ export function computeEquation(
 		// running in a browser - this makes a runtime-evaluated equation
 		// responsive to runtime-tweaked globals.
 		skipBaking: userContext.skipBaking ?? typeof window !== 'undefined',
+		resolvingProperties: userContext.resolvingProperties ?? new Set(),
 	};
 	switch (equation.type) {
 		case 'literal':

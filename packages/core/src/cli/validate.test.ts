@@ -77,11 +77,27 @@ it('reports unknown declarations, functions, and mixins for configured prefixes'
 	expect(issues).toHaveLength(3);
 	expect(issues.map((issue) => issue.message)).toEqual(
 		expect.arrayContaining([
-			'Unknown Arbor token: --x-does-not-exist',
+			expect.stringContaining('Unknown Arbor token: --x-does-not-exist'),
 			'Unknown Arbor function: --x-fn-missing',
 			'Unknown Arbor mixin: --x-mx-missing',
 		]),
 	);
+});
+
+it('suggests similar Arbor tokens for unknown declarations', () => {
+	const preset = createTestPreset();
+	const knownTokenName = preset.$.mode.spacing.md.name;
+	const misspelledTokenName = knownTokenName.replace(/md$/, 'mdd');
+	const issues = validateCssContent({
+		content: ['.card {', `  ${misspelledTokenName}: 1rem;`, '}'].join('\n'),
+		tokenMap: createTokenMap(preset),
+		prefixConfig: createPrefixValidationConfig(preset.context.tokenPrefixes),
+	});
+
+	expect(issues).toHaveLength(1);
+	expect(issues[0].message).toContain(`Unknown Arbor token: ${misspelledTokenName}`);
+	expect(issues[0].message).toContain('Did you mean:');
+	expect(issues[0].message).toContain(knownTokenName);
 });
 
 it('reports misuse when functions or mixins are used as declarations', () => {

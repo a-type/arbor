@@ -9,7 +9,7 @@ import {
 	type ArborResolvedPrefixes,
 } from '@arbor-css/globals';
 import type { AnyArborPreset } from '@arbor-css/preset/config';
-import { flattenTokenSchema, type Token } from '@arbor-css/tokens';
+import { flattenTokenSchema, isToken, type Token } from '@arbor-css/tokens';
 
 type TokenMapValue = Token | ArborFunction | ArborMixin<any, any>;
 
@@ -28,6 +28,89 @@ export interface ValidationIssue {
 	index: number;
 	line: number;
 	column: number;
+}
+
+function findSuggestions(
+	names: string[],
+	query: string,
+	limit = 5,
+): string[] {
+	const normalized = query.trim().toLowerCase();
+	if (!normalized) {
+		return [];
+	}
+
+	return names
+		.map((name) => ({
+			name,
+			normalized: name.toLowerCase(),
+		}))
+		.map((candidate) => ({
+			name: candidate.name,
+			distance: levenshtein(candidate.normalized, normalized),
+			contains: candidate.normalized.includes(normalized),
+			startsWith: candidate.normalized.startsWith(normalized.slice(0, 4)),
+		}))
+		.filter(
+			(candidate) =>
+				candidate.contains ||
+				candidate.startsWith ||
+				candidate.distance <= Math.max(3, Math.floor(normalized.length * 0.2)),
+		)
+		.sort((a, b) => {
+			if (a.contains !== b.contains) {
+				return a.contains ? -1 : 1;
+			}
+			if (a.startsWith !== b.startsWith) {
+				return a.startsWith ? -1 : 1;
+			}
+			if (a.distance !== b.distance) {
+				return a.distance - b.distance;
+			}
+			return a.name.localeCompare(b.name);
+		})
+		.map((candidate) => candidate.name)
+		.slice(0, limit);
+}
+
+function levenshtein(a: string, b: string): number {
+	if (a === b) return 0;
+	if (a.length === 0) return b.length;
+	if (b.length === 0) return a.length;
+
+	const previous = new Array<number>(b.length + 1);
+	const current = new Array<number>(b.length + 1);
+
+	for (let j = 0; j <= b.length; j += 1) {
+		previous[j] = j;
+	}
+
+	for (let i = 1; i <= a.length; i += 1) {
+		current[0] = i;
+		for (let j = 1; j <= b.length; j += 1) {
+			const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+			current[j] = Math.min(
+				previous[j] + 1,
+				current[j - 1] + 1,
+				previous[j - 1] + cost,
+			);
+		}
+
+		for (let j = 0; j <= b.length; j += 1) {
+			previous[j] = current[j];
+		}
+	}
+
+	return previous[b.length];
+}
+
+function formatUnknownTokenMessage(name: string, tokenNames: string[]): string {
+	const suggestions = findSuggestions(tokenNames, name);
+	if (suggestions.length === 0) {
+		return `Unknown Arbor token: ${name}`;
+	}
+
+	return `Unknown Arbor token: ${name}. Did you mean: ${suggestions.join(', ')}`;
 }
 
 function escapeRegex(value: string): string {
@@ -164,6 +247,9 @@ export function validateCssContent({
 	const issues: ValidationIssue[] = [];
 	const seen = new Set<string>();
 	const lineStarts = getLineStarts(content);
+	const tokenNames = Array.from(tokenMap.entries())
+		.filter(([, value]) => isToken(value))
+		.map(([name]) => name);
 
 	for (const prefix of prefixConfig.tokenPrefixes) {
 		const generalPropertyUsageRegex = new RegExp(
@@ -181,7 +267,7 @@ export function validateCssContent({
 				addIssue(issues, seen, lineStarts, {
 					name: propertyName,
 					kind: 'token',
-					message: `Unknown Arbor token: ${propertyName}`,
+					message: formatUnknownTokenMessage(propertyName, tokenNames),
 					index,
 				});
 			}
@@ -202,7 +288,7 @@ export function validateCssContent({
 				addIssue(issues, seen, lineStarts, {
 					name,
 					kind: 'token',
-					message: `Unknown Arbor token: ${name}`,
+					message: formatUnknownTokenMessage(name, tokenNames),
 					index,
 				});
 				continue;
