@@ -69,7 +69,7 @@ export function createArborModeValues<
 				block: css`calc(${$.mode.spacing.lg} * max(1, ${$.mode.surface.roundness} * ${$.system.global.roundness}))`,
 				inline: css`calc(${$.mode.spacing.lg} * max(1, ${$.mode.surface.roundness} * ${$.system.global.roundness}))`,
 			},
-			roundness: 1,
+			roundness: 0.75,
 			radius: css`calc(${$.mode.radius.md} * ${$.mode.surface.roundness})`,
 			primary: {
 				bg: css`
