@@ -41,7 +41,17 @@
 					"LESS"
 				]
 			}
-		]
+		],
+		"configuration": {
+			"title": "Arbor CSS",
+			"properties": {
+				"arborCss.warnOnArbitraryValues": {
+					"type": "boolean",
+					"default": false,
+					"description": "Warn on arbitrary color and spacing values and recommend Arbor semantic tokens."
+				}
+			}
+		}
 	},
 	"main": "./dist/extension.mjs",
 	"scripts": {

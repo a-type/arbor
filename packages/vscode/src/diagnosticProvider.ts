@@ -1,5 +1,6 @@
 import { isFunction, isMixin } from '@arbor-css/core';
 import * as vscode from 'vscode';
+import { findArbitraryValueWarnings } from './arbitraryValueDiagnostics.js';
 import { createTokenRegexes } from './regex.js';
 import { TokenProvider } from './tokenProvider.js';
 
@@ -23,6 +24,11 @@ export class ArborDiagnosticProvider {
 			vscode.workspace.onDidChangeTextDocument(
 				(e) => void this.validate(e.document),
 			),
+			vscode.workspace.onDidChangeConfiguration((event) => {
+				if (event.affectsConfiguration('arborCss.warnOnArbitraryValues')) {
+					this.validateAll();
+				}
+			}),
 			vscode.workspace.onDidCloseTextDocument((doc) =>
 				this.diagnostics.delete(doc.uri),
 			),
@@ -56,9 +62,34 @@ export class ArborDiagnosticProvider {
 
 		const tokenRegexes = createTokenRegexes(state.tokenPrefixes);
 		const fileDiagnostics: vscode.Diagnostic[] = [];
+		const warnOnArbitraryValues = vscode
+			.workspace.getConfiguration('arborCss')
+			.get<boolean>(
+			'warnOnArbitraryValues',
+			false,
+			);
 
 		for (let lineIndex = 0; lineIndex < document.lineCount; lineIndex++) {
 			const line = document.lineAt(lineIndex).text;
+
+			if (warnOnArbitraryValues) {
+				for (const warning of findArbitraryValueWarnings(
+					line,
+					state.tokenPrefixes,
+				)) {
+					const diagnostic = new vscode.Diagnostic(
+						new vscode.Range(
+							new vscode.Position(lineIndex, warning.start),
+							new vscode.Position(lineIndex, warning.end),
+						),
+						warning.message,
+						vscode.DiagnosticSeverity.Warning,
+					);
+					diagnostic.source = 'arbor-css';
+					fileDiagnostics.push(diagnostic);
+				}
+			}
+
 			for (const tokenRegex of tokenRegexes) {
 				for (const match of line.matchAll(tokenRegex.anywhere())) {
 					if (match.index === undefined) continue;
