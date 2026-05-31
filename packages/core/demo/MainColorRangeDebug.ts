@@ -1,4 +1,4 @@
-import { SchemeDefinition } from '@arbor-css/colors';
+import { createColorDarkModeRange } from '@arbor-css/colors';
 import { ArborElement } from '../src/runtime/components/index';
 import arbor from './arbor.js';
 
@@ -22,12 +22,11 @@ class MainColorRangeDebug extends ArborElement {
 			},
 			{} as Record<string, string>,
 		);
-		const range = (
-			(arbor.meta.config.colors.schemes as any).dark as SchemeDefinition
-		).getColorRange(
-			arbor.meta.config.colors.ranges[
-				colorName as keyof typeof arbor.meta.config.colors.ranges
-			],
+		const range = createColorDarkModeRange(
+			{
+				hue: 90.8,
+			},
+			arbor.context,
 		);
 		this.shadowRoot.innerHTML = `
 			<div class="range @scheme-dark">
@@ -38,7 +37,7 @@ class MainColorRangeDebug extends ArborElement {
 							skipBaking: false,
 						});
 						const match = compiled.match(oklchMatcher) ?? [];
-						return `<div class="color-swatch" style="background: ${arbor.$.primitives.colors[colorName as keyof typeof arbor.$.primitives.colors][name].var}; width: 100px; height: 100px;" title="${range[name].equation.printDynamic({ propertyValues: {} })}">
+						return `<div class="color-swatch" style="background: ${arbor.$.primitives.color[colorName as any][name].var}; width: 100px; height: 100px;" title="${range[name].equation.printDynamic({ propertyValues: {} })}">
 					<div class="pip l" style="bottom: ${match[1] ?? 0}"></div>
 					<div class="pip c" style="bottom: calc(${match[2] ?? 0} / 0.4 * 100%)"></div>
 					<div class="pip h" style="bottom: calc(${match[3] ?? 0} / 360 * 100%)"></div>
