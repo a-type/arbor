@@ -23,3 +23,12 @@ describe('fade function', () => {
 		expect(result).toBe(`oklch(from red l c h / 42%)`);
 	});
 });
+
+describe('contrast color function', () => {
+	it('should compute the right default value', () => {
+		const result = presetBasic.functions.contrastColor.compute({});
+		expect(result).toBe(
+			`contrast-color(var(--mx-bg-contrast, var(--mx-bg-ref, var(--_-system-schemeTrueLight, white))))`,
+		);
+	});
+});

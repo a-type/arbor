@@ -89,7 +89,11 @@ export function createFunctionFactory({
 					const parameter = parameters[index];
 					const cssParameterName =
 						isFunctionParamWithMeta(parameter) ? parameter.name : parameter;
-					propertyValues[cssParameterName] = String(params[cssParameterName]);
+					const fallback =
+						isFunctionParamWithMeta(parameter) ? parameter.fallback : undefined;
+					propertyValues[cssParameterName] = String(
+						params[cssParameterName] ?? fallback,
+					);
 				}
 				const result = computeEquation(equation, {
 					propertyValues,
