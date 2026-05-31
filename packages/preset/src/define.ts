@@ -180,7 +180,10 @@ export interface ArborPreset<
 	mixins: TMixins;
 	/** Easy access to your mode schema */
 	modeSchema: TModeSchema;
+	/** Values you applied for your base mode */
 	baseMode: ModeInstance<TModeSchema>;
+	/** A list of scheme names configured in the preset */
+	schemes: string[];
 	/** All tokens in this preset. */
 	$: PresetTokens<
 		TModeSchema,
@@ -340,6 +343,7 @@ function emptyPreset(): ArborPreset {
 		mixins: {} as any,
 		modeSchema: {} as any,
 		baseMode: {} as any,
+		schemes: [],
 		$: {
 			mode: {},
 			mixins: {},
@@ -447,6 +451,7 @@ export function definePreset<
 					acc.baseMode || {},
 					presetWithConfig.baseMode || {},
 				),
+				schemes: [...(acc.schemes || []), ...(presetWithConfig.schemes || [])],
 				functions: {
 					...acc.functions,
 					...presetWithConfig.functions,
@@ -563,6 +568,18 @@ export function definePreset<
 			withConfig,
 
 			baseMode,
+
+			schemes: Array.from(
+				new Set([
+					// defaults
+					'light',
+					'dark',
+					...composedPresets.schemes,
+					...(presetOptions.primitives ?
+						Object.keys(resolvedPrimitives.color || {})
+					:	[]),
+				]),
+			),
 
 			bundleMode(name: string, mode: DeepPartial<ModeValues<TModeSchema>>) {
 				const instance = createModeInstance(name, mode);

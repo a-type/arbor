@@ -108,21 +108,21 @@ ${cascadeLayerName ? `@layer ${cascadeLayerName} {` : ''}
 	${printTokens(config.$.primitives.duration, primitiveValues.duration)}
 }
 
-/* Scheme classes */
-${Object.keys(primitiveValues.color)
-	.map(
-		(schemeName) => `.\\@scheme-${schemeName}, [data-scheme-${schemeName}=""] {
-	${schemeApplicationCss(schemeName)}
-}`,
-	)
-	.join('\n\n')}
-
 ${[['base', config.baseMode] as const, ...Object.entries(modes)]
 	.map(([modeName, modeValue]) => {
 		return `/* Mode: ${modeName} */
-${modeName === 'base' ? ':root, :root [class^="\\@scheme-"], ' : ''}${modeToCss(modeValue, config)}
+${modeName === 'base' ? ':root, :root [class^="\\@scheme-"], :root [class*=" \\@scheme-"] ' : ''}${modeToCss(modeValue, config)}
 `;
 	})
+	.join('\n\n')}
+
+	/* Scheme classes */
+${Object.keys(primitiveValues.color)
+	.map(
+		(schemeName) => `.\\@scheme-${schemeName} {
+	${schemeApplicationCss(schemeName)}
+}`,
+	)
 	.join('\n\n')}
 
 /* Function definitions */

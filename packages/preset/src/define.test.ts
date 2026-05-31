@@ -220,7 +220,7 @@ it('composes presets', () => {
 					`,
 				}),
 				contributeTokens: {
-					usesDemoInputColor: 'color',
+					inputColor2: 'color',
 				},
 			}),
 		}),
@@ -250,8 +250,8 @@ it('composes presets', () => {
 
 	expect(extendedPreset.$.mixins.demo).toBeDefined();
 	expect(extendedPreset.mixins.usesDemo).toBeDefined();
-	expect(extendedPreset.$.mixins.usesDemo.usesDemoInputColor.name).toBe(
-		'--mx2-uses-demo-inputColor',
+	expect(extendedPreset.$.mixins.usesDemo.inputColor2.name).toBe(
+		'--mx-uses-demo-inputColor2',
 	);
 
 	// typing checks

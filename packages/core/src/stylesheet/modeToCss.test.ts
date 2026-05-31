@@ -45,10 +45,7 @@ const underivedMode = preset.createMode('underived', {
 it('prints a base mode with derived values', () => {
 	const css = modeToCss(preset.baseMode, preset);
 	expect(css).toMatchInlineSnapshot(`
-		".\\@mode-base,
-		[data-mode-base=""],
-		:where(.\\@mode-base [class^="\\@scheme-"]),
-		:where([data-mode-base=""] [class^="\\@scheme-"]) {
+		".\\@mode-base, :where(&.\\@mode-base .\\@scheme-light), :where(&.\\@mode-base .\\@scheme-dark), :root, :where(&:root .\\@scheme-light), :where(&:root .\\@scheme-dark) {
 			--_-system-modeName: base;
 			--m-derived-once: color-mix(in hsl, var(--m-value), black);
 		--m-derived-twice: color-mix(in hsl, var(--m-derived-once), transparent);
@@ -65,10 +62,7 @@ it('prints a base mode with derived values', () => {
 it('prints a partial mode with derived dependencies it doesnt declare', () => {
 	const css = modeToCss(partialMode, preset);
 	expect(css).toMatchInlineSnapshot(`
-		".\\@mode-partial,
-		[data-mode-partial=""],
-		:where(.\\@mode-partial [class^="\\@scheme-"]),
-		:where([data-mode-partial=""] [class^="\\@scheme-"]) {
+		".\\@mode-partial, :where(&.\\@mode-partial .\\@scheme-light), :where(&.\\@mode-partial .\\@scheme-dark) {
 			--_-system-modeName: partial;
 			--m-derived-once: color-mix(in hsl, var(--m-value), black);
 		--m-derived-twice: color-mix(in hsl, var(--m-derived-once), transparent);
@@ -83,10 +77,7 @@ it('prints a partial mode with derived dependencies it doesnt declare', () => {
 it('prints a partial mode which overrides derived dependencies from base and doesnt go upstream from there, but does go downstream to further derivations', () => {
 	const css = modeToCss(underivedMode, preset);
 	expect(css).toMatchInlineSnapshot(`
-		".\\@mode-underived,
-		[data-mode-underived=""],
-		:where(.\\@mode-underived [class^="\\@scheme-"]),
-		:where([data-mode-underived=""] [class^="\\@scheme-"]) {
+		".\\@mode-underived, :where(&.\\@mode-underived .\\@scheme-light), :where(&.\\@mode-underived .\\@scheme-dark) {
 			--_-system-modeName: underived;
 			--m-derived-twice: color-mix(in hsl, var(--m-derived-once), transparent);
 		--m-derived-once: green;

@@ -62,10 +62,20 @@ export function modeToCss<TModeShape extends SimpleTokenSchema>(
 		.filter(Boolean)
 		.join('\n');
 
-	return `.\\@mode-${mode.$name},
-[data-mode-${mode.$name}=""],
-:where(.\\@mode-${mode.$name} [class^="\\@scheme-"]),
-:where([data-mode-${mode.$name}=""] [class^="\\@scheme-"]) {
+	const simpleSelector = `.\\@mode-${mode.$name}`;
+	const schemeSelectors = preset.schemes.map(
+		(schemeName) => `:where(&.\\@mode-${mode.$name} .\\@scheme-${schemeName})`,
+	);
+	const selectors = [simpleSelector, ...schemeSelectors];
+
+	if (mode === preset.baseMode) {
+		// base mode values are applied to :root and all scheme selectors since they can be referenced by any mode and we want them to update when the base mode changes
+		selectors.push(
+			...selectors.map((s) => s.replace(`.\\@mode-${mode.$name}`, ':root')),
+		);
+	}
+
+	return `${selectors.join(', ')} {
 	${preset.$.system.meta.modeName.assign(mode.$name)}
 	${content}
 }
