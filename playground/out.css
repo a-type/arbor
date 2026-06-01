@@ -1,0 +1,282 @@
+/* Auto-generated CSS - do not edit directly */
+@layer arbor {
+:root {
+	/* Assign user globals */
+	--_-system-sat: 0.5; --_-system-round: 0.5; --_-system-base-font-size: 16px; --_-system-base-spacing-size: 8px; --_-system-default-shadow-color: rgba(0 0 0 / 0.15); --_-system-shadow-spread: 0; --_-system-shadow-blur: 0.5; --_-system-arrow-width: 1rem; --_-system-arrow-height: 0.5rem; --_-system-line-width: 1px;
+	/* By default we set the font size */
+	font-size: var(--_-system-base-font-size);
+
+	/* Raw scheme colors */
+--p-color-light-brand-ink: oklch(20.000000000000007% 0.11000000000000001 98); --p-color-light-brand-heavy: oklch(59.53073028463566% 0.1325889887340775 98); --p-color-light-brand-mid: oklch(90% 0.15000000000000002 98); --p-color-light-brand-light: oklch(98.02741561760232% 0.11253872711785591 98); --p-color-light-brand-wash: oklch(100% 0.06393659492837209 98); --p-color-light-brand-paper: oklch(100% 0.010000000000000009 98); --p-color-light-brand: oklch(90% 0.15000000000000002 98); --p-color-light-brand-_neutral-ink: oklch(0.17653786308766073 0.00825 98); --p-color-light-brand-_neutral-heavy: oklch(0.5630771267048826 0.009944174155055814 98); --p-color-light-brand-_neutral-mid: oklch(0.8602483517886919 0.011250000000000001 98); --p-color-light-brand-_neutral-light: oklch(0.9558840664607136 0.008440404533839194 98); --p-color-light-brand-_neutral-wash: oklch(0.9906723088936705 0.004795244619627906 98); --p-color-light-brand-_neutral-paper: oklch(0.9996018928294464 0.0007500000000000007 98); --p-color-light-brand-_neutral: oklch(0.8602483517886919 0.011250000000000001 98); --p-color-light-success-ink: oklch(20.000000000000007% 0.11000000000000001 120); --p-color-light-success-heavy: oklch(59.53073028463566% 0.1325889887340775 120); --p-color-light-success-mid: oklch(90% 0.15000000000000002 120); --p-color-light-success-light: oklch(98.02741561760232% 0.11253872711785591 120); --p-color-light-success-wash: oklch(100% 0.06393659492837209 120); --p-color-light-success-paper: oklch(100% 0.010000000000000009 120); --p-color-light-success: oklch(90% 0.15000000000000002 120); --p-color-light-success-_neutral-ink: oklch(0.17653786308766073 0.00825 120); --p-color-light-success-_neutral-heavy: oklch(0.5630771267048826 0.009944174155055814 120); --p-color-light-success-_neutral-mid: oklch(0.8602483517886919 0.011250000000000001 120); --p-color-light-success-_neutral-light: oklch(0.9558840664607136 0.008440404533839194 120); --p-color-light-success-_neutral-wash: oklch(0.9906723088936705 0.004795244619627906 120); --p-color-light-success-_neutral-paper: oklch(0.9996018928294464 0.0007500000000000007 120); --p-color-light-success-_neutral: oklch(0.8602483517886919 0.011250000000000001 120); --p-color-light-user-ink: oklch(20.000000000000007% 0.11000000000000001 var(--user-hue, 200)); --p-color-light-user-heavy: oklch(59.53073028463566% 0.1325889887340775 var(--user-hue, 200)); --p-color-light-user-mid: oklch(90% 0.15000000000000002 var(--user-hue, 200)); --p-color-light-user-light: oklch(98.02741561760232% 0.11253872711785591 var(--user-hue, 200)); --p-color-light-user-wash: oklch(100% 0.06393659492837209 var(--user-hue, 200)); --p-color-light-user-paper: oklch(100% 0.010000000000000009 var(--user-hue, 200)); --p-color-light-user: oklch(90% 0.15000000000000002 var(--user-hue, 200)); --p-color-light-user-_neutral-ink: oklch(0.17653786308766073 0.00825 var(--user-hue, 200)); --p-color-light-user-_neutral-heavy: oklch(0.5630771267048826 0.009944174155055814 var(--user-hue, 200)); --p-color-light-user-_neutral-mid: oklch(0.8602483517886919 0.011250000000000001 var(--user-hue, 200)); --p-color-light-user-_neutral-light: oklch(0.9558840664607136 0.008440404533839194 var(--user-hue, 200)); --p-color-light-user-_neutral-wash: oklch(0.9906723088936705 0.004795244619627906 var(--user-hue, 200)); --p-color-light-user-_neutral-paper: oklch(0.9996018928294464 0.0007500000000000007 var(--user-hue, 200)); --p-color-light-user-_neutral: oklch(0.8602483517886919 0.011250000000000001 var(--user-hue, 200));
+--p-color-dark-brand-ink: oklch(100% 0.08400000000000002 98); --p-color-dark-brand-heavy: oklch(90.46926971536435% 0.1269190785947473 98); --p-color-dark-brand-mid: oklch(60% 0.16000000000000003 98); --p-color-dark-brand-light: oklch(44.74791032655562% 0.12253872711785592 98); --p-color-dark-brand-wash: oklch(24.959899363694344% 0.0739365949283721 98); --p-color-dark-brand-paper: oklch(3.0000000000000027% 0.020000000000000018 98); --p-color-dark-brand: oklch(60% 0.16000000000000003 98); --p-color-dark-brand-_neutral-ink: oklch(0.9851654360090278 0.006300000000000001 98); --p-color-dark-brand-_neutral-heavy: oklch(0.8747703437504191 0.009518930894606047 98); --p-color-dark-brand-_neutral-mid: oklch(0.5556387300380706 0.012000000000000002 98); --p-color-dark-brand-_neutral-light: oklch(0.41929107358805867 0.009190404533839194 98); --p-color-dark-brand-_neutral-wash: oklch(0.2376574338389646 0.005545244619627907 98); --p-color-dark-brand-_neutral-paper: oklch(0.02870654598684531 0.0015000000000000013 98); --p-color-dark-brand-_neutral: oklch(0.5556387300380706 0.012000000000000002 98); --p-color-dark-success-ink: oklch(100% 0.08400000000000002 120); --p-color-dark-success-heavy: oklch(90.46926971536435% 0.1269190785947473 120); --p-color-dark-success-mid: oklch(60% 0.16000000000000003 120); --p-color-dark-success-light: oklch(44.74791032655562% 0.12253872711785592 120); --p-color-dark-success-wash: oklch(24.959899363694344% 0.0739365949283721 120); --p-color-dark-success-paper: oklch(3.0000000000000027% 0.020000000000000018 120); --p-color-dark-success: oklch(60% 0.16000000000000003 120); --p-color-dark-success-_neutral-ink: oklch(0.9851654360090278 0.006300000000000001 120); --p-color-dark-success-_neutral-heavy: oklch(0.8747703437504191 0.009518930894606047 120); --p-color-dark-success-_neutral-mid: oklch(0.5556387300380706 0.012000000000000002 120); --p-color-dark-success-_neutral-light: oklch(0.41929107358805867 0.009190404533839194 120); --p-color-dark-success-_neutral-wash: oklch(0.2376574338389646 0.005545244619627907 120); --p-color-dark-success-_neutral-paper: oklch(0.02870654598684531 0.0015000000000000013 120); --p-color-dark-success-_neutral: oklch(0.5556387300380706 0.012000000000000002 120); --p-color-dark-user-ink: oklch(100% 0.08400000000000002 var(--user-hue, 200)); --p-color-dark-user-heavy: oklch(90.46926971536435% 0.1269190785947473 var(--user-hue, 200)); --p-color-dark-user-mid: oklch(60% 0.16000000000000003 var(--user-hue, 200)); --p-color-dark-user-light: oklch(44.74791032655562% 0.12253872711785592 var(--user-hue, 200)); --p-color-dark-user-wash: oklch(24.959899363694344% 0.0739365949283721 var(--user-hue, 200)); --p-color-dark-user-paper: oklch(3.0000000000000027% 0.020000000000000018 var(--user-hue, 200)); --p-color-dark-user: oklch(60% 0.16000000000000003 var(--user-hue, 200)); --p-color-dark-user-_neutral-ink: oklch(0.9851654360090278 0.006300000000000001 var(--user-hue, 200)); --p-color-dark-user-_neutral-heavy: oklch(0.8747703437504191 0.009518930894606047 var(--user-hue, 200)); --p-color-dark-user-_neutral-mid: oklch(0.5556387300380706 0.012000000000000002 var(--user-hue, 200)); --p-color-dark-user-_neutral-light: oklch(0.41929107358805867 0.009190404533839194 var(--user-hue, 200)); --p-color-dark-user-_neutral-wash: oklch(0.2376574338389646 0.005545244619627907 var(--user-hue, 200)); --p-color-dark-user-_neutral-paper: oklch(0.02870654598684531 0.0015000000000000013 var(--user-hue, 200)); --p-color-dark-user-_neutral: oklch(0.5556387300380706 0.012000000000000002 var(--user-hue, 200));
+	/* Dark/Light schemes are assigned to built-in device preferences */
+	@media (prefers-color-scheme: light), (prefers-color-scheme: no-preference) {
+		--_-system-schemeName: light;
+	--_-system-schemeInvertMult: 1;
+	--_-system-schemeWhenDark: 0;
+	--_-system-schemeWhenLight: 1;
+	--_-system-schemeTrueLight: white;
+	--_-system-schemeTrueHeavy: black;
+	--p-color-brand-ink: var(--p-color-light-brand-ink); --p-color-brand-heavy: var(--p-color-light-brand-heavy); --p-color-brand-mid: var(--p-color-light-brand-mid); --p-color-brand-light: var(--p-color-light-brand-light); --p-color-brand-wash: var(--p-color-light-brand-wash); --p-color-brand-paper: var(--p-color-light-brand-paper); --p-color-brand: var(--p-color-light-brand); --p-color-brand-_neutral-ink: var(--p-color-light-brand-_neutral-ink); --p-color-brand-_neutral-heavy: var(--p-color-light-brand-_neutral-heavy); --p-color-brand-_neutral-mid: var(--p-color-light-brand-_neutral-mid); --p-color-brand-_neutral-light: var(--p-color-light-brand-_neutral-light); --p-color-brand-_neutral-wash: var(--p-color-light-brand-_neutral-wash); --p-color-brand-_neutral-paper: var(--p-color-light-brand-_neutral-paper); --p-color-brand-_neutral: var(--p-color-light-brand-_neutral); --p-color-success-ink: var(--p-color-light-success-ink); --p-color-success-heavy: var(--p-color-light-success-heavy); --p-color-success-mid: var(--p-color-light-success-mid); --p-color-success-light: var(--p-color-light-success-light); --p-color-success-wash: var(--p-color-light-success-wash); --p-color-success-paper: var(--p-color-light-success-paper); --p-color-success: var(--p-color-light-success); --p-color-success-_neutral-ink: var(--p-color-light-success-_neutral-ink); --p-color-success-_neutral-heavy: var(--p-color-light-success-_neutral-heavy); --p-color-success-_neutral-mid: var(--p-color-light-success-_neutral-mid); --p-color-success-_neutral-light: var(--p-color-light-success-_neutral-light); --p-color-success-_neutral-wash: var(--p-color-light-success-_neutral-wash); --p-color-success-_neutral-paper: var(--p-color-light-success-_neutral-paper); --p-color-success-_neutral: var(--p-color-light-success-_neutral); --p-color-user-ink: var(--p-color-light-user-ink); --p-color-user-heavy: var(--p-color-light-user-heavy); --p-color-user-mid: var(--p-color-light-user-mid); --p-color-user-light: var(--p-color-light-user-light); --p-color-user-wash: var(--p-color-light-user-wash); --p-color-user-paper: var(--p-color-light-user-paper); --p-color-user: var(--p-color-light-user); --p-color-user-_neutral-ink: var(--p-color-light-user-_neutral-ink); --p-color-user-_neutral-heavy: var(--p-color-light-user-_neutral-heavy); --p-color-user-_neutral-mid: var(--p-color-light-user-_neutral-mid); --p-color-user-_neutral-light: var(--p-color-light-user-_neutral-light); --p-color-user-_neutral-wash: var(--p-color-light-user-_neutral-wash); --p-color-user-_neutral-paper: var(--p-color-light-user-_neutral-paper); --p-color-user-_neutral: var(--p-color-light-user-_neutral);
+	
+	}
+
+	@media (prefers-color-scheme: dark) {
+		--_-system-schemeName: dark;
+	--_-system-schemeInvertMult: -1;
+	--_-system-schemeWhenDark: 1;
+	--_-system-schemeWhenLight: 0;
+	--_-system-schemeTrueLight: black;
+	--_-system-schemeTrueHeavy: white;
+	--p-color-brand-ink: var(--p-color-dark-brand-ink); --p-color-brand-heavy: var(--p-color-dark-brand-heavy); --p-color-brand-mid: var(--p-color-dark-brand-mid); --p-color-brand-light: var(--p-color-dark-brand-light); --p-color-brand-wash: var(--p-color-dark-brand-wash); --p-color-brand-paper: var(--p-color-dark-brand-paper); --p-color-brand: var(--p-color-dark-brand); --p-color-brand-_neutral-ink: var(--p-color-dark-brand-_neutral-ink); --p-color-brand-_neutral-heavy: var(--p-color-dark-brand-_neutral-heavy); --p-color-brand-_neutral-mid: var(--p-color-dark-brand-_neutral-mid); --p-color-brand-_neutral-light: var(--p-color-dark-brand-_neutral-light); --p-color-brand-_neutral-wash: var(--p-color-dark-brand-_neutral-wash); --p-color-brand-_neutral-paper: var(--p-color-dark-brand-_neutral-paper); --p-color-brand-_neutral: var(--p-color-dark-brand-_neutral); --p-color-success-ink: var(--p-color-dark-success-ink); --p-color-success-heavy: var(--p-color-dark-success-heavy); --p-color-success-mid: var(--p-color-dark-success-mid); --p-color-success-light: var(--p-color-dark-success-light); --p-color-success-wash: var(--p-color-dark-success-wash); --p-color-success-paper: var(--p-color-dark-success-paper); --p-color-success: var(--p-color-dark-success); --p-color-success-_neutral-ink: var(--p-color-dark-success-_neutral-ink); --p-color-success-_neutral-heavy: var(--p-color-dark-success-_neutral-heavy); --p-color-success-_neutral-mid: var(--p-color-dark-success-_neutral-mid); --p-color-success-_neutral-light: var(--p-color-dark-success-_neutral-light); --p-color-success-_neutral-wash: var(--p-color-dark-success-_neutral-wash); --p-color-success-_neutral-paper: var(--p-color-dark-success-_neutral-paper); --p-color-success-_neutral: var(--p-color-dark-success-_neutral); --p-color-user-ink: var(--p-color-dark-user-ink); --p-color-user-heavy: var(--p-color-dark-user-heavy); --p-color-user-mid: var(--p-color-dark-user-mid); --p-color-user-light: var(--p-color-dark-user-light); --p-color-user-wash: var(--p-color-dark-user-wash); --p-color-user-paper: var(--p-color-dark-user-paper); --p-color-user: var(--p-color-dark-user); --p-color-user-_neutral-ink: var(--p-color-dark-user-_neutral-ink); --p-color-user-_neutral-heavy: var(--p-color-dark-user-_neutral-heavy); --p-color-user-_neutral-mid: var(--p-color-dark-user-_neutral-mid); --p-color-user-_neutral-light: var(--p-color-dark-user-_neutral-light); --p-color-user-_neutral-wash: var(--p-color-dark-user-_neutral-wash); --p-color-user-_neutral-paper: var(--p-color-dark-user-_neutral-paper); --p-color-user-_neutral: var(--p-color-dark-user-_neutral);
+	
+	}
+
+	/* Other primitives */
+	--p-typography-xs-size: 0.875rem; --p-typography-xs-weight: 350; --p-typography-xs-line-height: 1.5; --p-typography-sm-size: 0.8888888888888888rem; --p-typography-sm-weight: 375; --p-typography-sm-line-height: 1.5; --p-typography-md-size: 1rem; --p-typography-md-weight: 400; --p-typography-md-line-height: 1.5; --p-typography-lg-size: 1.125rem; --p-typography-lg-weight: 425; --p-typography-lg-line-height: 1.45; --p-typography-xl-size: 1.265625rem; --p-typography-xl-weight: 450; --p-typography-xl-line-height: 1.4; --p-typography-2xl-size: 1.423828125rem; --p-typography-2xl-weight: 475; --p-typography-2xl-line-height: 1.35; --p-typography-3xl-size: 1.601806640625rem; --p-typography-3xl-weight: 500; --p-typography-3xl-line-height: 1.3; --p-typography-4xl-size: 1.802032470703125rem; --p-typography-4xl-weight: 525; --p-typography-4xl-line-height: 1.25; --p-typography-5xl-size: 2.0272865295410156rem; --p-typography-5xl-weight: 550; --p-typography-5xl-line-height: 1.2; --p-typography-6xl-size: 2.2806973457336426rem; --p-typography-6xl-weight: 575; --p-typography-6xl-line-height: 1.15; --p-typography-size: 1rem; --p-typography-weight: 400; --p-typography-line-height: 1.5;
+	--p-spacing-2xs: 0.14814814814814814rem; --p-spacing-xs: 0.2222222222222222rem; --p-spacing-sm: 0.3333333333333333rem; --p-spacing-md: 0.5rem; --p-spacing-lg: 0.75rem; --p-spacing-xl: 1.125rem; --p-spacing-2xl: 1.6875rem; --p-spacing-3xl: 2.53125rem; --p-spacing: 0.5rem;
+	--p-shadow-xs-x: 0px; --p-shadow-xs-y: 0.5px; --p-shadow-xs-blur: 0.5px; --p-shadow-xs-spread: 0; --p-shadow-xs-color: rgba(0 0 0 / 0.15); --p-shadow-sm-x: 0px; --p-shadow-sm-y: 1px; --p-shadow-sm-blur: 1px; --p-shadow-sm-spread: 0; --p-shadow-sm-color: rgba(0 0 0 / 0.15); --p-shadow-md-x: 0px; --p-shadow-md-y: 2px; --p-shadow-md-blur: 2px; --p-shadow-md-spread: 0; --p-shadow-md-color: rgba(0 0 0 / 0.15); --p-shadow-lg-x: 0px; --p-shadow-lg-y: 4px; --p-shadow-lg-blur: 4px; --p-shadow-lg-spread: 0; --p-shadow-lg-color: rgba(0 0 0 / 0.15); --p-shadow-xl-x: 0px; --p-shadow-xl-y: 8px; --p-shadow-xl-blur: 8px; --p-shadow-xl-spread: 0; --p-shadow-xl-color: rgba(0 0 0 / 0.15); --p-shadow-x: 0px; --p-shadow-y: 2px; --p-shadow-blur: 2px; --p-shadow-spread: 0; --p-shadow-color: rgba(0 0 0 / 0.15);
+	--p-easing-tight: cubic-bezier(0.4, 0, 0.2, 1); --p-easing-medium: cubic-bezier(0.4, 0, 0.2, 1); --p-easing-loose: cubic-bezier(0.4, 0, 0.2, 1);
+	--p-duration-fast: 100ms; --p-duration-medium: 250ms; --p-duration-slow: 500ms;
+}
+
+/* Mode: base */
+:root, :root [class^="\@scheme-"], :root [class*=" \@scheme-"] .\@mode-base, :where(&.\@mode-base .\@scheme-light), :where(&.\@mode-base .\@scheme-dark), :root, :where(&:root .\@scheme-light), :where(&:root .\@scheme-dark) {
+	--_-system-modeName: base;
+	--m-surface-primary-fg: var(--m-color-main-ink);
+--m-surface-secondary-border: var(--m-color-main-ink);
+--m-action-primary-fg: var(--m-color-main-ink);
+--m-action-ambient-fg: var(--m-color-main-ink);
+--m-surface-primary-border: var(--m-color-main-heavy);
+--m-action-primary-border: var(--m-color-main-heavy);
+--m-action-primary-bg: var(--m-color-main-mid);
+--m-surface-primary-bg: var(--m-color-main-light);
+--m-surface-secondary-bg: var(--m-color-main-wash);
+--m-surface-secondary-fg: var(--m-color-neutral-ink);
+--m-surface-ambient-fg: var(--m-color-neutral-ink);
+--m-action-secondary-fg: var(--m-color-neutral-ink);
+--m-control-fg: var(--m-color-neutral-ink);
+--m-surface-ambient-border: var(--m-color-neutral-heavy);
+--m-action-secondary-border: var(--m-color-neutral-heavy);
+--m-control-border: var(--m-color-neutral-heavy);
+--m-shadow-color: var(--m-color-neutral-heavy);
+--m-shadow-sm-color: oklch(from var(--m-shadow-color, var(--p-shadow-sm-color)) l c h / 15%);
+--m-shadow-sm: var(--m-shadow-sm-x) var(--m-shadow-sm-y) var(--m-shadow-sm-blur) var(--m-shadow-sm-spread) var(--m-shadow-sm-color);
+--m-shadow-md-color: oklch(from var(--m-shadow-color, var(--p-shadow-md-color)) l c h / 15%);
+--m-shadow-md: var(--m-shadow-md-x) var(--m-shadow-md-y) var(--m-shadow-md-blur) var(--m-shadow-md-spread) var(--m-shadow-md-color);
+--m-shadow-lg-color: oklch(from var(--m-shadow-color, var(--p-shadow-lg-color)) l c h / 15%);
+--m-shadow-lg: var(--m-shadow-lg-x) var(--m-shadow-lg-y) var(--m-shadow-lg-blur) var(--m-shadow-lg-spread) var(--m-shadow-lg-color);
+--m-shadow-xl-color: oklch(from var(--m-shadow-color, var(--p-shadow-xl-color)) l c h / 15%);
+--m-shadow-xl: var(--m-shadow-xl-x) var(--m-shadow-xl-y) var(--m-shadow-xl-blur) var(--m-shadow-xl-spread) var(--m-shadow-xl-color);
+--m-surface-ambient-bg: var(--m-color-neutral-paper);
+--m-action-secondary-bg: var(--m-color-neutral-paper);
+--m-control-bg: var(--m-color-neutral-paper);
+--m-surface-padding: var(--m-surface-padding-block) var(--m-surface-padding-inline);
+--m-surface-padding-block: calc((var(--m-spacing-lg) * max(1, (var(--m-surface-roundness) * var(--_-system-round)))));
+--m-surface-padding-inline: calc((var(--m-spacing-lg) * max(1, (var(--m-surface-roundness) * var(--_-system-round)))));
+--m-surface-radius: calc((var(--m-radius-md) * var(--m-surface-roundness)));
+--m-action-padding: var(--m-action-padding-block) var(--m-action-padding-inline);
+--m-action-radius: calc((var(--m-radius-sm) * var(--m-action-roundness)));
+--m-control-padding: var(--m-control-padding-block) var(--m-control-padding-inline);
+--m-control-radius: calc((var(--m-radius-sm) * var(--m-control-roundness)));
+--m-action-padding-block: calc((var(--p-spacing-md) / var(--m-density)));
+--m-action-padding-inline: calc(((var(--p-spacing-lg) + (var(--_-system-round) * var(--p-spacing-sm))) / var(--m-density)));
+--m-control-padding-block: calc((var(--p-spacing-sm) / var(--m-density)));
+--m-control-padding-inline: calc(((var(--p-spacing-md) + (var(--_-system-round) * var(--p-spacing-sm))) / var(--m-density)));
+--m-spacing: calc((var(--p-spacing) / var(--m-density)));
+--m-spacing-xs: calc((var(--p-spacing-xs) / var(--m-density)));
+--m-spacing-sm: calc((var(--p-spacing-sm) / var(--m-density)));
+--m-spacing-md: calc((var(--p-spacing-md) / var(--m-density)));
+--m-spacing-lg: calc((var(--p-spacing-lg) / var(--m-density)));
+--m-spacing-xl: calc((var(--p-spacing-xl) / var(--m-density)));
+--m-text-primary-size: calc((var(--p-typography-3xl-size) / var(--m-density)));
+--m-text-secondary-size: calc(max(var(--p-typography-xs-size), (var(--p-typography-md-size) / var(--m-density))));
+--m-text-ambient-size: calc(max(var(--p-typography-xs-size), (var(--p-typography-sm-size) / var(--m-density))));
+--m-radius-xs: calc((((var(--_-system-round) * var(--p-spacing-sm)) * 2) / var(--m-density)));
+--m-radius-sm: calc((((var(--_-system-round) * var(--p-spacing-md)) * 2) / var(--m-density)));
+--m-radius-md: calc((((var(--_-system-round) * var(--p-spacing-lg)) * 2) / var(--m-density)));
+--m-radius: var(--m-radius-md);
+--m-radius-lg: calc((((var(--_-system-round) * var(--p-spacing-xl)) * 2) / var(--m-density)));
+--m-radius-xl: calc((((var(--_-system-round) * var(--p-spacing-2xl)) * 2) / var(--m-density)));
+--m-color-main-ink: var(--p-color-brand-ink);
+--m-color-main-heavy: var(--p-color-brand-heavy);
+--m-color-main-mid: var(--p-color-brand-mid);
+--m-color-main-light: var(--p-color-brand-light);
+--m-color-main-wash: var(--p-color-brand-wash);
+--m-color-main-paper: var(--p-color-brand-paper);
+--m-color-main: var(--p-color-brand);
+--m-color-neutral-ink: var(--p-color-brand-_neutral-ink);
+--m-color-neutral-heavy: var(--p-color-brand-_neutral-heavy);
+--m-color-neutral-mid: var(--p-color-brand-_neutral-mid);
+--m-color-neutral-light: var(--p-color-brand-_neutral-light);
+--m-color-neutral-wash: var(--p-color-brand-_neutral-wash);
+--m-color-neutral-paper: var(--p-color-brand-_neutral-paper);
+--m-color-neutral: var(--p-color-brand-_neutral);
+--m-surface-roundness: 0.75;
+--m-action-roundness: 1;
+--m-action-ambient-bg: transparent;
+--m-action-ambient-border: transparent;
+--m-control-roundness: 1;
+--m-density: 1;
+--m-text-primary-weight: var(--p-typography-3xl-weight);
+--m-text-primary-lineHeight: var(--p-typography-3xl-line-height);
+--m-text-primary-font: sans-serif;
+--m-text-secondary-weight: var(--p-typography-md-weight);
+--m-text-secondary-lineHeight: var(--p-typography-md-line-height);
+--m-text-secondary-font: sans-serif;
+--m-text-ambient-weight: var(--p-typography-sm-weight);
+--m-text-ambient-lineHeight: var(--p-typography-sm-line-height);
+--m-text-ambient-font: sans-serif;
+--m-lineWidth: var(--_-system-line-width);
+--m-lineWidth-sm: calc(max(1px, (var(--_-system-line-width) / 2)));
+--m-lineWidth-md: var(--_-system-line-width);
+--m-lineWidth-lg: calc((var(--_-system-line-width) * 2));
+--m-shadow: var(--p-shadow-x) var(--p-shadow-y) var(--p-shadow-blur) var(--p-shadow-spread) var(--p-shadow-color);
+--m-shadow-sm-x: var(--p-shadow-sm-x);
+--m-shadow-sm-y: var(--p-shadow-sm-y);
+--m-shadow-sm-blur: var(--p-shadow-sm-blur);
+--m-shadow-sm-spread: var(--p-shadow-sm-spread);
+--m-shadow-md-x: var(--p-shadow-md-x);
+--m-shadow-md-y: var(--p-shadow-md-y);
+--m-shadow-md-blur: var(--p-shadow-md-blur);
+--m-shadow-md-spread: var(--p-shadow-md-spread);
+--m-shadow-lg-x: var(--p-shadow-lg-x);
+--m-shadow-lg-y: var(--p-shadow-lg-y);
+--m-shadow-lg-blur: var(--p-shadow-lg-blur);
+--m-shadow-lg-spread: var(--p-shadow-lg-spread);
+--m-shadow-xl-x: var(--p-shadow-xl-x);
+--m-shadow-xl-y: var(--p-shadow-xl-y);
+--m-shadow-xl-blur: var(--p-shadow-xl-blur);
+--m-shadow-xl-spread: var(--p-shadow-xl-spread);
+--m-easing: var(--p-easing-medium);
+--m-easing-tight: var(--p-easing-tight);
+--m-easing-medium: var(--p-easing-medium);
+--m-easing-loose: var(--p-easing-loose);
+--m-duration: var(--p-duration-medium);
+--m-duration-fast: var(--p-duration-fast);
+--m-duration-medium: var(--p-duration-medium);
+--m-duration-slow: var(--p-duration-slow);
+
+}
+
+
+
+/* Mode: 0 */
+.\@mode-success, :where(&.\@mode-success .\@scheme-light), :where(&.\@mode-success .\@scheme-dark) {
+	--_-system-modeName: success;
+	--m-surface-primary-fg: var(--m-color-main-ink);
+--m-surface-secondary-border: var(--m-color-main-ink);
+--m-action-primary-fg: var(--m-color-main-ink);
+--m-action-ambient-fg: var(--m-color-main-ink);
+--m-surface-primary-border: var(--m-color-main-heavy);
+--m-action-primary-border: var(--m-color-main-heavy);
+--m-action-primary-bg: var(--m-color-main-mid);
+--m-surface-primary-bg: var(--m-color-main-light);
+--m-surface-secondary-bg: var(--m-color-main-wash);
+--m-color-main-ink: var(--p-color-success-ink);
+--m-color-main-heavy: var(--p-color-success-heavy);
+--m-color-main-mid: var(--p-color-success-mid);
+--m-color-main-light: var(--p-color-success-light);
+--m-color-main-wash: var(--p-color-success-wash);
+--m-color-main-paper: var(--p-color-success-paper);
+--m-color-main: var(--p-color-success);
+
+}
+
+
+
+/* Mode: 1 */
+.\@mode-user, :where(&.\@mode-user .\@scheme-light), :where(&.\@mode-user .\@scheme-dark) {
+	--_-system-modeName: user;
+	--m-surface-primary-fg: var(--m-color-main-ink);
+--m-surface-secondary-border: var(--m-color-main-ink);
+--m-action-primary-fg: var(--m-color-main-ink);
+--m-action-ambient-fg: var(--m-color-main-ink);
+--m-surface-primary-border: var(--m-color-main-heavy);
+--m-action-primary-border: var(--m-color-main-heavy);
+--m-action-primary-bg: var(--m-color-main-mid);
+--m-surface-primary-bg: var(--m-color-main-light);
+--m-surface-secondary-bg: var(--m-color-main-wash);
+--m-color-main-ink: var(--p-color-user-ink);
+--m-color-main-heavy: var(--p-color-user-heavy);
+--m-color-main-mid: var(--p-color-user-mid);
+--m-color-main-light: var(--p-color-user-light);
+--m-color-main-wash: var(--p-color-user-wash);
+--m-color-main-paper: var(--p-color-user-paper);
+--m-color-main: var(--p-color-user);
+
+}
+
+
+
+	/* Scheme classes */
+.\@scheme-light {
+	--_-system-schemeName: light;
+	--_-system-schemeInvertMult: 1;
+	--_-system-schemeWhenDark: 0;
+	--_-system-schemeWhenLight: 1;
+	--_-system-schemeTrueLight: white;
+	--_-system-schemeTrueHeavy: black;
+	--p-color-brand-ink: var(--p-color-light-brand-ink); --p-color-brand-heavy: var(--p-color-light-brand-heavy); --p-color-brand-mid: var(--p-color-light-brand-mid); --p-color-brand-light: var(--p-color-light-brand-light); --p-color-brand-wash: var(--p-color-light-brand-wash); --p-color-brand-paper: var(--p-color-light-brand-paper); --p-color-brand: var(--p-color-light-brand); --p-color-brand-_neutral-ink: var(--p-color-light-brand-_neutral-ink); --p-color-brand-_neutral-heavy: var(--p-color-light-brand-_neutral-heavy); --p-color-brand-_neutral-mid: var(--p-color-light-brand-_neutral-mid); --p-color-brand-_neutral-light: var(--p-color-light-brand-_neutral-light); --p-color-brand-_neutral-wash: var(--p-color-light-brand-_neutral-wash); --p-color-brand-_neutral-paper: var(--p-color-light-brand-_neutral-paper); --p-color-brand-_neutral: var(--p-color-light-brand-_neutral); --p-color-success-ink: var(--p-color-light-success-ink); --p-color-success-heavy: var(--p-color-light-success-heavy); --p-color-success-mid: var(--p-color-light-success-mid); --p-color-success-light: var(--p-color-light-success-light); --p-color-success-wash: var(--p-color-light-success-wash); --p-color-success-paper: var(--p-color-light-success-paper); --p-color-success: var(--p-color-light-success); --p-color-success-_neutral-ink: var(--p-color-light-success-_neutral-ink); --p-color-success-_neutral-heavy: var(--p-color-light-success-_neutral-heavy); --p-color-success-_neutral-mid: var(--p-color-light-success-_neutral-mid); --p-color-success-_neutral-light: var(--p-color-light-success-_neutral-light); --p-color-success-_neutral-wash: var(--p-color-light-success-_neutral-wash); --p-color-success-_neutral-paper: var(--p-color-light-success-_neutral-paper); --p-color-success-_neutral: var(--p-color-light-success-_neutral); --p-color-user-ink: var(--p-color-light-user-ink); --p-color-user-heavy: var(--p-color-light-user-heavy); --p-color-user-mid: var(--p-color-light-user-mid); --p-color-user-light: var(--p-color-light-user-light); --p-color-user-wash: var(--p-color-light-user-wash); --p-color-user-paper: var(--p-color-light-user-paper); --p-color-user: var(--p-color-light-user); --p-color-user-_neutral-ink: var(--p-color-light-user-_neutral-ink); --p-color-user-_neutral-heavy: var(--p-color-light-user-_neutral-heavy); --p-color-user-_neutral-mid: var(--p-color-light-user-_neutral-mid); --p-color-user-_neutral-light: var(--p-color-light-user-_neutral-light); --p-color-user-_neutral-wash: var(--p-color-light-user-_neutral-wash); --p-color-user-_neutral-paper: var(--p-color-light-user-_neutral-paper); --p-color-user-_neutral: var(--p-color-light-user-_neutral);
+	
+}
+
+.\@scheme-dark {
+	--_-system-schemeName: dark;
+	--_-system-schemeInvertMult: -1;
+	--_-system-schemeWhenDark: 1;
+	--_-system-schemeWhenLight: 0;
+	--_-system-schemeTrueLight: black;
+	--_-system-schemeTrueHeavy: white;
+	--p-color-brand-ink: var(--p-color-dark-brand-ink); --p-color-brand-heavy: var(--p-color-dark-brand-heavy); --p-color-brand-mid: var(--p-color-dark-brand-mid); --p-color-brand-light: var(--p-color-dark-brand-light); --p-color-brand-wash: var(--p-color-dark-brand-wash); --p-color-brand-paper: var(--p-color-dark-brand-paper); --p-color-brand: var(--p-color-dark-brand); --p-color-brand-_neutral-ink: var(--p-color-dark-brand-_neutral-ink); --p-color-brand-_neutral-heavy: var(--p-color-dark-brand-_neutral-heavy); --p-color-brand-_neutral-mid: var(--p-color-dark-brand-_neutral-mid); --p-color-brand-_neutral-light: var(--p-color-dark-brand-_neutral-light); --p-color-brand-_neutral-wash: var(--p-color-dark-brand-_neutral-wash); --p-color-brand-_neutral-paper: var(--p-color-dark-brand-_neutral-paper); --p-color-brand-_neutral: var(--p-color-dark-brand-_neutral); --p-color-success-ink: var(--p-color-dark-success-ink); --p-color-success-heavy: var(--p-color-dark-success-heavy); --p-color-success-mid: var(--p-color-dark-success-mid); --p-color-success-light: var(--p-color-dark-success-light); --p-color-success-wash: var(--p-color-dark-success-wash); --p-color-success-paper: var(--p-color-dark-success-paper); --p-color-success: var(--p-color-dark-success); --p-color-success-_neutral-ink: var(--p-color-dark-success-_neutral-ink); --p-color-success-_neutral-heavy: var(--p-color-dark-success-_neutral-heavy); --p-color-success-_neutral-mid: var(--p-color-dark-success-_neutral-mid); --p-color-success-_neutral-light: var(--p-color-dark-success-_neutral-light); --p-color-success-_neutral-wash: var(--p-color-dark-success-_neutral-wash); --p-color-success-_neutral-paper: var(--p-color-dark-success-_neutral-paper); --p-color-success-_neutral: var(--p-color-dark-success-_neutral); --p-color-user-ink: var(--p-color-dark-user-ink); --p-color-user-heavy: var(--p-color-dark-user-heavy); --p-color-user-mid: var(--p-color-dark-user-mid); --p-color-user-light: var(--p-color-dark-user-light); --p-color-user-wash: var(--p-color-dark-user-wash); --p-color-user-paper: var(--p-color-dark-user-paper); --p-color-user: var(--p-color-dark-user); --p-color-user-_neutral-ink: var(--p-color-dark-user-_neutral-ink); --p-color-user-_neutral-heavy: var(--p-color-dark-user-_neutral-heavy); --p-color-user-_neutral-mid: var(--p-color-dark-user-_neutral-mid); --p-color-user-_neutral-light: var(--p-color-dark-user-_neutral-light); --p-color-user-_neutral-wash: var(--p-color-dark-user-_neutral-wash); --p-color-user-_neutral-paper: var(--p-color-dark-user-_neutral-paper); --p-color-user-_neutral: var(--p-color-dark-user-_neutral);
+	
+}
+
+/* Function definitions */
+@function --fn-lighten-color(--color, --step) { result: oklch(from var(--color) calc((l * calc(((1 + (var(--step) * (var(--_-system-schemeWhenLight, 1) * 0.02))) + (var(--_-system-schemeWhenDark, 1) * -0.07))))) calc((c * calc(((1 + (var(--step) * (var(--_-system-schemeWhenLight, 1) * -0.1))) + (var(--_-system-schemeWhenDark, 1) * -0.03))))) h); }
+
+@function --fn-darken-color(--color, --step) { result: oklch(from var(--color) calc((l * calc(((1 + (var(--step) * (var(--_-system-schemeWhenLight, 1) * -0.02))) + (var(--_-system-schemeWhenDark, 1) * 0.12))))) calc((c * calc(((1 + (var(--step) * (var(--_-system-schemeWhenLight, 1) * 0.01))) + (var(--_-system-schemeWhenDark, 1) * -0.09))))) h); }
+
+@function --fn-desaturate-color(--color, --step) { result: oklch(from var(--color) l calc((c * calc(((1 + (var(--step) * (var(--_-system-schemeWhenLight, 1) * -0.05))) + (var(--_-system-schemeWhenDark, 1) * -0.05))))) h); }
+
+@function --fn-saturate-color(--color, --step) { result: oklch(from var(--color) l calc((c * calc(((1 + (var(--step) * (var(--_-system-schemeWhenLight, 1) * 0.05))) + (var(--_-system-schemeWhenDark, 1) * 0.05))))) h); }
+
+@function --fn-fade(--color, --opacity) { result: oklch(from var(--color) l c h / var(--opacity)); }
+
+@function --fn-ring(--color, [object Object], [object Object]) { result: 0 0 0 var(--offset, 0px) var(--_-system-schemeTrueLight, white), 0 0 0 calc((var(--size, 1px) + var(--offset, 0px))) var(--color); }
+
+@function --fn-contrast-color([object Object]) { result: contrast-color(var(--against-color, var(--mx-bg-contrast, var(--mx-bg-ref, var(--_-system-schemeTrueLight, white))))); }
+
+/* Power user classes */
+.\@user-colors {
+	/* Raw scheme colors */
+--p-color-light-brand-ink: oklch(20.000000000000007% 0.11000000000000001 98); --p-color-light-brand-heavy: oklch(59.53073028463566% 0.1325889887340775 98); --p-color-light-brand-mid: oklch(90% 0.15000000000000002 98); --p-color-light-brand-light: oklch(98.02741561760232% 0.11253872711785591 98); --p-color-light-brand-wash: oklch(100% 0.06393659492837209 98); --p-color-light-brand-paper: oklch(100% 0.010000000000000009 98); --p-color-light-brand: oklch(90% 0.15000000000000002 98); --p-color-light-brand-_neutral-ink: oklch(0.17653786308766073 0.00825 98); --p-color-light-brand-_neutral-heavy: oklch(0.5630771267048826 0.009944174155055814 98); --p-color-light-brand-_neutral-mid: oklch(0.8602483517886919 0.011250000000000001 98); --p-color-light-brand-_neutral-light: oklch(0.9558840664607136 0.008440404533839194 98); --p-color-light-brand-_neutral-wash: oklch(0.9906723088936705 0.004795244619627906 98); --p-color-light-brand-_neutral-paper: oklch(0.9996018928294464 0.0007500000000000007 98); --p-color-light-brand-_neutral: oklch(0.8602483517886919 0.011250000000000001 98); --p-color-light-success-ink: oklch(20.000000000000007% 0.11000000000000001 120); --p-color-light-success-heavy: oklch(59.53073028463566% 0.1325889887340775 120); --p-color-light-success-mid: oklch(90% 0.15000000000000002 120); --p-color-light-success-light: oklch(98.02741561760232% 0.11253872711785591 120); --p-color-light-success-wash: oklch(100% 0.06393659492837209 120); --p-color-light-success-paper: oklch(100% 0.010000000000000009 120); --p-color-light-success: oklch(90% 0.15000000000000002 120); --p-color-light-success-_neutral-ink: oklch(0.17653786308766073 0.00825 120); --p-color-light-success-_neutral-heavy: oklch(0.5630771267048826 0.009944174155055814 120); --p-color-light-success-_neutral-mid: oklch(0.8602483517886919 0.011250000000000001 120); --p-color-light-success-_neutral-light: oklch(0.9558840664607136 0.008440404533839194 120); --p-color-light-success-_neutral-wash: oklch(0.9906723088936705 0.004795244619627906 120); --p-color-light-success-_neutral-paper: oklch(0.9996018928294464 0.0007500000000000007 120); --p-color-light-success-_neutral: oklch(0.8602483517886919 0.011250000000000001 120); --p-color-light-user-ink: oklch(20.000000000000007% 0.11000000000000001 var(--user-hue, 200)); --p-color-light-user-heavy: oklch(59.53073028463566% 0.1325889887340775 var(--user-hue, 200)); --p-color-light-user-mid: oklch(90% 0.15000000000000002 var(--user-hue, 200)); --p-color-light-user-light: oklch(98.02741561760232% 0.11253872711785591 var(--user-hue, 200)); --p-color-light-user-wash: oklch(100% 0.06393659492837209 var(--user-hue, 200)); --p-color-light-user-paper: oklch(100% 0.010000000000000009 var(--user-hue, 200)); --p-color-light-user: oklch(90% 0.15000000000000002 var(--user-hue, 200)); --p-color-light-user-_neutral-ink: oklch(0.17653786308766073 0.00825 var(--user-hue, 200)); --p-color-light-user-_neutral-heavy: oklch(0.5630771267048826 0.009944174155055814 var(--user-hue, 200)); --p-color-light-user-_neutral-mid: oklch(0.8602483517886919 0.011250000000000001 var(--user-hue, 200)); --p-color-light-user-_neutral-light: oklch(0.9558840664607136 0.008440404533839194 var(--user-hue, 200)); --p-color-light-user-_neutral-wash: oklch(0.9906723088936705 0.004795244619627906 var(--user-hue, 200)); --p-color-light-user-_neutral-paper: oklch(0.9996018928294464 0.0007500000000000007 var(--user-hue, 200)); --p-color-light-user-_neutral: oklch(0.8602483517886919 0.011250000000000001 var(--user-hue, 200));
+--p-color-dark-brand-ink: oklch(100% 0.08400000000000002 98); --p-color-dark-brand-heavy: oklch(90.46926971536435% 0.1269190785947473 98); --p-color-dark-brand-mid: oklch(60% 0.16000000000000003 98); --p-color-dark-brand-light: oklch(44.74791032655562% 0.12253872711785592 98); --p-color-dark-brand-wash: oklch(24.959899363694344% 0.0739365949283721 98); --p-color-dark-brand-paper: oklch(3.0000000000000027% 0.020000000000000018 98); --p-color-dark-brand: oklch(60% 0.16000000000000003 98); --p-color-dark-brand-_neutral-ink: oklch(0.9851654360090278 0.006300000000000001 98); --p-color-dark-brand-_neutral-heavy: oklch(0.8747703437504191 0.009518930894606047 98); --p-color-dark-brand-_neutral-mid: oklch(0.5556387300380706 0.012000000000000002 98); --p-color-dark-brand-_neutral-light: oklch(0.41929107358805867 0.009190404533839194 98); --p-color-dark-brand-_neutral-wash: oklch(0.2376574338389646 0.005545244619627907 98); --p-color-dark-brand-_neutral-paper: oklch(0.02870654598684531 0.0015000000000000013 98); --p-color-dark-brand-_neutral: oklch(0.5556387300380706 0.012000000000000002 98); --p-color-dark-success-ink: oklch(100% 0.08400000000000002 120); --p-color-dark-success-heavy: oklch(90.46926971536435% 0.1269190785947473 120); --p-color-dark-success-mid: oklch(60% 0.16000000000000003 120); --p-color-dark-success-light: oklch(44.74791032655562% 0.12253872711785592 120); --p-color-dark-success-wash: oklch(24.959899363694344% 0.0739365949283721 120); --p-color-dark-success-paper: oklch(3.0000000000000027% 0.020000000000000018 120); --p-color-dark-success: oklch(60% 0.16000000000000003 120); --p-color-dark-success-_neutral-ink: oklch(0.9851654360090278 0.006300000000000001 120); --p-color-dark-success-_neutral-heavy: oklch(0.8747703437504191 0.009518930894606047 120); --p-color-dark-success-_neutral-mid: oklch(0.5556387300380706 0.012000000000000002 120); --p-color-dark-success-_neutral-light: oklch(0.41929107358805867 0.009190404533839194 120); --p-color-dark-success-_neutral-wash: oklch(0.2376574338389646 0.005545244619627907 120); --p-color-dark-success-_neutral-paper: oklch(0.02870654598684531 0.0015000000000000013 120); --p-color-dark-success-_neutral: oklch(0.5556387300380706 0.012000000000000002 120); --p-color-dark-user-ink: oklch(100% 0.08400000000000002 var(--user-hue, 200)); --p-color-dark-user-heavy: oklch(90.46926971536435% 0.1269190785947473 var(--user-hue, 200)); --p-color-dark-user-mid: oklch(60% 0.16000000000000003 var(--user-hue, 200)); --p-color-dark-user-light: oklch(44.74791032655562% 0.12253872711785592 var(--user-hue, 200)); --p-color-dark-user-wash: oklch(24.959899363694344% 0.0739365949283721 var(--user-hue, 200)); --p-color-dark-user-paper: oklch(3.0000000000000027% 0.020000000000000018 var(--user-hue, 200)); --p-color-dark-user: oklch(60% 0.16000000000000003 var(--user-hue, 200)); --p-color-dark-user-_neutral-ink: oklch(0.9851654360090278 0.006300000000000001 var(--user-hue, 200)); --p-color-dark-user-_neutral-heavy: oklch(0.8747703437504191 0.009518930894606047 var(--user-hue, 200)); --p-color-dark-user-_neutral-mid: oklch(0.5556387300380706 0.012000000000000002 var(--user-hue, 200)); --p-color-dark-user-_neutral-light: oklch(0.41929107358805867 0.009190404533839194 var(--user-hue, 200)); --p-color-dark-user-_neutral-wash: oklch(0.2376574338389646 0.005545244619627907 var(--user-hue, 200)); --p-color-dark-user-_neutral-paper: oklch(0.02870654598684531 0.0015000000000000013 var(--user-hue, 200)); --p-color-dark-user-_neutral: oklch(0.5556387300380706 0.012000000000000002 var(--user-hue, 200));
+	/* Dark/Light schemes are assigned to built-in device preferences */
+	@media (prefers-color-scheme: light), (prefers-color-scheme: no-preference) {
+		--_-system-schemeName: light;
+	--_-system-schemeInvertMult: 1;
+	--_-system-schemeWhenDark: 0;
+	--_-system-schemeWhenLight: 1;
+	--_-system-schemeTrueLight: white;
+	--_-system-schemeTrueHeavy: black;
+	--p-color-brand-ink: var(--p-color-light-brand-ink); --p-color-brand-heavy: var(--p-color-light-brand-heavy); --p-color-brand-mid: var(--p-color-light-brand-mid); --p-color-brand-light: var(--p-color-light-brand-light); --p-color-brand-wash: var(--p-color-light-brand-wash); --p-color-brand-paper: var(--p-color-light-brand-paper); --p-color-brand: var(--p-color-light-brand); --p-color-brand-_neutral-ink: var(--p-color-light-brand-_neutral-ink); --p-color-brand-_neutral-heavy: var(--p-color-light-brand-_neutral-heavy); --p-color-brand-_neutral-mid: var(--p-color-light-brand-_neutral-mid); --p-color-brand-_neutral-light: var(--p-color-light-brand-_neutral-light); --p-color-brand-_neutral-wash: var(--p-color-light-brand-_neutral-wash); --p-color-brand-_neutral-paper: var(--p-color-light-brand-_neutral-paper); --p-color-brand-_neutral: var(--p-color-light-brand-_neutral); --p-color-success-ink: var(--p-color-light-success-ink); --p-color-success-heavy: var(--p-color-light-success-heavy); --p-color-success-mid: var(--p-color-light-success-mid); --p-color-success-light: var(--p-color-light-success-light); --p-color-success-wash: var(--p-color-light-success-wash); --p-color-success-paper: var(--p-color-light-success-paper); --p-color-success: var(--p-color-light-success); --p-color-success-_neutral-ink: var(--p-color-light-success-_neutral-ink); --p-color-success-_neutral-heavy: var(--p-color-light-success-_neutral-heavy); --p-color-success-_neutral-mid: var(--p-color-light-success-_neutral-mid); --p-color-success-_neutral-light: var(--p-color-light-success-_neutral-light); --p-color-success-_neutral-wash: var(--p-color-light-success-_neutral-wash); --p-color-success-_neutral-paper: var(--p-color-light-success-_neutral-paper); --p-color-success-_neutral: var(--p-color-light-success-_neutral); --p-color-user-ink: var(--p-color-light-user-ink); --p-color-user-heavy: var(--p-color-light-user-heavy); --p-color-user-mid: var(--p-color-light-user-mid); --p-color-user-light: var(--p-color-light-user-light); --p-color-user-wash: var(--p-color-light-user-wash); --p-color-user-paper: var(--p-color-light-user-paper); --p-color-user: var(--p-color-light-user); --p-color-user-_neutral-ink: var(--p-color-light-user-_neutral-ink); --p-color-user-_neutral-heavy: var(--p-color-light-user-_neutral-heavy); --p-color-user-_neutral-mid: var(--p-color-light-user-_neutral-mid); --p-color-user-_neutral-light: var(--p-color-light-user-_neutral-light); --p-color-user-_neutral-wash: var(--p-color-light-user-_neutral-wash); --p-color-user-_neutral-paper: var(--p-color-light-user-_neutral-paper); --p-color-user-_neutral: var(--p-color-light-user-_neutral);
+	
+	}
+
+	@media (prefers-color-scheme: dark) {
+		--_-system-schemeName: dark;
+	--_-system-schemeInvertMult: -1;
+	--_-system-schemeWhenDark: 1;
+	--_-system-schemeWhenLight: 0;
+	--_-system-schemeTrueLight: black;
+	--_-system-schemeTrueHeavy: white;
+	--p-color-brand-ink: var(--p-color-dark-brand-ink); --p-color-brand-heavy: var(--p-color-dark-brand-heavy); --p-color-brand-mid: var(--p-color-dark-brand-mid); --p-color-brand-light: var(--p-color-dark-brand-light); --p-color-brand-wash: var(--p-color-dark-brand-wash); --p-color-brand-paper: var(--p-color-dark-brand-paper); --p-color-brand: var(--p-color-dark-brand); --p-color-brand-_neutral-ink: var(--p-color-dark-brand-_neutral-ink); --p-color-brand-_neutral-heavy: var(--p-color-dark-brand-_neutral-heavy); --p-color-brand-_neutral-mid: var(--p-color-dark-brand-_neutral-mid); --p-color-brand-_neutral-light: var(--p-color-dark-brand-_neutral-light); --p-color-brand-_neutral-wash: var(--p-color-dark-brand-_neutral-wash); --p-color-brand-_neutral-paper: var(--p-color-dark-brand-_neutral-paper); --p-color-brand-_neutral: var(--p-color-dark-brand-_neutral); --p-color-success-ink: var(--p-color-dark-success-ink); --p-color-success-heavy: var(--p-color-dark-success-heavy); --p-color-success-mid: var(--p-color-dark-success-mid); --p-color-success-light: var(--p-color-dark-success-light); --p-color-success-wash: var(--p-color-dark-success-wash); --p-color-success-paper: var(--p-color-dark-success-paper); --p-color-success: var(--p-color-dark-success); --p-color-success-_neutral-ink: var(--p-color-dark-success-_neutral-ink); --p-color-success-_neutral-heavy: var(--p-color-dark-success-_neutral-heavy); --p-color-success-_neutral-mid: var(--p-color-dark-success-_neutral-mid); --p-color-success-_neutral-light: var(--p-color-dark-success-_neutral-light); --p-color-success-_neutral-wash: var(--p-color-dark-success-_neutral-wash); --p-color-success-_neutral-paper: var(--p-color-dark-success-_neutral-paper); --p-color-success-_neutral: var(--p-color-dark-success-_neutral); --p-color-user-ink: var(--p-color-dark-user-ink); --p-color-user-heavy: var(--p-color-dark-user-heavy); --p-color-user-mid: var(--p-color-dark-user-mid); --p-color-user-light: var(--p-color-dark-user-light); --p-color-user-wash: var(--p-color-dark-user-wash); --p-color-user-paper: var(--p-color-dark-user-paper); --p-color-user: var(--p-color-dark-user); --p-color-user-_neutral-ink: var(--p-color-dark-user-_neutral-ink); --p-color-user-_neutral-heavy: var(--p-color-dark-user-_neutral-heavy); --p-color-user-_neutral-mid: var(--p-color-dark-user-_neutral-mid); --p-color-user-_neutral-light: var(--p-color-dark-user-_neutral-light); --p-color-user-_neutral-wash: var(--p-color-dark-user-_neutral-wash); --p-color-user-_neutral-paper: var(--p-color-dark-user-_neutral-paper); --p-color-user-_neutral: var(--p-color-dark-user-_neutral);
+	
+	}
+}
+
+
+
+
+}

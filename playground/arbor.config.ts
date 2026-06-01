@@ -9,6 +9,9 @@ const preset = presetArbor({
 			success: {
 				hue: 120,
 			},
+			user: {
+				hue: 'var(--user-hue, 200)',
+			},
 		},
 		mainColor: 'brand',
 	},
@@ -17,6 +20,12 @@ const preset = presetArbor({
 preset.bundleMode('success', {
 	color: {
 		main: preset.$.primitives.color.success,
+	},
+});
+
+preset.bundleMode('user', {
+	color: {
+		main: preset.$.primitives.color.user,
 	},
 });
 

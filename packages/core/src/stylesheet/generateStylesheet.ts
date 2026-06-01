@@ -41,7 +41,7 @@ export function generateStylesheet(
 		return formatObjectToCss(values);
 	}
 
-	function schemeApplicationCss(schemeName: string) {
+	function getSchemeApplicationCss(schemeName: string) {
 		const scheme = primitiveValues.color[schemeName];
 		const values = selfReferencedProps(config.$.primitives.color, {
 			valuePrefix: schemeName,
@@ -74,6 +74,24 @@ export function generateStylesheet(
 		),
 	);
 
+	const rawSchemeColorValuesCss = `/* Raw scheme colors */
+${Object.keys(primitiveValues.color)
+	.map((schemeName) => getSchemeRootPropertiesCss(schemeName))
+	.join('\n')}`;
+
+	const lightDarkSchemeApplicationCss = `/* Dark/Light schemes are assigned to built-in device preferences */
+	@media (prefers-color-scheme: light)${
+		defaultScheme === 'light' ? noPreference : ''
+	} {
+		${getSchemeApplicationCss('light')}
+	}
+
+	@media (prefers-color-scheme: dark)${
+		defaultScheme === 'dark' ? noPreference : ''
+	} {
+		${getSchemeApplicationCss('dark')}
+	}`;
+
 	return `/* Auto-generated CSS - do not edit directly */
 ${cascadeLayerName ? `@layer ${cascadeLayerName} {` : ''}
 :root {
@@ -82,23 +100,8 @@ ${cascadeLayerName ? `@layer ${cascadeLayerName} {` : ''}
 	/* By default we set the font size */
 	font-size: ${globalProps.baseFontSize.var};
 
-	/* Raw scheme ranges */
-	${Object.keys(primitiveValues.color)
-		.map((schemeName) => getSchemeRootPropertiesCss(schemeName))
-		.join('\n')}
-
-	/* Dark/Light schemes are assigned to built-in device preferences */
-	@media (prefers-color-scheme: light)${
-		defaultScheme === 'light' ? noPreference : ''
-	} {
-		${schemeApplicationCss('light')}
-	}
-
-	@media (prefers-color-scheme: dark)${
-		defaultScheme === 'dark' ? noPreference : ''
-	} {
-		${schemeApplicationCss('dark')}
-	}
+	${rawSchemeColorValuesCss}
+	${lightDarkSchemeApplicationCss}
 
 	/* Other primitives */
 	${printTokens(config.$.primitives.typography, primitiveValues.typography.levels)}
@@ -120,7 +123,7 @@ ${modeName === 'base' ? ':root, :root [class^="\\@scheme-"], :root [class*=" \\@
 ${Object.keys(primitiveValues.color)
 	.map(
 		(schemeName) => `.\\@scheme-${schemeName} {
-	${schemeApplicationCss(schemeName)}
+	${getSchemeApplicationCss(schemeName)}
 }`,
 	)
 	.join('\n\n')}
@@ -131,11 +134,10 @@ ${Object.values(config.functions)
 	.filter(Boolean)
 	.join('\n\n')}
 
-${
-	/*Object.values(config.mixins)
-	.map((mixin) => mixin.definition)
-	.filter(Boolean)
-	.join('\n\n')*/ ''
+/* Power user classes */
+.\\@user-colors {
+	${rawSchemeColorValuesCss}
+	${lightDarkSchemeApplicationCss}
 }
 
 ${allColorTokens
