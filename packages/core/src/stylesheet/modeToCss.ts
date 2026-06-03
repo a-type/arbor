@@ -41,8 +41,7 @@ export function modeToCss<TModeShape extends SimpleTokenSchema>(
 		if (isToken(value)) {
 			cssVars[tokenVar.name] = value.var;
 		} else if (isCalcEquation(value)) {
-			// TODO: add globals to parameters of this function and computeEquation
-			// instead?
+			// TODO: computeEquation instead?
 			cssVars[tokenVar.name] = printEquation(value);
 		} else if (typeof value === 'string' || typeof value === 'number') {
 			cssVars[tokenVar.name] = value.toString();
@@ -84,7 +83,10 @@ export function modeToCss<TModeShape extends SimpleTokenSchema>(
 	${content}
 	${modeInternals.extraCss ?? ''}
 }
-`;
+`
+		.replace(/\s+/g, ' ')
+		.replaceAll('; ', ';\n\t')
+		.replaceAll('{ ', '{\n\t');
 }
 
 /**
@@ -125,6 +127,24 @@ function getBaseModeDependents(
 					continue;
 				}
 				dependents[tokenForKey.name] = printEquation(value);
+				// recurse to find any values that depend on this dependent as well
+				Object.assign(
+					dependents,
+					getBaseModeDependents(
+						baseMode,
+						tokenForKey,
+						modeTokens,
+						nextVisiting,
+					),
+				);
+			}
+		} else if (isToken(value)) {
+			if (value.name === token.name) {
+				const tokenForKey = flatTokens[key];
+				if (!tokenForKey) {
+					continue;
+				}
+				dependents[tokenForKey.name] = value.var;
 				// recurse to find any values that depend on this dependent as well
 				Object.assign(
 					dependents,

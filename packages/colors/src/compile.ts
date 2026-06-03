@@ -47,6 +47,7 @@ export interface CompileColorsOptions<
 		>;
 		dark?: SchemeDefinition<ColorRangeConfig<TRangeStepNames>, TRangeStepNames>;
 	};
+	invertLightDark?: boolean;
 }
 
 /**
@@ -62,6 +63,7 @@ export function compileColors<
 	{
 		ranges,
 		schemes: userSchemes,
+		invertLightDark = false,
 	}: CompileColorsOptions<TRangeNames, TRangeStepNames>,
 	context: GlobalContext,
 ): CompiledColors<TRangeNames, TRangeStepNames> {
@@ -89,8 +91,8 @@ export function compileColors<
 		const uncompiledDark = schemes.dark.getColorRange(rangeConfig, context);
 
 		const combined = toLightDarkCompiled(
-			uncompiledLight,
-			uncompiledDark,
+			invertLightDark ? uncompiledDark : uncompiledLight,
+			invertLightDark ? uncompiledLight : uncompiledDark,
 			context,
 			evalContext,
 		);

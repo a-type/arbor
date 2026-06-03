@@ -224,9 +224,9 @@ export function createColorDarkModeRange(
 	context: GlobalContext,
 ) {
 	const lightness = lightnessEq({
-		rangeUp: -0.57,
-		rangeDown: -0.7,
-		baseline: 0.6,
+		rangeUp: -0.47,
+		rangeDown: -0.75,
+		baseline: 0.53,
 	});
 	const chroma = chromaEq({
 		baseline: 0.8,

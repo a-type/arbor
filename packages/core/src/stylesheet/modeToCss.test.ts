@@ -11,6 +11,7 @@ const preset = definePreset({
 			once: 'color',
 			twice: 'color',
 			again: 'color',
+			direct: 'color',
 		},
 		ex: {
 			$root: 'color',
@@ -23,6 +24,7 @@ const preset = definePreset({
 			once: css`color-mix(in hsl, ${$.mode.value}, black)`,
 			twice: css`color-mix(in hsl, ${$.mode.derived.once}, transparent)`,
 			again: css`color-mix(in hsl, ${$.mode.value}, red)`,
+			direct: $.mode.value,
 		},
 		ex: {
 			$root: 'blue',
@@ -47,15 +49,13 @@ it('prints a base mode with derived values', () => {
 		".\\@mode-base, :root, .\\@mode-base, :root {
 			--_-system-modeName: base;
 			--m-derived-once: color-mix(in hsl, var(--m-value), black);
-		--m-derived-twice: color-mix(in hsl, var(--m-derived-once), transparent);
-		--m-derived-again: color-mix(in hsl, var(--m-value), red);
-		--m-value: red;
-		--m-ex: blue;
-		--m-ex-mid: teal;
-
-			
-		}
-		"
+			--m-derived-twice: color-mix(in hsl, var(--m-derived-once), transparent);
+			--m-derived-again: color-mix(in hsl, var(--m-value), red);
+			--m-derived-direct: var(--m-value);
+			--m-value: red;
+			--m-ex: blue;
+			--m-ex-mid: teal;
+			} "
 	`);
 });
 
@@ -65,13 +65,11 @@ it('prints a partial mode with derived dependencies it doesnt declare', () => {
 		".\\@mode-partial {
 			--_-system-modeName: partial;
 			--m-derived-once: color-mix(in hsl, var(--m-value), black);
-		--m-derived-twice: color-mix(in hsl, var(--m-derived-once), transparent);
-		--m-derived-again: color-mix(in hsl, var(--m-value), red);
-		--m-value: blue;
-
-			
-		}
-		"
+			--m-derived-twice: color-mix(in hsl, var(--m-derived-once), transparent);
+			--m-derived-again: color-mix(in hsl, var(--m-value), red);
+			--m-derived-direct: var(--m-value);
+			--m-value: blue;
+			} "
 	`);
 });
 
@@ -81,11 +79,8 @@ it('prints a partial mode which overrides derived dependencies from base and doe
 		".\\@mode-underived {
 			--_-system-modeName: underived;
 			--m-derived-twice: color-mix(in hsl, var(--m-derived-once), transparent);
-		--m-derived-once: green;
-
-			
-		}
-		"
+			--m-derived-once: green;
+			} "
 	`);
 });
 

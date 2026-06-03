@@ -42,8 +42,8 @@ button {
 	transition: all var(--m-duration) var(--m-easing);
 	cursor: pointer;
 
-	/* use color-contrast to find a readable color against current bg (applied by variants) */
-	@apply --mx-fg(color-contrast(var(--mx-bg-ref)));
+	/* use contrast to find a readable color against current bg (applied by variants) */
+	@apply --mx-fg(--fn-contrast-color());
 	/* use applied fg color for the border, too */
 	@apply --mx-border(var(--mx-fg-ref));
 

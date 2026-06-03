@@ -49,6 +49,11 @@ export interface ArborPresetConfig<
 	shadow?: ShadowConfig;
 	easing?: ModeValues<ArborModeSchema['easing']>;
 	duration?: ModeValues<ArborModeSchema['duration']>;
+	/**
+	 * Turns off the automatic bundled @mode-inverted, which inverts
+	 * your light/dark color scheme.
+	 */
+	disableAutoInvertedMode?: boolean;
 }
 
 /**
@@ -134,6 +139,22 @@ export const presetArbor = <
 		},
 		extends: [presetBasic],
 	});
+
+	if (!config.disableAutoInvertedMode) {
+		// special built-in mode: @mode-inverted - easier to create here than in userland
+		preset.bundleMode('inverted', {
+			primitive: {
+				color: compileColors(
+					{
+						ranges: config.color.ranges,
+						schemes: config.color.schemes,
+						invertLightDark: true,
+					},
+					preset.context,
+				) as any,
+			},
+		});
+	}
 
 	return preset;
 };

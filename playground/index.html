@@ -34,10 +34,14 @@
 			<input class="input" placeholder="Input" />
 		</div>
 
+		<h2 class="subtitle">Dark Scheme</h2>
 		<div class="surface @scheme-dark" data-emphasis="ambient">
 			<button class="button" data-emphasis="primary">Primary Button</button>
 			<button class="button" data-emphasis="secondary">Secondary Button</button>
 			<button class="button" data-emphasis="ambient">Ambient Button</button>
+			<button class="button @mode-inverted" data-emphasis="primary">
+				Inverted Button
+			</button>
 			<input class="input" placeholder="Input" />
 		</div>
 		<div class="surface @scheme-dark" data-emphasis="secondary">
@@ -59,6 +63,15 @@
 			<input class="input" placeholder="Input" />
 		</div>
 
+		<h2 class="subtitle">Inverted Mode (auto)</h2>
+		<div class="surface @mode-inverted" data-emphasis="primary">
+			<button class="button" data-emphasis="primary">Primary Button</button>
+			<button class="button" data-emphasis="secondary">Secondary Button</button>
+			<button class="button" data-emphasis="ambient">Ambient Button</button>
+			<input class="input" placeholder="Input" />
+		</div>
+
+		<h2 class="subtitle">User Mode + Custom Color Hue</h2>
 		<div class="@mode-user @user-colors" style="--user-hue: 60">
 			<div class="surface" data-emphasis="secondary">
 				<button class="button" data-emphasis="primary">Primary Button</button>
