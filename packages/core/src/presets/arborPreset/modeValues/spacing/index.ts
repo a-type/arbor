@@ -1,5 +1,5 @@
 import { css, Equation } from '@arbor-css/calc';
-import { GlobalContext } from '@arbor-css/globals';
+import { Token } from '@arbor-css/tokens';
 
 export const defaultSpacingLevels = [
 	'2xs',
@@ -13,11 +13,8 @@ export const defaultSpacingLevels = [
 ] as const;
 export type DefaultSpacingLevel = (typeof defaultSpacingLevels)[number];
 
-const defaultSpacingEquation = (
-	step: number,
-	context: GlobalContext,
-): Equation =>
-	css`(${context.$systemTokens.global.baseSpacingSize} / ${context.$systemTokens.global.baseFontSize}) * 1rem * pow(1.5, ${step})`;
+const defaultSpacingEquation = (step: number, $: RequiredTokens): Equation =>
+	css`(${$.baseSpacingSize} / ${$.baseFontSize}) * 1rem * pow(1.5, ${step})`;
 
 export interface SpacingConfig<
 	TSpacingLevel extends string = DefaultSpacingLevel,
@@ -34,6 +31,11 @@ export type CompiledSpacing<
 	$root: string | Equation;
 };
 
+type RequiredTokens = {
+	baseSpacingSize: Token;
+	baseFontSize: Token;
+};
+
 /**
  * Given configuration for spacing sizes and the default
  * level name, produces a range of spacing sizes.
@@ -42,7 +44,7 @@ export function compileSpacing<
 	TSpacingLevel extends string = DefaultSpacingLevel,
 >(
 	config: SpacingConfig<TSpacingLevel>,
-	context: GlobalContext,
+	$: RequiredTokens,
 ): CompiledSpacing<TSpacingLevel> {
 	const levelNames =
 		config.levels ?
@@ -61,8 +63,7 @@ export function compileSpacing<
 		(acc, name, i) => {
 			const nameCast = name as TSpacingLevel;
 			const levelConfig = config.levels?.[nameCast]?.toString();
-			acc[nameCast] =
-				levelConfig ?? defaultSpacingEquation(i - baseIndex, context);
+			acc[nameCast] = levelConfig ?? defaultSpacingEquation(i - baseIndex, $);
 			return acc;
 		},
 		{} as Record<TSpacingLevel, string | Equation>,

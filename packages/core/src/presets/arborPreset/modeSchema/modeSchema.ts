@@ -1,4 +1,5 @@
 import { SimpleTokenSchema } from '@arbor-css/tokens';
+import { global } from './global.js';
 import { actionIntents } from './intents/action.js';
 import { controlIntents } from './intents/control.js';
 import { surfaceIntents } from './intents/surface.js';
@@ -9,7 +10,6 @@ import { easingPrimitives } from './primitives/easing.js';
 import { shadowPrimitives } from './primitives/shadow.js';
 import { spacingPrimitives } from './primitives/spacing.js';
 import { typographyPrimitives } from './primitives/typography.js';
-import { scalars } from './scalars/scalars.js';
 import { mainColorSemantics } from './semantics/color.js';
 import { durationSemantics } from './semantics/duration.js';
 import { easingSemantics } from './semantics/easing.js';
@@ -27,7 +27,7 @@ export function createArborModeSchema<TColorName extends string>(
 ) {
 	return {
 		// these influence all sorts of things
-		scalar: scalars,
+		global,
 
 		// primitive values
 		primitive: {

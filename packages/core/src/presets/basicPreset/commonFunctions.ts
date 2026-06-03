@@ -23,7 +23,7 @@ export function lightenColorAlteration(
 	sourceColor: CalcInterpolation,
 	step: CalcInterpolation,
 ) {
-	return css`oklch(from ${sourceColor} calc(l * ${lightDarkAlteration(css, systemProps, { light: 0.02, dark: -0.07, step })}) calc(c * ${lightDarkAlteration(css, systemProps, { light: -0.1, dark: -0.03, step })}) h)`;
+	return css`oklch(from ${sourceColor} calc(l * ${lightDarkAlteration(css, systemProps, { light: 0.04, dark: -0.17, step })}) calc(c * ${lightDarkAlteration(css, systemProps, { light: -0.1, dark: -0.03, step })}) h)`;
 }
 
 export function darkenColorAlteration(
@@ -32,7 +32,7 @@ export function darkenColorAlteration(
 	sourceColor: CalcInterpolation,
 	step: CalcInterpolation,
 ) {
-	return css`oklch(from ${sourceColor} calc(l * ${lightDarkAlteration(css, systemProps, { light: -0.02, dark: 0.12, step })}) calc(c * ${lightDarkAlteration(css, systemProps, { light: 0.01, dark: -0.09, step })}) h)`;
+	return css`oklch(from ${sourceColor} calc(l * ${lightDarkAlteration(css, systemProps, { light: -0.04, dark: 0.2, step })}) calc(c * ${lightDarkAlteration(css, systemProps, { light: 0.01, dark: -0.09, step })}) h)`;
 }
 
 export function saturateColorAlteration(

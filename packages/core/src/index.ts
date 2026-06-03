@@ -1,15 +1,11 @@
 export * from '@arbor-css/functions';
 export {
-	createGlobals,
 	DEFAULT_META_TOKEN_PREFIX,
 	DEFAULT_MODE_TOKEN_PREFIX,
 	DEFAULT_PRIMITIVE_TOKEN_PREFIX,
 	DEFAULT_REF_TOKEN_PREFIX,
-	defaultGlobals,
 	type ArborPrefixConfig,
 	type ArborResolvedPrefixes,
-	type GlobalConfigProps,
-	type GlobalConfig as PrimitiveGlobals,
 } from '@arbor-css/globals';
 export * from '@arbor-css/modes';
 export type * from '@arbor-css/preset';

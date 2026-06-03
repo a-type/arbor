@@ -5,13 +5,10 @@ import {
 	createMixinFactory,
 } from '@arbor-css/functions';
 import { CreateToken, createTokenFactory } from '@arbor-css/tokens';
-import { defaultGlobals, GlobalConfig } from './globalProps.js';
 import { resolveArborPrefixes, type ArborPrefixConfig } from './prefixes.js';
 import { createSystemProps, SystemTokens } from './systemProps.js';
 
-export interface GlobalContextConfig extends ArborPrefixConfig {
-	globals?: Partial<GlobalConfig>;
-}
+export interface GlobalContextConfig extends ArborPrefixConfig {}
 
 export interface GlobalContext {
 	createModeToken: CreateToken;
@@ -21,9 +18,7 @@ export interface GlobalContext {
 	createFunction: CreateFunction;
 	createMixin: CreateMixin;
 	tokenPrefixes: ReturnType<typeof resolveArborPrefixes>;
-	globals: GlobalConfig;
 	$systemTokens: SystemTokens;
-	getGlobalPropertyAssignments(): Record<string, string>;
 }
 
 export function createGlobalContext(config: GlobalContextConfig = {}) {
@@ -40,10 +35,7 @@ export function createGlobalContext(config: GlobalContextConfig = {}) {
 	const $systemTokens = createSystemProps({
 		createMetaToken,
 	});
-	const globals = {
-		...defaultGlobals,
-		...config.globals,
-	};
+
 	return {
 		createModeToken,
 		createMetaToken,
@@ -58,15 +50,5 @@ export function createGlobalContext(config: GlobalContextConfig = {}) {
 		}),
 		tokenPrefixes,
 		$systemTokens,
-		globals,
-		getGlobalPropertyAssignments() {
-			const assignments: Record<string, string> = {};
-			let key: keyof GlobalConfig;
-			for (key of Object.keys($systemTokens.global) as (keyof GlobalConfig)[]) {
-				const token = $systemTokens.global[key];
-				assignments[token.name] = globals[key].toString();
-			}
-			return assignments;
-		},
 	};
 }

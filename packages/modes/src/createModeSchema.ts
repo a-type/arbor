@@ -40,10 +40,12 @@ export type ModeInstance<T extends SimpleTokenSchema> = DeepPartial<
 	ModeValues<T>
 >;
 
+export type ModeInstanceOptions = Omit<Partial<ModeInternals>, 'name'>;
+
 export function createModeInstance<T extends SimpleTokenSchema>(
 	name: string,
 	values: DeepPartial<ModeValues<T>>,
-	options?: Omit<Partial<ModeInternals>, 'name'>,
+	options?: ModeInstanceOptions,
 ): ModeInstance<T> {
 	const internals = {
 		...options,

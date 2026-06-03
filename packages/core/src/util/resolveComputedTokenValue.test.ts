@@ -37,7 +37,7 @@ it('applies user property values to evaluation context', () => {
 		preset,
 		preset.$.mode.spacing.sm.name,
 		{
-			[preset.$.mode.scalar.density.name]: '2',
+			[preset.$.mode.global.density.name]: '2',
 		},
 	);
 
@@ -49,7 +49,7 @@ it('resolves equation property values from user overrides', () => {
 		preset,
 		preset.$.mode.spacing.sm.name,
 		{
-			[preset.$.mode.scalar.density.name]: css`calc(1 + 1)`,
+			[preset.$.mode.global.density.name]: css`calc(1 + 1)`,
 		},
 	);
 

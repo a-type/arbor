@@ -50,7 +50,7 @@ arbor.bundleMode('greenButtons', {
 });
 
 arbor.bundleMode('dense', {
-	scalar: {
+	global: {
 		density: 2,
 	},
 });

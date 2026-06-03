@@ -14,10 +14,13 @@ const ctx = createGlobalContext();
 
 // helper to bake and print values for easier comparisons
 function compileAndBake(config: CompileColorsOptions<string, string>) {
-	const compiled = compileColors(config, ctx);
+	const saturationToken = ctx.createModeToken('saturation');
+	const compiled = compileColors(config, {
+		saturation: saturationToken,
+	});
 	const computeCtx: CalcEvaluationContext = {
 		propertyValues: {
-			[ctx.$systemTokens.global.saturation.name]: '0.5',
+			[saturationToken.name]: '0.5',
 		},
 	};
 	function bakeValues(
@@ -147,39 +150,6 @@ it('compiles a set of color ranges with a custom scheme', () => {
 	`);
 });
 
-it('precomputes colors when globals are provided', () => {
-	const ctx = createGlobalContext({
-		globals: {
-			saturation: 0.5,
-		},
-	});
-	const compiled = compileAndBake({
-		ranges: {
-			primary: {
-				hue: 90,
-				rangeNames: ['heavy', 'mid', 'light'],
-			},
-		},
-	});
-
-	expect(compiled).toMatchInlineSnapshot(`
-		{
-		  "primary": {
-		    "$neutral": {
-		      "$root": "light-dark(oklch(0.8602483517886919 0.011250000000000001 90), oklch(0.4856387300380706 0.012000000000000002 90))",
-		      "heavy": "light-dark(oklch(0.17653786308766073 0.00825 90), oklch(0.9906565781856719 0.004800000000000001 90))",
-		      "light": "light-dark(oklch(0.9996018928294464 0.0007500000000000007 90), oklch(0.0787065459868453 0.0015000000000000013 90))",
-		      "mid": "light-dark(oklch(0.8602483517886919 0.011250000000000001 90), oklch(0.4856387300380706 0.012000000000000002 90))",
-		    },
-		    "$root": "light-dark(oklch(90% 0.15000000000000002 90), oklch(53% 0.16000000000000003 90))",
-		    "heavy": "light-dark(oklch(20.000000000000007% 0.11000000000000001 90), oklch(100% 0.06400000000000002 90))",
-		    "light": "light-dark(oklch(100% 0.010000000000000009 90), oklch(8.000000000000002% 0.020000000000000018 90))",
-		    "mid": "light-dark(oklch(90% 0.15000000000000002 90), oklch(53% 0.16000000000000003 90))",
-		  },
-		}
-	`);
-});
-
 it('provides default range names', () => {
 	const compiled = compileAndBake({
 		ranges: {
@@ -207,8 +177,12 @@ it('supports color-level saturation', () => {
 		},
 	});
 
-	expect(compiled.primaryLight.light).toMatchInlineSnapshot(`"light-dark(oklch(98.02741561760232% 0.056269363558927955 90), oklch(40.95887657359654% 0.06126936355892796 90))"`);
-	expect(compiled.primary.light).toMatchInlineSnapshot(`"light-dark(oklch(98.02741561760232% 0.11253872711785591 90), oklch(40.95887657359654% 0.12253872711785592 90))"`);
+	expect(compiled.primaryLight.light).toMatchInlineSnapshot(
+		`"light-dark(oklch(98.02741561760232% 0.056269363558927955 90), oklch(40.95887657359654% 0.06126936355892796 90))"`,
+	);
+	expect(compiled.primary.light).toMatchInlineSnapshot(
+		`"light-dark(oklch(98.02741561760232% 0.11253872711785591 90), oklch(40.95887657359654% 0.12253872711785592 90))"`,
+	);
 	expect(compiled.primaryLight.light).not.toEqual(compiled.primary.light);
 });
 
@@ -221,7 +195,9 @@ it('supports hue defined as a CSS property', () => {
 		},
 	});
 
-	expect(compiled.primary.light).toMatchInlineSnapshot(`"light-dark(oklch(98.02741561760232% 0.11253872711785591 var(--my-hue)), oklch(40.95887657359654% 0.12253872711785592 var(--my-hue)))"`);
+	expect(compiled.primary.light).toMatchInlineSnapshot(
+		`"light-dark(oklch(98.02741561760232% 0.11253872711785591 var(--my-hue)), oklch(40.95887657359654% 0.12253872711785592 var(--my-hue)))"`,
+	);
 });
 
 it('assigns color and neutral $root to mid when mid exists', () => {

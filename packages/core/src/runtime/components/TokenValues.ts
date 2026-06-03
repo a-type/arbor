@@ -87,8 +87,6 @@ class TokenValues extends ArborElement {
 			}
 				.token-group {
 					margin-bottom: 2rem;
-					background-color: white;
-					border: 1px solid black;
 					padding: 0.25rem;
 				}
 					.token-subgroup {

@@ -9,7 +9,7 @@ class SchemeSelector extends ArborElement {
 	render = () => {
 		const schemeNames = ['light', 'dark'];
 		const selected = this.getAttribute('selected') || 'base';
-		this.shadowRoot!.innerHTML = `<div data-scheme-${selected}>
+		this.shadowRoot!.innerHTML = `<div class="@scheme-${selected}" style="background: var(--m-surface-ambient-bg); color: var(--m-surface-ambient-fg);">
 			<select data-scheme-select name="scheme" aria-label="Select scheme" style="position: sticky; top: 0;">
 				${schemeNames
 					.map(
@@ -20,11 +20,11 @@ class SchemeSelector extends ArborElement {
 			</select>
 			<slot></slot>
 		</div>`;
-		const modeSelect = this.shadowRoot?.querySelector(
+		const schemeSelect = this.shadowRoot?.querySelector(
 			'[data-scheme-select]',
 		) as HTMLSelectElement | null;
-		modeSelect?.addEventListener('change', () => {
-			const selectedMode = modeSelect.value;
+		schemeSelect?.addEventListener('change', () => {
+			const selectedMode = schemeSelect.value;
 			this.setAttribute('selected', selectedMode);
 		});
 	};

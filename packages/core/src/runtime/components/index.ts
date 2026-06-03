@@ -1,4 +1,3 @@
-import './GlobalsEditor.js';
 import './ModeSelector.js';
 import './SchemeSelector.js';
 import './SystemDemo.js';

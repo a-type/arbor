@@ -12,7 +12,12 @@ import {
 	GlobalContextConfig,
 	SystemTokens,
 } from '@arbor-css/globals';
-import { createModeInstance, ModeInstance, ModeValues } from '@arbor-css/modes';
+import {
+	createModeInstance,
+	ModeInstance,
+	ModeInstanceOptions,
+	ModeValues,
+} from '@arbor-css/modes';
 import {
 	convertSimpleTokenSchema,
 	SimpleTokensAsTokenDefinitions,
@@ -88,6 +93,7 @@ export interface ArborPreset<
 	bundleMode<TMode extends ModeInstance<TModeSchema>>(
 		name: string,
 		mode: DeepPartial<ModeValues<TModeSchema>>,
+		options?: ModeInstanceOptions,
 	): TMode;
 	/**
 	 * Create a free-standing mode from your mode schema with full typing
@@ -98,6 +104,7 @@ export interface ArborPreset<
 	createMode<TMode extends ModeInstance<TModeSchema>>(
 		name: string,
 		mode: DeepPartial<ModeValues<TModeSchema>>,
+		options?: ModeInstanceOptions,
 	): TMode;
 
 	meta: {
@@ -129,6 +136,13 @@ export interface DefinePresetConfig<
 		>,
 		context: GlobalContext,
 	) => BaseModeValues<TModeSchema, TExtends>;
+	baseModeOptions?: (
+		$tokens: PresetTokens<
+			ExtendedConfigModeSchema<TExtends> & TModeSchema,
+			ExtendedConfigMixins<TExtends> & TMixins
+		>,
+		context: GlobalContext,
+	) => ModeInstanceOptions;
 	defaultScheme?: 'light' | 'dark';
 	mixins?: (
 		create: CreateMixin,
@@ -288,6 +302,7 @@ export function definePreset<
 			) as any,
 			{
 				extraSelectors: [':root'],
+				...presetOptions.baseModeOptions?.($tokens as any, context),
 			},
 		);
 
@@ -318,14 +333,22 @@ export function definePreset<
 
 			baseMode,
 
-			bundleMode(name: string, mode: DeepPartial<ModeValues<TModeSchema>>) {
-				const instance = createModeInstance(name, mode);
+			bundleMode(
+				name: string,
+				mode: DeepPartial<ModeValues<TModeSchema>>,
+				options?: ModeInstanceOptions,
+			) {
+				const instance = createModeInstance(name, mode, options);
 				internals.modes.push(instance);
 				return instance;
 			},
 
-			createMode(name: string, mode: DeepPartial<ModeValues<TModeSchema>>) {
-				return createModeInstance(name, mode);
+			createMode(
+				name: string,
+				mode: DeepPartial<ModeValues<TModeSchema>>,
+				options?: ModeInstanceOptions,
+			) {
+				return createModeInstance(name, mode, options);
 			},
 		} as any;
 	}

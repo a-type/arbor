@@ -1,4 +1,4 @@
-import { GlobalContext } from '@arbor-css/globals';
+import { Token } from '@arbor-css/tokens';
 import {
 	ColorRangeConfig,
 	createColorDarkModeRange,
@@ -13,7 +13,9 @@ export interface SchemeDefinition<
 > {
 	getColorRange: (
 		config: TRangeConfig,
-		context: GlobalContext,
+		tokens: {
+			saturation: Token;
+		},
 	) => UncompiledColorRange<TRangeNames>;
 	tag: string;
 	isDark: boolean;

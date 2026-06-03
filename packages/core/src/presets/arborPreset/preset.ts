@@ -1,10 +1,7 @@
-import {
-	ArborPrefixConfig,
-	defaultGlobals,
-	GlobalConfig,
-} from '@arbor-css/globals';
+import { ArborPrefixConfig } from '@arbor-css/globals';
 import { ModeValues } from '@arbor-css/modes';
 import { definePreset } from '@arbor-css/preset';
+import { createColorMixins } from '../basicPreset/mixins.js';
 import { presetBasic } from '../basicPreset/preset.js';
 import {
 	ArborModeSchema,
@@ -42,7 +39,6 @@ export interface ArborPresetConfig<
 	TRangeStepNames extends string = DefaultRangeName,
 > {
 	prefixes?: ArborPrefixConfig;
-	globals?: Partial<GlobalConfig>;
 	color: CompileColorsOptions<TRanges, TRangeStepNames> & {
 		mainColor: string;
 		defaultScheme?: 'light' | 'dark';
@@ -52,6 +48,7 @@ export interface ArborPresetConfig<
 	shadow?: ShadowConfig;
 	easing?: ModeValues<ArborModeSchema['easing']>;
 	duration?: ModeValues<ArborModeSchema['duration']>;
+	globals?: Partial<ModeValues<ArborModeSchema['global']>>;
 	/**
 	 * Turns off the automatic bundled @mode-inverted, which inverts
 	 * your light/dark color scheme.
@@ -69,10 +66,6 @@ export const presetArbor = <
 >(
 	config: ArborPresetConfig<TRanges>,
 ) => {
-	const defaultedGlobals: GlobalConfig = {
-		...defaultGlobals,
-		...config.globals,
-	};
 	const preset = definePreset({
 		name: 'arbor',
 		modeSchema: createArborModeSchema<TRanges>({
@@ -82,8 +75,18 @@ export const presetArbor = <
 			// NOTE: had to bypass typings for color tokens... the user-controlled
 			// color names seem to really mess with this.
 			return {
-				scalar: {
+				global: {
 					density: 1,
+					lineWidth: 1,
+					roundness: 0.5,
+					saturation: 0.5,
+					shadowBlur: 0.5,
+					shadowSpread: 0,
+					baseFontSize: '16px',
+					baseSpacingSize: '8px',
+					defaultShadowColor: 'rgba(0 0 0 / 0.15)',
+
+					...config.globals,
 				},
 
 				/** PRIMITIVES */
@@ -93,11 +96,11 @@ export const presetArbor = <
 							ranges: config.color.ranges,
 							schemes: config.color.schemes,
 						},
-						ctx,
+						$.mode.global,
 					) as any,
-					spacing: compileSpacing(config.spacing || {}, ctx),
-					typography: compileTypography(config.typography || {}, ctx),
-					shadow: compileShadows(config.shadow || {}, ctx),
+					spacing: compileSpacing(config.spacing || {}, $.mode.global),
+					typography: compileTypography(config.typography || {}),
+					shadow: compileShadows(config.shadow || {}, $.mode.global),
 
 					easing:
 						config.easing ||
@@ -136,9 +139,36 @@ export const presetArbor = <
 				text: createTextIntentValues($),
 			};
 		},
-		config: {
-			...config.prefixes,
-			globals: defaultedGlobals,
+		baseModeOptions: ($) => ({
+			extraCss: `
+			font-size: ${$.mode.global.baseFontSize.var};
+			`,
+		}),
+		config: config.prefixes,
+		mixins: (create, $) => {
+			// overwrite the basic preset's border mixin to apply the user's
+			// configured border width
+			const newBorderMixins = createColorMixins(create, $.system, {
+				name: 'border',
+				property: 'border-color',
+				description:
+					'Routes border color assignments through intermediate tokens to allow for runtime adjustments and cross-color references.',
+				defineExtraProperties: (css) => ({
+					'border-style': css`solid`,
+					'border-width': css`
+						calc(1px * ${$.mode.global.lineWidth})
+					`,
+				}),
+			});
+
+			return {
+				border: newBorderMixins.ref,
+				borderLighten: newBorderMixins.lighten,
+				borderDarken: newBorderMixins.darken,
+				borderDesaturate: newBorderMixins.desaturate,
+				borderSaturate: newBorderMixins.saturate,
+				borderFade: newBorderMixins.fade,
+			};
 		},
 		extends: [presetBasic],
 	});
@@ -153,7 +183,7 @@ export const presetArbor = <
 						schemes: config.color.schemes,
 						invertLightDark: true,
 					},
-					preset.context,
+					preset.$.mode.global,
 				) as any,
 			},
 		});

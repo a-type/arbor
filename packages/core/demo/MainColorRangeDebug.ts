@@ -4,7 +4,7 @@ import arbor from './arbor.js';
 
 const oklchMatcher = /oklch\(([0-9.%]+),?\s?([0-9.%]+),?\s?([0-9.%]+)\)/;
 
-const globalPropsFlat = Object.values(arbor.$.system.global);
+const globalPropsFlat = Object.values(arbor.$.mode.global);
 
 class MainColorRangeDebug extends ArborElement {
 	constructor() {
@@ -26,7 +26,7 @@ class MainColorRangeDebug extends ArborElement {
 			{
 				hue: 90.8,
 			},
-			arbor.context,
+			arbor.$.mode.global,
 		);
 		this.shadowRoot.innerHTML = `
 			<div class="range @scheme-dark">

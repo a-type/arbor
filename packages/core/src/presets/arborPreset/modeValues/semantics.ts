@@ -37,11 +37,11 @@ export function createSpacingSemanticValues<TColorName extends string>(
 ) {
 	return {
 		$root: $.mode.spacing.md,
-		xs: css`calc(${$.mode.primitive.spacing.xs} / ${$.mode.scalar.density})`,
-		sm: css`calc(${$.mode.primitive.spacing.sm} / ${$.mode.scalar.density})`,
-		md: css`calc(${$.mode.primitive.spacing.md} / ${$.mode.scalar.density})`,
-		lg: css`calc(${$.mode.primitive.spacing.lg} / ${$.mode.scalar.density})`,
-		xl: css`calc(${$.mode.primitive.spacing.xl} / ${$.mode.scalar.density})`,
+		xs: css`calc(${$.mode.primitive.spacing.xs} / ${$.mode.global.density})`,
+		sm: css`calc(${$.mode.primitive.spacing.sm} / ${$.mode.global.density})`,
+		md: css`calc(${$.mode.primitive.spacing.md} / ${$.mode.global.density})`,
+		lg: css`calc(${$.mode.primitive.spacing.lg} / ${$.mode.global.density})`,
+		xl: css`calc(${$.mode.primitive.spacing.xl} / ${$.mode.global.density})`,
 	} satisfies ModeValues<ArborModeSchema['spacing']>;
 }
 
@@ -84,11 +84,11 @@ export function createRadiusSemanticValues<TColorName extends string>(
 ) {
 	return {
 		$root: $.mode.radius.md,
-		xs: css`calc(${$.system.global.roundness} * ${$.mode.primitive.spacing.sm} * 2 / ${$.mode.scalar.density})`,
-		sm: css`calc(${$.system.global.roundness} * ${$.mode.primitive.spacing.md} * 2 / ${$.mode.scalar.density})`,
-		md: css`calc(${$.system.global.roundness} * ${$.mode.primitive.spacing.lg} * 2 / ${$.mode.scalar.density})`,
-		lg: css`calc(${$.system.global.roundness} * ${$.mode.primitive.spacing.xl} * 2 / ${$.mode.scalar.density})`,
-		xl: css`calc(${$.system.global.roundness} * ${$.mode.primitive.spacing['2xl']} * 2 / ${$.mode.scalar.density})`,
+		xs: css`calc(${$.mode.global.roundness} * ${$.mode.primitive.spacing.sm} * 2 / ${$.mode.global.density})`,
+		sm: css`calc(${$.mode.global.roundness} * ${$.mode.primitive.spacing.md} * 2 / ${$.mode.global.density})`,
+		md: css`calc(${$.mode.global.roundness} * ${$.mode.primitive.spacing.lg} * 2 / ${$.mode.global.density})`,
+		lg: css`calc(${$.mode.global.roundness} * ${$.mode.primitive.spacing.xl} * 2 / ${$.mode.global.density})`,
+		xl: css`calc(${$.mode.global.roundness} * ${$.mode.primitive.spacing['2xl']} * 2 / ${$.mode.global.density})`,
 	} satisfies ModeValues<ArborModeSchema['radius']>;
 }
 
@@ -97,9 +97,9 @@ export function createLineWidthSemanticValues<TColorName extends string>(
 ) {
 	return {
 		$root: $.mode.lineWidth.md,
-		sm: css`calc(max(1px, ${$.system.global.lineWidth} / 2))`,
-		md: $.system.global.lineWidth,
-		lg: css`calc(${$.system.global.lineWidth} * 2)`,
+		sm: css`calc(max(1px, ${$.mode.global.lineWidth} * 1px / 2))`,
+		md: css`calc(${$.mode.global.lineWidth} * 1px)`,
+		lg: css`calc(${$.mode.global.lineWidth} * 2px)`,
 	} satisfies ModeValues<ArborModeSchema['lineWidth']>;
 }
 

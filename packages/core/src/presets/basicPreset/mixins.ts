@@ -9,7 +9,7 @@ import {
 	saturateColorAlteration,
 } from './commonFunctions.js';
 
-function createColorMixins(
+export function createColorMixins(
 	createMixinValue: CreateMixin,
 	systemTokens: SystemTokens,
 	{
@@ -219,7 +219,7 @@ export function createPresetMixins(
 		defineExtraProperties: (css) => ({
 			'border-style': css`solid`,
 			'border-width': css`
-				${systemProps.global.lineWidth}
+				1px
 			`,
 		}),
 	});

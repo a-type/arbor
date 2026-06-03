@@ -1,6 +1,5 @@
 import { AnyArborPreset, getInternals } from '@arbor-css/preset/config';
 import { flattenTokenSchema } from '@arbor-css/tokens';
-import { printTokens } from '../util/printTokens.js';
 import { modeToCss } from './modeToCss.js';
 
 export function generateStylesheet(
@@ -13,24 +12,14 @@ export function generateStylesheet(
 ): string {
 	const { modes } = getInternals(config);
 	const systemProps = config.$.system;
-	const globalProps = systemProps.global;
 
 	const allModeProps = flattenTokenSchema(config.$.mode);
 
 	return `/* Auto-generated CSS - do not edit directly */
 ${cascadeLayerName ? `@layer ${cascadeLayerName} {` : ''}
-:root {
-	/* Assign user globals */
-	${printTokens(globalProps, config.context.globals)}
-	/* By default we set the font size */
-	font-size: ${globalProps.baseFontSize.var};
-}
-
-${[['base', config.baseMode] as const, ...Object.entries(modes)]
-	.map(([modeName, modeValue]) => {
-		return `/* Mode: ${modeName} */
-${modeToCss(modeValue, config)}
-`;
+${[config.baseMode, ...modes]
+	.map((modeValue) => {
+		return modeToCss(modeValue, config);
 	})
 	.join('\n\n')}
 

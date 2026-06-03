@@ -1,5 +1,4 @@
 import { CreateToken } from '@arbor-css/tokens';
-import { createGlobalProps } from './globalProps.js';
 
 export function createSystemProps({
 	createMetaToken,
@@ -63,8 +62,6 @@ export function createSystemProps({
 			...$labelProps,
 			scheme: $schemeProps,
 		},
-		// scheme information
-		global: createGlobalProps({ createToken: createMetaToken }),
 	};
 }
 

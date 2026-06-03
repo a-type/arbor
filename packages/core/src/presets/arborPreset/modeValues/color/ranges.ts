@@ -3,7 +3,7 @@ import {
 	CalcOperations,
 	Equation,
 } from '@arbor-css/calc';
-import { GlobalContext } from '@arbor-css/globals';
+import { Token } from '@arbor-css/tokens';
 import { oklchBuilder, OklchColorEquation } from './color.js';
 
 export const defaultRangeNames = [
@@ -75,7 +75,9 @@ export type CompiledColorRange<TRangeNames extends string = DefaultRangeName> =
 export function createColorRange<RangeNames extends string = DefaultRangeName>(
 	config: ColorRangeConfig<RangeNames>,
 	calcs: ColorRangeCalculations,
-	context: GlobalContext,
+	tokens: {
+		saturation: Token;
+	},
 ): UncompiledColorRange<RangeNames> {
 	const {
 		hue: sourceHue,
@@ -108,7 +110,7 @@ export function createColorRange<RangeNames extends string = DefaultRangeName>(
 						$.val(config.saturation ?? 1),
 						$.val('0.4'),
 						chroma($, { step: i, rangeSize: size, midpoint }),
-						$.val(context.$systemTokens.global.saturation.var),
+						$.token(tokens.saturation),
 					),
 					$.val('0.4'),
 				),
@@ -194,7 +196,9 @@ export function createColorLightModeRange(
 		base?: number;
 		scale?: number;
 	},
-	options: GlobalContext,
+	$: {
+		saturation: Token;
+	},
 ) {
 	const lightness = lightnessEq({
 		rangeUp: 0.3,
@@ -212,7 +216,7 @@ export function createColorLightModeRange(
 			lightness,
 			chroma,
 		},
-		options,
+		$,
 	);
 }
 
@@ -221,7 +225,9 @@ export function createColorDarkModeRange(
 		base?: number;
 		scale?: number;
 	},
-	context: GlobalContext,
+	$: {
+		saturation: Token;
+	},
 ) {
 	const lightness = lightnessEq({
 		rangeUp: -0.45,
@@ -239,24 +245,20 @@ export function createColorDarkModeRange(
 			lightness,
 			chroma,
 		},
-		context,
+		$,
 	);
 }
 
 export function createNeutralDerivedRange(
 	sourceRange: UncompiledColorRange<string>,
-	context: GlobalContext,
+	tokens: { saturation: Token },
 ): UncompiledColorRange<string> {
 	function lightness($: CalcOperations, source: OklchColorEquation) {
 		const sourceLAsZeroToOne = $.divide(source.l, $.val('100%'));
 		return $.subtract(sourceLAsZeroToOne, $.fn('pow', source.c, $.val(1.7)));
 	}
 	function chroma($: CalcOperations, source: OklchColorEquation) {
-		return $.multiply(
-			source.c,
-			$.val(context.$systemTokens.global.saturation.var),
-			$.val('0.15'),
-		);
+		return $.multiply(source.c, $.token(tokens.saturation), $.val('0.15'));
 	}
 
 	return Object.fromEntries(

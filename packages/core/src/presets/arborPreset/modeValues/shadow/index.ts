@@ -1,5 +1,5 @@
 import { css, Equation } from '@arbor-css/calc';
-import { GlobalContext } from '@arbor-css/globals';
+import { Token } from '@arbor-css/tokens';
 
 export const defaultShadowLevels = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
 export type DefaultShadowLevel = (typeof defaultShadowLevels)[number];
@@ -37,30 +37,31 @@ export type CompiledShadows<TShadowLevel extends string = DefaultShadowLevel> =
 
 const defaultShadowXEquation = (step: number) => css`0px`;
 const defaultShadowYEquation = (step: number) => css`1px * pow(2, ${step} - 1)`;
-const defaultShadowBlurEquation = (step: number, context: GlobalContext) => css`
-	${[context.$systemTokens.global.shadowBlur, '0.5']} * ${[
-		context.$systemTokens.global.baseSpacingSize,
+const defaultShadowBlurEquation = (step: number, $: RequiredTokens) => css`
+	${[$.shadowBlur, '0.5']} * ${[
+		$.baseSpacingSize,
 		'0.5rem',
 	]} * 0.25 * pow(2, ${step} - 1)
 `;
-const defaultShadowSpreadEquation = (
-	step: number,
-	context: GlobalContext,
-) => css`
-	${[context.$systemTokens.global.shadowSpread, '0.5']} * 1px
+const defaultShadowSpreadEquation = (step: number, $: RequiredTokens) => css`
+	${[$.shadowSpread, '0.5']} * 1px
 `;
-const defaultShadowColorEquation = (
-	step: number,
-	context: GlobalContext,
-) => css`
-	${context.$systemTokens.global.defaultShadowColor}
+const defaultShadowColorEquation = (step: number, $: RequiredTokens) => css`
+	${$.defaultShadowColor}
 `;
+
+type RequiredTokens = {
+	shadowBlur: Token;
+	shadowSpread: Token;
+	baseSpacingSize: Token;
+	defaultShadowColor: Token;
+};
 
 export function compileShadows<
 	TShadowLevel extends string = DefaultShadowLevel,
 >(
 	config: ShadowConfig<TShadowLevel>,
-	context: GlobalContext,
+	tokens: RequiredTokens,
 ): CompiledShadows<TShadowLevel> {
 	const levelNames =
 		config.levels ?
@@ -81,9 +82,9 @@ export function compileShadows<
 			const levelConfig = config.levels?.[nameCast];
 			const x = defaultShadowXEquation(i);
 			const y = defaultShadowYEquation(i);
-			const blur = defaultShadowBlurEquation(i, context);
-			const spread = defaultShadowSpreadEquation(i, context);
-			const color = defaultShadowColorEquation(i, context);
+			const blur = defaultShadowBlurEquation(i, tokens);
+			const spread = defaultShadowSpreadEquation(i, tokens);
+			const color = defaultShadowColorEquation(i, tokens);
 			const $root = css`
 				${x} ${y} ${blur} ${spread} ${color}
 			`;

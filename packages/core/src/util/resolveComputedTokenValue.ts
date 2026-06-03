@@ -52,10 +52,7 @@ function getResolvedTokenValues(
 	const internals = getInternals(preset);
 	const colorScheme = internals.defaultScheme;
 
-	const values: Record<string, string | Equation> = {
-		...preset.context.getGlobalPropertyAssignments(),
-	};
-
+	const values: Record<string, string | Equation> = {};
 	applyKnownTokenValues(preset.$.mode, preset.baseMode, values);
 
 	applyKnownTokenValues(

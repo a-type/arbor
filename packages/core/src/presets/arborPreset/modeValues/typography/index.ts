@@ -1,5 +1,4 @@
 import { css, Equation } from '@arbor-css/calc';
-import { GlobalContext } from '@arbor-css/globals';
 
 export interface TypographyLevel {
 	size: string | Equation;
@@ -41,10 +40,7 @@ export type TypographyConfig<TLevels extends string = DefaultTypographyLevel> =
 
 export function compileTypography<
 	TLevels extends string = DefaultTypographyLevel,
->(
-	config: TypographyConfig<TLevels>,
-	_context: GlobalContext,
-): CompiledTypography<TLevels> {
+>(config: TypographyConfig<TLevels>): CompiledTypography<TLevels> {
 	const levelNames =
 		config.levels ?
 			Object.keys(config.levels)

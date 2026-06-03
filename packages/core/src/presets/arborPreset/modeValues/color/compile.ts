@@ -1,5 +1,5 @@
 import { css } from '@arbor-css/calc';
-import { GlobalContext } from '@arbor-css/globals';
+import { Token } from '@arbor-css/tokens';
 import {
 	ColorRangeConfig,
 	CompiledColorRange,
@@ -50,6 +50,10 @@ export interface CompileColorsOptions<
 	invertLightDark?: boolean;
 }
 
+type RequiredTokens = {
+	saturation: Token;
+};
+
 /**
  * Given an input set of color range configurations (hue, saturation)
  * and, optionally, specific calculations to handle light/dark schemes,
@@ -65,7 +69,7 @@ export function compileColors<
 		schemes: userSchemes,
 		invertLightDark = false,
 	}: CompileColorsOptions<TRangeNames, TRangeStepNames>,
-	context: GlobalContext,
+	$: RequiredTokens,
 ): CompiledColors<TRangeNames, TRangeStepNames> {
 	const schemes = {
 		light:
@@ -84,13 +88,13 @@ export function compileColors<
 
 	const colors = Object.keys(ranges).reduce((colorsAcc, rangeName) => {
 		const rangeConfig = ranges[rangeName as TRangeNames];
-		const uncompiledLight = schemes.light.getColorRange(rangeConfig, context);
-		const uncompiledDark = schemes.dark.getColorRange(rangeConfig, context);
+		const uncompiledLight = schemes.light.getColorRange(rangeConfig, $);
+		const uncompiledDark = schemes.dark.getColorRange(rangeConfig, $);
 
 		const combined = toLightDarkCompiled(
 			invertLightDark ? uncompiledDark : uncompiledLight,
 			invertLightDark ? uncompiledLight : uncompiledDark,
-			context,
+			$,
 		);
 
 		colorsAcc[rangeName] = combined;
@@ -104,7 +108,7 @@ export function compileColors<
 function toLightDarkCompiled(
 	light: UncompiledColorRange<any>,
 	dark: UncompiledColorRange<any>,
-	context: GlobalContext,
+	$: { saturation: Token },
 ): CompiledColorRangeWithNeutral<any> {
 	const result = {} as any;
 	for (const key in light) {
@@ -114,8 +118,8 @@ function toLightDarkCompiled(
 			css`light-dark(${lightColor.equation.compiled}, ${darkColor.equation.compiled})`;
 	}
 
-	const lightNeutral = createNeutralDerivedRange(light, context);
-	const darkNeutral = createNeutralDerivedRange(dark, context);
+	const lightNeutral = createNeutralDerivedRange(light, $);
+	const darkNeutral = createNeutralDerivedRange(dark, $);
 
 	const neutralResult = {} as any;
 	for (const key in lightNeutral) {
