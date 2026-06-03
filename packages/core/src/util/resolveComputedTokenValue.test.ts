@@ -29,7 +29,7 @@ it('resolves base mode values with baking', () => {
 		preset.$.mode.spacing.sm.name,
 	);
 
-	expect(value).toBe('calc(0.3333333333333333rem)');
+	expect(value).toBe('0.3333333333333333rem');
 });
 
 it('applies user property values to evaluation context', () => {
@@ -53,7 +53,7 @@ it('resolves equation property values from user overrides', () => {
 		},
 	);
 
-	expect(value).toBe('calc(calc(0.3333333333333333rem / calc(2)))');
+	expect(value).toBe('calc(calc(0.3333333333333333rem / 2))');
 });
 
 it('returns undefined when token is unknown', () => {

@@ -67,9 +67,9 @@ export type UncompiledColorRange<
 };
 export type CompiledColorRange<TRangeNames extends string = DefaultRangeName> =
 	{
-		[K in TRangeNames]: string;
+		[K in TRangeNames]: string | Equation;
 	} & {
-		$root: string;
+		$root: string | Equation;
 	};
 
 export function createColorRange<RangeNames extends string = DefaultRangeName>(

@@ -277,6 +277,10 @@ class Parser {
 		);
 	}
 
+	private isEmptyConcatPart(value: Equation): boolean {
+		return value.type === 'literal' && value.value === '';
+	}
+
 	/**
 	 * Parses one CSS value expression.  Like {@link parseAddSub} but in CSS
 	 * mode, any non-operator primaries that follow are collected into a
@@ -306,7 +310,15 @@ class Parser {
 				parts.push(this.parseAddSub());
 			}
 		}
-		return $.concat(parts, ' ');
+
+		const nonEmptyParts = parts.filter((part) => !this.isEmptyConcatPart(part));
+		if (nonEmptyParts.length === 0) {
+			return $.val('');
+		}
+		if (nonEmptyParts.length === 1) {
+			return nonEmptyParts[0];
+		}
+		return $.concat(nonEmptyParts, ' ');
 	}
 
 	// expr := addSub

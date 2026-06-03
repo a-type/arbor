@@ -1,15 +1,10 @@
-import {
-	$,
-	CalcEvaluationContext,
-	computeEquation,
-	printComputationResult,
-} from '@arbor-css/calc';
+import { css, Equation } from '@arbor-css/calc';
 import { GlobalContext } from '@arbor-css/globals';
 
 export interface TypographyLevel {
-	size: string;
-	weight: number;
-	lineHeight: number;
+	size: string | Equation;
+	weight: number | string | Equation;
+	lineHeight: number | string | Equation;
 }
 
 export function isTypographyLevel(value: any): value is TypographyLevel {
@@ -48,7 +43,7 @@ export function compileTypography<
 	TLevels extends string = DefaultTypographyLevel,
 >(
 	config: TypographyConfig<TLevels>,
-	context: GlobalContext,
+	_context: GlobalContext,
 ): CompiledTypography<TLevels> {
 	const levelNames =
 		config.levels ?
@@ -62,41 +57,23 @@ export function compileTypography<
 			// we're using default levels, and md is the base.
 		: levelNames.indexOf('md' as TLevels);
 
-	const evalContext: CalcEvaluationContext = {
-		propertyValues: context.getGlobalPropertyAssignments(),
-	};
-
 	const levels = levelNames.reduce(
 		(acc, name, i) => {
 			const nameCast = name as TLevels;
 			const levelConfig = config.levels?.[nameCast] ?? {};
 			acc[nameCast] = {
-				size: printComputationResult(
-					computeEquation(
-						typographySizeEquation(i - baseIndex, {
-							min: config.minSize,
-							max: config.maxSize,
-						}),
-						evalContext,
-					),
-				),
-				weight: printComputationResult(
-					computeEquation(typographyWeightEquation(i - baseIndex), evalContext),
-				),
-				lineHeight: printComputationResult(
-					computeEquation(
-						typographyLineHeightEquation(i - baseIndex),
-						evalContext,
-					),
-				),
+				size: typographySizeEquation(i - baseIndex, {
+					min: config.minSize,
+					max: config.maxSize,
+				}),
+				weight: typographyWeightEquation(i - baseIndex),
+				lineHeight: typographyLineHeightEquation(i - baseIndex),
 				...levelConfig,
 			};
 			return acc;
 		},
 		{} as Record<TLevels, TypographyLevel>,
 	) as CompiledTypography<TLevels>;
-	const defaultLevel =
-		config.defaultLevel ?? (levelNames[baseIndex] as TLevels);
 
 	return {
 		...levels,
@@ -106,20 +83,9 @@ export function compileTypography<
 const typographySizeEquation = (
 	step: number,
 	{ min = '0.875rem', max = '3rem' }: { min?: string; max?: string },
-) =>
-	$.fn(
-		'clamp',
-		$.val(min),
-		$.multiply($.val('1rem'), $.fn('pow', $.val(1.125), $.val(step))),
-		$.val(max),
-	);
-const typographyWeightEquation = (step: number) =>
-	$.add($.val(400), $.multiply($.val(25), $.val(step)));
+) => css`clamp(${min}, 1rem * pow(1.125, ${step}), ${max})`;
+
+const typographyWeightEquation = (step: number) => css`400 + 25 * ${step}`;
 
 const typographyLineHeightEquation = (step: number) =>
-	$.fn(
-		'clamp',
-		$.val(1.1),
-		$.subtract($.val(1.5), $.multiply($.val(0.05), $.val(step))),
-		$.val(1.5),
-	);
+	css`clamp(1.1, (1.5 - 0.05 * ${step}), 1.5)`;

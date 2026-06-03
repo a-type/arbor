@@ -1,4 +1,4 @@
-import { CalcEvaluationContext } from '@arbor-css/calc';
+import { css } from '@arbor-css/calc';
 import { GlobalContext } from '@arbor-css/globals';
 import {
 	ColorRangeConfig,
@@ -67,9 +67,6 @@ export function compileColors<
 	}: CompileColorsOptions<TRangeNames, TRangeStepNames>,
 	context: GlobalContext,
 ): CompiledColors<TRangeNames, TRangeStepNames> {
-	const evalContext: CalcEvaluationContext = {
-		propertyValues: context.getGlobalPropertyAssignments(),
-	};
 	const schemes = {
 		light:
 			userSchemes?.light ??
@@ -94,7 +91,6 @@ export function compileColors<
 			invertLightDark ? uncompiledDark : uncompiledLight,
 			invertLightDark ? uncompiledLight : uncompiledDark,
 			context,
-			evalContext,
 		);
 
 		colorsAcc[rangeName] = combined;
@@ -109,14 +105,13 @@ function toLightDarkCompiled(
 	light: UncompiledColorRange<any>,
 	dark: UncompiledColorRange<any>,
 	context: GlobalContext,
-	evalContext: CalcEvaluationContext,
 ): CompiledColorRangeWithNeutral<any> {
 	const result = {} as any;
 	for (const key in light) {
 		const lightColor = light[key as keyof typeof light];
 		const darkColor = dark[key as keyof typeof dark];
 		result[key as any] =
-			`light-dark(${lightColor.equation.printComputed(evalContext)}, ${darkColor.equation.printComputed(evalContext)})`;
+			css`light-dark(${lightColor.equation.compiled}, ${darkColor.equation.compiled})`;
 	}
 
 	const lightNeutral = createNeutralDerivedRange(light, context);
@@ -127,7 +122,7 @@ function toLightDarkCompiled(
 		const lightColor = lightNeutral[key as keyof typeof lightNeutral];
 		const darkColor = darkNeutral[key as keyof typeof darkNeutral];
 		neutralResult[key as any] =
-			`light-dark(${lightColor.equation.printComputed(evalContext)}, ${darkColor.equation.printComputed(evalContext)})`;
+			css`light-dark(${lightColor.equation.compiled}, ${darkColor.equation.compiled})`;
 	}
 
 	result.$neutral = neutralResult;

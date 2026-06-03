@@ -1,4 +1,4 @@
-import { $, computeEquation, printComputationResult } from '@arbor-css/calc';
+import { css, Equation } from '@arbor-css/calc';
 import { GlobalContext } from '@arbor-css/globals';
 
 export const defaultSpacingLevels = [
@@ -13,17 +13,11 @@ export const defaultSpacingLevels = [
 ] as const;
 export type DefaultSpacingLevel = (typeof defaultSpacingLevels)[number];
 
-const defaultSpacingEquation = (step: number, context: GlobalContext) =>
-	$.multiply(
-		// calculate rem value of the spacing relative to the
-		// font size.
-		$.divide(
-			$.token(context.$systemTokens.global.baseSpacingSize),
-			$.token(context.$systemTokens.global.baseFontSize),
-		),
-		$.val('1rem'),
-		$.fn('pow', $.val(1.5), $.val(step)),
-	);
+const defaultSpacingEquation = (
+	step: number,
+	context: GlobalContext,
+): Equation =>
+	css`(${context.$systemTokens.global.baseSpacingSize} / ${context.$systemTokens.global.baseFontSize}) * 1rem * pow(1.5, ${step})`;
 
 export interface SpacingConfig<
 	TSpacingLevel extends string = DefaultSpacingLevel,
@@ -35,9 +29,9 @@ export interface SpacingConfig<
 export type CompiledSpacing<
 	TSpacingLevel extends string = DefaultSpacingLevel,
 > = {
-	[K in TSpacingLevel]: string | number;
+	[K in TSpacingLevel]: string | Equation;
 } & {
-	$root: string | number;
+	$root: string | Equation;
 };
 
 /**
@@ -68,15 +62,10 @@ export function compileSpacing<
 			const nameCast = name as TSpacingLevel;
 			const levelConfig = config.levels?.[nameCast]?.toString();
 			acc[nameCast] =
-				levelConfig ??
-				printComputationResult(
-					computeEquation(defaultSpacingEquation(i - baseIndex, context), {
-						propertyValues: context.getGlobalPropertyAssignments(),
-					}),
-				);
+				levelConfig ?? defaultSpacingEquation(i - baseIndex, context);
 			return acc;
 		},
-		{} as Record<TSpacingLevel, string>,
+		{} as Record<TSpacingLevel, string | Equation>,
 	) as CompiledSpacing<TSpacingLevel>;
 	const defaultLevel =
 		config.defaultLevel ?? (levelNames[baseIndex] as TSpacingLevel);

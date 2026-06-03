@@ -85,10 +85,10 @@ it('resolves Arbor color tokens through the shared helper', () => {
 	const spacingToken = state.preset.$.mode.primitive.spacing.$root;
 
 	expect(resolveTokenValue(state, colorToken)).toBe(
-		'light-dark(oklch(90% 0.15000000000000002 0), oklch(60% 0.16000000000000003 0))',
+		'light-dark(oklch(90% 0.15000000000000002 0), oklch(53% 0.16000000000000003 0))',
 	);
 	expect(resolveColorTokenValueByName(state, colorToken.name)).toBe(
-		'light-dark(oklch(90% 0.15000000000000002 0), oklch(60% 0.16000000000000003 0))',
+		'light-dark(oklch(90% 0.15000000000000002 0), oklch(53% 0.16000000000000003 0))',
 	);
 	expect(resolveColorTokenValueByName(state, spacingToken.name)).toBeNull();
 });

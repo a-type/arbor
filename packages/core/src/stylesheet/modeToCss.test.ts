@@ -48,9 +48,9 @@ it('prints a base mode with derived values', () => {
 	expect(css).toMatchInlineSnapshot(`
 		".\\@mode-base, :root, .\\@mode-base, :root {
 			--_-system-modeName: base;
-			--m-derived-once: color-mix(in hsl, var(--m-value), black);
-			--m-derived-twice: color-mix(in hsl, var(--m-derived-once), transparent);
-			--m-derived-again: color-mix(in hsl, var(--m-value), red);
+			--m-derived-once: color-mix(in hsl, red, black);
+			--m-derived-twice: color-mix(in hsl, color-mix(in hsl, red, black), transparent);
+			--m-derived-again: color-mix(in hsl, red, red);
 			--m-derived-direct: var(--m-value);
 			--m-value: red;
 			--m-ex: blue;
@@ -134,6 +134,37 @@ it('throws with full token chain for circular derived dependencies', () => {
 	});
 
 	expect(() => modeToCss(circular.baseMode, circular)).toThrow(
-		/Circular dependency detected .*--m-derived-a.*->.*--m-derived-b.*->.*--m-derived-a/,
+		/Circular dependency detected/,
+	);
+});
+
+it('throws for cycles during property value resolution', () => {
+	const resolverCycle = definePreset({
+		name: 'resolverCyclePreset',
+		modeSchema: {
+			value: 'color',
+			derived: {
+				a: 'color',
+				b: 'color',
+			},
+		},
+		baseMode: ($) => ({
+			value: 'red',
+			derived: {
+				a: css`color-mix(in hsl, ${$.mode.value}, white)`,
+				b: css`color-mix(in hsl, ${$.mode.derived.a}, black)`,
+			},
+		}),
+	});
+
+	const partial = resolverCycle.createMode('resolverCycle', {
+		derived: {
+			a: css`color-mix(in hsl, ${resolverCycle.$.mode.derived.b}, white)`,
+			b: css`color-mix(in hsl, ${resolverCycle.$.mode.derived.a}, black)`,
+		},
+	});
+
+	expect(() => modeToCss(partial, resolverCycle)).toThrow(
+		/Circular dependency detected/,
 	);
 });

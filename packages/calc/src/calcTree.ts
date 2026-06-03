@@ -1,4 +1,4 @@
-import { Token } from '@arbor-css/tokens';
+import { isToken, Token } from '@arbor-css/tokens';
 import { functionResolvers } from './functions.js';
 
 export interface CalcEvaluationContext {
@@ -451,7 +451,10 @@ function evaluateStyleCondition(
 	context: CalcEvaluationContext,
 ): { decision?: boolean; text: string } {
 	const computedArgs = args.map((arg) => computeEquation(arg, context));
-	const text = printFunctionCall('style', computedArgs.map(printComputationResult));
+	const text = printFunctionCall(
+		'style',
+		computedArgs.map(printComputationResult),
+	);
 
 	if (computedArgs.length !== 2 || context.skipBaking) {
 		return { text };
@@ -524,7 +527,10 @@ function computeIfFunction(
 	if (!hasUnknownCondition) {
 		return {
 			type: 'calc',
-			value: printFunctionCall('if', args.map((arg) => printEquation(arg))),
+			value: printFunctionCall(
+				'if',
+				args.map((arg) => printEquation(arg)),
+			),
 		};
 	}
 
@@ -534,14 +540,44 @@ function computeIfFunction(
 	};
 }
 
+function removeWrappingParens(value: string): string {
+	const trimmed = value.trim();
+	let current = trimmed;
+	while (current.startsWith('(') && current.endsWith(')')) {
+		current = current.slice(1, -1).trim();
+	}
+	return current;
+}
+
+export function extractLiteralFromSimpleCalc(value: string): string {
+	const insideCalc = value.trim().match(/^calc\((.+)\)$/);
+	if (insideCalc) {
+		const insideValue = removeWrappingParens(insideCalc[1].trim());
+		const isComplex =
+			// arithmetic operators
+			insideValue.match(/[\+\*\/]/) ||
+			// "-" is special since we allow it as a negative prefix -
+			// only match non-first character instances
+			insideValue.match(/.-\d/) ||
+			// functions or variables - i.e. word(...
+			insideValue.match(/\d+\(/) ||
+			// spaces
+			insideValue.match(/\s/);
+		if (!isComplex) {
+			return insideValue;
+		}
+	}
+	return value;
+}
+
 export function printComputationResult(result: ComputationResult): string {
 	if (result.type === 'calc') {
-		return result.value;
+		return extractLiteralFromSimpleCalc(result.value.trim());
 	}
 	if (result.type === 'concatenated') {
 		return result.value;
 	}
-	return `${result.value}${result.unit}`;
+	return `${result.value}${result.unit}`.trim();
 }
 
 function parseLiteralToNumeric(literal: string): ComputationResult | null {
@@ -608,15 +644,26 @@ function evaluateLiteral(
 
 function evaluatePropertyValue(
 	propertyName: string,
-	propertyValue: string | Equation | undefined,
+	propertyValue: string | number | Equation | undefined,
 	context: CalcEvaluationContext,
 ): string | undefined {
+	// sanity check
+	if (isToken(propertyValue)) {
+		throw new Error(
+			`Unexpected token reference for property ${propertyName} during evaluation - tokens should have been resolved to their fallback or inlined value at this point. Got token: ${propertyValue.name}`,
+		);
+	}
+
 	if (propertyValue === undefined) {
 		return undefined;
 	}
 
 	if (typeof propertyValue === 'string') {
 		return propertyValue;
+	}
+
+	if (typeof propertyValue === 'number') {
+		return propertyValue.toString();
 	}
 
 	if (context.resolvingProperties?.has(propertyName)) {

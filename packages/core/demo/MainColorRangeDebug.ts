@@ -1,4 +1,4 @@
-import { createColorDarkModeRange } from '@arbor-css/colors';
+import { createColorDarkModeRange } from '../src/presets/arborPreset';
 import { ArborElement } from '../src/runtime/components/index';
 import arbor from './arbor.js';
 

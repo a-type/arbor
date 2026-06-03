@@ -1,4 +1,10 @@
-import { isCalcEquation, printEquation } from '@arbor-css/calc';
+import {
+	CalcEvaluationContext,
+	computeEquation,
+	isCalcEquation,
+	printComputationResult,
+	printEquation,
+} from '@arbor-css/calc';
 import {
 	getModeInternals,
 	isModeValue,
@@ -13,6 +19,98 @@ import {
 	Token,
 } from '@arbor-css/tokens';
 import { toFlatKeys } from '@arbor-css/util';
+import { flattenAndApplyTokenValues } from '../util/flattenAndApplyTokenValues.js';
+
+/**
+ * Constructs a proxy which computes the resolved
+ * value of any assigned property on demand and caches
+ * the result.
+ *
+ * Mode values can be CSS equations or token references,
+ * which require recursive resolution to get a final string
+ * value which is required for calculation, so this both
+ * resolves those to strings and makes sure we don't
+ * recompute the same things over and over.
+ */
+function createResolvingPropertyValuesProxy(
+	propertyValues: Record<string, ModeValue>,
+	allowMissing: boolean = false,
+): Record<string, string> {
+	const cache: Record<string, string> = {};
+	const resolvingStack: string[] = [];
+	const resolvingSet = new Set<string>();
+
+	const propertyValuesProxy = new Proxy({} as Record<string, string>, {
+		get(_, prop: string | symbol) {
+			if (typeof prop !== 'string') {
+				return undefined;
+			}
+
+			if (prop in cache) {
+				return cache[prop];
+			}
+
+			if (resolvingSet.has(prop)) {
+				const cycleStart = resolvingStack.findIndex((name) => name === prop);
+				const cycleChain = [...resolvingStack.slice(cycleStart), prop].join(
+					' -> ',
+				);
+				throw new Error(
+					`Circular dependency detected during property resolution: ${cycleChain}`,
+				);
+			}
+
+			resolvingStack.push(prop);
+			resolvingSet.add(prop);
+
+			const value = propertyValues[prop];
+			try {
+				if (typeof value === 'string' || typeof value === 'number') {
+					cache[prop] = value.toString();
+					return cache[prop];
+				} else if (isToken(value)) {
+					// does this token reference another property in our values?
+					// if so, follow that thread.
+					if (value.name in propertyValues) {
+						const referencedValue = propertyValuesProxy[value.name];
+						cache[prop] = referencedValue;
+					} else {
+						// otherwise, just resolve to the token's var() reference since we have no more information about it at this point
+						cache[prop] = value.var;
+					}
+					return cache[prop];
+				} else if (isCalcEquation(value)) {
+					// here's where it gets fun
+					cache[prop] = printComputationResult(
+						computeEquation(value, {
+							// we reference ourselves to continue resolving
+							// down the chain.
+							propertyValues: propertyValuesProxy,
+						} as CalcEvaluationContext),
+					);
+					return cache[prop];
+				} else if (value === undefined) {
+					if (!allowMissing) {
+						throw new Error(
+							`Missing value for property ${prop} during resolution.`,
+						);
+					} else {
+						return undefined;
+					}
+				} else {
+					throw new Error(
+						`Invalid value for property ${prop}: ${value}. Must be a string, number, token reference, or calc equation.`,
+					);
+				}
+			} finally {
+				resolvingSet.delete(prop);
+				resolvingStack.pop();
+			}
+		},
+	});
+
+	return propertyValuesProxy;
+}
 
 export function modeToCss<TModeShape extends SimpleTokenSchema>(
 	mode: ModeInstance<TModeShape>,
@@ -24,6 +122,12 @@ export function modeToCss<TModeShape extends SimpleTokenSchema>(
 	const flatTokens = toFlatKeys<Token>(preset.$.mode, isToken, {
 		separator: '-',
 	});
+	const calcContext: CalcEvaluationContext = {
+		propertyValues: createResolvingPropertyValuesProxy(
+			flattenAndApplyTokenValues(preset.$.mode, mode, { allowMissing: true }),
+			true,
+		),
+	};
 
 	const modeInternals = getModeInternals(mode);
 
@@ -41,8 +145,10 @@ export function modeToCss<TModeShape extends SimpleTokenSchema>(
 		if (isToken(value)) {
 			cssVars[tokenVar.name] = value.var;
 		} else if (isCalcEquation(value)) {
-			// TODO: computeEquation instead?
-			cssVars[tokenVar.name] = printEquation(value);
+			// bake the equation to get the simplest value we can know ahead of time
+			cssVars[tokenVar.name] = printComputationResult(
+				computeEquation(value, calcContext),
+			);
 		} else if (typeof value === 'string' || typeof value === 'number') {
 			cssVars[tokenVar.name] = value.toString();
 		} else {

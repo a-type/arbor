@@ -5,6 +5,7 @@ import {
 	ComputationResult,
 	Equation,
 	computeEquation,
+	css,
 	printComputationResult,
 	printEquation,
 } from '@arbor-css/calc';
@@ -13,6 +14,8 @@ export interface OklchColorEquation {
 	l: Equation;
 	c: Equation;
 	h: Equation;
+	from?: Equation;
+	compiled: Equation;
 
 	/**
 	 * Prints the CSS value of the color equation, including all
@@ -27,7 +30,7 @@ export interface OklchColorEquation {
 	/**
 	 * Returns the raw computed L, C, H values as numbers with units.
 	 */
-	compute(ctx: CalcEvaluationContext): {
+	computeParts(ctx: CalcEvaluationContext): {
 		l: ComputationResult;
 		c: ComputationResult;
 		h: ComputationResult;
@@ -53,25 +56,21 @@ export function oklchBuilder(
 		return { l, c, h, from };
 	}
 
+	const compiled = css`oklch(${
+		equations.from ? `from ${equations.from} ` : ''
+	}calc(${equations.l}) calc(${equations.c}) calc(${equations.h}))`;
+
 	return {
 		...equations,
+		compiled: css`oklch(${
+			equations.from ? `from ${equations.from} ` : ''
+		}calc(${equations.l}) calc(${equations.c}) calc(${equations.h}))`,
 		printDynamic(): string {
-			const l = printEquation(equations.l);
-			const c = printEquation(equations.c);
-			const h = printEquation(equations.h);
-			const from = equations.from ? printEquation(equations.from) : undefined;
-			return `oklch(${
-				from ? `from ${from} ` : ''
-			}calc(${l}) calc(${c}) calc(${h}))`;
+			return printEquation(compiled);
 		},
 		printComputed(context: CalcEvaluationContext): string {
-			const { l, c, h, from } = compute(context);
-			return `oklch(${
-				from ? `from ${printComputationResult(from)} ` : ''
-			}${printComputationResult(l)} ${printComputationResult(
-				c,
-			)} ${printComputationResult(h)})`;
+			return printComputationResult(computeEquation(compiled, context));
 		},
-		compute,
+		computeParts: compute,
 	};
 }

@@ -46,8 +46,13 @@ describe('css template — literals', () => {
 	});
 
 	it('accepts an outer calc() wrapper', () => {
-		// TODO: remove calc() wrapper here.
 		expect(printEquation(css`calc(10px)`)).toBe(`calc(10px)`);
+		// computing + printing should remove calc wrapper
+		expect(
+			printComputationResult(
+				computeEquation(css`calc(10px)`, { propertyValues: {} }),
+			),
+		).toBe('10px');
 	});
 
 	it('parsers a var(--*) reference inlined in the template', () => {
@@ -254,6 +259,11 @@ describe('css template — functions', () => {
 			`oklch(from ${tokenA.var} calc((l / 2)) c h)`,
 		);
 	});
+
+	it('drops empty concat parts in function args', () => {
+		const eq = css`oklch(${''}98% 0.1 90)`;
+		expect(printEquation(eq)).toBe(`oklch(98% 0.1 90)`);
+	});
 });
 
 // ─── Error cases ─────────────────────────────────────────────────────────────
@@ -329,6 +339,13 @@ describe('css template — non-calc functions', () => {
 		expect(printEquation(eq)).toBe(`clamp(0px, ${tokenA.var}, 100px)`);
 	});
 
+	it('simplifies calc() of single literals within colors', () => {
+		const eq = css`oklch(from ${tokenA} calc(l * 1) calc(c) calc((h)))`;
+		expect(
+			printComputationResult(computeEquation(eq, { propertyValues: {} })),
+		).toBe(`oklch(from ${tokenA.var} l c h)`);
+	});
+
 	it('handles comma separated tokens as a bare string', () => {
 		const eq = css`var(--ring), var(--shadow)`;
 		expect(printEquation(eq)).toBe(`var(--ring), var(--shadow)`);
@@ -342,6 +359,17 @@ describe('css template — non-calc functions', () => {
 	it('interpolates tokens into space separated lists', () => {
 		const eq = css`0 0 0 0 ${tokenA}`;
 		expect(printEquation(eq)).toBe(`0 0 0 0 ${tokenA.var}`);
+	});
+
+	it('handles light-dark wrapping two colors with computation', () => {
+		const eq = css`light-dark(${tokenA}, oklch(calc(l * 1.5) c calc(1 / 2)))`;
+		const simplified = printComputationResult(
+			computeEquation(eq, { propertyValues: {} }),
+		);
+		// TODO: eliminate double calc()
+		expect(simplified).toBe(
+			`light-dark(${tokenA.var}, oklch(calc(calc(l * 1.5)) c 0.5))`,
+		);
 	});
 });
 

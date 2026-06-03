@@ -1,9 +1,4 @@
-import {
-	$,
-	CalcEvaluationContext,
-	computeEquation,
-	printComputationResult,
-} from '@arbor-css/calc';
+import { css, Equation } from '@arbor-css/calc';
 import { GlobalContext } from '@arbor-css/globals';
 
 export const defaultShadowLevels = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
@@ -17,12 +12,12 @@ export interface ShadowConfig<
 }
 
 export interface CompiledShadowLevel {
-	$root: string;
-	x: string;
-	y: string;
-	blur: string;
-	spread: string;
-	color: string;
+	$root: string | Equation;
+	x: string | Equation;
+	y: string | Equation;
+	blur: string | Equation;
+	spread: string | Equation;
+	color: string | Equation;
 }
 
 export function isCompiledShadowLevel(
@@ -40,23 +35,26 @@ export type CompiledShadows<TShadowLevel extends string = DefaultShadowLevel> =
 		[K in TShadowLevel]: CompiledShadowLevel;
 	};
 
-const defaultShadowXEquation = (step: number) => $.val(`0px`);
-const defaultShadowYEquation = (step: number) =>
-	$.multiply($.val('1px'), $.fn('pow', $.val(2), $.val(step - 1)));
-const defaultShadowBlurEquation = (step: number, context: GlobalContext) =>
-	$.multiply(
-		$.val(context.$systemTokens.global.shadowBlur.varFallback('0.5')),
-		$.val(context.$systemTokens.global.baseSpacingSize.varFallback('0.5rem')),
-		$.val(0.25),
-		$.fn('pow', $.val(2), $.val(step - 1)),
-	);
-const defaultShadowSpreadEquation = (step: number, context: GlobalContext) =>
-	$.multiply(
-		$.token(context.$systemTokens.global.shadowSpread, $.val('1')),
-		$.val('1px'),
-	);
-const defaultShadowColorEquation = (step: number, context: GlobalContext) =>
-	$.token(context.$systemTokens.global.defaultShadowColor);
+const defaultShadowXEquation = (step: number) => css`0px`;
+const defaultShadowYEquation = (step: number) => css`1px * pow(2, ${step} - 1)`;
+const defaultShadowBlurEquation = (step: number, context: GlobalContext) => css`
+	${[context.$systemTokens.global.shadowBlur, '0.5']} * ${[
+		context.$systemTokens.global.baseSpacingSize,
+		'0.5rem',
+	]} * 0.25 * pow(2, ${step} - 1)
+`;
+const defaultShadowSpreadEquation = (
+	step: number,
+	context: GlobalContext,
+) => css`
+	${[context.$systemTokens.global.shadowSpread, '0.5']} * 1px
+`;
+const defaultShadowColorEquation = (
+	step: number,
+	context: GlobalContext,
+) => css`
+	${context.$systemTokens.global.defaultShadowColor}
+`;
 
 export function compileShadows<
 	TShadowLevel extends string = DefaultShadowLevel,
@@ -77,30 +75,18 @@ export function compileShadows<
 			// user did not give us a default level, and is using the default levels, so we'll use 'md' as the default.
 		: levelNames.indexOf('md' as TShadowLevel);
 
-	const ctx: CalcEvaluationContext = {
-		propertyValues: context.getGlobalPropertyAssignments(),
-	};
-
 	const levels = levelNames.reduce(
 		(acc, name, i) => {
 			const nameCast = name as TShadowLevel;
 			const levelConfig = config.levels?.[nameCast];
-			const x = printComputationResult(
-				computeEquation(defaultShadowXEquation(i), ctx),
-			);
-			const y = printComputationResult(
-				computeEquation(defaultShadowYEquation(i), ctx),
-			);
-			const blur = printComputationResult(
-				computeEquation(defaultShadowBlurEquation(i, context), ctx),
-			);
-			const spread = printComputationResult(
-				computeEquation(defaultShadowSpreadEquation(i, context), ctx),
-			);
-			const color = printComputationResult(
-				computeEquation(defaultShadowColorEquation(i, context), ctx),
-			);
-			const $root = `${x} ${y} ${blur} ${spread} ${color}`;
+			const x = defaultShadowXEquation(i);
+			const y = defaultShadowYEquation(i);
+			const blur = defaultShadowBlurEquation(i, context);
+			const spread = defaultShadowSpreadEquation(i, context);
+			const color = defaultShadowColorEquation(i, context);
+			const $root = css`
+				${x} ${y} ${blur} ${spread} ${color}
+			`;
 			acc[nameCast] = {
 				$root,
 				x,
@@ -114,10 +100,6 @@ export function compileShadows<
 		},
 		{} as Record<TShadowLevel, CompiledShadowLevel>,
 	) as CompiledShadows<TShadowLevel>;
-	const defaultLevel =
-		config.defaultLevel ?? (levelNames[baseIndex] as TShadowLevel);
 
-	return {
-		...levels,
-	};
+	return levels;
 }
