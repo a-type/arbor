@@ -12,6 +12,16 @@ export function parseCssColor(value: string): RgbaColor | null {
 		return { red: 0, green: 0, blue: 0, alpha: 0 };
 	}
 
+	// for light-dark(), take the first valid CSS color reference
+	if (trimmed.toLowerCase().startsWith('light-dark')) {
+		const match = /^light-dark\((.*)\)$/iu.exec(trimmed);
+		if (!match) {
+			return null;
+		}
+		const components = splitComponents(match[1]);
+		return parseCssColor(components[0]) ?? parseCssColor(components[1]);
+	}
+
 	return (
 		parseHexColor(trimmed) ??
 		parseRgbColor(trimmed) ??

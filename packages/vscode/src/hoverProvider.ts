@@ -1,5 +1,6 @@
 import { isFunction, isMixin, isToken } from '@arbor-css/core';
 import * as vscode from 'vscode';
+import { paramToCompletionInline } from './format.js';
 import { createTokenRegexes } from './regex.js';
 import {
 	resolveColorTokenValue,
@@ -55,8 +56,8 @@ export class ArborHoverProvider implements vscode.HoverProvider {
 
 				const md = new vscode.MarkdownString();
 				md.supportHtml = true;
-				md.appendMarkdown(`**Arbor token:** \`${entry.name}\`\n\n`);
 				if (isToken(entry)) {
+					md.appendMarkdown(`**Arbor token:** \`${entry.name}\`\n\n`);
 					md.appendMarkdown(`**Purpose:** ${entry.purpose}`);
 					if (entry.contributedBy) {
 						md.appendMarkdown(`\n\n*Contributed by ${entry.contributedBy}*`);
@@ -76,12 +77,12 @@ export class ArborHoverProvider implements vscode.HoverProvider {
 					}
 				} else if (isFunction(entry)) {
 					md.appendMarkdown(
-						`**Arbor function:** \`${entry.name}(${entry.parameters.join(', ')})\``,
+						`**Arbor function:** \`${entry.name}(${entry.parameters.map(paramToCompletionInline).join(', ')})\``,
 					);
 					md.appendMarkdown(`\n\n${entry.description}`);
 				} else if (isMixin(entry)) {
 					md.appendMarkdown(
-						`**Arbor mixin:** \`${entry.name}(${entry.parameters.join(', ')})\``,
+						`**Arbor mixin:** \`${entry.name}(${entry.parameters.map(paramToCompletionInline).join(', ')})\``,
 					);
 					md.appendMarkdown(`\n\n${entry.description}`);
 					md.appendMarkdown(`\n\n**Contributed tokens:**`);

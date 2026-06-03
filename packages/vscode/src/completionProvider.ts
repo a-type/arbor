@@ -1,5 +1,6 @@
-import { FunctionParam, isFunction, isMixin, isToken } from '@arbor-css/core';
+import { isFunction, isMixin, isToken } from '@arbor-css/core';
 import * as vscode from 'vscode';
+import { paramToCompletionInline } from './format.js';
 import type { TokenProvider } from './tokenProvider.js';
 
 export class ArborCompletionProvider implements vscode.CompletionItemProvider {
@@ -122,11 +123,4 @@ export class ArborCompletionProvider implements vscode.CompletionItemProvider {
 			return item;
 		});
 	}
-}
-
-function paramToCompletionInline(param: FunctionParam): string {
-	if (typeof param === 'string') {
-		return param;
-	}
-	return param.name;
 }
