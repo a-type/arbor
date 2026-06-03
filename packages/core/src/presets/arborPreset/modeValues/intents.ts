@@ -66,7 +66,7 @@ export function createSurfaceIntentValues<TColorNames extends string>(
 				${$.mode.color.main.light}
 			`,
 			fg: css`
-				${$.mode.color.main.ink}
+				${$.mode.color.neutral.ink}
 			`,
 			border: css`
 				${$.mode.color.main.heavy}
@@ -80,7 +80,7 @@ export function createSurfaceIntentValues<TColorNames extends string>(
 				${$.mode.color.neutral.ink}
 			`,
 			border: css`
-				${$.mode.color.main.ink}
+				${$.mode.color.neutral.heavy}
 			`,
 		},
 		ambient: {

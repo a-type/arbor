@@ -42,8 +42,6 @@ button {
 	transition: all var(--m-duration) var(--m-easing);
 	cursor: pointer;
 
-	/* use contrast to find a readable color against current bg (applied by variants) */
-	@apply --mx-fg(--fn-contrast-color());
 	/* use applied fg color for the border, too */
 	@apply --mx-border(var(--mx-fg-ref));
 
@@ -53,6 +51,7 @@ button {
 
 	&[data-emphasis='primary'] {
 		@apply --mx-bg(var(--m-action-primary-bg));
+		@apply --mx-fg(var(--m-action-primary-fg));
 		&:hover {
 			@apply --mx-bg-lighten(2);
 		}
@@ -63,6 +62,7 @@ button {
 	&,
 	&[data-emphasis='secondary'] {
 		@apply --mx-bg(var(--m-action-secondary-bg));
+		@apply --mx-fg(var(--m-action-secondary-fg));
 	}
 	&[data-emphasis='ambient'] {
 		@apply --mx-bg(var(--m-action-ambient-bg));

@@ -7,7 +7,7 @@ const preset = presetArbor({
 				hue: 98,
 			},
 			success: {
-				hue: 120,
+				hue: 165.88,
 			},
 			user: {
 				hue: 'var(--user-hue, 200)',
