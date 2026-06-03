@@ -1,23 +1,20 @@
 import {
-	compileColors,
-	CompileColorsOptions,
-	DefaultRangeName,
-} from '@arbor-css/colors';
-import {
 	ArborPrefixConfig,
 	defaultGlobals,
 	GlobalConfig,
 } from '@arbor-css/globals';
 import { ModeValues } from '@arbor-css/modes';
 import { definePreset } from '@arbor-css/preset';
-import { compileShadows, ShadowConfig } from '@arbor-css/shadows';
-import { compileSpacing, SpacingConfig } from '@arbor-css/spacing';
-import { compileTypography, TypographyConfig } from '@arbor-css/typography';
 import { presetBasic } from '../basicPreset/preset.js';
 import {
 	ArborModeSchema,
 	createArborModeSchema,
 } from './modeSchema/modeSchema.js';
+import {
+	compileColors,
+	CompileColorsOptions,
+	DefaultRangeName,
+} from './modeValues/color/index.js';
 import {
 	createActionIntentValues,
 	createControlIntentValues,
@@ -33,6 +30,12 @@ import {
 	createShadowSemanticValues,
 	createSpacingSemanticValues,
 } from './modeValues/semantics.js';
+import { compileShadows, ShadowConfig } from './modeValues/shadow/index.js';
+import { compileSpacing, SpacingConfig } from './modeValues/spacing/index.js';
+import {
+	compileTypography,
+	TypographyConfig,
+} from './modeValues/typography/index.js';
 
 export interface ArborPresetConfig<
 	TRanges extends string,
