@@ -30,11 +30,7 @@ export interface ValidationIssue {
 	column: number;
 }
 
-function findSuggestions(
-	names: string[],
-	query: string,
-	limit = 5,
-): string[] {
+function findSuggestions(names: string[], query: string, limit = 5): string[] {
 	const normalized = query.trim().toLowerCase();
 	if (!normalized) {
 		return [];
@@ -215,9 +211,7 @@ export function createPrefixValidationConfig(
 ): PrefixValidationConfig {
 	const configuredPrefixes = [
 		tokenPrefixes.modeTokenPrefix,
-		tokenPrefixes.primitiveTokenPrefix,
 		tokenPrefixes.metaTokenPrefix,
-		tokenPrefixes.refTokenPrefix,
 		tokenPrefixes.mixinTokenPrefix,
 		tokenPrefixes.functionNamePrefix,
 		tokenPrefixes.mixinNamePrefix,

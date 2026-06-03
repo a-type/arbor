@@ -18,10 +18,12 @@ it('generates a map of mode, primitive, and system tokens with correct paths', (
 
 	expect(map.has('color.main.mid')).toBe(true);
 	expect(map.get('color.main.mid')).toBe(preset.$.mode.color.main.mid);
-	expect(map.has('primitives.spacing.md')).toBe(true);
+	expect(map.has('primitive.spacing.md')).toBe(true);
 	expect(map.get('color.main')).toBe(preset.$.mode.color.main.$root);
-	expect(map.has('primitives.spacing.md')).toBe(true);
-	expect(map.get('primitives.spacing.md')).toBe(preset.$.primitives.spacing.md);
+	expect(map.has('primitive.spacing.md')).toBe(true);
+	expect(map.get('primitive.spacing.md')).toBe(
+		preset.$.mode.primitive.spacing.md,
+	);
 });
 
 it('applies descriptions to all built-in system and global tokens', () => {

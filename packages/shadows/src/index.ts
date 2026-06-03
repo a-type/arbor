@@ -14,10 +14,10 @@ export interface ShadowConfig<
 > {
 	levels?: Record<TShadowLevel, CompiledShadowLevel>;
 	defaultLevel?: TShadowLevel;
-	context: GlobalContext;
 }
 
 export interface CompiledShadowLevel {
+	$root: string;
 	x: string;
 	y: string;
 	blur: string;
@@ -35,16 +35,10 @@ export function isCompiledShadowLevel(
 	);
 }
 
-export interface CompiledShadows<
-	TShadowLevel extends string = DefaultShadowLevel,
-> {
-	defaultLevel: TShadowLevel;
-	levels: {
+export type CompiledShadows<TShadowLevel extends string = DefaultShadowLevel> =
+	{
 		[K in TShadowLevel]: CompiledShadowLevel;
-	} & {
-		$root: CompiledShadowLevel;
 	};
-}
 
 const defaultShadowXEquation = (step: number) => $.val(`0px`);
 const defaultShadowYEquation = (step: number) =>
@@ -66,7 +60,10 @@ const defaultShadowColorEquation = (step: number, context: GlobalContext) =>
 
 export function compileShadows<
 	TShadowLevel extends string = DefaultShadowLevel,
->(config: ShadowConfig<TShadowLevel>): CompiledShadows<TShadowLevel> {
+>(
+	config: ShadowConfig<TShadowLevel>,
+	context: GlobalContext,
+): CompiledShadows<TShadowLevel> {
 	const levelNames =
 		config.levels ?
 			Object.keys(config.levels)
@@ -81,43 +78,46 @@ export function compileShadows<
 		: levelNames.indexOf('md' as TShadowLevel);
 
 	const ctx: CalcEvaluationContext = {
-		propertyValues: config.context.getGlobalPropertyAssignments(),
+		propertyValues: context.getGlobalPropertyAssignments(),
 	};
 
 	const levels = levelNames.reduce(
 		(acc, name, i) => {
 			const nameCast = name as TShadowLevel;
 			const levelConfig = config.levels?.[nameCast];
+			const x = printComputationResult(
+				computeEquation(defaultShadowXEquation(i), ctx),
+			);
+			const y = printComputationResult(
+				computeEquation(defaultShadowYEquation(i), ctx),
+			);
+			const blur = printComputationResult(
+				computeEquation(defaultShadowBlurEquation(i, context), ctx),
+			);
+			const spread = printComputationResult(
+				computeEquation(defaultShadowSpreadEquation(i, context), ctx),
+			);
+			const color = printComputationResult(
+				computeEquation(defaultShadowColorEquation(i, context), ctx),
+			);
+			const $root = `${x} ${y} ${blur} ${spread} ${color}`;
 			acc[nameCast] = {
-				x: printComputationResult(
-					computeEquation(defaultShadowXEquation(i), ctx),
-				),
-				y: printComputationResult(
-					computeEquation(defaultShadowYEquation(i), ctx),
-				),
-				blur: printComputationResult(
-					computeEquation(defaultShadowBlurEquation(i, config.context), ctx),
-				),
-				spread: printComputationResult(
-					computeEquation(defaultShadowSpreadEquation(i, config.context), ctx),
-				),
-				color: printComputationResult(
-					computeEquation(defaultShadowColorEquation(i, config.context), ctx),
-				),
+				$root,
+				x,
+				y,
+				blur,
+				spread,
+				color,
 				...levelConfig,
 			};
 			return acc;
 		},
 		{} as Record<TShadowLevel, CompiledShadowLevel>,
-	) as CompiledShadows<TShadowLevel>['levels'];
+	) as CompiledShadows<TShadowLevel>;
 	const defaultLevel =
 		config.defaultLevel ?? (levelNames[baseIndex] as TShadowLevel);
 
 	return {
-		defaultLevel,
-		levels: {
-			...levels,
-			$root: levels[defaultLevel],
-		},
+		...levels,
 	};
 }

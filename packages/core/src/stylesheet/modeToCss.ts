@@ -1,5 +1,10 @@
 import { isCalcEquation, printEquation } from '@arbor-css/calc';
-import { isModeValue, ModeInstance, ModeValue } from '@arbor-css/modes';
+import {
+	getModeInternals,
+	isModeValue,
+	ModeInstance,
+	ModeValue,
+} from '@arbor-css/modes';
 import { ArborPreset } from '@arbor-css/preset';
 import {
 	isToken,
@@ -19,6 +24,8 @@ export function modeToCss<TModeShape extends SimpleTokenSchema>(
 	const flatTokens = toFlatKeys<Token>(preset.$.mode, isToken, {
 		separator: '-',
 	});
+
+	const modeInternals = getModeInternals(mode);
 
 	const cssVars: Record<string, string> = {};
 	const lowPriorityVars: Record<string, string> = {};
@@ -62,11 +69,8 @@ export function modeToCss<TModeShape extends SimpleTokenSchema>(
 		.filter(Boolean)
 		.join('\n');
 
-	const simpleSelector = `.\\@mode-${mode.$name}`;
-	const schemeSelectors = preset.schemes.map(
-		(schemeName) => `:where(&.\\@mode-${mode.$name} .\\@scheme-${schemeName})`,
-	);
-	const selectors = [simpleSelector, ...schemeSelectors];
+	const simpleSelector = `.\\@mode-${modeInternals.name}`;
+	const selectors = [simpleSelector, ...(modeInternals.extraSelectors ?? [])];
 
 	if (mode === preset.baseMode) {
 		// base mode values are applied to :root and all scheme selectors since they can be referenced by any mode and we want them to update when the base mode changes
@@ -76,8 +80,9 @@ export function modeToCss<TModeShape extends SimpleTokenSchema>(
 	}
 
 	return `${selectors.join(', ')} {
-	${preset.$.system.meta.modeName.assign(mode.$name)}
+	${preset.$.system.meta.modeName.assign(modeInternals.name)}
 	${content}
+	${modeInternals.extraCss ?? ''}
 }
 `;
 }

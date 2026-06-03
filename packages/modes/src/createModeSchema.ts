@@ -28,18 +28,34 @@ export function createModeSchema<T extends SimpleTokenSchema>(input: T): T {
 	return input;
 }
 
+const INTERNALS = Symbol('ARBOR_MODE_INTERNALS');
+
+export type ModeInternals = {
+	name: string;
+	extraSelectors?: string[];
+	extraCss?: string;
+};
+
 export type ModeInstance<T extends SimpleTokenSchema> = DeepPartial<
 	ModeValues<T>
-> & {
-	$name: string;
-};
+>;
 
 export function createModeInstance<T extends SimpleTokenSchema>(
 	name: string,
 	values: DeepPartial<ModeValues<T>>,
+	options?: Omit<Partial<ModeInternals>, 'name'>,
 ): ModeInstance<T> {
-	return {
-		...values,
-		$name: name,
+	const internals = {
+		...options,
+		name,
 	};
+	const modeInstance = {
+		...values,
+		[INTERNALS]: internals,
+	};
+	return modeInstance;
+}
+
+export function getModeInternals(mode: ModeInstance<any>): ModeInternals {
+	return (mode as any)[INTERNALS];
 }

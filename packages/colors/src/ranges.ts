@@ -59,15 +59,15 @@ export interface ColorRangeItem<TRangeNames extends string = string> {
 }
 
 export type UncompiledColorRange<
-	TRangeConfig extends ColorRangeConfig<string>,
+	TRangeNames extends string = DefaultRangeName,
 > = {
-	[K in InferRangeNames<TRangeConfig>]: ColorRangeItem;
+	[K in TRangeNames]: ColorRangeItem;
 } & {
 	$root: ColorRangeItem;
 };
-export type CompiledColorRange<TRangeConfig extends ColorRangeConfig<string>> =
+export type CompiledColorRange<TRangeNames extends string = DefaultRangeName> =
 	{
-		[K in InferRangeNames<TRangeConfig>]: string;
+		[K in TRangeNames]: string;
 	} & {
 		$root: string;
 	};
@@ -76,7 +76,7 @@ export function createColorRange<RangeNames extends string = DefaultRangeName>(
 	config: ColorRangeConfig<RangeNames>,
 	calcs: ColorRangeCalculations,
 	context: GlobalContext,
-): UncompiledColorRange<ColorRangeConfig<RangeNames>> {
+): UncompiledColorRange<RangeNames> {
 	const {
 		hue: sourceHue,
 		rangeNames = defaultRangeNames as unknown as RangeNames[],
@@ -122,7 +122,7 @@ export function createColorRange<RangeNames extends string = DefaultRangeName>(
 			return acc;
 		},
 		{} as Record<RangeNames, ColorRangeItem>,
-	) as UncompiledColorRange<ColorRangeConfig<RangeNames>>;
+	) as UncompiledColorRange<RangeNames>;
 
 	range.$root = (range as Record<string, ColorRangeItem>)[rootName as string];
 
@@ -244,9 +244,9 @@ export function createColorDarkModeRange(
 }
 
 export function createNeutralDerivedRange(
-	sourceRange: UncompiledColorRange<ColorRangeConfig<string>>,
+	sourceRange: UncompiledColorRange<string>,
 	context: GlobalContext,
-): UncompiledColorRange<ColorRangeConfig<string>> {
+): UncompiledColorRange<string> {
 	function lightness($: CalcOperations, source: OklchColorEquation) {
 		const sourceLAsZeroToOne = $.divide(source.l, $.val('100%'));
 		return $.subtract(sourceLAsZeroToOne, $.fn('pow', source.c, $.val(1.7)));
@@ -279,17 +279,14 @@ export function createNeutralDerivedRange(
 	) as any;
 }
 
-export function compileRange<
-	R extends string,
-	TRanges extends Record<string, ColorRangeConfig>,
->(
-	range: UncompiledColorRange<TRanges[R]>,
+export function compileRange<R extends string>(
+	range: UncompiledColorRange<R>,
 	context: CalcEvaluationContext,
-): CompiledColorRange<TRanges[R]> {
+): CompiledColorRange<R> {
 	return Object.fromEntries(
 		Object.keys(range).map((name) => [
 			name,
 			range[name as keyof typeof range].equation.printComputed(context),
 		]),
-	) as CompiledColorRange<TRanges[R]>;
+	) as CompiledColorRange<R>;
 }

@@ -15,18 +15,25 @@ const preset = presetArbor({
 
 it('resolves a indirect token values', () => {
 	expect(
-		resolveTokenReferences(preset, preset.$.primitives.color.red.$root.name),
-	).toBe('oklch(90% 0.15000000000000002 0)');
+		resolveTokenReferences(
+			preset,
+			preset.$.mode.primitive.color.red.$root.name,
+		),
+	).toBe(
+		'light-dark(oklch(90% 0.15000000000000002 0), oklch(60% 0.16000000000000003 0))',
+	);
 });
 
 it('resolves direct token values', () => {
 	expect(
-		resolveTokenReferences(preset, preset.$.primitives.spacing.$root.name),
+		resolveTokenReferences(preset, preset.$.mode.primitive.spacing.$root.name),
 	).toBe('0.5rem');
 });
 
 it('resolves mode token values', () => {
 	expect(
 		resolveTokenReferences(preset, preset.$.mode.color.main.$root.name),
-	).toBe('oklch(90% 0.15000000000000002 0)');
+	).toBe(
+		'light-dark(oklch(90% 0.15000000000000002 0), oklch(60% 0.16000000000000003 0))',
+	);
 });

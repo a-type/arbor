@@ -19,13 +19,13 @@ const preset = presetArbor({
 
 preset.bundleMode('success', {
 	color: {
-		main: preset.$.primitives.color.success,
+		main: preset.$.mode.primitive.color.success,
 	},
 });
 
 preset.bundleMode('user', {
 	color: {
-		main: preset.$.primitives.color.user,
+		main: preset.$.mode.primitive.color.user,
 	},
 });
 

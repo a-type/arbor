@@ -6,7 +6,7 @@ import {
 	resolveColorTokenValueByName,
 	resolveTokenValue,
 } from './resolvedTokenValue.js';
-import type { ConfigState, TokenMap } from './tokenProvider.js';
+import type { TokenMap } from './tokenProvider.js';
 
 function expectColor(
 	value: ReturnType<typeof parseCssColor>,
@@ -19,7 +19,7 @@ function expectColor(
 	expect(value?.alpha).toBeCloseTo(expected.alpha);
 }
 
-function createTestState(): ConfigState {
+function createTestState() {
 	const preset = presetArbor({
 		color: {
 			mainColor: 'red',
@@ -82,13 +82,13 @@ it('parses oklch colors into rgba channels', () => {
 it('resolves Arbor color tokens through the shared helper', () => {
 	const state = createTestState();
 	const colorToken = (state.preset.$.mode.color as any).main.$root;
-	const spacingToken = state.preset.$.primitives.spacing.$root;
+	const spacingToken = state.preset.$.mode.primitive.spacing.$root;
 
 	expect(resolveTokenValue(state, colorToken)).toBe(
-		'oklch(90% 0.15000000000000002 0)',
+		'light-dark(oklch(90% 0.15000000000000002 0), oklch(60% 0.16000000000000003 0))',
 	);
 	expect(resolveColorTokenValueByName(state, colorToken.name)).toBe(
-		'oklch(90% 0.15000000000000002 0)',
+		'light-dark(oklch(90% 0.15000000000000002 0), oklch(60% 0.16000000000000003 0))',
 	);
 	expect(resolveColorTokenValueByName(state, spacingToken.name)).toBeNull();
 });

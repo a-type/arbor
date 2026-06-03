@@ -1,4 +1,3 @@
-import { CompiledColors } from '@arbor-css/colors';
 import {
 	CreateFunction,
 	CreateMixin,
@@ -14,47 +13,12 @@ import {
 	SystemTokens,
 } from '@arbor-css/globals';
 import { createModeInstance, ModeInstance, ModeValues } from '@arbor-css/modes';
-import { CompiledShadows } from '@arbor-css/shadows';
-import { CompiledSpacing } from '@arbor-css/spacing';
 import {
 	convertSimpleTokenSchema,
 	SimpleTokensAsTokenDefinitions,
 	SimpleTokenSchema,
 } from '@arbor-css/tokens';
-import { CompiledTypography } from '@arbor-css/typography';
 import { deepMerge, DeepPartial } from '@arbor-css/util';
-import {
-	createPrimitiveTokens,
-	PrimitiveTokens,
-} from './createPrimitiveTokens.js';
-
-/**
- * Taking an input array of presets, reduces to the combined
- * token set by merging their token types together
- */
-export type ExtendedConfigPrimitiveTokens<TExtends extends AnyArborPreset[]> =
-	TExtends[number] extends (
-		ArborPreset<
-			any,
-			infer TColors,
-			infer TTypography,
-			infer TSpacing,
-			infer TShadows,
-			infer TEasingFunctions,
-			infer TDurations,
-			any,
-			any
-		>
-	) ?
-		PrimitiveTokens<
-			TColors,
-			TTypography,
-			TSpacing,
-			TShadows,
-			TEasingFunctions,
-			TDurations
-		>
-	:	{};
 
 // if no extends exist, this is an implicit base type
 type EmptyPreset = ArborPreset<
@@ -62,77 +26,21 @@ type EmptyPreset = ArborPreset<
 	// TODO: use some kind of sentinel type which can avoid allowing
 	// arbitrary keys but doesn't leak dummy keys into tokens.
 	{},
-	CompiledColors<any, any>,
-	CompiledTypography<any>,
-	CompiledSpacing<any>,
-	CompiledShadows<any>,
-	{},
-	{},
 	{},
 	{}
 >;
 
 export type ExtendedConfigModeSchema<TExtends extends AnyArborPreset[]> =
-	TExtends[number] extends (
-		ArborPreset<infer TModeSchema, any, any, any, any, any, any, any, any>
-	) ?
+	TExtends[number] extends ArborPreset<infer TModeSchema, any, any> ?
 		TModeSchema
 	:	{};
 
-export type ExtendedConfigColors<TExtends extends AnyArborPreset[]> =
-	TExtends[number] extends (
-		ArborPreset<any, infer TColors, any, any, any, any, any, any, any>
-	) ?
-		TColors
-	:	CompiledColors<any, any>;
-
-export type ExtendedConfigTypography<TExtends extends AnyArborPreset[]> =
-	TExtends[number] extends (
-		ArborPreset<any, any, infer TTypography, any, any, any, any, any, any>
-	) ?
-		TTypography
-	:	CompiledTypography<any>;
-
-export type ExtendedConfigSpacing<TExtends extends AnyArborPreset[]> =
-	TExtends[number] extends (
-		ArborPreset<any, any, any, infer TSpacing, any, any, any, any, any>
-	) ?
-		TSpacing
-	:	CompiledSpacing<any>;
-
-export type ExtendedConfigShadows<TExtends extends AnyArborPreset[]> =
-	TExtends[number] extends (
-		ArborPreset<any, any, any, any, infer TShadows, any, any, any, any>
-	) ?
-		TShadows
-	:	CompiledShadows<any>;
-
-export type ExtendedConfigEasingFunctions<TExtends extends AnyArborPreset[]> =
-	TExtends[number] extends (
-		ArborPreset<any, any, any, any, any, infer TEasingFunctions, any, any, any>
-	) ?
-		TEasingFunctions
-	:	Record<string, string>;
-
-export type ExtendedConfigDurations<TExtends extends AnyArborPreset[]> =
-	TExtends[number] extends (
-		ArborPreset<any, any, any, any, any, any, infer TDurations, any, any>
-	) ?
-		TDurations
-	:	Record<string, string>;
-
 export type ExtendedConfigFunctions<TExtends extends AnyArborPreset[]> =
-	TExtends[number] extends (
-		ArborPreset<any, any, any, any, any, any, any, infer TFunctions, any>
-	) ?
-		TFunctions
+	TExtends[number] extends ArborPreset<any, infer TFunctions, any> ? TFunctions
 	:	PresetFunctions;
 
 export type ExtendedConfigMixins<TExtends extends AnyArborPreset[]> =
-	TExtends[number] extends (
-		ArborPreset<any, any, any, any, any, any, any, any, infer TMixins>
-	) ?
-		TMixins
+	TExtends[number] extends ArborPreset<any, any, infer TMixins> ? TMixins
 	:	PresetMixins;
 
 /**
@@ -140,25 +48,10 @@ export type ExtendedConfigMixins<TExtends extends AnyArborPreset[]> =
  */
 export type PresetTokens<
 	TModeSchema extends SimpleTokenSchema,
-	TColors extends CompiledColors<any, any>,
-	TTypography extends CompiledTypography<any>,
-	TSpacing extends CompiledSpacing<any>,
-	TEasingFunctions extends Record<string, string>,
-	TDurations extends Record<string, string>,
-	TShadows extends CompiledShadows<any>,
 	TMixins extends PresetMixins,
 	TExtends extends AnyArborPreset[] = [],
 > = {
 	mode: SimpleTokensAsTokenDefinitions<TModeSchema>;
-	primitives: ExtendedConfigPrimitiveTokens<TExtends> &
-		PrimitiveTokens<
-			TColors,
-			TTypography,
-			TSpacing,
-			TShadows,
-			TEasingFunctions,
-			TDurations
-		>;
 	system: SystemTokens;
 	mixins: MixinTokens<TMixins>;
 };
@@ -167,12 +60,6 @@ export const INTERNALS = Symbol('ARBOR_INTERNALS');
 
 export interface ArborPreset<
 	TModeSchema extends SimpleTokenSchema = SimpleTokenSchema,
-	TCompiledColors extends CompiledColors = CompiledColors,
-	TTypography extends CompiledTypography = CompiledTypography,
-	TSpacing extends CompiledSpacing = CompiledSpacing,
-	TShadows extends CompiledShadows = CompiledShadows,
-	TEasingFunctions extends Record<string, string> = Record<string, string>,
-	TDurations extends Record<string, string> = Record<string, string>,
 	TFunctions extends PresetFunctions = PresetFunctions,
 	TMixins extends PresetMixins = PresetMixins,
 > {
@@ -182,19 +69,8 @@ export interface ArborPreset<
 	modeSchema: TModeSchema;
 	/** Values you applied for your base mode */
 	baseMode: ModeInstance<TModeSchema>;
-	/** A list of scheme names configured in the preset */
-	schemes: string[];
 	/** All tokens in this preset. */
-	$: PresetTokens<
-		TModeSchema,
-		TCompiledColors,
-		TTypography,
-		TSpacing,
-		TEasingFunctions,
-		TDurations,
-		TShadows,
-		TMixins
-	>;
+	$: PresetTokens<TModeSchema, TMixins>;
 	context: GlobalContext;
 	extends: AnyArborPreset[];
 	/**
@@ -203,17 +79,7 @@ export interface ArborPreset<
 	 */
 	withConfig(
 		options: GlobalContextConfig,
-	): ArborPreset<
-		TModeSchema,
-		TCompiledColors,
-		TTypography,
-		TSpacing,
-		TShadows,
-		TEasingFunctions,
-		TDurations,
-		TFunctions,
-		TMixins
-	>;
+	): ArborPreset<TModeSchema, TFunctions, TMixins>;
 
 	/**
 	 * Add a 'bundled' mode to this preset. Bundled modes are included in the
@@ -236,27 +102,7 @@ export interface ArborPreset<
 
 	meta: {
 		name: string;
-		/**
-		 * The initial configuration for this preset.
-		 */
-		init: DefinePresetConfig<any, any, any, any, any, any, any, any, any, any>;
 	};
-}
-
-export interface DefinePresetConfigPrimitives<
-	TColors extends CompiledColors<any, any>,
-	TTypography extends CompiledTypography<any>,
-	TSpacing extends CompiledSpacing<any>,
-	TShadows extends CompiledShadows<any>,
-	TEasingFunctions extends Record<string, string>,
-	TDurations extends Record<string, string>,
-> {
-	color?: TColors;
-	typography?: TTypography;
-	spacing?: TSpacing;
-	shadow?: TShadows;
-	easing?: TEasingFunctions;
-	duration?: TDurations;
 }
 
 export type BaseModeValues<
@@ -270,12 +116,6 @@ export type BaseModeValues<
 
 export interface DefinePresetConfig<
 	TModeSchema extends SimpleTokenSchema,
-	TColors extends CompiledColors<any, any>,
-	TTypography extends CompiledTypography<any>,
-	TSpacing extends CompiledSpacing<any>,
-	TShadows extends CompiledShadows<any>,
-	TEasingFunctions extends Record<string, string>,
-	TDurations extends Record<string, string>,
 	TFunctions extends PresetFunctions,
 	TMixins extends PresetMixins,
 	TExtends extends AnyArborPreset[],
@@ -285,36 +125,15 @@ export interface DefinePresetConfig<
 	baseMode: (
 		$tokens: PresetTokens<
 			ExtendedConfigModeSchema<TExtends> & TModeSchema,
-			ExtendedConfigColors<TExtends> & TColors,
-			ExtendedConfigTypography<TExtends> & TTypography,
-			ExtendedConfigSpacing<TExtends> & TSpacing,
-			ExtendedConfigEasingFunctions<TExtends> & TEasingFunctions,
-			ExtendedConfigDurations<TExtends> & TDurations,
-			ExtendedConfigShadows<TExtends> & TShadows,
 			ExtendedConfigMixins<TExtends> & TMixins
 		>,
-	) => BaseModeValues<TModeSchema, TExtends>;
-	primitives?: (
 		context: GlobalContext,
-	) => DefinePresetConfigPrimitives<
-		DeepPartial<ExtendedConfigColors<TExtends>> & TColors,
-		DeepPartial<ExtendedConfigTypography<TExtends>> & TTypography,
-		DeepPartial<ExtendedConfigSpacing<TExtends>> & TSpacing,
-		DeepPartial<ExtendedConfigShadows<TExtends>> & TShadows,
-		DeepPartial<ExtendedConfigEasingFunctions<TExtends>> & TEasingFunctions,
-		DeepPartial<ExtendedConfigDurations<TExtends>> & TDurations
-	>;
-	defaultScheme?: keyof TColors;
+	) => BaseModeValues<TModeSchema, TExtends>;
+	defaultScheme?: 'light' | 'dark';
 	mixins?: (
 		create: CreateMixin,
 		$: PresetTokens<
 			ExtendedConfigModeSchema<TExtends> & TModeSchema,
-			ExtendedConfigColors<TExtends> & TColors,
-			ExtendedConfigTypography<TExtends> & TTypography,
-			ExtendedConfigSpacing<TExtends> & TSpacing,
-			ExtendedConfigEasingFunctions<TExtends> & TEasingFunctions,
-			ExtendedConfigDurations<TExtends> & TDurations,
-			ExtendedConfigShadows<TExtends> & TShadows,
 			// Do not include mixin tokens when defining mixins -
 			// this would be circular logic
 			ExtendedConfigMixins<TExtends>
@@ -324,12 +143,6 @@ export interface DefinePresetConfig<
 		create: CreateFunction,
 		$: PresetTokens<
 			ExtendedConfigModeSchema<TExtends> & TModeSchema,
-			ExtendedConfigColors<TExtends> & TColors,
-			ExtendedConfigTypography<TExtends> & TTypography,
-			ExtendedConfigSpacing<TExtends> & TSpacing,
-			ExtendedConfigEasingFunctions<TExtends> & TEasingFunctions,
-			ExtendedConfigDurations<TExtends> & TDurations,
-			ExtendedConfigShadows<TExtends> & TShadows,
 			ExtendedConfigMixins<TExtends> & TMixins
 		>,
 	) => TFunctions;
@@ -343,18 +156,9 @@ function emptyPreset(): ArborPreset {
 		mixins: {} as any,
 		modeSchema: {} as any,
 		baseMode: {} as any,
-		schemes: [],
 		$: {
 			mode: {},
 			mixins: {},
-			primitives: {
-				color: {},
-				duration: {},
-				easing: {},
-				shadow: {},
-				spacing: {},
-				typography: {},
-			} as any,
 			system: {
 				global: {},
 				meta: {},
@@ -367,7 +171,6 @@ function emptyPreset(): ArborPreset {
 		},
 		meta: {
 			name: 'empty',
-			init: {} as any,
 		},
 		bundleMode() {
 			return {} as any;
@@ -380,12 +183,6 @@ function emptyPreset(): ArborPreset {
 
 export function definePreset<
 	TModeSchema extends SimpleTokenSchema,
-	TCompiledColors extends CompiledColors<any, any>,
-	TTypography extends CompiledTypography<any>,
-	TSpacing extends CompiledSpacing<any>,
-	TShadows extends CompiledShadows<any>,
-	TEasingFunctions extends Record<string, string>,
-	TDurations extends Record<string, string>,
 	TFunctions extends PresetFunctions,
 	TMixins extends PresetMixins,
 	TExtends extends AnyArborPreset[] = [EmptyPreset],
@@ -394,41 +191,14 @@ export function definePreset<
 	mixins: createMixins,
 	config,
 	...presetOptions
-}: DefinePresetConfig<
-	TModeSchema,
-	TCompiledColors,
-	TTypography,
-	TSpacing,
-	TShadows,
-	TEasingFunctions,
-	TDurations,
-	TFunctions,
-	TMixins,
-	TExtends
->): ArborPreset<
+}: DefinePresetConfig<TModeSchema, TFunctions, TMixins, TExtends>): ArborPreset<
 	ExtendedConfigModeSchema<TExtends> & TModeSchema,
-	ExtendedConfigColors<TExtends> & TCompiledColors,
-	ExtendedConfigTypography<TExtends> & TTypography,
-	ExtendedConfigSpacing<TExtends> & TSpacing,
-	ExtendedConfigShadows<TExtends> & TShadows,
-	ExtendedConfigEasingFunctions<TExtends> & TEasingFunctions,
-	ExtendedConfigDurations<TExtends> & TDurations,
 	ExtendedConfigFunctions<TExtends> & TFunctions,
 	ExtendedConfigMixins<TExtends> & TMixins
 > {
 	function withConfig(
 		options: GlobalContextConfig,
-	): ArborPreset<
-		TModeSchema,
-		TCompiledColors,
-		TTypography,
-		TSpacing,
-		TShadows,
-		TEasingFunctions,
-		TDurations,
-		TFunctions,
-		TMixins
-	> {
+	): ArborPreset<TModeSchema, TFunctions, TMixins> {
 		const context = createGlobalContext(options);
 
 		const extended = presetOptions.extends ?? [];
@@ -451,7 +221,6 @@ export function definePreset<
 					acc.baseMode || {},
 					presetWithConfig.baseMode || {},
 				),
-				schemes: [...(acc.schemes || []), ...(presetWithConfig.schemes || [])],
 				functions: {
 					...acc.functions,
 					...presetWithConfig.functions,
@@ -467,27 +236,9 @@ export function definePreset<
 			} as any;
 		}, emptyPreset());
 
-		const composedPrimitiveValues = extended.reduce((acc, preset) => {
-			return deepMerge(acc || {}, getInternals(preset).primitiveValues || {});
-		}, {});
-
-		const resolvedPrimitives =
-			presetOptions.primitives ? presetOptions.primitives(context) : {};
-
 		const $tokensWithoutMixins = {
 			...composedPresets.$,
 			system: context.$systemTokens,
-			primitives:
-				presetOptions.primitives ?
-					deepMerge(
-						{},
-						composedPresets.$?.primitives || {},
-						createPrimitiveTokens({
-							createToken: context.createPrimitiveToken,
-							...resolvedPrimitives,
-						}) as any,
-					)
-				:	composedPresets.$?.primitives || {},
 			mode: deepMerge(
 				{},
 				composedPresets.$.mode || {},
@@ -504,7 +255,7 @@ export function definePreset<
 				createMixins(context.createMixin, $tokensWithoutMixins as any)
 			:	({} as TMixins);
 
-		const $tokens: PresetTokens<any, any, any, any, any, any, any, any> = {
+		const $tokens: PresetTokens<any, any, any> = {
 			...$tokensWithoutMixins,
 			mixins: {
 				...$tokensWithoutMixins.mixins,
@@ -520,11 +271,6 @@ export function definePreset<
 		const internals = {
 			modes: [],
 			defaultScheme: presetOptions.defaultScheme ?? 'light',
-			primitiveValues: deepMerge(
-				{},
-				composedPrimitiveValues,
-				resolvedPrimitives,
-			) as any,
 		} as PresetInternals;
 
 		const modeSchema = deepMerge(
@@ -538,8 +284,11 @@ export function definePreset<
 			deepMerge(
 				{},
 				composedPresets.baseMode as any,
-				presetOptions.baseMode($tokens as any) as any,
+				presetOptions.baseMode($tokens as any, context) as any,
 			) as any,
+			{
+				extraSelectors: [':root'],
+			},
 		);
 
 		return {
@@ -569,18 +318,6 @@ export function definePreset<
 
 			baseMode,
 
-			schemes: Array.from(
-				new Set([
-					// defaults
-					'light',
-					'dark',
-					...composedPresets.schemes,
-					...(presetOptions.primitives ?
-						Object.keys(resolvedPrimitives.color || {})
-					:	[]),
-				]),
-			),
-
 			bundleMode(name: string, mode: DeepPartial<ModeValues<TModeSchema>>) {
 				const instance = createModeInstance(name, mode);
 				internals.modes.push(instance);
@@ -599,14 +336,6 @@ export function definePreset<
 export interface PresetInternals {
 	modes: ModeInstance<any>[];
 	defaultScheme: string;
-	primitiveValues: {
-		color: CompiledColors<any, any>;
-		typography: CompiledTypography<any>;
-		spacing: CompiledSpacing<any>;
-		shadow: CompiledShadows<any>;
-		easing: Record<string, string>;
-		duration: Record<string, string>;
-	};
 }
 
 export function getInternals(preset: AnyArborPreset): PresetInternals {
@@ -619,14 +348,4 @@ export function getInternals(preset: AnyArborPreset): PresetInternals {
 	return internals;
 }
 
-export type AnyArborPreset = ArborPreset<
-	any,
-	any,
-	any,
-	any,
-	any,
-	any,
-	any,
-	PresetFunctions,
-	PresetMixins
->;
+export type AnyArborPreset = ArborPreset<any, PresetFunctions, PresetMixins>;

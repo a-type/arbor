@@ -3,8 +3,9 @@ import { GlobalContext } from '@arbor-css/globals';
 import {
 	ColorRangeConfig,
 	CompiledColorRange,
-	compileRange,
 	createNeutralDerivedRange,
+	DefaultRangeName,
+	UncompiledColorRange,
 } from './ranges.js';
 import {
 	defaultDarkScheme,
@@ -13,94 +14,120 @@ import {
 } from './schemes.js';
 
 export type CompiledColorRangeWithNeutral<
-	TRangeConfig extends ColorRangeConfig<any>,
-> = CompiledColorRange<TRangeConfig> & {
+	TRangeStepNames extends string = DefaultRangeName,
+> = CompiledColorRange<TRangeStepNames> & {
 	/**
 	 * An automatically-generated neutral range derived from
 	 * the color range.
 	 */
-	$neutral: CompiledColorRange<TRangeConfig>;
+	$neutral: CompiledColorRange<TRangeStepNames>;
 };
 
 export type CompiledColorRanges<
-	TRanges extends Record<string, ColorRangeConfig<any>>,
+	TRangeNames extends string,
+	TRangeStepNames extends string = DefaultRangeName,
 > = {
-	isDark: boolean;
-	colors: {
-		[K in keyof TRanges]: CompiledColorRangeWithNeutral<TRanges[K]>;
-	};
+	[K in TRangeNames]: CompiledColorRangeWithNeutral<TRangeStepNames>;
 };
 
 export type CompiledColors<
-	TRanges extends Record<string, ColorRangeConfig<any>> = Record<
-		string,
-		ColorRangeConfig
-	>,
-	TSchemes extends Record<string, SchemeDefinition> = Record<
-		string,
-		SchemeDefinition
-	>,
-> = {
-	[K in keyof TSchemes | 'light' | 'dark']: CompiledColorRanges<TRanges>;
-};
+	TRangeNames extends string,
+	TRangeStepNames extends string = DefaultRangeName,
+> = CompiledColorRanges<TRangeNames, TRangeStepNames>;
 
-export type ExtractCompiledColorRanges<
-	TCompiledColors extends CompiledColors<any, any>,
-> = TCompiledColors['light'];
+export interface CompileColorsOptions<
+	TRangeNames extends string,
+	TRangeStepNames extends string = DefaultRangeName,
+> {
+	ranges: Record<TRangeNames, ColorRangeConfig<TRangeStepNames>>;
+	schemes?: {
+		light?: SchemeDefinition<
+			ColorRangeConfig<TRangeStepNames>,
+			TRangeStepNames
+		>;
+		dark?: SchemeDefinition<ColorRangeConfig<TRangeStepNames>, TRangeStepNames>;
+	};
+}
 
+/**
+ * Given an input set of color range configurations (hue, saturation)
+ * and, optionally, specific calculations to handle light/dark schemes,
+ * produces a single set of compiled color ranges which incorporates
+ * light-dark logic to select the appropriate color in each scheme
+ */
 export function compileColors<
-	TRanges extends Record<string, ColorRangeConfig<any>>,
-	TSchemes extends Record<string, SchemeDefinition>,
->({
-	ranges,
-	schemes: userSchemes,
-	context,
-}: {
-	ranges: TRanges;
-	schemes?: TSchemes;
-	context: GlobalContext;
-}) {
+	TRangeNames extends string,
+	TRangeStepNames extends string = DefaultRangeName,
+>(
+	{
+		ranges,
+		schemes: userSchemes,
+	}: CompileColorsOptions<TRangeNames, TRangeStepNames>,
+	context: GlobalContext,
+): CompiledColors<TRangeNames, TRangeStepNames> {
 	const evalContext: CalcEvaluationContext = {
 		propertyValues: context.getGlobalPropertyAssignments(),
 	};
 	const schemes = {
-		light: defaultLightScheme,
-		dark: defaultDarkScheme,
-		...userSchemes,
-	} as Record<keyof TSchemes, SchemeDefinition>;
+		light:
+			userSchemes?.light ??
+			(defaultLightScheme as SchemeDefinition<
+				ColorRangeConfig<TRangeStepNames>,
+				TRangeStepNames
+			>),
+		dark:
+			userSchemes?.dark ??
+			(defaultDarkScheme as SchemeDefinition<
+				ColorRangeConfig<TRangeStepNames>,
+				TRangeStepNames
+			>),
+	};
 
-	return Object.keys(schemes).reduce(
-		(acc, schemeName) => {
-			const scheme = schemes[schemeName as keyof TSchemes];
-			acc[schemeName as keyof TSchemes] = {
-				isDark: scheme.isDark,
-				colors: Object.keys(ranges).reduce(
-					(rangeAcc, rangeName) => {
-						const rangeConfig = ranges[rangeName as keyof TRanges];
+	const colors = Object.keys(ranges).reduce((colorsAcc, rangeName) => {
+		const rangeConfig = ranges[rangeName as TRangeNames];
+		const uncompiledLight = schemes.light.getColorRange(rangeConfig, context);
+		const uncompiledDark = schemes.dark.getColorRange(rangeConfig, context);
 
-						const uncompiled = scheme.getColorRange(rangeConfig, context);
+		const combined = toLightDarkCompiled(
+			uncompiledLight,
+			uncompiledDark,
+			context,
+			evalContext,
+		);
 
-						const compiled = compileRange(uncompiled, evalContext);
+		colorsAcc[rangeName] = combined;
 
-						const uncompiledNeutralRange = createNeutralDerivedRange(
-							uncompiled,
-							context,
-						);
+		return colorsAcc;
+	}, {} as any);
 
-						rangeAcc[rangeName as keyof TRanges] = {
-							...compiled,
-							$neutral: compileRange(uncompiledNeutralRange, evalContext),
-						} as any;
-						return rangeAcc;
-					},
-					{} as Record<
-						keyof TRanges,
-						CompiledColorRangeWithNeutral<TRanges[keyof TRanges]>
-					>,
-				),
-			};
-			return acc;
-		},
-		{} as CompiledColors<TRanges, TSchemes>,
-	);
+	return colors;
+}
+
+function toLightDarkCompiled(
+	light: UncompiledColorRange<any>,
+	dark: UncompiledColorRange<any>,
+	context: GlobalContext,
+	evalContext: CalcEvaluationContext,
+): CompiledColorRangeWithNeutral<any> {
+	const result = {} as any;
+	for (const key in light) {
+		const lightColor = light[key as keyof typeof light];
+		const darkColor = dark[key as keyof typeof dark];
+		result[key as any] =
+			`light-dark(${lightColor.equation.printComputed(evalContext)}, ${darkColor.equation.printComputed(evalContext)})`;
+	}
+
+	const lightNeutral = createNeutralDerivedRange(light, context);
+	const darkNeutral = createNeutralDerivedRange(dark, context);
+
+	const neutralResult = {} as any;
+	for (const key in lightNeutral) {
+		const lightColor = lightNeutral[key as keyof typeof lightNeutral];
+		const darkColor = darkNeutral[key as keyof typeof darkNeutral];
+		neutralResult[key as any] =
+			`light-dark(${lightColor.equation.printComputed(evalContext)}, ${darkColor.equation.printComputed(evalContext)})`;
+	}
+
+	result.$neutral = neutralResult;
+	return result;
 }

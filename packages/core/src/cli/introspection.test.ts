@@ -64,18 +64,11 @@ function createTestPreset() {
 it('parses token level filters and supports aliases', () => {
 	expect(parseTokenLevelFilter(undefined)).toEqual([
 		'mode',
-		'primitives',
 		'system',
 		'mixins',
 	]);
-	expect(parseTokenLevelFilter('primitives,mode')).toEqual([
-		'primitives',
-		'mode',
-	]);
-	expect(parseTokenLevelFilter('primitive,mixin')).toEqual([
-		'primitives',
-		'mixins',
-	]);
+	expect(parseTokenLevelFilter('mode')).toEqual(['mode']);
+	expect(parseTokenLevelFilter('mode,mixin')).toEqual(['mode', 'mixins']);
 
 	expect(() => parseTokenLevelFilter('invalid')).toThrow(
 		'Invalid --filter level(s): invalid',
@@ -120,7 +113,10 @@ it('finds tokens by CSS variable name and returns name suggestions', () => {
 	const infoOutput = formatTokenInfo(modeSpacingRecord!);
 	expect(infoOutput).toContain(`name: ${modeSpacingRecord!.token.name}`);
 	expect(infoOutput).toContain('purpose: spacing');
-	const suggestions = findTokenSuggestions(records, modeSpacingTokenName.slice(0, -2));
+	const suggestions = findTokenSuggestions(
+		records,
+		modeSpacingTokenName.slice(0, -2),
+	);
 	expect(suggestions.length).toBeGreaterThan(0);
 	expect(suggestions[0]).toContain(modeSpacingTokenName);
 });

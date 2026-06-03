@@ -16,16 +16,11 @@ export function isTypographyLevel(value: any): value is TypographyLevel {
 	return value && 'size' in value && 'weight' in value && 'lineHeight' in value;
 }
 
-export interface CompiledTypography<
+export type CompiledTypography<
 	TLevels extends string = DefaultTypographyLevel,
-> {
-	defaultLevel: TLevels;
-	levels: {
-		[K in TLevels]: TypographyLevel;
-	} & {
-		$root: TypographyLevel;
-	};
-}
+> = {
+	[K in TLevels]: TypographyLevel;
+};
 
 export const defaultTypographyLevels = [
 	'xs',
@@ -47,12 +42,14 @@ export type TypographyConfig<TLevels extends string = DefaultTypographyLevel> =
 		defaultLevel?: TLevels;
 		minSize?: string;
 		maxSize?: string;
-		context: GlobalContext;
 	};
 
 export function compileTypography<
 	TLevels extends string = DefaultTypographyLevel,
->(config: TypographyConfig<TLevels>): CompiledTypography<TLevels> {
+>(
+	config: TypographyConfig<TLevels>,
+	context: GlobalContext,
+): CompiledTypography<TLevels> {
 	const levelNames =
 		config.levels ?
 			Object.keys(config.levels)
@@ -66,7 +63,7 @@ export function compileTypography<
 		: levelNames.indexOf('md' as TLevels);
 
 	const evalContext: CalcEvaluationContext = {
-		propertyValues: config.context.getGlobalPropertyAssignments(),
+		propertyValues: context.getGlobalPropertyAssignments(),
 	};
 
 	const levels = levelNames.reduce(
@@ -97,16 +94,12 @@ export function compileTypography<
 			return acc;
 		},
 		{} as Record<TLevels, TypographyLevel>,
-	) as CompiledTypography<TLevels>['levels'];
+	) as CompiledTypography<TLevels>;
 	const defaultLevel =
 		config.defaultLevel ?? (levelNames[baseIndex] as TLevels);
 
 	return {
-		defaultLevel,
-		levels: {
-			...levels,
-			$root: levels[defaultLevel],
-		},
+		...levels,
 	};
 }
 

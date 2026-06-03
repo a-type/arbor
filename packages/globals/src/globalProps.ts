@@ -8,8 +8,6 @@ export interface GlobalConfig {
 	defaultShadowColor: string;
 	shadowSpread: number;
 	shadowBlur: number;
-	arrowWidth: string;
-	arrowHeight: string;
 	lineWidth: string;
 }
 
@@ -21,8 +19,6 @@ export const defaultGlobals: GlobalConfig = {
 	defaultShadowColor: 'rgba(0 0 0 / 0.15)',
 	shadowSpread: 0,
 	shadowBlur: 0.5,
-	arrowWidth: '1rem',
-	arrowHeight: '0.5rem',
 	lineWidth: '1px',
 };
 
@@ -73,18 +69,6 @@ export function createGlobalProps({
 				'Scales the blur component used by generated shadow primitives.',
 			tag: 'system',
 			type: 'number',
-		}),
-		arrowWidth: createTokenValue('arrow-width', {
-			description:
-				'Defines the default width for built-in arrow and caret shapes.',
-			tag: 'system',
-			type: 'length',
-		}),
-		arrowHeight: createTokenValue('arrow-height', {
-			description:
-				'Defines the default height for built-in arrow and caret shapes.',
-			tag: 'system',
-			type: 'length',
 		}),
 		lineWidth: createTokenValue('line-width', {
 			description: 'Adjust line widths used by borders, etc',

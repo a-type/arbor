@@ -6,7 +6,7 @@ import {
 	type Equation,
 } from '@arbor-css/calc';
 import { ArborPreset, getInternals } from '@arbor-css/preset/config';
-import { isToken, type Token, tokenSchemaToList } from '@arbor-css/tokens';
+import { isToken, tokenSchemaToList } from '@arbor-css/tokens';
 
 type PropertyValueMap = Record<string, string | Equation | undefined>;
 
@@ -38,7 +38,7 @@ export function resolveComputedTokenValue(
 				propertyValues: contextValues,
 				skipBaking: false,
 			})
-		: 	computeEquation(tokenValue, {
+		:	computeEquation(tokenValue, {
 				propertyValues: contextValues,
 				skipBaking: false,
 			});
@@ -51,38 +51,11 @@ function getResolvedTokenValues(
 ): Record<string, string | Equation> {
 	const internals = getInternals(preset);
 	const colorScheme = internals.defaultScheme;
-	const schemeValues = internals.primitiveValues.color[colorScheme];
 
 	const values: Record<string, string | Equation> = {
 		...preset.context.getGlobalPropertyAssignments(),
 	};
 
-	applyKnownTokenValues(preset.$.primitives.color, schemeValues?.colors, values);
-	applyKnownTokenValues(
-		preset.$.primitives.typography,
-		internals.primitiveValues.typography.levels,
-		values,
-	);
-	applyKnownTokenValues(
-		preset.$.primitives.spacing,
-		internals.primitiveValues.spacing.levels,
-		values,
-	);
-	applyKnownTokenValues(
-		preset.$.primitives.shadow,
-		internals.primitiveValues.shadow.levels,
-		values,
-	);
-	applyKnownTokenValues(
-		preset.$.primitives.easing,
-		internals.primitiveValues.easing,
-		values,
-	);
-	applyKnownTokenValues(
-		preset.$.primitives.duration,
-		internals.primitiveValues.duration,
-		values,
-	);
 	applyKnownTokenValues(preset.$.mode, preset.baseMode, values);
 
 	applyKnownTokenValues(
@@ -91,11 +64,11 @@ function getResolvedTokenValues(
 			modeName: 'base',
 			schemeName: colorScheme,
 			scheme: {
-				invertMultiplier: schemeValues?.isDark ? -1 : 1,
-				whenDark: schemeValues?.isDark ? 1 : 0,
-				whenLight: schemeValues?.isDark ? 0 : 1,
-				trueLight: schemeValues?.isDark ? 'black' : 'white',
-				trueHeavy: schemeValues?.isDark ? 'white' : 'black',
+				invertMultiplier: colorScheme === 'dark' ? -1 : 1,
+				whenDark: colorScheme === 'dark' ? 1 : 0,
+				whenLight: colorScheme === 'dark' ? 0 : 1,
+				trueLight: colorScheme === 'dark' ? 'black' : 'white',
+				trueHeavy: colorScheme === 'dark' ? 'white' : 'black',
 			},
 		},
 		values,

@@ -1,4 +1,4 @@
-import { definePreset, getInternals } from '@arbor-css/preset';
+import { definePreset } from '@arbor-css/preset';
 import { expect, it } from 'vitest';
 import { presetArbor } from './preset.js';
 
@@ -26,12 +26,9 @@ it('is extensible', () => {
 		}),
 	});
 
-	expect(preset.$.primitives.color.mainColor).toBe(
-		base.$.primitives.color.mainColor,
+	expect(preset.$.mode.primitive.color.red.mid.name).toEqual(
+		base.$.mode.primitive.color.red.mid.name,
 	);
 	expect(preset.baseMode.test).toBe('red');
 	expect(preset.baseMode.action?.roundness).toBe(0.5);
-
-	const internals = getInternals(preset);
-	expect(internals.primitiveValues.color).toBeDefined();
 });

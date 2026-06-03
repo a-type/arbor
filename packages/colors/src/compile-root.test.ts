@@ -5,41 +5,35 @@ import { compileColors } from './compile.js';
 const ctx = createGlobalContext();
 
 it('assigns color and neutral $root to mid when mid exists', () => {
-	const compiled = compileColors({
-		ranges: {
-			primary: {
-				hue: 90,
-				rangeNames: ['dark', 'mid', 'light'],
+	const compiled = compileColors(
+		{
+			ranges: {
+				primary: {
+					hue: 90,
+					rangeNames: ['heavy', 'mid', 'light'],
+				},
 			},
 		},
-		schemes: {},
-		context: ctx,
-	});
+		ctx,
+	);
 
-	expect(compiled.light.colors.primary.$root).toBe(
-		compiled.light.colors.primary.mid,
-	);
-	expect(compiled.light.colors.primary.$neutral.$root).toBe(
-		compiled.light.colors.primary.$neutral.mid,
-	);
+	expect(compiled.primary.$root).toBe(compiled.primary.mid);
+	expect(compiled.primary.$neutral.$root).toBe(compiled.primary.$neutral.mid);
 });
 
 it('assigns $root to midpoint when mid is absent', () => {
-	const compiled = compileColors({
-		ranges: {
-			primary: {
-				hue: 90,
-				rangeNames: ['low', 'high'] as const,
+	const compiled = compileColors(
+		{
+			ranges: {
+				primary: {
+					hue: 90,
+					rangeNames: ['low', 'high'] as const,
+				},
 			},
 		},
-		schemes: {},
-		context: ctx,
-	});
+		ctx,
+	);
 
-	expect(compiled.light.colors.primary.$root).toBe(
-		compiled.light.colors.primary.high,
-	);
-	expect(compiled.light.colors.primary.$neutral.$root).toBe(
-		compiled.light.colors.primary.$neutral.high,
-	);
+	expect(compiled.primary.$root).toBe(compiled.primary.high);
+	expect(compiled.primary.$neutral.$root).toBe(compiled.primary.$neutral.high);
 });

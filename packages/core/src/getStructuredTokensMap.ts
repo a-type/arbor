@@ -18,12 +18,6 @@ export function getStructuredTokensMap(
 		walkTokenTree(modeTokens, '', map, { delimiter });
 	}
 
-	// Primitive tokens — prefix with "primitives."
-	const primitiveTokens = preset.$.primitives;
-	if (primitiveTokens) {
-		walkTokenTree(primitiveTokens, 'primitives', map, { delimiter });
-	}
-
 	// System tokens - we only expose the "final" tokens
 	walkTokenTree(preset.$.system, 'system', map, {
 		delimiter,

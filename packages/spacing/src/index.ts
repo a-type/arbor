@@ -30,23 +30,26 @@ export interface SpacingConfig<
 > {
 	levels?: Record<TSpacingLevel, string | number>;
 	defaultLevel?: TSpacingLevel;
-	context: GlobalContext;
 }
 
-export interface CompiledSpacing<
+export type CompiledSpacing<
 	TSpacingLevel extends string = DefaultSpacingLevel,
-> {
-	defaultLevel: TSpacingLevel;
-	levels: {
-		[K in TSpacingLevel]: string | number;
-	} & {
-		$root: string | number;
-	};
-}
+> = {
+	[K in TSpacingLevel]: string | number;
+} & {
+	$root: string | number;
+};
 
+/**
+ * Given configuration for spacing sizes and the default
+ * level name, produces a range of spacing sizes.
+ */
 export function compileSpacing<
 	TSpacingLevel extends string = DefaultSpacingLevel,
->(config: SpacingConfig<TSpacingLevel>): CompiledSpacing<TSpacingLevel> {
+>(
+	config: SpacingConfig<TSpacingLevel>,
+	context: GlobalContext,
+): CompiledSpacing<TSpacingLevel> {
 	const levelNames =
 		config.levels ?
 			Object.keys(config.levels)
@@ -67,25 +70,19 @@ export function compileSpacing<
 			acc[nameCast] =
 				levelConfig ??
 				printComputationResult(
-					computeEquation(
-						defaultSpacingEquation(i - baseIndex, config.context),
-						{
-							propertyValues: config.context.getGlobalPropertyAssignments(),
-						},
-					),
+					computeEquation(defaultSpacingEquation(i - baseIndex, context), {
+						propertyValues: context.getGlobalPropertyAssignments(),
+					}),
 				);
 			return acc;
 		},
 		{} as Record<TSpacingLevel, string>,
-	) as CompiledSpacing<TSpacingLevel>['levels'];
+	) as CompiledSpacing<TSpacingLevel>;
 	const defaultLevel =
 		config.defaultLevel ?? (levelNames[baseIndex] as TSpacingLevel);
 
 	return {
-		defaultLevel,
-		levels: {
-			...levels,
-			$root: levels[defaultLevel],
-		},
+		...levels,
+		$root: levels[defaultLevel],
 	};
 }

@@ -1,4 +1,3 @@
-import { getInternals } from '../../index.js';
 import { ArborElement } from './BaseElement.js';
 
 class SchemeSelector extends ArborElement {
@@ -8,8 +7,7 @@ class SchemeSelector extends ArborElement {
 	}
 
 	render = () => {
-		const internals = getInternals(this.config);
-		const schemeNames = Object.keys(internals.primitiveValues.color);
+		const schemeNames = ['light', 'dark'];
 		const selected = this.getAttribute('selected') || 'base';
 		this.shadowRoot!.innerHTML = `<div data-scheme-${selected}>
 			<select data-scheme-select name="scheme" aria-label="Select scheme" style="position: sticky; top: 0;">

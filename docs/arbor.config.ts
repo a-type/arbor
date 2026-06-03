@@ -46,8 +46,8 @@ const preset = definePreset({
 function makeSeasonMode(season: 'winter' | 'spring' | 'summer' | 'fall') {
 	preset.bundleMode(season, {
 		color: {
-			main: preset.$.primitives.color[season],
-			neutral: preset.$.primitives.color[season].$neutral,
+			main: preset.$.mode.primitive.color[season],
+			neutral: preset.$.mode.primitive.color[season].$neutral,
 		},
 	});
 }
@@ -67,9 +67,9 @@ preset.bundleMode('creativity', {
 preset.bundleMode('hero', {
 	density: 0.5,
 	text: {
-		primary: preset.$.primitives.typography['4xl'],
-		secondary: preset.$.primitives.typography['2xl'],
-		ambient: preset.$.primitives.typography.md,
+		primary: preset.$.mode.primitive.typography['4xl'],
+		secondary: preset.$.mode.primitive.typography['2xl'],
+		ambient: preset.$.mode.primitive.typography.md,
 	},
 });
 

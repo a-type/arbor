@@ -37,7 +37,7 @@ class MainColorRangeDebug extends ArborElement {
 							skipBaking: false,
 						});
 						const match = compiled.match(oklchMatcher) ?? [];
-						return `<div class="color-swatch" style="background: ${arbor.$.primitives.color[colorName as any][name].var}; width: 100px; height: 100px;" title="${range[name].equation.printDynamic({ propertyValues: {} })}">
+						return `<div class="color-swatch" style="background: ${arbor.$.mode.primitive.color[colorName as 'primary'][name].var}; width: 100px; height: 100px;" title="${range[name].equation.printDynamic({ propertyValues: {} })}">
 					<div class="pip l" style="bottom: ${match[1] ?? 0}"></div>
 					<div class="pip c" style="bottom: calc(${match[2] ?? 0} / 0.4 * 100%)"></div>
 					<div class="pip h" style="bottom: calc(${match[3] ?? 0} / 360 * 100%)"></div>

@@ -7,7 +7,7 @@ import {
 import type { AnyArborPreset } from '@arbor-css/preset/config';
 import { isToken, type Token } from '@arbor-css/tokens';
 
-export type TokenLevel = 'mode' | 'primitives' | 'system' | 'mixins';
+export type TokenLevel = 'mode' | 'system' | 'mixins';
 
 export interface TokenRecord {
 	level: TokenLevel;
@@ -24,12 +24,10 @@ export interface MixinRecord {
 	mixin: ArborMixin;
 }
 
-const DEFAULT_LEVELS: TokenLevel[] = ['mode', 'primitives', 'system', 'mixins'];
+const DEFAULT_LEVELS: TokenLevel[] = ['mode', 'system', 'mixins'];
 
 const LEVEL_ALIASES: Record<string, TokenLevel> = {
 	mode: 'mode',
-	primitives: 'primitives',
-	primitive: 'primitives',
 	system: 'system',
 	mixins: 'mixins',
 	mixin: 'mixins',
@@ -88,7 +86,7 @@ export function parseTokenLevelFilter(filter?: string): TokenLevel[] {
 
 	if (invalid.size > 0) {
 		throw new Error(
-			`Invalid --filter level(s): ${Array.from(invalid).join(', ')}. Valid levels: mode, primitives, system, mixins.`,
+			`Invalid --filter level(s): ${Array.from(invalid).join(', ')}. Valid levels: mode, system, mixins.`,
 		);
 	}
 
@@ -104,10 +102,6 @@ export function listTokenRecords(
 
 	if (enabledLevels.has('mode')) {
 		walkTokenTree(preset.$.mode, 'mode', recordsByName);
-	}
-
-	if (enabledLevels.has('primitives')) {
-		walkTokenTree(preset.$.primitives, 'primitives', recordsByName);
 	}
 
 	if (enabledLevels.has('system')) {
@@ -127,7 +121,9 @@ function printable(value: unknown): string {
 	if (value === undefined || value === null) {
 		return '';
 	}
-	return String(value).replace(/[\t\r\n]+/g, ' ').trim();
+	return String(value)
+		.replace(/[\t\r\n]+/g, ' ')
+		.trim();
 }
 
 function formatParam(param: FunctionParam): string {

@@ -15,7 +15,6 @@ export interface GlobalContextConfig extends ArborPrefixConfig {
 
 export interface GlobalContext {
 	createModeToken: CreateToken;
-	createPrimitiveToken: CreateToken;
 	createMetaToken: CreateToken;
 	createMixinToken: CreateToken;
 	createToken: CreateToken;
@@ -32,9 +31,6 @@ export function createGlobalContext(config: GlobalContextConfig = {}) {
 	const createModeToken = createTokenFactory({
 		tokenPrefix: tokenPrefixes.modeTokenPrefix,
 	});
-	const createPrimitiveToken = createTokenFactory({
-		tokenPrefix: tokenPrefixes.primitiveTokenPrefix,
-	});
 	const createMetaToken = createTokenFactory({
 		tokenPrefix: tokenPrefixes.metaTokenPrefix,
 	});
@@ -50,7 +46,6 @@ export function createGlobalContext(config: GlobalContextConfig = {}) {
 	};
 	return {
 		createModeToken,
-		createPrimitiveToken,
 		createMetaToken,
 		createMixinToken,
 		createToken: createModeToken,

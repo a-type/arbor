@@ -1,4 +1,3 @@
-import { compileColors } from '@arbor-css/colors';
 import { definePreset } from '@arbor-css/preset';
 import { expect, it } from 'vitest';
 import {
@@ -20,21 +19,9 @@ function createTestPreset() {
 			},
 		}),
 		name: 'test-preset',
-		primitives: (context) => ({
-			color: compileColors({
-				ranges: {
-					brand: {
-						hue: 120,
-					},
-				},
-				context,
-			}),
-		}),
 		config: {
 			modeTokenPrefix: '--x-',
-			primitiveTokenPrefix: '--xp-',
 			metaTokenPrefix: '--x_-',
-			refTokenPrefix: '--xref-',
 			functionNamePrefix: '--x-fn-',
 			mixinNamePrefix: '--x-mx-',
 			mixinTokenPrefix: '--x-mx-',
@@ -95,7 +82,9 @@ it('suggests similar Arbor tokens for unknown declarations', () => {
 	});
 
 	expect(issues).toHaveLength(1);
-	expect(issues[0].message).toContain(`Unknown Arbor token: ${misspelledTokenName}`);
+	expect(issues[0].message).toContain(
+		`Unknown Arbor token: ${misspelledTokenName}`,
+	);
 	expect(issues[0].message).toContain('Did you mean:');
 	expect(issues[0].message).toContain(knownTokenName);
 });

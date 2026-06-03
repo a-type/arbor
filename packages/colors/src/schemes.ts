@@ -3,16 +3,18 @@ import {
 	ColorRangeConfig,
 	createColorDarkModeRange,
 	createColorLightModeRange,
+	DefaultRangeName,
 	UncompiledColorRange,
 } from './ranges.js';
 
 export interface SchemeDefinition<
-	RangeConfig extends ColorRangeConfig = ColorRangeConfig,
+	TRangeConfig extends ColorRangeConfig<TRangeNames>,
+	TRangeNames extends string = DefaultRangeName,
 > {
 	getColorRange: (
-		config: RangeConfig,
+		config: TRangeConfig,
 		context: GlobalContext,
-	) => UncompiledColorRange<RangeConfig>;
+	) => UncompiledColorRange<TRangeNames>;
 	tag: string;
 	isDark: boolean;
 }
@@ -23,13 +25,19 @@ export function createScheme<
 	return def;
 }
 
-export const defaultLightScheme: SchemeDefinition = {
+export const defaultLightScheme: SchemeDefinition<
+	ColorRangeConfig<DefaultRangeName>,
+	DefaultRangeName
+> = {
 	tag: 'light',
 	getColorRange: createColorLightModeRange,
 	isDark: false,
 };
 
-export const defaultDarkScheme: SchemeDefinition = {
+export const defaultDarkScheme: SchemeDefinition<
+	ColorRangeConfig<DefaultRangeName>,
+	DefaultRangeName
+> = {
 	tag: 'dark',
 	getColorRange: createColorDarkModeRange,
 	isDark: true,

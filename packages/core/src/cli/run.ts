@@ -98,7 +98,7 @@ yargs(hideBin(process.argv))
 				.option('filter', {
 					type: 'string',
 					description:
-						'Filter token levels by comma-separated values (mode,primitives,system,mixins)',
+						'Filter token levels by comma-separated values (mode,system,mixins)',
 				}),
 		async (argv) => {
 			try {
