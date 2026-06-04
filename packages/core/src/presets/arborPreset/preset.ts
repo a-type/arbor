@@ -71,9 +71,7 @@ export const presetArbor = <
 		modeSchema: createArborModeSchema<TRanges>({
 			colorNames: Object.keys(config.color.ranges) as TRanges[],
 		}),
-		baseMode: ($, ctx) => {
-			// NOTE: had to bypass typings for color tokens... the user-controlled
-			// color names seem to really mess with this.
+		baseMode: ($) => {
 			return {
 				global: {
 					density: 1,
@@ -91,6 +89,8 @@ export const presetArbor = <
 
 				/** PRIMITIVES */
 				primitive: {
+					// NOTE: had to bypass typings for color tokens... the user-controlled
+					// color names seem to really mess with this.
 					color: compileColors(
 						{
 							ranges: config.color.ranges,

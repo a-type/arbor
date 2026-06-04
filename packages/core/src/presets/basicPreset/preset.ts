@@ -139,5 +139,11 @@ export const presetBasic = definePreset({
 	},
 });
 
+// verify types
+
 // @ts-expect-error
 presetBasic.$.mixins.kasjdkfj;
+
+presetBasic.$.mixins.accent.ref;
+presetBasic.$.mixins.bg.ref.varFallback('red');
+presetBasic.$.mixins.bg.contrast.var;
