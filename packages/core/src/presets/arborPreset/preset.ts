@@ -140,15 +140,13 @@ export const presetArbor = <
 			};
 		},
 		baseModeOptions: ($) => ({
-			extraCss: `
-			font-size: ${$.mode.global.baseFontSize.var};
-			`,
+			extraCss: `font-size: ${$.mode.global.baseFontSize.var};`,
 		}),
 		config: config.prefixes,
 		mixins: (create, $) => {
 			// overwrite the basic preset's border mixin to apply the user's
 			// configured border width
-			const newBorderMixins = createColorMixins(create, $.system, {
+			const newBorderMixins = createColorMixins(create, $.mode.global, {
 				name: 'border',
 				property: 'border-color',
 				description:
@@ -175,18 +173,24 @@ export const presetArbor = <
 
 	if (!config.disableAutoInvertedMode) {
 		// special built-in mode: @mode-inverted - easier to create here than in userland
-		preset.bundleMode('inverted', {
-			primitive: {
-				color: compileColors(
-					{
-						ranges: config.color.ranges,
-						schemes: config.color.schemes,
-						invertLightDark: true,
-					},
-					preset.$.mode.global,
-				) as any,
+		preset.bundleMode(
+			'inverted',
+			{
+				primitive: {
+					color: compileColors(
+						{
+							ranges: config.color.ranges,
+							schemes: config.color.schemes,
+							invertLightDark: true,
+						},
+						preset.$.mode.global,
+					) as any,
+				},
 			},
-		});
+			{
+				extraCss: `${preset.$.mode.global.whenInverted.assign(1)}`,
+			},
+		);
 	}
 
 	return preset;

@@ -60,13 +60,6 @@ function getResolvedTokenValues(
 		{
 			modeName: 'base',
 			schemeName: colorScheme,
-			scheme: {
-				invertMultiplier: colorScheme === 'dark' ? -1 : 1,
-				whenDark: colorScheme === 'dark' ? 1 : 0,
-				whenLight: colorScheme === 'dark' ? 0 : 1,
-				trueLight: colorScheme === 'dark' ? 'black' : 'white',
-				trueHeavy: colorScheme === 'dark' ? 'white' : 'black',
-			},
 		},
 		values,
 	);

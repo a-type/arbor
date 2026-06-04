@@ -23,42 +23,13 @@ ${[config.baseMode, ...modes]
 	})
 	.join('\n\n')}
 
-/* System scheme tokens */
 @media (prefers-color-scheme: light) {
-	:root {
-		${systemProps.meta.scheme.trueHeavy.assign('#000')}
-		${systemProps.meta.scheme.trueLight.assign('#fff')}
-		${systemProps.meta.scheme.invertMultiplier.assign('1')}
-		${systemProps.meta.scheme.whenDark.assign('0')}
-		${systemProps.meta.scheme.whenLight.assign('1')}
-	}
+	${systemProps.env.prefersLight.assign(1)}
+	${systemProps.env.prefersDark.assign(0)}
 }
 @media (prefers-color-scheme: dark) {
-	:root {
-		${systemProps.meta.scheme.trueHeavy.assign('#fff')}
-		${systemProps.meta.scheme.trueLight.assign('#000')}
-		${systemProps.meta.scheme.invertMultiplier.assign('-1')}
-		${systemProps.meta.scheme.whenDark.assign('1')}
-		${systemProps.meta.scheme.whenLight.assign('0')}
-	}
-}
-
-/* Scheme control classes */
-.\\@scheme-light {
-	color-scheme: light;
-	${systemProps.meta.scheme.trueHeavy.assign('#000')}
-	${systemProps.meta.scheme.trueLight.assign('#fff')}
-	${systemProps.meta.scheme.invertMultiplier.assign('1')}
-	${systemProps.meta.scheme.whenDark.assign('0')}
-	${systemProps.meta.scheme.whenLight.assign('1')}
-}
-.\\@scheme-dark {
-	color-scheme: dark;
-	${systemProps.meta.scheme.trueHeavy.assign('#fff')}
-	${systemProps.meta.scheme.trueLight.assign('#000')}
-	${systemProps.meta.scheme.invertMultiplier.assign('-1')}
-	${systemProps.meta.scheme.whenDark.assign('1')}
-	${systemProps.meta.scheme.whenLight.assign('0')}
+	${systemProps.env.prefersLight.assign(0)}
+	${systemProps.env.prefersDark.assign(1)}
 }
 
 /* Function definitions */

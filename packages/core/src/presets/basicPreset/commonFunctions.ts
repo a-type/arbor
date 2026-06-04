@@ -1,9 +1,14 @@
 import { CalcInterpolation, Css } from '@arbor-css/calc';
-import { SystemTokens } from '@arbor-css/globals';
+import { Token } from '@arbor-css/tokens';
+
+export type RequiredTokens = {
+	whenLight: Token;
+	whenDark: Token;
+};
 
 export function lightDarkAlteration(
 	css: Css,
-	systemProps: SystemTokens,
+	tokens: RequiredTokens,
 	{
 		light,
 		dark,
@@ -14,43 +19,43 @@ export function lightDarkAlteration(
 		step: CalcInterpolation;
 	},
 ) {
-	return css`calc(1 + ${step} * (${[systemProps.meta.scheme.whenLight, 1]} * ${light}) + (${[systemProps.meta.scheme.whenDark, 1]} * ${dark}))`;
+	return css`calc(1 + ${step} * (${[tokens.whenLight, 1]} * ${light}) + (${[tokens.whenDark, 1]} * ${dark}))`;
 }
 
 export function lightenColorAlteration(
 	css: Css,
-	systemProps: SystemTokens,
+	tokens: RequiredTokens,
 	sourceColor: CalcInterpolation,
 	step: CalcInterpolation,
 ) {
-	return css`oklch(from ${sourceColor} calc(l * ${lightDarkAlteration(css, systemProps, { light: 0.04, dark: -0.17, step })}) calc(c * ${lightDarkAlteration(css, systemProps, { light: -0.1, dark: -0.03, step })}) h)`;
+	return css`oklch(from ${sourceColor} calc(l * ${lightDarkAlteration(css, tokens, { light: 0.04, dark: -0.17, step })}) calc(c * ${lightDarkAlteration(css, tokens, { light: -0.1, dark: -0.03, step })}) h)`;
 }
 
 export function darkenColorAlteration(
 	css: Css,
-	systemProps: SystemTokens,
+	tokens: RequiredTokens,
 	sourceColor: CalcInterpolation,
 	step: CalcInterpolation,
 ) {
-	return css`oklch(from ${sourceColor} calc(l * ${lightDarkAlteration(css, systemProps, { light: -0.04, dark: 0.2, step })}) calc(c * ${lightDarkAlteration(css, systemProps, { light: 0.01, dark: -0.09, step })}) h)`;
+	return css`oklch(from ${sourceColor} calc(l * ${lightDarkAlteration(css, tokens, { light: -0.04, dark: 0.2, step })}) calc(c * ${lightDarkAlteration(css, tokens, { light: 0.01, dark: -0.09, step })}) h)`;
 }
 
 export function saturateColorAlteration(
 	css: Css,
-	systemProps: SystemTokens,
+	tokens: RequiredTokens,
 	sourceColor: CalcInterpolation,
 	step: CalcInterpolation,
 ) {
-	return css`oklch(from ${sourceColor} l calc(c * ${lightDarkAlteration(css, systemProps, { light: 0.05, dark: 0.05, step })}) h)`;
+	return css`oklch(from ${sourceColor} l calc(c * ${lightDarkAlteration(css, tokens, { light: 0.05, dark: 0.05, step })}) h)`;
 }
 
 export function desaturateColorAlteration(
 	css: Css,
-	systemProps: SystemTokens,
+	tokens: RequiredTokens,
 	sourceColor: CalcInterpolation,
 	step: CalcInterpolation,
 ) {
-	return css`oklch(from ${sourceColor} l calc(c * ${lightDarkAlteration(css, systemProps, { light: -0.05, dark: -0.05, step })}) h)`;
+	return css`oklch(from ${sourceColor} l calc(c * ${lightDarkAlteration(css, tokens, { light: -0.05, dark: -0.05, step })}) h)`;
 }
 
 export function fadeColorAlteration(

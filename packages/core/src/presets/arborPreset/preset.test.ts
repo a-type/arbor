@@ -31,4 +31,8 @@ it('is extensible', () => {
 	);
 	expect(preset.baseMode.test).toBe('red');
 	expect(preset.baseMode.action?.roundness).toBe(0.5);
+
+	// check typing of mixin tokens
+	// @ts-expect-error
+	preset.$.mixins.adfa;
 });

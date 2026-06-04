@@ -85,6 +85,40 @@ it('allows defining functions or mixins using available tokens', () => {
 	expect(preset.$.mixins.test.foo.name).toBe('--mx2-test-foo');
 });
 
+it('keeps mixin token inference narrowed when baseMode uses $ tokens', () => {
+	const preset = definePreset({
+		name: 'type-inference-base-mode',
+		modeSchema: createModeSchema({
+			color: 'color',
+		}),
+		baseMode: ($) => ({
+			color: $.mode.color.varFallback('red'),
+		}),
+		mixins: (create) => ({
+			bg: create('bg', {
+				definition: (css) => ({
+					'background-color': css`transparent`,
+				}),
+				contributeTokens: {
+					contrast: 'color',
+				},
+			}),
+		}),
+		functions: (create, $) => ({
+			'bg-contrast': create('bg-contrast', {
+				parameters: [] as const,
+				definition: (css) => css`
+					${$.mixins.bg.contrast.var}
+				`,
+			}),
+		}),
+	});
+
+	preset.$.mixins.bg.contrast.var;
+	// @ts-expect-error - missing mixin key should be rejected
+	preset.$.mixins.notReal;
+});
+
 it('composes presets', () => {
 	const basePreset = definePreset({
 		name: 'base-preset',

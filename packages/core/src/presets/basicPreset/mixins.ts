@@ -1,17 +1,17 @@
 import { Css, Equation } from '@arbor-css/calc';
 import { CreateMixin } from '@arbor-css/functions';
-import { SystemTokens } from '@arbor-css/globals';
 import {
 	darkenColorAlteration,
 	desaturateColorAlteration,
 	fadeColorAlteration,
 	lightenColorAlteration,
+	RequiredTokens,
 	saturateColorAlteration,
 } from './commonFunctions.js';
 
 export function createColorMixins(
 	createMixinValue: CreateMixin,
-	systemTokens: SystemTokens,
+	tokens: RequiredTokens,
 	{
 		name,
 		property,
@@ -24,7 +24,6 @@ export function createColorMixins(
 		defineExtraProperties?: (css: Css) => Record<string, Equation>;
 	},
 ) {
-	const includeContrast = property === 'background';
 	const refMixin = createMixinValue(name, {
 		description,
 		parameters: ['--color'] as const,
@@ -58,15 +57,11 @@ export function createColorMixins(
 				purpose: 'color',
 				description: `The final ${property} value applied by Arbor.`,
 			},
-			...(includeContrast ?
-				{
-					contrast: {
-						purpose: 'color',
-						description:
-							'Color used when deriving a contrast foreground from the background.',
-					},
-				}
-			:	{}),
+			contrast: {
+				purpose: 'color',
+				description:
+					'Color used when deriving a contrast foreground from the background.',
+			},
 		},
 	});
 	const lightenMixin = createMixinValue(`${name}-lighten`, {
@@ -81,7 +76,7 @@ export function createColorMixins(
 		definition: (css, { parameters: [step, source] }) => ({
 			[refMixin.contributeTokens.ref.name]: lightenColorAlteration(
 				css,
-				systemTokens,
+				tokens,
 				source,
 				step,
 			),
@@ -99,7 +94,7 @@ export function createColorMixins(
 		definition: (css, { parameters: [step, source] }) => ({
 			[refMixin.contributeTokens.ref.name]: darkenColorAlteration(
 				css,
-				systemTokens,
+				tokens,
 				source,
 				step,
 			),
@@ -117,7 +112,7 @@ export function createColorMixins(
 		definition: (css, { parameters: [step, source] }) => ({
 			[refMixin.contributeTokens.ref.name]: desaturateColorAlteration(
 				css,
-				systemTokens,
+				tokens,
 				source,
 				step,
 			),
@@ -135,7 +130,7 @@ export function createColorMixins(
 		definition: (css, { parameters: [step, source] }) => ({
 			[refMixin.contributeTokens.ref.name]: saturateColorAlteration(
 				css,
-				systemTokens,
+				tokens,
 				source,
 				step,
 			),
@@ -170,7 +165,7 @@ export function createColorMixins(
 }
 
 export function createPresetMixins(
-	systemProps: SystemTokens,
+	tokens: RequiredTokens,
 	createMixinValue: CreateMixin,
 ) {
 	const shadow = createMixinValue('shadow', {
@@ -197,21 +192,21 @@ export function createPresetMixins(
 	});
 
 	// colors
-	const fgMixins = createColorMixins(createMixinValue, systemProps, {
+	const fgMixins = createColorMixins(createMixinValue, tokens, {
 		name: 'fg',
 		property: 'color',
 		description:
 			'Routes color assignments through intermediate tokens to allow for runtime adjustments and cross-color references.',
 	});
 
-	const bgMixins = createColorMixins(createMixinValue, systemProps, {
+	const bgMixins = createColorMixins(createMixinValue, tokens, {
 		name: 'bg',
 		property: 'background',
 		description:
 			'Routes background color assignments through intermediate tokens to allow for runtime adjustments and cross-color references.',
 	});
 
-	const borderMixins = createColorMixins(createMixinValue, systemProps, {
+	const borderMixins = createColorMixins(createMixinValue, tokens, {
 		name: 'border',
 		property: 'border-color',
 		description:
@@ -224,21 +219,21 @@ export function createPresetMixins(
 		}),
 	});
 
-	const fillMixins = createColorMixins(createMixinValue, systemProps, {
+	const fillMixins = createColorMixins(createMixinValue, tokens, {
 		name: 'fill',
 		property: 'fill',
 		description:
 			'Routes SVG fill assignments through intermediate tokens to allow for runtime adjustments and cross-color references.',
 	});
 
-	const strokeMixins = createColorMixins(createMixinValue, systemProps, {
+	const strokeMixins = createColorMixins(createMixinValue, tokens, {
 		name: 'stroke',
 		property: 'stroke',
 		description:
 			'Routes SVG stroke assignments through intermediate tokens to allow for runtime adjustments and cross-color references.',
 	});
 
-	const accentMixins = createColorMixins(createMixinValue, systemProps, {
+	const accentMixins = createColorMixins(createMixinValue, tokens, {
 		name: 'accent',
 		property: 'accent-color',
 		description:
@@ -292,4 +287,5 @@ export function createPresetMixins(
 	} as const;
 }
 
+// export type BuiltinMixins = ReturnType<typeof createPresetMixins>;
 export type BuiltinMixins = ReturnType<typeof createPresetMixins>;
