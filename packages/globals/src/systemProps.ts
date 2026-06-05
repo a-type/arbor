@@ -11,13 +11,13 @@ export function createSystemProps({
 			modeName: createMetaToken('modeName', {
 				description:
 					'Labels the currently applied mode name for debugging and styling hooks.',
-				tag: 'system',
+				tag: 'meta',
 				type: 'string',
 			}),
 			schemeName: createMetaToken('schemeName', {
 				description:
 					'Labels the active color scheme name for debugging and styling hooks.',
-				tag: 'system',
+				tag: 'meta',
 				type: 'string',
 			}),
 		},
@@ -27,14 +27,14 @@ export function createSystemProps({
 				purpose: 'scalar',
 				description:
 					'Indicates whether the user has a light color scheme preference: 1 or 0.',
-				tag: 'system',
+				tag: 'env',
 			}),
 			prefersDark: createMetaToken('prefersDark', {
 				type: 'number',
 				purpose: 'scalar',
 				description:
 					'Indicates whether the user has a dark color scheme preference: 1 or 0.',
-				tag: 'system',
+				tag: 'env',
 			}),
 		},
 	};

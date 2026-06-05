@@ -21,7 +21,7 @@ export function createActionIntentValues<TColorNames extends string>(
 				${$.mode.color.main.mid}
 			`,
 			fg: css`
-				${$.mode.color.main.ink}
+				${$.mode.global.trueHeavyColor}
 			`,
 			border: css`
 				${$.mode.color.main.heavy}
@@ -32,7 +32,7 @@ export function createActionIntentValues<TColorNames extends string>(
 				${$.mode.color.neutral.paper}
 			`,
 			fg: css`
-				${$.mode.color.neutral.ink}
+				${$.mode.global.trueHeavyColor}
 			`,
 			border: css`
 				${$.mode.color.neutral.heavy}
@@ -41,7 +41,7 @@ export function createActionIntentValues<TColorNames extends string>(
 		ambient: {
 			bg: 'transparent',
 			fg: css`
-				${$.mode.color.main.ink}
+				${$.mode.global.trueHeavyColor}
 			`,
 			border: 'transparent',
 		},
@@ -66,7 +66,7 @@ export function createSurfaceIntentValues<TColorNames extends string>(
 				${$.mode.color.main.light}
 			`,
 			fg: css`
-				${$.mode.color.neutral.ink}
+				${$.mode.global.trueHeavyColor}
 			`,
 			border: css`
 				${$.mode.color.main.heavy}

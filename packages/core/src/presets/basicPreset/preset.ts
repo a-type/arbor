@@ -1,5 +1,6 @@
 import { css } from '@arbor-css/calc';
 import { definePreset } from '@arbor-css/preset';
+import { SimpleTokenSchema } from '@arbor-css/tokens';
 import {
 	darkenColorAlteration,
 	desaturateColorAlteration,
@@ -9,44 +10,48 @@ import {
 } from './commonFunctions.js';
 import { createPresetMixins } from './mixins.js';
 
+const modeSchema = {
+	global: {
+		trueLightColor: {
+			purpose: 'color',
+			description: 'Either white or black, depending on the color scheme',
+		},
+		trueHeavyColor: {
+			purpose: 'color',
+			description: 'Either white or black, depending on the color scheme',
+		},
+		whenLight: {
+			purpose: 'scalar',
+			description:
+				'Resolves to 1 in light color schemes and 0 in dark color schemes.',
+		},
+		whenDark: {
+			purpose: 'scalar',
+			description:
+				'Resolves to 1 in dark color schemes and 0 in light color schemes.',
+		},
+		whenInverted: {
+			purpose: 'scalar',
+			description:
+				'Resolves to 1 in inverted color schemes and 0 in non-inverted color schemes.',
+		},
+		schemeMultiplier: {
+			purpose: 'scalar',
+			description:
+				'Resolves to 1 in light color schemes and -1 in dark color schemes.',
+		},
+	},
+} satisfies SimpleTokenSchema;
+
+export type BasicPresetModeSchema = typeof modeSchema;
+
 /**
  * This basic preset includes utility mixins and functions,
  * but no primitive tokens or mode schema.
  */
 export const presetBasic = definePreset({
 	name: 'arbor-base',
-	modeSchema: {
-		global: {
-			trueLightColor: {
-				purpose: 'color',
-				description: 'Either white or black, depending on the color scheme',
-			},
-			trueHeavyColor: {
-				purpose: 'color',
-				description: 'Either white or black, depending on the color scheme',
-			},
-			whenLight: {
-				purpose: 'scalar',
-				description:
-					'Resolves to 1 in light color schemes and 0 in dark color schemes.',
-			},
-			whenDark: {
-				purpose: 'scalar',
-				description:
-					'Resolves to 1 in dark color schemes and 0 in light color schemes.',
-			},
-			whenInverted: {
-				purpose: 'scalar',
-				description:
-					'Resolves to 1 in inverted color schemes and 0 in non-inverted color schemes.',
-			},
-			schemeMultiplier: {
-				purpose: 'scalar',
-				description:
-					'Resolves to 1 in light color schemes and -1 in dark color schemes.',
-			},
-		},
-	},
+	modeSchema,
 	baseMode: ($) => ({
 		global: {
 			trueLightColor: 'light-dark(white, black)',

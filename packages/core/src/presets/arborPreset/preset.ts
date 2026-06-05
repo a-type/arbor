@@ -186,6 +186,11 @@ export const presetArbor = <
 						preset.$.mode.global,
 					) as any,
 				},
+				global: {
+					whenInverted: '1',
+					trueHeavyColor: 'light-dark(white, black)',
+					trueLightColor: 'light-dark(black, white)',
+				},
 			},
 			{
 				extraCss: `${preset.$.mode.global.whenInverted.assign(1)}`,
@@ -195,3 +200,7 @@ export const presetArbor = <
 
 	return preset;
 };
+
+export type PresetArborModeTokens<TRangeNames extends string> = ReturnType<
+	typeof presetArbor
+>['$']['mode'];

@@ -47,7 +47,7 @@ it('prints a base mode with derived values', () => {
 	const css = modeToCss(preset.baseMode, preset);
 	expect(css).toMatchInlineSnapshot(`
 		".\\@mode-base, :root, .\\@mode-base, :root {
-			--_-system-modeName: base;
+			--_-meta-modeName: base;
 			--m-derived-once: color-mix(in hsl, red, black);
 			--m-derived-twice: color-mix(in hsl, color-mix(in hsl, red, black), transparent);
 			--m-derived-again: color-mix(in hsl, red, red);
@@ -63,7 +63,7 @@ it('prints a partial mode with derived dependencies it doesnt declare', () => {
 	const css = modeToCss(partialMode, preset);
 	expect(css).toMatchInlineSnapshot(`
 		".\\@mode-partial {
-			--_-system-modeName: partial;
+			--_-meta-modeName: partial;
 			--m-derived-once: color-mix(in hsl, var(--m-value), black);
 			--m-derived-twice: color-mix(in hsl, var(--m-derived-once), transparent);
 			--m-derived-again: color-mix(in hsl, var(--m-value), red);
@@ -77,7 +77,7 @@ it('prints a partial mode which overrides derived dependencies from base and doe
 	const css = modeToCss(underivedMode, preset);
 	expect(css).toMatchInlineSnapshot(`
 		".\\@mode-underived {
-			--_-system-modeName: underived;
+			--_-meta-modeName: underived;
 			--m-derived-twice: color-mix(in hsl, var(--m-derived-once), transparent);
 			--m-derived-once: green;
 			} "

@@ -16,21 +16,29 @@ export function generateStylesheet(
 	const allModeProps = flattenTokenSchema(config.$.mode);
 
 	return `/* Auto-generated CSS - do not edit directly */
-${cascadeLayerName ? `@layer ${cascadeLayerName} {` : ''}
+	${cascadeLayerName ? `@layer ${cascadeLayerName} {` : ''}
+	:root {
+		@media (prefers-color-scheme: light) {
+			${systemProps.env.prefersLight.assign(1)}
+			${systemProps.env.prefersDark.assign(0)}
+		}
+		@media (prefers-color-scheme: dark) {
+			${systemProps.env.prefersLight.assign(0)}
+			${systemProps.env.prefersDark.assign(1)}
+		}
+	}
+	.\\@scheme-light {
+		color-scheme: light;
+	}
+	.\\@scheme-dark {
+		color-scheme: dark;
+	}
 ${[config.baseMode, ...modes]
 	.map((modeValue) => {
 		return modeToCss(modeValue, config);
 	})
 	.join('\n\n')}
 
-@media (prefers-color-scheme: light) {
-	${systemProps.env.prefersLight.assign(1)}
-	${systemProps.env.prefersDark.assign(0)}
-}
-@media (prefers-color-scheme: dark) {
-	${systemProps.env.prefersLight.assign(0)}
-	${systemProps.env.prefersDark.assign(1)}
-}
 
 /* Function definitions */
 ${Object.values(config.functions)
