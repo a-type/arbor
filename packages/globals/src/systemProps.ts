@@ -21,22 +21,6 @@ export function createSystemProps({
 				type: 'string',
 			}),
 		},
-		env: {
-			prefersLight: createMetaToken('prefersLight', {
-				type: 'number',
-				purpose: 'scalar',
-				description:
-					'Indicates whether the user has a light color scheme preference: 1 or 0.',
-				tag: 'env',
-			}),
-			prefersDark: createMetaToken('prefersDark', {
-				type: 'number',
-				purpose: 'scalar',
-				description:
-					'Indicates whether the user has a dark color scheme preference: 1 or 0.',
-				tag: 'env',
-			}),
-		},
 	};
 }
 

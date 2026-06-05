@@ -56,11 +56,26 @@ export const presetBasic = definePreset({
 		global: {
 			trueLightColor: 'light-dark(white, black)',
 			trueHeavyColor: 'light-dark(black, white)',
-			whenLight: css`calc(${$.system.env.prefersLight} - ${$.mode.global.whenInverted})`,
-			whenDark: css`calc(1 - ${$.mode.global.whenLight})`,
-			whenInverted: '0',
+			whenLight: css`1`,
+			whenDark: css`0`,
+			whenInverted: css`0`,
 			schemeMultiplier: css`calc(${$.mode.global.whenLight} - ${$.mode.global.whenDark})`,
 		},
+	}),
+	baseModeOptions: ($) => ({
+		extraCss: `
+			container-type: normal;
+			@media (prefers-color-scheme: light) {
+				color-scheme: light;
+				${$.mode.global.whenLight.assign(1)}
+				${$.mode.global.whenDark.assign(0)}
+			}
+			@media (prefers-color-scheme: dark) {
+				color-scheme: dark;
+				${$.mode.global.whenLight.assign(0)}
+				${$.mode.global.whenDark.assign(1)}
+			}
+		`,
 	}),
 	mixins: (create, $) => createPresetMixins($.mode.global, create),
 	functions: (create, $) => {

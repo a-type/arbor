@@ -69,13 +69,15 @@ export function mergeModes(
 	const values = deepMerge({}, modeA, modeB);
 	const internalsA = getModeInternals(modeA);
 	const internalsB = getModeInternals(modeB);
-	const internals = {
-		...internalsA,
-		...internalsB,
+	const internals: ModeInternals = {
 		extraSelectors: [
 			...(internalsA.extraSelectors || []),
 			...(internalsB.extraSelectors || []),
 		],
+		extraCss: [internalsA.extraCss, internalsB.extraCss]
+			.filter(Boolean)
+			.join('\n'),
+		name: internalsB.name || internalsA.name, // prefer B's name if it exists
 	};
 	return {
 		...values,

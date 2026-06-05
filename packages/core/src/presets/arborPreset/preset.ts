@@ -51,7 +51,6 @@ export interface ArborPresetConfig<
 	globals?: Partial<ModeValues<ArborModeSchema['global']>>;
 	/**
 	 * Turns off the automatic bundled @mode-light, @mode-dark, and @mode-inverted.
-	 * Also removes automatic scheme detection from the base mode.
 	 */
 	disableAutoColorSchemes?: boolean;
 }
@@ -142,23 +141,6 @@ export const presetArbor = <
 		baseModeOptions: ($) => ({
 			extraCss: `
 			font-size: ${$.mode.global.baseFontSize.var};
-			container-type: style;
-			${
-				!config.disableAutoColorSchemes ?
-					`
-			@media (prefers-color-scheme: light) {
-				color-scheme: light;
-				${$.mode.global.whenLight.assign(1)}
-				${$.mode.global.whenDark.assign(0)}
-			}
-			@media (prefers-color-scheme: dark) {
-				color-scheme: dark;
-				${$.mode.global.whenLight.assign(0)}
-				${$.mode.global.whenDark.assign(1)}
-			}
-				`
-				:	''
-			}
 			`,
 		}),
 		config: config.prefixes,
@@ -196,7 +178,7 @@ export const presetArbor = <
 			{},
 			{
 				extraCss: `
-				container-type: style;
+				container-type: normal;
 				color-scheme: dark;
 				${preset.$.mode.global.whenDark.assign(1)}
 				${preset.$.mode.global.whenLight.assign(0)}
@@ -208,7 +190,7 @@ export const presetArbor = <
 			{},
 			{
 				extraCss: `
-				container-type: style;
+				container-type: normal;
 				color-scheme: light;
 				${preset.$.mode.global.whenLight.assign(1)}
 				${preset.$.mode.global.whenDark.assign(0)}
