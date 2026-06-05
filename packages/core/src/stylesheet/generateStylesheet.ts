@@ -11,46 +11,25 @@ export function generateStylesheet(
 	} = {},
 ): string {
 	const { modes } = getInternals(config);
-	const systemProps = config.$.system;
-
 	const allModeProps = flattenTokenSchema(config.$.mode);
 
 	return `/* Auto-generated CSS - do not edit directly */
 	${cascadeLayerName ? `@layer ${cascadeLayerName} {` : ''}
-	:root {
-		@media (prefers-color-scheme: light) {
-			${systemProps.env.prefersLight.assign(1)}
-			${systemProps.env.prefersDark.assign(0)}
-		}
-		@media (prefers-color-scheme: dark) {
-			${systemProps.env.prefersLight.assign(0)}
-			${systemProps.env.prefersDark.assign(1)}
-		}
-	}
-	.\\@scheme-light {
-		color-scheme: light;
-	}
-	.\\@scheme-dark {
-		color-scheme: dark;
-	}
 ${[config.baseMode, ...modes]
 	.map((modeValue) => {
 		return modeToCss(modeValue, config);
 	})
 	.join('\n\n')}
-
-
 /* Function definitions */
 ${Object.values(config.functions)
 	.map((fn) => fn.definition)
 	.filter(Boolean)
 	.join('\n\n')}
-
+/* Mode property definitions, if relevant */
 ${allModeProps
 	.map((PROP) => PROP.definition)
 	.filter(Boolean)
 	.join('\n\n')}
-
 ${cascadeLayerName ? `}` : ''}
 `
 		.trim()

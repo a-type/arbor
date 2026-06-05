@@ -50,10 +50,10 @@ export interface ArborPresetConfig<
 	duration?: ModeValues<ArborModeSchema['duration']>;
 	globals?: Partial<ModeValues<ArborModeSchema['global']>>;
 	/**
-	 * Turns off the automatic bundled @mode-inverted, which inverts
-	 * your light/dark color scheme.
+	 * Turns off the automatic bundled @mode-light, @mode-dark, and @mode-inverted.
+	 * Also removes automatic scheme detection from the base mode.
 	 */
-	disableAutoInvertedMode?: boolean;
+	disableAutoColorSchemes?: boolean;
 }
 
 /**
@@ -140,7 +140,26 @@ export const presetArbor = <
 			};
 		},
 		baseModeOptions: ($) => ({
-			extraCss: `font-size: ${$.mode.global.baseFontSize.var};`,
+			extraCss: `
+			font-size: ${$.mode.global.baseFontSize.var};
+			container-type: style;
+			${
+				!config.disableAutoColorSchemes ?
+					`
+			@media (prefers-color-scheme: light) {
+				color-scheme: light;
+				${$.mode.global.whenLight.assign(1)}
+				${$.mode.global.whenDark.assign(0)}
+			}
+			@media (prefers-color-scheme: dark) {
+				color-scheme: dark;
+				${$.mode.global.whenLight.assign(0)}
+				${$.mode.global.whenDark.assign(1)}
+			}
+				`
+				:	''
+			}
+			`,
 		}),
 		config: config.prefixes,
 		mixins: (create, $) => {
@@ -171,29 +190,54 @@ export const presetArbor = <
 		extends: [presetBasic],
 	});
 
-	if (!config.disableAutoInvertedMode) {
+	if (!config.disableAutoColorSchemes) {
+		preset.bundleMode(
+			'dark',
+			{},
+			{
+				extraCss: `
+				container-type: style;
+				color-scheme: dark;
+				${preset.$.mode.global.whenDark.assign(1)}
+				${preset.$.mode.global.whenLight.assign(0)}
+			`,
+			},
+		);
+		preset.bundleMode(
+			'light',
+			{},
+			{
+				extraCss: `
+				container-type: style;
+				color-scheme: light;
+				${preset.$.mode.global.whenLight.assign(1)}
+				${preset.$.mode.global.whenDark.assign(0)}
+			`,
+			},
+		);
 		// special built-in mode: @mode-inverted - easier to create here than in userland
 		preset.bundleMode(
 			'inverted',
+			{},
 			{
-				primitive: {
-					color: compileColors(
-						{
-							ranges: config.color.ranges,
-							schemes: config.color.schemes,
-							invertLightDark: true,
-						},
-						preset.$.mode.global,
-					) as any,
-				},
-				global: {
-					whenInverted: '1',
-					trueHeavyColor: 'light-dark(white, black)',
-					trueLightColor: 'light-dark(black, white)',
-				},
-			},
-			{
-				extraCss: `${preset.$.mode.global.whenInverted.assign(1)}`,
+				extraCss: `
+				@media (prefers-color-scheme: light) {
+					color-scheme: dark;
+				}
+				@media (prefers-color-scheme: dark) {
+					color-scheme: light;
+				}
+				@container style(${preset.$.mode.global.whenLight.name}: 1) {
+					color-scheme: dark;
+					${preset.$.mode.global.whenLight.assign(0)}
+					${preset.$.mode.global.whenDark.assign(1)}
+				}
+				@container style(${preset.$.mode.global.whenDark.name}: 1) {
+					color-scheme: light;
+					${preset.$.mode.global.whenLight.assign(1)}
+					${preset.$.mode.global.whenDark.assign(0)}
+				}
+				`,
 			},
 		);
 	}

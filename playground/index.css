@@ -10,6 +10,9 @@ body {
 	flex-direction: row;
 	flex-wrap: wrap;
 	gap: var(--m-spacing-sm);
+	/* Ambient = default */
+	@apply --mx-bg(var(--m-surface-ambient-bg));
+	@apply --mx-fg(var(--m-surface-ambient-fg));
 
 	&[data-emphasis='primary'] {
 		@apply --mx-bg(var(--m-surface-primary-bg));
@@ -18,10 +21,6 @@ body {
 	&[data-emphasis='secondary'] {
 		@apply --mx-bg(var(--m-surface-secondary-bg));
 		@apply --mx-fg(var(--m-surface-secondary-fg));
-	}
-	&[data-emphasis='ambient'] {
-		@apply --mx-bg(var(--m-surface-ambient-bg));
-		@apply --mx-fg(var(--m-surface-ambient-fg));
 	}
 }
 
