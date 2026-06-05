@@ -395,6 +395,17 @@ describe('css template — arithmetic still works', () => {
 			`calc((${tokenA.var} + 10px))`,
 		);
 	});
+
+	it('can multiply scalars with percentages', () => {
+		expect(printComputationResult(computeEquation(css`2 * 50%`))).toBe(`100%`);
+		expect(printComputationResult(computeEquation(css`1 * 100%`))).toBe(`100%`);
+		expect(printComputationResult(computeEquation(css`0.5 * 100%`))).toBe(
+			`50%`,
+		);
+		expect(printComputationResult(computeEquation(css`2 * 50% + 10px`))).toBe(
+			`calc(100% + 10px)`,
+		);
+	});
 });
 
 describe('css template — if() pre-baking', () => {

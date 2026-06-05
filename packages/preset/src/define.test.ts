@@ -255,12 +255,12 @@ it('allows creating modes from the final mode schema', () => {
 		color: 'blue',
 	});
 
-	expect(getInternals(preset).modes[0].color).toBe('blue');
+	expect(getInternals(preset).modes.blue.color).toBe('blue');
 
 	const freeMode = preset.createMode('free', {
 		color: 'green',
 	});
 
 	expect(freeMode.color).toBe('green');
-	expect(getInternals(preset).modes[1]).not.toBeDefined();
+	expect(getInternals(preset).modes.green).not.toBeDefined();
 });

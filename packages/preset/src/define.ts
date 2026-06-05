@@ -319,6 +319,15 @@ export function definePreset<
 				},
 			} as any;
 		}, emptyPreset());
+		const composedPresetBundledModes = extended.reduce<
+			Record<string, ModeInstance<any>>
+		>((acc, preset) => {
+			const internals = getInternals(preset);
+			return {
+				...acc,
+				...internals.modes,
+			};
+		}, {});
 
 		const $tokensWithoutMixins = {
 			...composedPresets.$,
@@ -353,7 +362,7 @@ export function definePreset<
 			:	({} as TFunctions);
 
 		const internals = {
-			modes: {},
+			modes: composedPresetBundledModes,
 			defaultScheme: presetOptions.defaultScheme ?? 'light',
 		} as PresetInternals;
 

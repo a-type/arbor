@@ -334,11 +334,28 @@ function multiply(
 	if (b.type === 'numeric' && b.unit === '' && b.value === 1) {
 		return a;
 	}
+
+	// TODO: does this align with the CSS spec for multiplying percentages?
+	// this makes % "win"
 	if (a.type === 'numeric' && a.unit === '%' && a.value === 100) {
-		return b;
+		if (b.type !== 'numeric') {
+			return b;
+		}
+		return {
+			type: 'numeric',
+			value: b.value * 100,
+			unit: '%',
+		};
 	}
 	if (b.type === 'numeric' && b.unit === '%' && b.value === 100) {
-		return a;
+		if (a.type !== 'numeric') {
+			return a;
+		}
+		return {
+			type: 'numeric',
+			value: a.value * 100,
+			unit: '%',
+		};
 	}
 
 	if (a.type === 'calc' || b.type === 'calc' || a.unit !== b.unit) {
@@ -680,7 +697,24 @@ function evaluatePropertyValue(
 
 export function computeEquation(
 	equation: Equation,
-	userContext: CalcEvaluationContext,
+	userContext: CalcEvaluationContext = { propertyValues: {} },
+): ComputationResult {
+	const rawResult = computeEquationRaw(equation, userContext);
+
+	// attempt to simplify before continuing; if the result is
+	// a simple value like calc(3), we unwrap it first.
+	if (rawResult.type === 'calc') {
+		const extracted = extractLiteralFromSimpleCalc(rawResult.value);
+		if (extracted !== rawResult.value) {
+			return evaluateLiteral(extracted, userContext);
+		}
+	}
+	return rawResult;
+}
+
+function computeEquationRaw(
+	equation: Equation,
+	userContext: CalcEvaluationContext = { propertyValues: {} },
 ): ComputationResult {
 	const context: CalcEvaluationContext = {
 		propertyValues: userContext.propertyValues,
@@ -726,10 +760,12 @@ export function computeEquation(
 					first,
 				);
 		case 'multiply':
-			return equation.values.reduce<ComputationResult>(
-				(product, v) => multiply(product, computeEquation(v, context)),
-				{ type: 'numeric', value: 1, unit: '' },
-			);
+			return equation.values
+				.slice(1)
+				.reduce<ComputationResult>(
+					(product, v) => multiply(product, computeEquation(v, context)),
+					computeEquation(equation.values[0], context),
+				);
 		case 'divide':
 			if (equation.values.length !== 2) {
 				throw new Error('Divide operation requires exactly 2 values');

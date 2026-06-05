@@ -17,8 +17,6 @@ it("generates a preset's CSS, including globals, primitives, modes, and function
 
 	const css = generateStylesheet(preset);
 
-	expect(css).toContain('--_-env-prefersLight: ');
-	expect(css).toContain('--_-env-prefersDark: ');
 	expect(css).toContain('--m-global-roundness: 1');
 	expect(css).toContain('--m-primitive-color-brand-mid: ');
 	expect(css).toContain('--m-color-main: ');

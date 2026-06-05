@@ -1,6 +1,7 @@
 import {
 	CalcEvaluationContext,
 	computeEquation,
+	css,
 	Equation,
 	isCalcEquation,
 	printComputationResult,
@@ -70,10 +71,10 @@ it('compiles a set of color ranges with default schemes and no precalculated glo
 		      "light": "light-dark(oklch(0.9996018928294464 0.0007500000000000007 210), oklch(0.0787065459868453 0.0015000000000000013 210))",
 		      "mid": "light-dark(oklch(0.8602483517886919 0.011250000000000001 210), oklch(0.4856387300380706 0.012000000000000002 210))",
 		    },
-		    "$root": "light-dark(oklch(90% 0.15000000000000002 210), oklch(53% 0.16000000000000003 210))",
-		    "heavy": "light-dark(oklch(20.000000000000007% 0.11000000000000001 210), oklch(100% 0.06400000000000002 210))",
-		    "light": "light-dark(oklch(100% 0.010000000000000009 210), oklch(8.000000000000002% 0.020000000000000018 210))",
-		    "mid": "light-dark(oklch(90% 0.15000000000000002 210), oklch(53% 0.16000000000000003 210))",
+		    "$root": "light-dark(oklch(0.9 0.15000000000000002 210), oklch(0.53 0.16000000000000003 210))",
+		    "heavy": "light-dark(oklch(0.20000000000000007 0.11000000000000001 210), oklch(1 0.06400000000000002 210))",
+		    "light": "light-dark(oklch(1 0.010000000000000009 210), oklch(0.08000000000000002 0.020000000000000018 210))",
+		    "mid": "light-dark(oklch(0.9 0.15000000000000002 210), oklch(0.53 0.16000000000000003 210))",
 		  },
 		  "primary": {
 		    "$neutral": {
@@ -82,10 +83,10 @@ it('compiles a set of color ranges with default schemes and no precalculated glo
 		      "light": "light-dark(oklch(0.9996018928294464 0.0007500000000000007 90), oklch(0.0787065459868453 0.0015000000000000013 90))",
 		      "mid": "light-dark(oklch(0.8602483517886919 0.011250000000000001 90), oklch(0.4856387300380706 0.012000000000000002 90))",
 		    },
-		    "$root": "light-dark(oklch(90% 0.15000000000000002 90), oklch(53% 0.16000000000000003 90))",
-		    "heavy": "light-dark(oklch(20.000000000000007% 0.11000000000000001 90), oklch(100% 0.06400000000000002 90))",
-		    "light": "light-dark(oklch(100% 0.010000000000000009 90), oklch(8.000000000000002% 0.020000000000000018 90))",
-		    "mid": "light-dark(oklch(90% 0.15000000000000002 90), oklch(53% 0.16000000000000003 90))",
+		    "$root": "light-dark(oklch(0.9 0.15000000000000002 90), oklch(0.53 0.16000000000000003 90))",
+		    "heavy": "light-dark(oklch(0.20000000000000007 0.11000000000000001 90), oklch(1 0.06400000000000002 90))",
+		    "light": "light-dark(oklch(1 0.010000000000000009 90), oklch(0.08000000000000002 0.020000000000000018 90))",
+		    "mid": "light-dark(oklch(0.9 0.15000000000000002 90), oklch(0.53 0.16000000000000003 90))",
 		  },
 		}
 	`);
@@ -110,8 +111,8 @@ it('compiles a set of color ranges with a custom scheme', () => {
 					createColorRange(
 						config,
 						{
-							lightness: ($) => $.val('0'),
-							chroma: ($) => $.val('0'),
+							lightness: () => css`0`,
+							chroma: () => css`0`,
 						},
 						ctx,
 					),
@@ -129,10 +130,10 @@ it('compiles a set of color ranges with a custom scheme', () => {
 		      "light": "light-dark(oklch(0 0 210), oklch(0.0787065459868453 0.0015000000000000013 210))",
 		      "mid": "light-dark(oklch(0 0 210), oklch(0.4856387300380706 0.012000000000000002 210))",
 		    },
-		    "$root": "light-dark(oklch(0% 0 210), oklch(53% 0.16000000000000003 210))",
-		    "heavy": "light-dark(oklch(0% 0 210), oklch(100% 0.06400000000000002 210))",
-		    "light": "light-dark(oklch(0% 0 210), oklch(8.000000000000002% 0.020000000000000018 210))",
-		    "mid": "light-dark(oklch(0% 0 210), oklch(53% 0.16000000000000003 210))",
+		    "$root": "light-dark(oklch(0 0 210), oklch(0.53 0.16000000000000003 210))",
+		    "heavy": "light-dark(oklch(0 0 210), oklch(1 0.06400000000000002 210))",
+		    "light": "light-dark(oklch(0 0 210), oklch(0.08000000000000002 0.020000000000000018 210))",
+		    "mid": "light-dark(oklch(0 0 210), oklch(0.53 0.16000000000000003 210))",
 		  },
 		  "primary": {
 		    "$neutral": {
@@ -141,10 +142,10 @@ it('compiles a set of color ranges with a custom scheme', () => {
 		      "light": "light-dark(oklch(0 0 90), oklch(0.0787065459868453 0.0015000000000000013 90))",
 		      "mid": "light-dark(oklch(0 0 90), oklch(0.4856387300380706 0.012000000000000002 90))",
 		    },
-		    "$root": "light-dark(oklch(0% 0 90), oklch(53% 0.16000000000000003 90))",
-		    "heavy": "light-dark(oklch(0% 0 90), oklch(100% 0.06400000000000002 90))",
-		    "light": "light-dark(oklch(0% 0 90), oklch(8.000000000000002% 0.020000000000000018 90))",
-		    "mid": "light-dark(oklch(0% 0 90), oklch(53% 0.16000000000000003 90))",
+		    "$root": "light-dark(oklch(0 0 90), oklch(0.53 0.16000000000000003 90))",
+		    "heavy": "light-dark(oklch(0 0 90), oklch(1 0.06400000000000002 90))",
+		    "light": "light-dark(oklch(0 0 90), oklch(0.08000000000000002 0.020000000000000018 90))",
+		    "mid": "light-dark(oklch(0 0 90), oklch(0.53 0.16000000000000003 90))",
 		  },
 		}
 	`);
@@ -178,10 +179,10 @@ it('supports color-level saturation', () => {
 	});
 
 	expect(compiled.primaryLight.light).toMatchInlineSnapshot(
-		`"light-dark(oklch(98.02741561760232% 0.056269363558927955 90), oklch(40.95887657359654% 0.06126936355892796 90))"`,
+		`"light-dark(oklch(0.9802741561760231 0.056269363558927955 90), oklch(0.4095887657359654 0.06126936355892796 90))"`,
 	);
 	expect(compiled.primary.light).toMatchInlineSnapshot(
-		`"light-dark(oklch(98.02741561760232% 0.11253872711785591 90), oklch(40.95887657359654% 0.12253872711785592 90))"`,
+		`"light-dark(oklch(0.9802741561760231 0.11253872711785591 90), oklch(0.4095887657359654 0.12253872711785592 90))"`,
 	);
 	expect(compiled.primaryLight.light).not.toEqual(compiled.primary.light);
 });
@@ -196,7 +197,7 @@ it('supports hue defined as a CSS property', () => {
 	});
 
 	expect(compiled.primary.light).toMatchInlineSnapshot(
-		`"light-dark(oklch(98.02741561760232% 0.11253872711785591 var(--my-hue)), oklch(40.95887657359654% 0.12253872711785592 var(--my-hue)))"`,
+		`"light-dark(oklch(0.9802741561760231 0.11253872711785591 var(--my-hue)), oklch(0.4095887657359654 0.12253872711785592 var(--my-hue)))"`,
 	);
 });
 

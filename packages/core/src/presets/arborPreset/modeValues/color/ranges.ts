@@ -1,8 +1,4 @@
-import {
-	CalcEvaluationContext,
-	CalcOperations,
-	Equation,
-} from '@arbor-css/calc';
+import { CalcEvaluationContext, css, Equation } from '@arbor-css/calc';
 import { Token } from '@arbor-css/tokens';
 import { oklchBuilder, OklchColorEquation } from './color.js';
 
@@ -20,30 +16,33 @@ export interface ColorRangeConfig<
 	RangeNames extends string = DefaultRangeName,
 > {
 	/** 0-360ish, OKLCH "H" hue. Can also be a var() reference! */
-	hue: number | string;
-	rangeNames?: readonly RangeNames[];
-	defaultLevel?: RangeNames;
+	hue: number | string | Equation | Token;
 	/**
 	 * 0-1, a local multiplier for chroma, stacks on global and computed value. Can also be a var() reference!
 	 */
-	saturation?: number | string;
+	saturation?: number | string | Equation | Token;
+	rangeNames?: readonly RangeNames[];
+	defaultLevel?: RangeNames;
 }
 
 export interface ColorRangeCalculations {
 	/** A computation for lightness at each step - resolve 0-1 */
-	lightness: (
-		tools: CalcOperations,
-		details: { step: number; rangeSize: number; midpoint: number },
-	) => Equation;
+	lightness: (details: {
+		step: number;
+		rangeSize: number;
+		midpoint: number;
+	}) => Equation;
 	/** A computation for chroma at each step - resolve 0-1 */
-	chroma: (
-		tools: CalcOperations,
-		details: { step: number; rangeSize: number; midpoint: number },
-	) => Equation;
-	hue?: (
-		tools: CalcOperations,
-		details: { step: number; rangeSize: number; midpoint: number },
-	) => Equation;
+	chroma: (details: {
+		step: number;
+		rangeSize: number;
+		midpoint: number;
+	}) => Equation;
+	hue?: (details: {
+		step: number;
+		rangeSize: number;
+		midpoint: number;
+	}) => Equation;
 }
 
 export type InferRangeNames<Config> =
@@ -96,30 +95,10 @@ export function createColorRange<RangeNames extends string = DefaultRangeName>(
 
 	const range = rangeNames.reduce(
 		(acc, name, i) => {
-			const equation = oklchBuilder(($) => ({
-				l: $.fn(
-					'clamp',
-					$.val('0%'),
-					$.castPercentage(
-						lightness($, { step: i, rangeSize: size, midpoint }),
-					),
-					$.val('100%'),
-				),
-				c: $.fn(
-					'clamp',
-					$.val('0'),
-					$.multiply(
-						$.val(config.saturation ?? 1),
-						$.val('0.4'),
-						chroma($, { step: i, rangeSize: size, midpoint }),
-						$.token(tokens.saturation),
-					),
-					$.val('0.4'),
-				),
-				h: $.multiply(
-					$.val(`${sourceHue}`),
-					calcs.hue?.($, { step: i, rangeSize: size, midpoint }) ?? $.val(1),
-				),
+			const equation = oklchBuilder(() => ({
+				l: css`clamp(0, calc(${lightness({ step: i, rangeSize: size, midpoint })}), 1)`,
+				c: css`clamp(0, calc(${config.saturation ?? 1} * 0.4 * ${chroma({ step: i, rangeSize: size, midpoint })} * ${tokens.saturation}), 0.4)`,
+				h: css`calc(${sourceHue} * ${calcs.hue?.({ step: i, rangeSize: size, midpoint }) ?? 1})`,
 			}));
 
 			acc[name as RangeNames] = { name, equation };
@@ -139,27 +118,21 @@ function lightnessEq(config: {
 	baseline: number;
 	midpointDifferentiation?: number;
 }) {
-	return (
-		$: CalcOperations,
-		{
-			step,
-			rangeSize,
-			midpoint,
-		}: { step: number; rangeSize: number; midpoint: number },
-	) => {
+	return ({
+		step,
+		rangeSize,
+		midpoint,
+	}: {
+		step: number;
+		rangeSize: number;
+		midpoint: number;
+	}) => {
 		const rangeDir = step < midpoint ? -1 : 1;
 		const rangeMax = step < midpoint ? midpoint : rangeSize - midpoint - 1;
 		const rangeProgress =
 			(Math.abs(step - midpoint) / rangeMax) **
 			(config.midpointDifferentiation ?? 1.2);
-		return $.add(
-			$.val(config.baseline),
-			$.multiply(
-				$.val(rangeDir),
-				$.val(rangeProgress),
-				$.val(step < midpoint ? config.rangeDown : config.rangeUp),
-			),
-		);
+		return css`calc(${config.baseline} + (${rangeDir} * ${rangeProgress} * ${step < midpoint ? config.rangeDown : config.rangeUp}))`;
 	};
 }
 
@@ -169,27 +142,22 @@ function chromaEq(config: {
 	baseline: number;
 	midpointDifferentiation?: number;
 }) {
-	return (
-		$: CalcOperations,
-		{
-			step,
-			rangeSize,
-			midpoint,
-		}: { step: number; rangeSize: number; midpoint: number },
-	) => {
+	return ({
+		step,
+		rangeSize,
+		midpoint,
+	}: {
+		step: number;
+		rangeSize: number;
+		midpoint: number;
+	}) => {
 		const rangeDir = step < midpoint ? -1 : 1;
 		const rangeMax = step < midpoint ? midpoint : rangeSize - midpoint - 1;
 		const rangeProgress =
 			(Math.abs(step - midpoint) / rangeMax) **
 			(config.midpointDifferentiation ?? 1.2);
-		return $.add(
-			$.val(config.baseline),
-			$.multiply(
-				$.val(rangeDir),
-				$.val(rangeProgress),
-				$.val(step < midpoint ? config.rangeDown : config.rangeUp),
-			),
-		);
+
+		return css`calc(${config.baseline} + (${rangeDir} * ${rangeProgress} * ${step < midpoint ? config.rangeDown : config.rangeUp}))`;
 	};
 }
 
@@ -256,29 +224,24 @@ export function createNeutralDerivedRange(
 	tokens: { saturation: Token },
 	options?: {
 		/** Adjust saturation relative to source range. Stacks with saturation token. */
-		saturationFactor?: number | string;
+		saturationFactor?: number | string | Equation | Token;
 	},
 ): UncompiledColorRange<string> {
-	function lightness($: CalcOperations, source: OklchColorEquation) {
-		const sourceLAsZeroToOne = $.divide(source.l, $.val('100%'));
-		return $.subtract(sourceLAsZeroToOne, $.fn('pow', source.c, $.val(1.7)));
+	function lightness(source: OklchColorEquation) {
+		return css`calc(${source.l} - pow(${source.c}, 1.7))`;
 	}
-	function chroma($: CalcOperations, source: OklchColorEquation) {
+	function chroma(source: OklchColorEquation) {
 		const saturationFactor = options?.saturationFactor ?? 0.15;
-		return $.multiply(
-			source.c,
-			$.token(tokens.saturation),
-			$.val(saturationFactor),
-		);
+		return css`calc(${source.c} * ${tokens.saturation} * ${saturationFactor})`;
 	}
 
 	return Object.fromEntries(
 		Object.keys(sourceRange).map((sourceName) => {
 			const sourceEquation =
 				sourceRange[sourceName as keyof typeof sourceRange].equation;
-			const equation = oklchBuilder(($) => ({
-				l: $.fn('clamp', $.val(0), lightness($, sourceEquation), $.val(1)),
-				c: $.fn('clamp', $.val(0), chroma($, sourceEquation), $.val(0.4)),
+			const equation = oklchBuilder(() => ({
+				l: css`clamp(0, ${lightness(sourceEquation)}, 1)`,
+				c: css`clamp(0, ${chroma(sourceEquation)}, 0.4)`,
 				h: sourceEquation.h,
 			}));
 			return [

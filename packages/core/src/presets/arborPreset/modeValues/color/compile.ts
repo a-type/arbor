@@ -1,4 +1,4 @@
-import { css } from '@arbor-css/calc';
+import { css, Equation } from '@arbor-css/calc';
 import { Token } from '@arbor-css/tokens';
 import {
 	ColorRangeConfig,
@@ -37,7 +37,7 @@ export type CompiledColors<
 
 export type CompiledColorRangeConfig<TRangeStepNames extends string> =
 	ColorRangeConfig<TRangeStepNames> & {
-		neutralSaturation?: number | string;
+		neutralSaturation?: number | string | Equation | Token;
 	};
 
 export interface CompileColorsOptions<
@@ -115,7 +115,7 @@ function toLightDarkCompiled(
 	light: UncompiledColorRange<any>,
 	dark: UncompiledColorRange<any>,
 	$: { saturation: Token },
-	options: { neutralSaturation?: number | string } = {},
+	options: { neutralSaturation?: number | string | Equation | Token } = {},
 ): CompiledColorRangeWithNeutral<any> {
 	const result = {} as any;
 	for (const key in light) {
@@ -126,10 +126,10 @@ function toLightDarkCompiled(
 	}
 
 	const lightNeutral = createNeutralDerivedRange(light, $, {
-		saturationFactor: options.neutralSaturation ?? 0.25,
+		saturationFactor: options.neutralSaturation ?? 0.15,
 	});
 	const darkNeutral = createNeutralDerivedRange(dark, $, {
-		saturationFactor: options.neutralSaturation ?? 0.25,
+		saturationFactor: options.neutralSaturation ?? 0.15,
 	});
 
 	const neutralResult = {} as any;
@@ -142,4 +142,31 @@ function toLightDarkCompiled(
 
 	result.$neutral = neutralResult;
 	return result;
+}
+
+/**
+ * Compile a single color range.
+ */
+export function compileSingleColor(
+	/**
+	 * Provide CSS property values for the dynamic inputs
+	 * of your color range.
+	 *
+	 * @example
+	 * {
+	 * 	hue: 'var(--my-hue)',
+	 * 	saturation: 'var(--my-saturation)',
+	 * }
+	 */
+	range: CompiledColorRangeConfig<string>,
+	tokens: RequiredTokens,
+) {
+	return compileColors(
+		{
+			ranges: {
+				dynamic: range,
+			},
+		},
+		tokens,
+	).dynamic;
 }
