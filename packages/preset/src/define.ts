@@ -14,6 +14,7 @@ import {
 } from '@arbor-css/globals';
 import {
 	createModeInstance,
+	mergeModes,
 	ModeInstance,
 	ModeInstanceOptions,
 	ModeValues,
@@ -54,7 +55,6 @@ export type ExtendedConfigMixins<TExtends extends AnyArborPreset[]> =
 export type PresetTokens<
 	TModeSchema extends SimpleTokenSchema,
 	TMixins extends PresetMixins,
-	TExtends extends AnyArborPreset[] = [],
 > = {
 	mode: SimpleTokensAsTokenDefinitions<TModeSchema>;
 	system: SystemTokens;
@@ -93,7 +93,7 @@ export interface ArborPreset<
 	bundleMode<TMode extends ModeInstance<TModeSchema>>(
 		name: string,
 		mode: DeepPartial<ModeValues<TModeSchema>>,
-		options?: ModeInstanceOptions,
+		options?: ModeInstanceOptions & { overwrite?: boolean },
 	): TMode;
 	/**
 	 * Create a free-standing mode from your mode schema with full typing
@@ -339,7 +339,7 @@ export function definePreset<
 				createMixins(context.createMixin, $tokensWithoutMixins as any)
 			:	({} as TMixins);
 
-		const $tokens: PresetTokens<any, any, any> = {
+		const $tokens: PresetTokens<any, any> = {
 			...$tokensWithoutMixins,
 			mixins: {
 				...$tokensWithoutMixins.mixins,
@@ -353,7 +353,7 @@ export function definePreset<
 			:	({} as TFunctions);
 
 		const internals = {
-			modes: [],
+			modes: {},
 			defaultScheme: presetOptions.defaultScheme ?? 'light',
 		} as PresetInternals;
 
@@ -406,11 +406,20 @@ export function definePreset<
 			bundleMode(
 				name: string,
 				mode: DeepPartial<ModeValues<TModeSchema>>,
-				options?: ModeInstanceOptions,
+				options?: ModeInstanceOptions & { overwrite?: boolean },
 			) {
 				const instance = createModeInstance(name, mode, options);
-				internals.modes.push(instance);
-				return instance;
+				if (options?.overwrite) {
+					internals.modes[name] = instance;
+					return instance;
+				}
+				const existing = internals.modes[name];
+				if (existing) {
+					internals.modes[name] = mergeModes(existing || {}, instance);
+				} else {
+					internals.modes[name] = instance;
+				}
+				return internals.modes[name];
 			},
 
 			createMode(
@@ -427,7 +436,7 @@ export function definePreset<
 }
 
 export interface PresetInternals {
-	modes: ModeInstance<any>[];
+	modes: Record<string, ModeInstance<any>>;
 	defaultScheme: string;
 }
 

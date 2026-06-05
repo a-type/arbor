@@ -71,6 +71,13 @@
 					"message": 5
 				}
 			}
+		},
+		{
+			"type": "npm",
+			"script": "bump",
+			"problemMatcher": [],
+			"label": "Bump version",
+			"detail": "bumpp -r"
 		}
 	]
 }

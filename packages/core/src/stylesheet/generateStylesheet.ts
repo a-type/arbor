@@ -15,7 +15,7 @@ export function generateStylesheet(
 
 	return `/* Auto-generated CSS - do not edit directly */
 	${cascadeLayerName ? `@layer ${cascadeLayerName} {` : ''}
-${[config.baseMode, ...modes]
+${[config.baseMode, ...Object.values(modes)]
 	.map((modeValue) => {
 		return modeToCss(modeValue, config);
 	})

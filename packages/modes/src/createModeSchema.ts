@@ -5,7 +5,7 @@ import {
 	SimpleTokenSchema,
 	Token,
 } from '@arbor-css/tokens';
-import { DeepPartial } from '@arbor-css/util';
+import { deepMerge, DeepPartial } from '@arbor-css/util';
 
 export type ModeSchemaProperty = SimpleTokenDefinition;
 
@@ -60,4 +60,25 @@ export function createModeInstance<T extends SimpleTokenSchema>(
 
 export function getModeInternals(mode: ModeInstance<any>): ModeInternals {
 	return (mode as any)[INTERNALS];
+}
+
+export function mergeModes(
+	modeA: ModeInstance<any>,
+	modeB: ModeInstance<any>,
+): ModeInstance<any> {
+	const values = deepMerge({}, modeA, modeB);
+	const internalsA = getModeInternals(modeA);
+	const internalsB = getModeInternals(modeB);
+	const internals = {
+		...internalsA,
+		...internalsB,
+		extraSelectors: [
+			...(internalsA.extraSelectors || []),
+			...(internalsB.extraSelectors || []),
+		],
+	};
+	return {
+		...values,
+		[INTERNALS]: internals,
+	};
 }
