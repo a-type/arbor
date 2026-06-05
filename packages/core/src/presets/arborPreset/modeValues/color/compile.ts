@@ -35,11 +35,16 @@ export type CompiledColors<
 	TRangeStepNames extends string = DefaultRangeName,
 > = CompiledColorRanges<TRangeNames, TRangeStepNames>;
 
+export type CompiledColorRangeConfig<TRangeStepNames extends string> =
+	ColorRangeConfig<TRangeStepNames> & {
+		neutralSaturation?: number | string;
+	};
+
 export interface CompileColorsOptions<
 	TRangeNames extends string,
 	TRangeStepNames extends string = DefaultRangeName,
 > {
-	ranges: Record<TRangeNames, ColorRangeConfig<TRangeStepNames>>;
+	ranges: Record<TRangeNames, CompiledColorRangeConfig<TRangeStepNames>>;
 	schemes?: {
 		light?: SchemeDefinition<
 			ColorRangeConfig<TRangeStepNames>,
@@ -95,6 +100,7 @@ export function compileColors<
 			invertLightDark ? uncompiledDark : uncompiledLight,
 			invertLightDark ? uncompiledLight : uncompiledDark,
 			$,
+			{ neutralSaturation: rangeConfig.neutralSaturation },
 		);
 
 		colorsAcc[rangeName] = combined;
@@ -109,6 +115,7 @@ function toLightDarkCompiled(
 	light: UncompiledColorRange<any>,
 	dark: UncompiledColorRange<any>,
 	$: { saturation: Token },
+	options: { neutralSaturation?: number | string } = {},
 ): CompiledColorRangeWithNeutral<any> {
 	const result = {} as any;
 	for (const key in light) {
@@ -118,8 +125,12 @@ function toLightDarkCompiled(
 			css`light-dark(${lightColor.equation.compiled}, ${darkColor.equation.compiled})`;
 	}
 
-	const lightNeutral = createNeutralDerivedRange(light, $);
-	const darkNeutral = createNeutralDerivedRange(dark, $);
+	const lightNeutral = createNeutralDerivedRange(light, $, {
+		saturationFactor: options.neutralSaturation ?? 0.25,
+	});
+	const darkNeutral = createNeutralDerivedRange(dark, $, {
+		saturationFactor: options.neutralSaturation ?? 0.25,
+	});
 
 	const neutralResult = {} as any;
 	for (const key in lightNeutral) {

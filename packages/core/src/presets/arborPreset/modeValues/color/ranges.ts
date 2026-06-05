@@ -23,7 +23,9 @@ export interface ColorRangeConfig<
 	hue: number | string;
 	rangeNames?: readonly RangeNames[];
 	defaultLevel?: RangeNames;
-	/** 0-1, a local multiplier for chroma, stacks on global and computed value. Can also be a var() reference! */
+	/**
+	 * 0-1, a local multiplier for chroma, stacks on global and computed value. Can also be a var() reference!
+	 */
 	saturation?: number | string;
 }
 
@@ -252,13 +254,22 @@ export function createColorDarkModeRange(
 export function createNeutralDerivedRange(
 	sourceRange: UncompiledColorRange<string>,
 	tokens: { saturation: Token },
+	options?: {
+		/** Adjust saturation relative to source range. Stacks with saturation token. */
+		saturationFactor?: number | string;
+	},
 ): UncompiledColorRange<string> {
 	function lightness($: CalcOperations, source: OklchColorEquation) {
 		const sourceLAsZeroToOne = $.divide(source.l, $.val('100%'));
 		return $.subtract(sourceLAsZeroToOne, $.fn('pow', source.c, $.val(1.7)));
 	}
 	function chroma($: CalcOperations, source: OklchColorEquation) {
-		return $.multiply(source.c, $.token(tokens.saturation), $.val('0.15'));
+		const saturationFactor = options?.saturationFactor ?? 0.15;
+		return $.multiply(
+			source.c,
+			$.token(tokens.saturation),
+			$.val(saturationFactor),
+		);
 	}
 
 	return Object.fromEntries(
