@@ -52,22 +52,6 @@ class MainColorRangeDebug extends HTMLElement {
 			<div class="range @mode-dark">
 				${content}
 			</div>
-			<div class="range">
-				<div class="color-swatch bg-main-mid lighten-3"></div>
-				<div class="color-swatch bg-main-mid lighten-2"></div>
-				<div class="color-swatch bg-main-mid lighten-1"></div>
-				<div class="color-swatch bg-main-mid"></div>
-				<div class="color-swatch bg-main-mid darken-1"></div>
-				<div class="color-swatch bg-main-mid darken-2"></div>
-			</div>
-			<div class="range @mode-dark">
-				<div class="color-swatch bg-main-mid lighten-3"></div>
-				<div class="color-swatch bg-main-mid lighten-2"></div>
-				<div class="color-swatch bg-main-mid lighten-1"></div>
-				<div class="color-swatch bg-main-mid"></div>
-				<div class="color-swatch bg-main-mid darken-1"></div>
-				<div class="color-swatch bg-main-mid darken-2"></div>
-			</div>
 		`;
 	}
 }

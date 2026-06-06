@@ -122,9 +122,6 @@ importers:
         specifier: ^18.0.0
         version: 18.0.0
     devDependencies:
-      '@arbor-css/postcss':
-        specifier: workspace:*
-        version: link:../postcss
       '@types/node':
         specifier: ^25.6.0
         version: 25.6.0

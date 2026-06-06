@@ -37,27 +37,3 @@
 	display: flex;
 	flex-direction: column;
 }
-
-.bg-main-mid {
-	@apply --mx-bg(var(--m-color-main));
-}
-
-.lighten-1 {
-	@apply --mx-bg-lighten(1);
-}
-
-.lighten-2 {
-	@apply --mx-bg-lighten(2);
-}
-
-.lighten-3 {
-	@apply --mx-bg-lighten(3);
-}
-
-.darken-1 {
-	@apply --mx-bg-darken(1);
-}
-
-.darken-2 {
-	@apply --mx-bg-darken(2);
-}
