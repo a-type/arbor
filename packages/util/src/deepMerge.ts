@@ -6,7 +6,7 @@ export function deepMerge<T>(target: T, ...sources: DeepPartial<T>[]): T {
 			if (isObject(source[key])) {
 				if (!target[key]) Object.assign(target, { [key]: {} });
 				deepMerge(target[key], source[key] as any);
-			} else {
+			} else if (source[key] !== undefined) {
 				Object.assign(target, { [key]: source[key] });
 			}
 		}
@@ -21,5 +21,3 @@ function isObject(item: any): item is Record<string, any> {
 export type DeepPartial<T> = {
 	[P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };
-
-type Test = DeepPartial<{ foo: string; bar?: number; baz?: { qux: boolean } }>;
