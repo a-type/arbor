@@ -7,7 +7,7 @@ export type DefaultShadowLevel = (typeof defaultShadowLevels)[number];
 export interface ShadowConfig<
 	TShadowLevel extends string = DefaultShadowLevel,
 > {
-	levels?: Record<TShadowLevel, CompiledShadowLevel>;
+	levels?: Record<TShadowLevel | 'none', CompiledShadowLevel>;
 	defaultLevel?: TShadowLevel;
 }
 
@@ -32,7 +32,7 @@ export function isCompiledShadowLevel(
 
 export type CompiledShadows<TShadowLevel extends string = DefaultShadowLevel> =
 	{
-		[K in TShadowLevel]: CompiledShadowLevel;
+		[K in TShadowLevel | 'none']: CompiledShadowLevel;
 	};
 
 const defaultShadowXEquation = (step: number) => css`0px`;
@@ -101,6 +101,15 @@ export function compileShadows<
 		},
 		{} as Record<TShadowLevel, CompiledShadowLevel>,
 	) as CompiledShadows<TShadowLevel>;
+
+	levels['none'] = config.levels?.['none'] ?? {
+		$root: '0 0 0 0 transparent',
+		x: '0',
+		y: '0',
+		blur: '0',
+		spread: '0',
+		color: 'transparent',
+	};
 
 	return levels;
 }

@@ -11,6 +11,7 @@ export const shadowSemantics = createModeSchema({
 		description:
 			'If specified, this token overrides shadow colors from primitives',
 	},
+	none: shadowLevelSemantics,
 	sm: shadowLevelSemantics,
 	md: shadowLevelSemantics,
 	lg: shadowLevelSemantics,

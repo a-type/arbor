@@ -5,7 +5,7 @@ import { Tokens } from './types.js';
 
 export function createShadowLevelSemanticValues<TColorName extends string>(
 	$: Tokens<TColorName>,
-	size: 'sm' | 'md' | 'lg' | 'xl',
+	size: 'none' | 'sm' | 'md' | 'lg' | 'xl',
 ) {
 	return {
 		$root: css`
@@ -56,6 +56,7 @@ export function createShadowSemanticValues<TColorName extends string>(
 		color: css`
 			${$.mode.color.neutral.heavy}
 		`,
+		none: createShadowLevelSemanticValues($, 'none'),
 		sm: createShadowLevelSemanticValues($, 'sm'),
 		md: createShadowLevelSemanticValues($, 'md'),
 		lg: createShadowLevelSemanticValues($, 'lg'),

@@ -28,6 +28,7 @@ export const shadowPrimitiveLevel = createModeSchema({
 });
 
 export const shadowPrimitives = createModeSchema({
+	none: shadowPrimitiveLevel,
 	xs: shadowPrimitiveLevel,
 	sm: shadowPrimitiveLevel,
 	md: shadowPrimitiveLevel,
