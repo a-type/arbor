@@ -10,113 +10,123 @@
 	<body>
 		<h1 class="title">Arbor CSS Playground</h1>
 		<div class="surface" data-emphasis="ambient">
-			<button class="button" data-emphasis="primary">Primary Button</button>
-			<button class="button" data-emphasis="secondary">Secondary Button</button>
-			<button class="button" data-emphasis="ambient">Ambient Button</button>
+			<button class="button" data-emphasis="primary">Primary</button>
+			<button class="button" data-emphasis="secondary">Secondary</button>
+			<button class="button" data-emphasis="ambient">Ambient</button>
+			<button class="button @mode-neutral" data-emphasis="primary">
+				Neutral
+			</button>
 			<input class="input" placeholder="Input" />
 		</div>
 		<div class="surface" data-emphasis="secondary">
-			<button class="button" data-emphasis="primary">Primary Button</button>
-			<button class="button" data-emphasis="secondary">Secondary Button</button>
-			<button class="button" data-emphasis="ambient">Ambient Button</button>
+			<button class="button" data-emphasis="primary">Primary</button>
+			<button class="button" data-emphasis="secondary">Secondary</button>
+			<button class="button" data-emphasis="ambient">Ambient</button>
 			<input class="input" placeholder="Input" />
 		</div>
 		<div class="surface" data-emphasis="primary">
-			<button class="button" data-emphasis="primary">Primary Button</button>
-			<button class="button" data-emphasis="secondary">Secondary Button</button>
-			<button class="button" data-emphasis="ambient">Ambient Button</button>
+			<button class="button" data-emphasis="primary">Primary</button>
+			<button class="button" data-emphasis="secondary">Secondary</button>
+			<button class="button" data-emphasis="ambient">Ambient</button>
 			<input class="input" placeholder="Input" />
 		</div>
 		<div class="surface @mode-success" data-emphasis="primary">
-			<button class="button" data-emphasis="primary">Primary Button</button>
-			<button class="button" data-emphasis="secondary">Secondary Button</button>
-			<button class="button" data-emphasis="ambient">Ambient Button</button>
+			<button class="button" data-emphasis="primary">Primary</button>
+			<button class="button" data-emphasis="secondary">Secondary</button>
+			<button class="button" data-emphasis="ambient">Ambient</button>
+			<button class="button @mode-neutral" data-emphasis="primary">
+				Neutral
+			</button>
 			<input class="input" placeholder="Input" />
 		</div>
 
 		<h2 class="subtitle">Dark Scheme</h2>
 		<div class="surface @mode-dark" data-emphasis="ambient">
-			<button class="button" data-emphasis="primary">Primary Button</button>
-			<button class="button" data-emphasis="secondary">Secondary Button</button>
-			<button class="button" data-emphasis="ambient">Ambient Button</button>
+			<button class="button" data-emphasis="primary">Primary</button>
+			<button class="button" data-emphasis="secondary">Secondary</button>
+			<button class="button" data-emphasis="ambient">Ambient</button>
 			<button class="button @mode-inverted" data-emphasis="primary">
-				Inverted Button
+				Inverted
 			</button>
 			<input class="input" placeholder="Input" />
 		</div>
 		<div class="surface @mode-dark" data-emphasis="secondary">
-			<button class="button" data-emphasis="primary">Primary Button</button>
-			<button class="button" data-emphasis="secondary">Secondary Button</button>
-			<button class="button" data-emphasis="ambient">Ambient Button</button>
+			<button class="button" data-emphasis="primary">Primary</button>
+			<button class="button" data-emphasis="secondary">Secondary</button>
+			<button class="button" data-emphasis="ambient">Ambient</button>
 			<input class="input" placeholder="Input" />
 		</div>
 		<div class="surface @mode-dark" data-emphasis="primary">
-			<button class="button" data-emphasis="primary">Primary Button</button>
-			<button class="button" data-emphasis="secondary">Secondary Button</button>
-			<button class="button" data-emphasis="ambient">Ambient Button</button>
+			<button class="button" data-emphasis="primary">Primary</button>
+			<button class="button" data-emphasis="secondary">Secondary</button>
+			<button class="button" data-emphasis="ambient">Ambient</button>
 			<input class="input" placeholder="Input" />
 		</div>
 		<div class="surface @mode-dark @mode-success" data-emphasis="primary">
-			<button class="button" data-emphasis="primary">Primary Button</button>
-			<button class="button" data-emphasis="secondary">Secondary Button</button>
-			<button class="button" data-emphasis="ambient">Ambient Button</button>
+			<button class="button" data-emphasis="primary">Primary</button>
+			<button class="button" data-emphasis="secondary">Secondary</button>
+			<button class="button" data-emphasis="ambient">Ambient</button>
 			<input class="input" placeholder="Input" />
 		</div>
 
 		<h2 class="subtitle">Inverted Mode (auto)</h2>
 		<div class="surface @mode-inverted" data-emphasis="primary">
-			<button class="button" data-emphasis="primary">Primary Button</button>
-			<button class="button" data-emphasis="secondary">Secondary Button</button>
-			<button class="button" data-emphasis="ambient">Ambient Button</button>
+			<button class="button" data-emphasis="primary">Primary</button>
+			<button class="button" data-emphasis="secondary">Secondary</button>
+			<button class="button" data-emphasis="ambient">Ambient</button>
 			<input class="input" placeholder="Input" />
 		</div>
 		<div class="surface @mode-dark">
 			<h3>Dark mode inverted</h3>
 			<div class="surface @mode-inverted" data-emphasis="primary">
-				<button class="button" data-emphasis="primary">Primary Button</button>
-				<button class="button" data-emphasis="secondary">
-					Secondary Button
-				</button>
-				<button class="button" data-emphasis="ambient">Ambient Button</button>
+				<button class="button" data-emphasis="primary">Primary</button>
+				<button class="button" data-emphasis="secondary">Secondary</button>
+				<button class="button" data-emphasis="ambient">Ambient</button>
 				<input class="input" placeholder="Input" />
 			</div>
 		</div>
 		<div class="surface @mode-inverted">
 			<h3>Double inverted</h3>
 			<div class="surface @mode-inverted" data-emphasis="primary">
-				<button class="button" data-emphasis="primary">Primary Button</button>
-				<button class="button" data-emphasis="secondary">
-					Secondary Button
-				</button>
-				<button class="button" data-emphasis="ambient">Ambient Button</button>
+				<button class="button" data-emphasis="primary">Primary</button>
+				<button class="button" data-emphasis="secondary">Secondary</button>
+				<button class="button" data-emphasis="ambient">Ambient</button>
 				<input class="input" placeholder="Input" />
 			</div>
 		</div>
 
-		<h2 class="subtitle">User Mode + Custom Color Hue</h2>
-		<div class="@mode-user @user-colors" style="--user-hue: 60">
+		<div class="@mode-user" style="--user-hue: 60">
+			<h3>@mode-user</h3>
 			<div class="surface" data-emphasis="secondary">
-				<button class="button" data-emphasis="primary">Primary Button</button>
-				<button class="button" data-emphasis="secondary">
-					Secondary Button
+				<button class="button" data-emphasis="primary">Primary</button>
+				<button class="button" data-emphasis="secondary">Secondary</button>
+				<button class="button" data-emphasis="ambient">Ambient</button>
+				<button class="button @mode-neutral" data-emphasis="primary">
+					Neutral
 				</button>
-				<button class="button" data-emphasis="ambient">Ambient Button</button>
 				<input class="input" placeholder="Input" />
 			</div>
 			<div class="surface" data-emphasis="primary">
-				<button class="button" data-emphasis="primary">Primary Button</button>
-				<button class="button" data-emphasis="secondary">
-					Secondary Button
-				</button>
-				<button class="button" data-emphasis="ambient">Ambient Button</button>
+				<button class="button" data-emphasis="primary">Primary</button>
+				<button class="button" data-emphasis="secondary">Secondary</button>
+				<button class="button" data-emphasis="ambient">Ambient</button>
+				<input class="input" placeholder="Input" />
+			</div>
+			<div class="surface @mode-neutral" data-emphasis="primary">
+				<h3>@mode-neutral</h3>
+				<button class="button" data-emphasis="primary">Primary</button>
+				<button class="button" data-emphasis="secondary">Secondary</button>
+				<button class="button" data-emphasis="ambient">Ambient</button>
 				<input class="input" placeholder="Input" />
 			</div>
 			<div class="surface @mode-success" data-emphasis="primary">
-				<button class="button" data-emphasis="primary">Primary Button</button>
-				<button class="button" data-emphasis="secondary">
-					Secondary Button
+				<h3>@mode-success</h3>
+				<button class="button" data-emphasis="primary">Primary</button>
+				<button class="button" data-emphasis="secondary">Secondary</button>
+				<button class="button" data-emphasis="ambient">Ambient</button>
+				<button class="button @mode-neutral" data-emphasis="primary">
+					Neutral
 				</button>
-				<button class="button" data-emphasis="ambient">Ambient Button</button>
 				<input class="input" placeholder="Input" />
 			</div>
 		</div>

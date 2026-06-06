@@ -71,11 +71,7 @@ export function createColorSemanticValues<TColorName extends string>(
 		main: $.mode.primitive.color[
 			defaultColor as keyof Tokens<TColorName>['mode']['primitive']['color']
 		],
-		neutral: (
-			$.mode.primitive.color[
-				defaultColor as keyof Tokens<TColorName>['mode']['primitive']['color']
-			] as any
-		).$neutral,
+		neutral: $.mode.color.main.$neutral,
 	};
 }
 

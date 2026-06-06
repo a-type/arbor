@@ -9,6 +9,7 @@ body {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
+	align-items: center;
 	gap: var(--m-spacing-sm);
 	/* Ambient = default */
 	@apply --mx-bg(var(--m-surface-ambient-bg));

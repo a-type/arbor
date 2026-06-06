@@ -9,12 +9,15 @@ const preset = definePreset({
 				ranges: {
 					brand: {
 						hue: 98,
+						neutralSaturation: 0.5,
 					},
 					success: {
 						hue: 165.88,
+						neutralSaturation: 0.5,
 					},
 					user: {
 						hue: 0,
+						neutralSaturation: 0.5,
 					},
 				},
 				mainColor: 'brand',
@@ -50,6 +53,12 @@ const preset = definePreset({
 preset.bundleMode('success', {
 	color: {
 		main: preset.$.mode.primitive.color.success,
+	},
+});
+
+preset.bundleMode('neutral', {
+	color: {
+		main: preset.$.mode.color.neutral,
 	},
 });
 

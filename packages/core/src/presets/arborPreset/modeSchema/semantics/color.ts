@@ -1,7 +1,10 @@
 import { createModeSchema } from '@arbor-css/modes';
-import { colorRangeSchemaWithoutNeutral } from '../primitives/color.js';
+import {
+	colorRangeSchema,
+	colorRangeSchemaWithoutNeutral,
+} from '../primitives/color.js';
 
 export const mainColorSemantics = createModeSchema({
-	main: colorRangeSchemaWithoutNeutral,
+	main: colorRangeSchema,
 	neutral: colorRangeSchemaWithoutNeutral,
 });
