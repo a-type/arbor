@@ -1,7 +1,7 @@
 {
 	"name": "@arbor-css/playground",
 	"private": true,
-	"version": "0.0.101",
+	"version": "0.0.102",
 	"scripts": {
 		"dev": "vite --port 5222",
 		"build": "vite build",
