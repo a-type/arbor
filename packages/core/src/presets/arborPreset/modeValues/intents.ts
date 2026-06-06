@@ -124,22 +124,26 @@ export function createControlIntentValues<TColorNames extends string>(
 
 export function createTextIntentValues<TColorNames extends string>(
 	$: Tokens<TColorNames>,
+	{
+		minSize = '0.875rem',
+		maxSize = '6rem',
+	}: { minSize?: string; maxSize?: string },
 ) {
 	return {
 		primary: {
-			size: css`calc(${$.mode.primitive.typography['3xl'].size} / ${$.mode.global.density})`,
+			size: css`calc(clamp(${minSize}, ${$.mode.primitive.typography['3xl'].size} / ${$.mode.global.density}, ${maxSize}))`,
 			weight: $.mode.primitive.typography['3xl'].weight,
 			lineHeight: $.mode.primitive.typography['3xl'].lineHeight,
 			font: 'sans-serif',
 		},
 		secondary: {
-			size: css`calc(max(${$.mode.primitive.typography.xs.size}, ${$.mode.primitive.typography.md.size} / ${$.mode.global.density}))`,
+			size: css`calc(clamp(${minSize}, ${$.mode.primitive.typography.md.size} / ${$.mode.global.density}, ${maxSize}))`,
 			weight: $.mode.primitive.typography.md.weight,
 			lineHeight: $.mode.primitive.typography.md.lineHeight,
 			font: 'sans-serif',
 		},
 		ambient: {
-			size: css`calc(max(${$.mode.primitive.typography.xs.size}, ${$.mode.primitive.typography.sm.size} / ${$.mode.global.density}))`,
+			size: css`calc(clamp(${minSize}, ${$.mode.primitive.typography.sm.size} / ${$.mode.global.density}, ${maxSize}))`,
 			weight: $.mode.primitive.typography.sm.weight,
 			lineHeight: $.mode.primitive.typography.sm.lineHeight,
 			font: 'sans-serif',

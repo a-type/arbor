@@ -43,7 +43,7 @@ export interface ArborPresetConfig<
 		mainColor: string;
 		defaultScheme?: 'light' | 'dark';
 	};
-	typography?: TypographyConfig;
+	typography?: TypographyConfig & { minSize?: string; maxSize?: string };
 	spacing?: SpacingConfig;
 	shadow?: ShadowConfig;
 	easing?: ModeValues<ArborModeSchema['easing']>;
@@ -135,7 +135,10 @@ export const presetArbor = <
 				action: createActionIntentValues($),
 				control: createControlIntentValues($),
 				surface: createSurfaceIntentValues($),
-				text: createTextIntentValues($),
+				text: createTextIntentValues($, {
+					minSize: config.typography?.minSize,
+					maxSize: config.typography?.maxSize,
+				}),
 			};
 		},
 		baseModeOptions: ($) => ({

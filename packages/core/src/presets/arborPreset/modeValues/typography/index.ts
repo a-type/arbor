@@ -34,8 +34,25 @@ export type TypographyConfig<TLevels extends string = DefaultTypographyLevel> =
 	{
 		levels?: Record<TLevels, Partial<TypographyLevel>>;
 		defaultLevel?: TLevels;
-		minSize?: string;
-		maxSize?: string;
+		weightStep?: number | string | Equation;
+		lineHeightStep?: number | string | Equation;
+		minWeight?: number | string | Equation;
+		maxWeight?: number | string | Equation;
+		baseWeight?: number | string | Equation;
+		minLineHeight?: number | string | Equation;
+		maxLineHeight?: number | string | Equation;
+		baseLineHeight?: number | string | Equation;
+		/**
+		 * Size is scaled exponentially; this is the "base" (the
+		 * number being scaled).
+		 */
+		sizeBase?: string | Equation;
+		/**
+		 * Multiplied with the step index to produce an exponent
+		 * for scaling sizeBase. The result is multiplied with
+		 * the default font size.
+		 */
+		sizeExponentStep?: number | string | Equation;
 	};
 
 export function compileTypography<
@@ -58,12 +75,9 @@ export function compileTypography<
 			const nameCast = name as TLevels;
 			const levelConfig = config.levels?.[nameCast] ?? {};
 			acc[nameCast] = {
-				size: typographySizeEquation(i - baseIndex, {
-					min: config.minSize,
-					max: config.maxSize,
-				}),
-				weight: typographyWeightEquation(i - baseIndex),
-				lineHeight: typographyLineHeightEquation(i - baseIndex),
+				size: css`calc(1rem * pow(${config.sizeBase ?? 1.125}, (${i - baseIndex} * ${config.sizeExponentStep ?? 1})))`,
+				weight: css`calc(clamp(${config.minWeight ?? 100}, ${config.baseWeight ?? 400} + ${config.weightStep ?? 25} * ${i - baseIndex}, ${config.maxWeight ?? 900}))`,
+				lineHeight: css`calc(clamp(${config.minLineHeight ?? 1}, (${config.baseLineHeight ?? 1.5} - ${config.lineHeightStep ?? 0.05} * ${i - baseIndex}), ${config.maxLineHeight ?? 2}))`,
 				...levelConfig,
 			};
 			return acc;
@@ -75,13 +89,3 @@ export function compileTypography<
 		...levels,
 	};
 }
-
-const typographySizeEquation = (
-	step: number,
-	{ min = '0.875rem', max = '3rem' }: { min?: string; max?: string },
-) => css`clamp(${min}, 1rem * pow(1.125, ${step}), ${max})`;
-
-const typographyWeightEquation = (step: number) => css`400 + 25 * ${step}`;
-
-const typographyLineHeightEquation = (step: number) =>
-	css`clamp(1.1, (1.5 - 0.05 * ${step}), 1.5)`;

@@ -15,6 +15,13 @@ export const arbor = presetArbor({
 		},
 		mainColor: 'primary',
 	},
+	typography: {
+		weightStep: -100,
+		maxWeight: 600,
+		maxSize: '12rem',
+		minSize: '0.5rem',
+		sizeExponentStep: 2,
+	},
 	globals: {
 		saturation: 0.5,
 		baseFontSize: '16px',
