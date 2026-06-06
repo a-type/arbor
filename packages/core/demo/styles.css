@@ -1,0 +1,63 @@
+.range {
+	display: flex;
+	color: var(--m-color-neutral-ink);
+}
+
+.color-swatch {
+	position: relative;
+	font-size: 10px;
+	white-space: wrap;
+	width: 100px;
+	height: 100px;
+}
+
+.pip {
+	position: absolute;
+	transform: translateY(50%);
+	background: black;
+	border-radius: 50%;
+	width: 10px;
+	height: 10px;
+	border: 1px solid white;
+	opacity: 0.8;
+
+	&.l {
+		background: white;
+		border-color: black;
+	}
+	&.c {
+		background: cyan;
+	}
+	&.h {
+		background: magenta;
+	}
+}
+
+.elements {
+	display: flex;
+	flex-direction: column;
+}
+
+.bg-main-mid {
+	@apply --mx-bg(var(--m-color-main));
+}
+
+.lighten-1 {
+	@apply --mx-bg-lighten(1);
+}
+
+.lighten-2 {
+	@apply --mx-bg-lighten(2);
+}
+
+.lighten-3 {
+	@apply --mx-bg-lighten(3);
+}
+
+.darken-1 {
+	@apply --mx-bg-darken(1);
+}
+
+.darken-2 {
+	@apply --mx-bg-darken(2);
+}

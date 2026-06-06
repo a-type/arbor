@@ -53,6 +53,7 @@
 		"prepublishOnly": "pnpm build"
 	},
 	"devDependencies": {
+		"@arbor-css/postcss": "workspace:*",
 		"@types/node": "^25.6.0",
 		"@types/yargs": "^17.0.35",
 		"@vitest/browser-playwright": "catalog:",
