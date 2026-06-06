@@ -28,7 +28,7 @@ export function createModeSchema<T extends SimpleTokenSchema>(input: T): T {
 	return input;
 }
 
-const INTERNALS = Symbol('ARBOR_MODE_INTERNALS');
+const INTERNALS = '$$ARBOR_MODE_INTERNALS';
 
 export type ModeInternals = {
 	name: string;
@@ -81,6 +81,6 @@ export function mergeModes(
 	};
 	return {
 		...values,
-		[INTERNALS]: internals,
+		[INTERNALS as any]: internals,
 	};
 }

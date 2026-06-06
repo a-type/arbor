@@ -61,7 +61,7 @@ export type PresetTokens<
 	mixins: MixinTokens<TMixins>;
 };
 
-export const INTERNALS = Symbol('ARBOR_INTERNALS');
+export const INTERNALS = '$$ARBOR_INTERNALS';
 
 export interface ArborPreset<
 	TModeSchema extends SimpleTokenSchema = SimpleTokenSchema,

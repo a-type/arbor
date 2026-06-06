@@ -1,3 +1,5 @@
+import colorName from 'color-name';
+
 export interface RgbaColor {
 	red: number;
 	green: number;
@@ -26,7 +28,8 @@ export function parseCssColor(value: string): RgbaColor | null {
 		parseHexColor(trimmed) ??
 		parseRgbColor(trimmed) ??
 		parseHslColor(trimmed) ??
-		parseOklchColor(trimmed)
+		parseOklchColor(trimmed) ??
+		parseNamedColor(trimmed)
 	);
 }
 
@@ -306,4 +309,16 @@ function linearSrgbToSrgb(value: number): number {
 
 function clamp01(value: number): number {
 	return Math.min(1, Math.max(0, value));
+}
+
+function parseNamedColor(value: string): RgbaColor | null {
+	const rgb = colorName[value.toLowerCase()];
+	return rgb ?
+			{
+				red: rgb[0] / 255,
+				green: rgb[1] / 255,
+				blue: rgb[2] / 255,
+				alpha: 1,
+			}
+		:	null;
 }
