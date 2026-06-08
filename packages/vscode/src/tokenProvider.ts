@@ -99,12 +99,31 @@ export class TokenProvider {
 		this.onChangeEmitter.fire();
 	}
 
+	/**
+	 * Resolves the filesystem path to use when searching upward for an
+	 * arbor.config.* file.  For ordinary files this is the document's own
+	 * directory.  For virtual "embedded-content" documents produced by VS Code
+	 * when a <style> block is processed inside an .astro / .svelte / .vue /
+	 * .html file we fall back to the currently-active editor's file path so
+	 * that the config search still anchors to the real project directory.
+	 */
+	private resolveDocumentDir(document: vscode.TextDocument): string | null {
+		if (document.uri.scheme === 'file') {
+			return dirname(document.uri.fsPath);
+		}
+		// Virtual embedded-content documents — use the active editor's real file.
+		const activeEditor = vscode.window.activeTextEditor;
+		if (activeEditor && activeEditor.document.uri.scheme === 'file') {
+			return dirname(activeEditor.document.uri.fsPath);
+		}
+		return null;
+	}
+
 	private async getConfigPathForDocument(
 		document: vscode.TextDocument,
 	): Promise<string | null> {
-		if (document.uri.scheme !== 'file') return null;
-
-		const fromDir = dirname(document.uri.fsPath);
+		const fromDir = this.resolveDocumentDir(document);
+		if (!fromDir) return null;
 		if (this.configPathCache.has(fromDir)) {
 			return this.configPathCache.get(fromDir) ?? null;
 		}

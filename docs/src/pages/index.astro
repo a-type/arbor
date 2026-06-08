@@ -1,96 +1,227 @@
 ---
-import Decorated from '../components/Decorated.astro';
 import Logo from '../components/Logo.astro';
-import PaletteSwitcher from '../components/PaletteSwitcher.astro';
-import Title from '../components/Title.astro';
+import Grid from '../components/system/Grid.astro';
+import Surface from '../components/system/Surface.astro';
 import Layout from '../layouts/Homepage.astro';
 ---
 
 <Layout>
-	<section
-		class:list={[
-			'p-xl flex flex-col items-center justify-center',
-			'gap-lg bg-surface-primary color-surface-primary md:min-h-50vh',
-		]}
-	>
-		<div class="flex flex-col items-center gap-lg sm:flex-row @mode-hero">
-			<Logo className="h-50vmin md:h-120px w-auto" />
-			<div class="flex flex-col gap-sm font-[Henrietta]">
-				<Title>Arbor&nbsp;CSS</Title>
-				<p class="rounded-lg text-secondary">The Design System System</p>
-			</div>
-		</div>
-	</section>
-
-	<div
-		class:list={[
-			'sticky top-0 flex items-center justify-center',
-			'@container [container-type:scroll-state]',
-		]}
-	>
-		<PaletteSwitcher class="stuck-start:(bg-white b rd text-sm)" />
-	</div>
-
-	<section
-		class:list={['p-xl flex flex-row items-center justify-center gap-lg']}
-	>
-		<div
-			class="flex flex-row gap-lg items-center text-primary font-[Henrietta]"
+	<Grid class="hero-grid @mode-hero">
+		<Surface
+			tag="section"
+			style="grid-area: title;"
+			emphasis="primary"
+			bordered
 		>
-			Designed for <Decorated className="@mode-structure @mode-winter"
-				>Structure</Decorated
-			> and <Decorated className="@mode-creativity @mode-summer"
-				>Creativity</Decorated
-			>.
-		</div>
-	</section>
-	<section>
-		Features (todo)
-		<ul>
-			<li>Define components once, let modes do the rest.</li>
-			<li>Powered by tokens</li>
-			<li>
-				(Go beyond light and dark) Light and dark schemes built-in, extensible
-				with custom schemes
-			</li>
-			<li>Bake your style configuration in, or leave it runtime dynamic</li>
-			<li>
-				Our preset generates your entire color palette from a handful of hues
-			</li>
-			<li>
-				Full control over color values, range size and step names, everything
-				your design system cares about
-			</li>
-		</ul>
-	</section>
-	<section>
-		<h2>No more of this</h2>
-		<div class="flex flex-row gap-md items-center">
-			<div
-				class="bg-_attention-light color-_attention-ink p-sm rd-md flex flex-row gap-md"
-				style="anchor-name:--warning-demo;"
-			>
-				<div class="i-material-symbols-light:warning-outline"></div>
-				<div class="@mode-dense flex flex-col gap-sm">
-					<span class="text-primary">Warning!</span>
-					<p>Your button doesn't match this alert.</p>
-					<button
-						class="px-sm py-xs rd-md bg-main-lighter self-end b b-solid b-action-secondary"
-					>
-						Okay
-					</button>
-				</div>
-			</div>
-			<div
-				style="position-anchor:--warning-demo;"
-				class="fixed left-[calc(anchor(right)-24px)] bottom-[anchor(top)] bg-surface-ambient color-surface-ambient p-sm rd-md flex flex-col gap-sm shadow-md"
-			>
-				<div class="flex flex-row gap-sm">
-					<div class="rd-full bg-main-light w-[32px] aspect-1"></div>
-					<span class="text-secondary text-bold">Your PM</span>
-				</div>
-				<p class="text-sm">"Can you make the button red like the alert?"</p>
-			</div>
-		</div>
-	</section>
+			<h1 class="title">Arbor CSS</h1>
+		</Surface>
+		<Surface
+			tag="section"
+			style="grid-area: logo;"
+			class="logo-section"
+			emphasis="ambient"
+		>
+			<Logo class="logo" />
+			<span class="caption @mode-dense">Structura + Vita</span>
+		</Surface>
+		<Surface
+			tag="section"
+			style="grid-area: tagline;"
+			emphasis="secondary"
+			bordered
+		>
+			<h3>The Design System System</h3>
+		</Surface>
+	</Grid>
+	<Surface
+		tag="nav"
+		emphasis="secondary"
+		class="toc @mode-inverted @mode-dense"
+	>
+		<a href="#editor">Your design tokens, clarified</a>
+		<a href="#modes">Scalable variants with Mise en Mode</a>
+		<a href="#preprocessor">Tomorrow's CSS, today</a>
+		<a href="#design">Designers welcome</a>
+	</Surface>
+	<Grid tag="main" class="content-grid">
+		<Surface tag="section" class="content-section" bordered id="editor">
+			<h2>Your design tokens, clarified</h2>
+			<p>
+				Arbor annotates your CSS with documentation, validation, and color
+				previews.
+			</p>
+			<a href="/docs/editor">Install the extension</a>
+		</Surface>
+		<Surface tag="section" class="content-section" bordered id="modes">
+			<h2>Scalable variants with Modes</h2>
+			<p>
+				Arbor's <code>@mode</code> system, inspired by Mise en Mode, brings clarity
+				and simplicity to component variations, eliminating gaps while decimating
+				your token count.
+			</p>
+			<a href="/docs/modes">Leverage modes</a>
+		</Surface>
+		<Surface tag="section" class="content-section" bordered id="preprocessor">
+			<h2>Tomorrow's CSS, today</h2>
+			<p>
+				Arbor's PostCSS preprocessor lets you adopt CSS <code>@function</code> and
+				<code>@mixin</code> today. Your Arbor preset config superpowers them with
+				type-checked token support.
+			</p>
+			<a href="/docs/preprocessor">Make some mixins</a>
+		</Surface>
+		<Surface tag="section" class="content-section" bordered id="design">
+			<h2>Designers welcome</h2>
+			<p>
+				Arbor's mission is to make the power of code-defined systems accessible
+				to designers and non-technical stakeholders.
+			</p>
+			<a href="/docs/designer-support">Read the designer's quick-start</a>
+		</Surface>
+	</Grid>
+
+	<style>
+		.hero-grid {
+			grid-template-areas: 'logo' 'title' 'tagline';
+			grid-template-rows: minmax(200px, auto) auto auto auto;
+			grid-template-columns: 1fr auto;
+
+			@apply --mx-border(var(--m-surface-primary-border));
+			border-radius: var(--m-surface-radius);
+
+			@media (min-width: 400px) {
+				grid-template-areas: 'title logo' 'tagline tagline';
+				grid-template-rows: minmax(200px, auto) auto auto;
+				grid-template-columns: 1fr auto;
+			}
+			@media (min-width: 800px) {
+				grid-template-areas: 'title logo' 'tagline logo';
+				grid-template-columns: 1fr auto;
+			}
+		}
+
+		section {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			text-align: left;
+		}
+
+		.logo-section {
+			gap: var(--m-spacing);
+			aspect-ratio: 1 / 1;
+			box-sizing: border-box;
+			display: flex;
+			flex-direction: column;
+			min-height: 0;
+		}
+
+		.logo {
+			flex: 1;
+		}
+
+		.title {
+			@apply --mx-fg(inherit);
+			font-size: var(--m-primitive-typography-6xl-size);
+			font-weight: var(--m-primitive-typography-weight-thin);
+			font-family: inherit;
+			line-height: var(--m-primitive-typography-6xl-lineHeight);
+		}
+
+		.caption {
+			@apply --mx-fg(inherit);
+			@apply --mx-fg-fade(50%);
+			font-size: var(--m-text-ambient-size);
+			font-weight: var(--m-text-ambient-weight);
+			font-family: var(--m-text-ambient-font);
+			line-height: 1;
+			margin-top: var(--m-spacing-sm);
+			letter-spacing: var(--m-spacing-xs);
+			font-style: italic;
+		}
+
+		a {
+			@apply --mx-fg(inherit);
+			font-size: var(--m-text-secondary-size);
+			font-weight: bold;
+			font-family: var(--m-text-secondary-font);
+			text-decoration: none;
+			line-height: 1;
+		}
+
+		h1,
+		h2,
+		h3 {
+			margin: 0;
+		}
+		h1 {
+			font-size: var(--m-text-primary-size);
+			font-weight: var(--m-text-primary-weight);
+			font-family: var(--m-text-primary-font);
+			line-height: var(--m-text-primary-lineHeight);
+		}
+		h2 {
+			font-size: var(--m-text-secondary-size);
+			font-weight: var(--m-text-secondary-weight);
+			font-family: var(--m-text-secondary-font);
+			line-height: var(--m-text-secondary-lineHeight);
+		}
+		h3 {
+			font-size: var(--m-text-ambient-size);
+			font-weight: var(--m-text-ambient-weight);
+			font-family: var(--m-text-ambient-font);
+			line-height: var(--m-text-ambient-lineHeight);
+		}
+
+		.toc {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+			gap: var(--m-spacing);
+			& > a {
+				@apply --mx-fg(inherit);
+				font-size: var(--m-text-ambient-size);
+				font-weight: var(--m-text-ambient-weight);
+				font-family: var(--m-text-ambient-font);
+				text-decoration: none;
+				line-height: 1;
+				text-align: center;
+			}
+		}
+
+		.content-grid {
+			grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+		}
+		.content-section {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			justify-content: flex-start;
+			gap: var(--m-spacing);
+			transition: box-shadow var(--m-duration) var(--m-easing);
+			@apply --mx-bg(transparent);
+
+			& > h2 {
+				@apply --mx-fg(inherit);
+				font-size: var(--m-text-primary-size);
+				font-weight: var(--m-primitive-typography-weight-bold);
+				font-family: var(--m-text-primary-font);
+				line-height: var(--m-text-primary-lineHeight);
+			}
+
+			& a {
+				&::after {
+					content: '→';
+					display: inline-block;
+					margin-left: var(--m-spacing-xs);
+				}
+			}
+
+			&:has(a:hover) {
+				@apply --mx-bg(var(--m-surface-ambient-bg));
+
+				@apply --mx-shadow;
+				--mx-shadow-shadow: var(--m-shadow-lg);
+			}
+		}
+	</style>
 </Layout>

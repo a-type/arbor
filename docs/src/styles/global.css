@@ -1,0 +1,25 @@
+/* inline-arbor-base */
+
+html,
+body {
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	min-height: 100dvh;
+	@apply --mx-bg(var(--m-color-main-paper));
+	font-family:
+		system-ui,
+		-apple-system,
+		BlinkMacSystemFont,
+		'Segoe UI',
+		Roboto,
+		Oxygen,
+		Ubuntu,
+		Cantarell,
+		'Open Sans',
+		'Helvetica Neue',
+		sans-serif;
+	font-size: var(--m-text-secondary-size);
+	font-weight: var(--m-text-secondary-weight);
+	line-height: var(--m-text-secondary-lineHeight);
+}

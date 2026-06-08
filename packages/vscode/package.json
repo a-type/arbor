@@ -19,7 +19,11 @@
 	"activationEvents": [
 		"onLanguage:css",
 		"onLanguage:scss",
-		"onLanguage:less"
+		"onLanguage:less",
+		"onLanguage:astro",
+		"onLanguage:svelte",
+		"onLanguage:vue",
+		"onLanguage:html"
 	],
 	"contributes": {
 		"languages": [

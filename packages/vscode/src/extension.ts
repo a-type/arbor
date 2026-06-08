@@ -8,7 +8,21 @@ import { TokenProvider } from './tokenProvider.js';
 export function activate(context: vscode.ExtensionContext): void {
 	const outputChannel = vscode.window.createOutputChannel('Arbor CSS');
 	outputChannel.appendLine('Activating Arbor CSS extension...');
-	const languageSelector: vscode.DocumentSelector = ['css', 'scss', 'less'];
+	// Standard CSS-family languages plus embedded-language host file types.
+	// For .astro, .svelte, .vue, and .html files VS Code creates virtual CSS
+	// documents (scheme "embedded-content") for <style> blocks, but the
+	// completion/hover/color providers are called with those virtual docs.
+	// Including the host language IDs here ensures the extension also
+	// activates and receives requests when those files are open.
+	const languageSelector: vscode.DocumentSelector = [
+		'css',
+		'scss',
+		'less',
+		'astro',
+		'svelte',
+		'vue',
+		'html',
+	];
 	const completionTriggerCharacters = Array.from(
 		'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-',
 	);

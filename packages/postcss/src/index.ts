@@ -30,6 +30,7 @@ interface CachedConfig {
 	configPath: string;
 	preset: AnyArborPreset;
 	mtimeMs: number;
+	size: number;
 }
 
 function parsePrefixedCall(input: string, namePrefix: string) {
@@ -207,7 +208,10 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 		if (cachedConfig) {
 			try {
 				const currentStats = await stat(cachedConfig.configPath);
-				if (currentStats.mtimeMs === cachedConfig.mtimeMs) {
+				if (
+					currentStats.mtimeMs === cachedConfig.mtimeMs &&
+					currentStats.size === cachedConfig.size
+				) {
 					return cachedConfig;
 				}
 			} catch {
@@ -229,9 +233,11 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 		}
 
 		let mtimeMs = 0;
+		let size = 0;
 		try {
 			const currentStats = await stat(loaded.configPath);
 			mtimeMs = currentStats.mtimeMs;
+			size = currentStats.size;
 		} catch {
 			// config path may be virtual (e.g. in tests); skip mtime caching
 		}
@@ -239,6 +245,7 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 			configPath: loaded.configPath,
 			preset: loaded.preset,
 			mtimeMs,
+			size,
 		};
 		return cachedConfig;
 	}

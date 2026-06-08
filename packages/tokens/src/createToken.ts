@@ -121,6 +121,7 @@ export type TokenPurpose =
 	| 'font-weight'
 	| 'font-family'
 	| 'line-height'
+	| 'letter-spacing'
 	| 'spacing'
 	| 'shadow'
 	| 'border-radius'

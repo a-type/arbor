@@ -1,3 +1,8 @@
+---
+import Grid from '../components/system/Grid.astro';
+import '../styles/global.css';
+---
+
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
@@ -5,9 +10,16 @@
 		<title>Arbor CSS</title>
 		<link rel="stylesheet" href="/henrietta.css" />
 	</head>
-	<body class="@mode-base">
-		<article class="flex flex-col bg-surface-primary gap-[1rem] p-[1rem]">
+	<body>
+		<Grid>
 			<slot />
-		</article>
+		</Grid>
+
+		<script>
+			import { connect } from '@arbor-css/core/runtime';
+			import preset from '../../arbor.config.js';
+			connect(preset);
+		</script>
+		<script src="../scripts/modePainter.ts"></script>
 	</body>
 </html>

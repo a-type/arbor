@@ -1,0 +1,59 @@
+---
+interface Props {
+	tag?: 'div' | 'section' | 'article' | 'aside' | 'nav';
+	emphasis?: 'primary' | 'secondary' | 'ambient';
+	bordered?: boolean;
+	round?: boolean;
+	style?: CSSStyleProperties | string;
+	class?: string;
+	id?: string;
+}
+const {
+	tag: TagName = 'div',
+	emphasis = '',
+	bordered = false,
+	round = true,
+	class: className,
+	...rest
+} = Astro.props;
+---
+
+<TagName
+	class:list={['surface', className]}
+	data-emphasis={emphasis}
+	data-bordered={bordered}
+	data-round={round}
+	{...rest}
+>
+	<slot />
+</TagName>
+
+<style>
+	.surface {
+		padding: var(--m-surface-padding);
+
+		@apply --mx-bg(var(--m-surface-ambient-bg));
+		@apply --mx-fg(var(--m-surface-ambient-fg));
+		border-radius: var(--m-surface-radius);
+		&[data-bordered='true'] {
+			@apply --mx-border(var(--m-surface-ambient-border));
+		}
+
+		&[data-emphasis='primary'] {
+			@apply --mx-bg(var(--m-surface-primary-bg));
+			@apply --mx-fg(var(--m-surface-primary-fg));
+
+			&[data-bordered='true'] {
+				@apply --mx-border(var(--m-surface-primary-border));
+			}
+		}
+		&[data-emphasis='secondary'] {
+			@apply --mx-bg(var(--m-surface-secondary-bg));
+			@apply --mx-fg(var(--m-surface-secondary-fg));
+
+			&[data-bordered='true'] {
+				@apply --mx-border(var(--m-surface-secondary-border));
+			}
+		}
+	}
+</style>

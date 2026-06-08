@@ -4,7 +4,17 @@ import { findArbitraryValueWarnings } from './arbitraryValueDiagnostics.js';
 import { createTokenRegexes } from './regex.js';
 import { TokenProvider } from './tokenProvider.js';
 
-const supportedLanguages = ['css', 'scss', 'less'];
+// Pure CSS-family languages handled directly.
+const supportedLanguages = [
+	'css',
+	'scss',
+	'less',
+	// Host language IDs for files that embed CSS in <style> blocks.
+	'astro',
+	'svelte',
+	'vue',
+	'html',
+];
 
 /**
  * Manages diagnostics (red underlines) for unknown Arbor token references.

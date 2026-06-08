@@ -1,0 +1,19 @@
+---
+export interface Props {
+	tag?: 'div' | 'main' | 'section' | 'article';
+	class?: string;
+}
+const { tag: TagName = 'div', class: className, ...rest } = Astro.props;
+---
+
+<TagName class:list={['grid', className]} {...rest}>
+	<slot />
+</TagName>
+
+<style>
+	.grid {
+		display: grid;
+		gap: var(--m-dynamic-gridGap);
+		padding: var(--m-dynamic-gridGap);
+	}
+</style>

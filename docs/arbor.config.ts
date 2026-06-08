@@ -1,11 +1,13 @@
-import { definePreset } from '@arbor-css/core';
+import { css, definePreset } from '@arbor-css/core';
 import { presetArbor } from '@arbor-css/core/preset-arbor';
 
 const basePreset = presetArbor({
-	config: {
-		globals: {
-			saturation: 0.5,
-		},
+	globals: {
+		saturation: 0.5,
+		shadowSpread: 1.5,
+		shadowBlur: 0,
+		lineWidth: 1,
+		roundness: 0,
 	},
 	color: {
 		mainColor: 'summer',
@@ -30,16 +32,24 @@ const basePreset = presetArbor({
 			},
 		},
 	},
+	typography: {
+		sizeExponentStep: 1.25,
+		maxSize: '10rem',
+	},
 });
 
 const preset = definePreset({
 	name: 'arbor-docs',
 	extends: [basePreset],
 	modeSchema: {
-		decoration: 'other',
+		dynamic: {
+			gridGap: 'spacing',
+		},
 	},
-	baseMode: () => ({
-		decoration: 'none',
+	baseMode: ($) => ({
+		dynamic: {
+			gridGap: css`calc(${$.mode.global.roundness} * ${$.mode.spacing.md})`,
+		},
 	}),
 });
 
@@ -57,19 +67,26 @@ makeSeasonMode('spring');
 makeSeasonMode('summer');
 makeSeasonMode('fall');
 
-preset.bundleMode('structure', {
-	decoration: 'url("/images/structure.svg")',
-});
-preset.bundleMode('creativity', {
-	decoration: 'url("/images/creativity.svg")',
-});
-
 preset.bundleMode('hero', {
-	density: 0.5,
+	global: {
+		density: 0.5,
+	},
 	text: {
 		primary: preset.$.mode.primitive.typography['4xl'],
 		secondary: preset.$.mode.primitive.typography['2xl'],
 		ambient: preset.$.mode.primitive.typography.md,
+	},
+});
+
+preset.bundleMode('dense', {
+	global: {
+		density: 1.5,
+	},
+});
+
+preset.bundleMode('round', {
+	global: {
+		roundness: 1,
 	},
 });
 

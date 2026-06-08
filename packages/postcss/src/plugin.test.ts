@@ -11,10 +11,21 @@ vi.mock('./loadConfig.js', () => ({
 	loadConfig: vi.fn(),
 }));
 
+// Mock fs/promises so we can control stat results
+vi.mock('node:fs/promises', () => ({
+	stat: vi.fn(),
+}));
+
+import * as fspModule from 'node:fs/promises';
+
 const mockLoadConfig = vi.mocked(loadConfigModule.loadConfig);
+const mockStat = vi.mocked(fspModule.stat);
 
 beforeEach(() => {
 	mockLoadConfig.mockReset();
+	mockStat.mockReset();
+	// Default: stat fails (virtual/fake path — skip mtime caching)
+	mockStat.mockRejectedValue(new Error('ENOENT'));
 });
 
 function makeConfigResult(preset: object) {
@@ -354,4 +365,61 @@ it('inlines scoped mixin declarations from list syntax with parameter values', a
 	expect(result.css).toContain('@media (max-width: 400px)');
 	expect(result.css).not.toContain('var(--color)');
 	expect(result.css).not.toContain('@apply');
+});
+
+it('evicts the cache when the config file size changes even if mtime is the same (sub-second write)', async () => {
+	// Simulate a file whose mtime stays the same across two reads (1-second
+	// filesystem granularity) but whose size changes because content was rewritten.
+	const FAKE_PATH = '/fake/arbor.config.ts';
+	const FIXED_MTIME = 1_700_000_000_000;
+
+	const firstPreset = makeConfigResult({ functions: {}, mixins: {}, $: undefined });
+	const secondPreset = makeConfigResult({ functions: {}, mixins: {}, $: undefined });
+
+	mockLoadConfig
+		.mockResolvedValueOnce({ ...firstPreset, configPath: FAKE_PATH })
+		.mockResolvedValueOnce({ ...secondPreset, configPath: FAKE_PATH });
+
+	// stat sequence:
+	//  1. After initial loadConfig: store mtime=fixed, size=100
+	//  2. Declaration handler cache-check during first run: same mtime+size → cache hit
+	//  3. Once handler cache-check at start of second run: same mtime, size=200 → evict
+	//  4. After second loadConfig: store mtime=fixed, size=200
+	//  5. Declaration handler cache-check during second run: same mtime+size → cache hit
+	mockStat
+		.mockResolvedValueOnce({ mtimeMs: FIXED_MTIME, size: 100 } as any) // store after 1st load
+		.mockResolvedValueOnce({ mtimeMs: FIXED_MTIME, size: 100 } as any) // cache-check in 1st run
+		.mockResolvedValueOnce({ mtimeMs: FIXED_MTIME, size: 200 } as any) // cache-check in 2nd run → evict
+		.mockResolvedValueOnce({ mtimeMs: FIXED_MTIME, size: 200 } as any) // store after 2nd load
+		.mockResolvedValueOnce({ mtimeMs: FIXED_MTIME, size: 200 } as any); // cache-check in 2nd run decl
+
+	const plugin = ArborPlugin({ cwd: '/fake' });
+
+	// First run — loads and caches the config
+	await postcss([plugin]).process(`.a { color: red; }`, { from: undefined });
+	expect(mockLoadConfig).toHaveBeenCalledTimes(1);
+
+	// Second run — mtime is identical but size differs; cache must be evicted
+	await postcss([plugin]).process(`.a { color: red; }`, { from: undefined });
+	expect(mockLoadConfig).toHaveBeenCalledTimes(2);
+});
+
+it('does not reload config when both mtime and size are unchanged', async () => {
+	const FAKE_PATH = '/fake/arbor.config.ts';
+	const FIXED_MTIME = 1_700_000_000_000;
+
+	const preset = makeConfigResult({ functions: {}, mixins: {}, $: undefined });
+	mockLoadConfig.mockResolvedValue({ ...preset, configPath: FAKE_PATH });
+
+	// stat always returns the same mtime and size
+	mockStat.mockResolvedValue({ mtimeMs: FIXED_MTIME, size: 512 } as any);
+
+	const plugin = ArborPlugin({ cwd: '/fake' });
+
+	await postcss([plugin]).process(`.a { color: red; }`, { from: undefined });
+	await postcss([plugin]).process(`.a { color: red; }`, { from: undefined });
+	await postcss([plugin]).process(`.a { color: red; }`, { from: undefined });
+
+	// loadConfig should only be called once; subsequent runs hit the cache
+	expect(mockLoadConfig).toHaveBeenCalledTimes(1);
 });
