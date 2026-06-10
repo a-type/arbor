@@ -21,7 +21,7 @@ export interface FunctionRecord {
 
 export interface MixinRecord {
 	name: string;
-	mixin: ArborMixin;
+	mixin: ArborMixin<any>;
 }
 
 const DEFAULT_LEVELS: TokenLevel[] = ['mode', 'system', 'mixins'];
@@ -241,12 +241,11 @@ export function listMixinRecords(preset: AnyArborPreset): MixinRecord[] {
 }
 
 export function formatMixinList(records: MixinRecord[]): string {
-	const header = 'name\tparameters\tdeclarations\tdescription';
+	const header = 'name\tparameters\tdescription';
 	const rows = records.map((record) =>
 		[
 			record.name,
 			formatParams(record.mixin.parameters),
-			record.mixin.declarations.length,
 			printable(record.mixin.description),
 		].join('\t'),
 	);

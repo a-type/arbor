@@ -13,6 +13,14 @@ it('is extensible', () => {
 		},
 	});
 
+	// typecheck arbor preset
+	base.$.mixins.bgFade;
+	// @ts-expect-error
+	base.$.mixins.askdjfs;
+	base.mixins.bgFade;
+	// @ts-expect-error
+	base.mixins.askdjfs;
+
 	const preset = definePreset({
 		name: 'test',
 		extends: [base],
@@ -38,9 +46,12 @@ it('is extensible', () => {
 	expect(getInternals(preset).modes.light).toBeDefined();
 	expect(getInternals(preset).modes.inverted).toBeDefined();
 
-	// check typing of mixin tokens
+	// check typing of extended mixins
 	// @ts-expect-error
 	preset.$.mixins.adfa;
+	preset.mixins.bgFade;
+	// @ts-expect-error
+	preset.mixins.askdjfs;
 });
 
 it('allows augmenting built-in modes', () => {

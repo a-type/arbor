@@ -16,6 +16,8 @@ import {
 } from '@arbor-css/tokens';
 import {
 	FunctionParams,
+	isFunctionParamWithMeta,
+	ParamsAsCallInputs,
 	paramsAsInterpolations,
 	ParamsAsInterpolations,
 	paramsAsString,
@@ -54,6 +56,18 @@ type MixinBodyListItem =
 			children: MixinBodyObject | MixinBodyList;
 	  };
 type MixinBodyList = readonly MixinBodyListItem[];
+
+export function isMixinPropertyDeclaration(
+	entry: ArborMixinBodyEntry,
+): entry is ArborMixinDeclaration {
+	return 'prop' in entry;
+}
+
+export function isMixinScope(
+	entry: ArborMixinBodyEntry,
+): entry is ArborMixinScope {
+	return 'scope' in entry;
+}
 
 function toEquation(value: MixinValue): Equation {
 	if (isCalcEquation(value)) {
@@ -106,7 +120,7 @@ function collectDeclarations(body: ArborMixinBody): ArborMixinDeclaration[] {
 	const declarations: ArborMixinDeclaration[] = [];
 
 	for (const entry of body) {
-		if ('prop' in entry) {
+		if (isMixinPropertyDeclaration(entry)) {
 			declarations.push(entry);
 			continue;
 		}
@@ -120,11 +134,15 @@ function collectDeclarations(body: ArborMixinBody): ArborMixinDeclaration[] {
 function printBody(body: ArborMixinBody): string {
 	return body
 		.map((entry) => {
-			if ('prop' in entry) {
+			if (isMixinPropertyDeclaration(entry)) {
 				return `${entry.prop}: ${printEquation(entry.value)};`;
 			}
 
-			return `${entry.scope} { ${printBody(entry.children)} }`;
+			if (isMixinScope(entry)) {
+				return `${entry.scope} { ${printBody(entry.children)} }`;
+			}
+
+			return '';
 		})
 		.join(' ');
 }
@@ -158,9 +176,9 @@ export interface CreateMixinParameters<
  *   parameters: [
  *     '--default-ring-color',
  *   ],
- *   definition: (css, defaultRingColor) => ({
+ *   definition: (css, { parameters }) => ({
  *     '--shadow': css`0 0 0 0 transparent`,
- *     '--ring': css`0 0 0 0 var(${defaultRingColor}, transparent)`,
+ *     '--ring': css`0 0 0 0 ${parameters[0]}`,
  *     'box-shadow': css`var(--ring), var(--shadow)`,
  *  }),
  */
@@ -208,7 +226,6 @@ export function createMixinFactory({
 				tokens: contributeTokens,
 			}),
 		);
-		const declarations = collectDeclarations(body);
 		const cssBody = printBody(body);
 
 		return {
@@ -216,25 +233,30 @@ export function createMixinFactory({
 			name: cssName,
 			description,
 			body,
-			declarations,
 			definition: `@mixin ${cssName}${paramsAsString(parameters)} { ${cssBody} }`,
-			inline: () =>
-				declarations.map((decl) => ({
-					prop: decl.prop,
-					value: decl.value,
-				})),
-			inlineBody: () =>
-				body.map((entry) =>
-					'prop' in entry ?
-						{
-							prop: entry.prop,
-							value: entry.value,
-						}
-					:	{
-							scope: entry.scope,
-							children: entry.children,
-						},
-				),
+			apply: (params) => {
+				// we "apply" a mixin within another mixin by assigning
+				// the provided parameters to properties matching their names,
+				// prepending that to this mixin's body statements, and
+				// returning it all.
+
+				const parameterDeclarations: ArborMixinDeclaration[] = [];
+				for (let index = 0; index < parameters.length; index++) {
+					const parameter = parameters[index];
+					const cssParameterName =
+						isFunctionParamWithMeta(parameter) ? parameter.name : parameter;
+					const fallback =
+						isFunctionParamWithMeta(parameter) ? parameter.fallback : undefined;
+					parameterDeclarations.push({
+						prop: cssParameterName,
+						value: css`
+							${params[index] ?? fallback ?? ''}
+						`,
+					});
+				}
+
+				return [...parameterDeclarations, ...body];
+			},
 			parameters,
 			contributeTokens,
 		};
@@ -242,24 +264,44 @@ export function createMixinFactory({
 }
 
 export type ArborMixin<
-	TParams extends FunctionParams = FunctionParams,
+	TParams extends FunctionParams,
 	TTokens extends TokenSchema = TokenSchema,
 > = {
 	[MIXIN_BRAND]: true;
 	name: string;
 	description?: string;
 	body: ArborMixinBody;
-	declarations: ArborMixinDeclaration[];
 	definition: string;
-	inline: () => ArborMixinDeclaration[];
-	inlineBody: () => ArborMixinBody;
+	/**
+	 * Computes the mixin's body based on provided parameters. This
+	 * can be used to compose mixins together, by applying one mixin from
+	 * an extended preset "into" another mixin you define by spreading the
+	 * result of this method.
+	 *
+	 * @example
+	 * const baseMixin = createMixin('base', {
+	 *   parameters: ['--color'] as const,
+	 *   definition: (colorParam) => ({
+	 *     color: colorParam,
+	 *     padding: '8px',
+	 *   }),
+	 * });
+	 *
+	 * const extendedMixin = createMixin('extended', {
+	 *   definition: (css, { parameters }, { mixins }) => ({
+	 *     ...mixins.base.apply('red'),
+	 *     background: 'black',
+	 *   }),
+	 * });
+	 */
+	apply: (params: ParamsAsCallInputs<TParams>) => MixinBodyList;
 	parameters: TParams;
 	contributeTokens: TTokens;
 };
 
-export type PresetMixins = Record<string, ArborMixin>;
+export type PresetMixins = Record<string, ArborMixin<any>>;
 
-export function isMixin(value: unknown): value is ArborMixin {
+export function isMixin(value: unknown): value is ArborMixin<any> {
 	return typeof value === 'object' && value !== null && MIXIN_BRAND in value;
 }
 

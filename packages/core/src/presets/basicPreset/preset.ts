@@ -155,7 +155,7 @@ export const presetBasic = definePreset({
 			fade,
 			ring,
 			contrastColor,
-		} as const;
+		};
 	},
 });
 

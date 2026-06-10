@@ -54,19 +54,19 @@ export type ExtendedConfigMixins<TExtends extends AnyArborPreset[]> =
  */
 export type PresetTokens<
 	TModeSchema extends SimpleTokenSchema,
-	TMixins extends PresetMixins,
+	TMixins extends PresetMixins | undefined,
 > = {
 	mode: SimpleTokensAsTokenDefinitions<TModeSchema>;
 	system: SystemTokens;
-	mixins: MixinTokens<TMixins>;
+	mixins: TMixins extends PresetMixins ? MixinTokens<TMixins> : {};
 };
 
 export const INTERNALS = '$$ARBOR_INTERNALS';
 
 export interface ArborPreset<
 	TModeSchema extends SimpleTokenSchema = SimpleTokenSchema,
-	TFunctions extends PresetFunctions = PresetFunctions,
-	TMixins extends PresetMixins = PresetMixins,
+	TFunctions extends PresetFunctions | undefined = PresetFunctions,
+	TMixins extends PresetMixins | undefined = PresetMixins,
 > {
 	functions: TFunctions;
 	mixins: TMixins;
@@ -118,16 +118,21 @@ export type BaseModeValues<
 > =
 	Record<never, never> extends ExtendedConfigModeSchema<TExtends> ?
 		ModeValues<TModeSchema>
-	:	DeepPartial<ModeValues<ExtendedConfigModeSchema<TExtends>>> &
-			ModeValues<TModeSchema>;
+	:	MergeAndReplaceExtensions<
+			DeepPartial<ModeValues<ExtendedConfigModeSchema<TExtends>>>,
+			ModeValues<TModeSchema>
+		>;
 
+// utility types
 type NoInferT<T> = [T][T extends any ? 0 : never];
+type MergeAndReplaceExtensions<T, R> =
+	R extends undefined ? T : Omit<T, keyof R> & R;
 
 export interface DefinePresetConfig<
 	TModeSchema extends SimpleTokenSchema,
-	TFunctions extends PresetFunctions,
-	TMixins extends PresetMixins,
-	TExtends extends AnyArborPreset[],
+	TFunctions extends PresetFunctions | undefined = undefined,
+	TMixins extends PresetMixins | undefined = undefined,
+	TExtends extends AnyArborPreset[] = [EmptyPreset],
 > {
 	name: string;
 	modeSchema: TModeSchema;
@@ -137,61 +142,44 @@ export interface DefinePresetConfig<
 	// from the same preset - it's "below" mixins in the overall order of things
 	baseMode: (
 		$tokens: PresetTokens<
-			ExtendedConfigModeSchema<NoInferT<TExtends>> & TModeSchema,
+			ExtendedConfigModeSchema<NoInferT<TExtends>> & NoInferT<TModeSchema>,
 			ExtendedConfigMixins<NoInferT<TExtends>>
 		>,
 		context: GlobalContext,
 	) => BaseModeValues<TModeSchema, TExtends>;
 	baseModeOptions?: (
 		$tokens: PresetTokens<
-			ExtendedConfigModeSchema<NoInferT<TExtends>> & TModeSchema,
+			ExtendedConfigModeSchema<NoInferT<TExtends>> & NoInferT<TModeSchema>,
 			ExtendedConfigMixins<NoInferT<TExtends>>
 		>,
 		context: GlobalContext,
 	) => ModeInstanceOptions;
 	defaultScheme?: 'light' | 'dark';
-	mixins?: (
-		create: CreateMixin,
-		$: PresetTokens<
-			ExtendedConfigModeSchema<NoInferT<TExtends>> & TModeSchema,
-			// Do not include mixin tokens when defining mixins -
-			// this would be circular logic
-			ExtendedConfigMixins<NoInferT<TExtends>>
-		>,
-	) => TMixins;
-	functions?: (
-		create: CreateFunction,
-		$: PresetTokens<
-			ExtendedConfigModeSchema<NoInferT<TExtends>> & TModeSchema,
-			ExtendedConfigMixins<NoInferT<TExtends>> & NoInferT<TMixins>
-		>,
-	) => TFunctions;
+	mixins?:
+		| ((
+				create: CreateMixin,
+				$: PresetTokens<
+					ExtendedConfigModeSchema<NoInferT<TExtends>> & NoInferT<TModeSchema>, // Do not include mixin tokens when defining mixins -
+					// this would be circular logic
+					ExtendedConfigMixins<NoInferT<TExtends>>
+				>,
+		  ) => TMixins)
+		| undefined;
+	functions?:
+		| ((
+				create: CreateFunction,
+				$: PresetTokens<
+					ExtendedConfigModeSchema<NoInferT<TExtends>> & NoInferT<TModeSchema>,
+					MergeAndReplaceExtensions<
+						ExtendedConfigMixins<NoInferT<TExtends>>,
+						NoInferT<TMixins>
+					>
+				>,
+		  ) => TFunctions)
+		| undefined;
 	extends?: TExtends;
 	config?: GlobalContextConfig;
 }
-
-export type DefinePresetConfigWithMixins<
-	TModeSchema extends SimpleTokenSchema,
-	TFunctions extends PresetFunctions,
-	TCreateMixins extends (
-		create: CreateMixin,
-		$: PresetTokens<
-			ExtendedConfigModeSchema<NoInferT<TExtends>> & TModeSchema,
-			ExtendedConfigMixins<NoInferT<TExtends>>
-		>,
-	) => PresetMixins,
-	TExtends extends AnyArborPreset[],
-> = Omit<
-	DefinePresetConfig<
-		TModeSchema,
-		TFunctions,
-		ReturnType<TCreateMixins>,
-		TExtends
-	>,
-	'mixins'
-> & {
-	mixins: TCreateMixins;
-};
 
 function emptyPreset(): ArborPreset {
 	return {
@@ -226,49 +214,8 @@ function emptyPreset(): ArborPreset {
 
 export function definePreset<
 	TModeSchema extends SimpleTokenSchema,
-	TFunctions extends PresetFunctions,
-	TCreateMixins extends (
-		create: CreateMixin,
-		$: PresetTokens<
-			ExtendedConfigModeSchema<NoInferT<TExtends>> & TModeSchema,
-			ExtendedConfigMixins<NoInferT<TExtends>>
-		>,
-	) => PresetMixins,
-	TExtends extends AnyArborPreset[] = [EmptyPreset],
->(
-	config: DefinePresetConfigWithMixins<
-		TModeSchema,
-		TFunctions,
-		TCreateMixins,
-		TExtends
-	>,
-): ArborPreset<
-	ExtendedConfigModeSchema<TExtends> & TModeSchema,
-	ExtendedConfigFunctions<TExtends> & TFunctions,
-	ExtendedConfigMixins<TExtends> & ReturnType<TCreateMixins>
->;
-
-export function definePreset<
-	TModeSchema extends SimpleTokenSchema,
-	TFunctions extends PresetFunctions,
-	TExtends extends AnyArborPreset[] = [EmptyPreset],
->(
-	config: Omit<
-		DefinePresetConfig<TModeSchema, TFunctions, {}, TExtends>,
-		'mixins'
-	> & {
-		mixins?: undefined;
-	},
-): ArborPreset<
-	ExtendedConfigModeSchema<TExtends> & TModeSchema,
-	ExtendedConfigFunctions<TExtends> & TFunctions,
-	ExtendedConfigMixins<TExtends>
->;
-
-export function definePreset<
-	TModeSchema extends SimpleTokenSchema,
-	TFunctions extends PresetFunctions,
-	TMixins extends PresetMixins,
+	TMixins extends PresetMixins | undefined = undefined,
+	TFunctions extends PresetFunctions | undefined = undefined,
 	TExtends extends AnyArborPreset[] = [EmptyPreset],
 >({
 	functions: createFunctions,
@@ -277,8 +224,8 @@ export function definePreset<
 	...presetOptions
 }: DefinePresetConfig<TModeSchema, TFunctions, TMixins, TExtends>): ArborPreset<
 	ExtendedConfigModeSchema<TExtends> & TModeSchema,
-	ExtendedConfigFunctions<TExtends> & TFunctions,
-	ExtendedConfigMixins<TExtends> & TMixins
+	MergeAndReplaceExtensions<ExtendedConfigFunctions<TExtends>, TFunctions>,
+	MergeAndReplaceExtensions<ExtendedConfigMixins<TExtends>, TMixins>
 > {
 	function withConfig(
 		options: GlobalContextConfig,
@@ -348,11 +295,16 @@ export function definePreset<
 				createMixins(context.createMixin, $tokensWithoutMixins as any)
 			:	({} as TMixins);
 
+		const allMixins = {
+			...composedPresets.mixins,
+			...mixins,
+		} as TMixins;
+
 		const $tokens: PresetTokens<any, any> = {
 			...$tokensWithoutMixins,
 			mixins: {
 				...$tokensWithoutMixins.mixins,
-				...extractMixinTokens(mixins),
+				...extractMixinTokens(mixins ?? {}),
 			},
 		} as any;
 
@@ -360,6 +312,11 @@ export function definePreset<
 			createFunctions ?
 				createFunctions(context.createFunction, $tokens as any)
 			:	({} as TFunctions);
+
+		const allFunctions = {
+			...composedPresets.functions,
+			...functions,
+		} as TFunctions;
 
 		const internals = {
 			modes: composedPresetBundledModes,
@@ -397,15 +354,8 @@ export function definePreset<
 				init: presetOptions,
 			},
 			$: $tokens,
-			// add mixins and functions to composed bases
-			functions: {
-				...composedPresets.functions,
-				...functions,
-			},
-			mixins: {
-				...composedPresets.mixins,
-				...mixins,
-			},
+			functions: allFunctions,
+			mixins: allMixins,
 			modeSchema,
 
 			withConfig,
@@ -459,4 +409,8 @@ export function getInternals(preset: AnyArborPreset): PresetInternals {
 	return internals;
 }
 
-export type AnyArborPreset = ArborPreset<any, PresetFunctions, PresetMixins>;
+export type AnyArborPreset = ArborPreset<
+	SimpleTokenSchema,
+	PresetFunctions,
+	PresetMixins
+>;

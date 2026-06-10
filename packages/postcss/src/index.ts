@@ -2,6 +2,7 @@ import { printEquation } from '@arbor-css/calc';
 import { AnyArborPreset, generateStylesheet } from '@arbor-css/core';
 import {
 	type ArborMixinBodyEntry,
+	FunctionParam,
 	isFunction,
 	isFunctionParamWithMeta,
 	isMixin,
@@ -122,7 +123,7 @@ function computeFunctionCallValue({
 		return input;
 	}
 
-	const paramValues: Record<string, string> = {};
+	const paramValues: string[] = [];
 	let invalid = false;
 	fn.parameters.forEach((param, i) => {
 		const paramName = isFunctionParamWithMeta(param) ? param.name : param;
@@ -148,7 +149,7 @@ function computeFunctionCallValue({
 		}
 
 		if (value !== undefined) {
-			paramValues[paramName] = value;
+			paramValues[i] = value;
 		}
 	});
 
@@ -156,7 +157,7 @@ function computeFunctionCallValue({
 		return input;
 	}
 
-	return fn.compute(paramValues);
+	return fn.compute(paramValues, { propertyValues: {} });
 }
 
 function resolveMixinValue(
@@ -185,7 +186,10 @@ function cloneScopedMixinEntry(
 	const parsed = postcss.parse(`${entry.scope} {}`);
 	const [scopedNode] = parsed.nodes;
 
-	if (!scopedNode || (scopedNode.type !== 'atrule' && scopedNode.type !== 'rule')) {
+	if (
+		!scopedNode ||
+		(scopedNode.type !== 'atrule' && scopedNode.type !== 'rule')
+	) {
 		throw new Error(`Invalid mixin scope: ${entry.scope}`);
 	}
 	const scopedContainer = scopedNode.clone();
@@ -345,7 +349,7 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 
 			const mixinParamValues: Record<string, string> = {};
 			let invalidMixinCall = false;
-			mixin.parameters.forEach((param, i) => {
+			mixin.parameters.forEach((param: FunctionParam, i: number) => {
 				const paramName = isFunctionParamWithMeta(param) ? param.name : param;
 				const fallback =
 					isFunctionParamWithMeta(param) ?
@@ -389,8 +393,7 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 				}),
 			);
 
-			const body = mixin.inlineBody();
-			for (const entry of body) {
+			for (const entry of mixin.body) {
 				atRule.cloneBefore(cloneScopedMixinEntry(entry, mixinParamValues));
 			}
 

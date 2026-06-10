@@ -1,0 +1,42 @@
+---
+export interface Props {
+	tag?: 'a' | 'button';
+	href?: string;
+	class?: string;
+	emphasis?: 'primary' | 'secondary' | 'ambient';
+}
+const { tag: Tag = 'a', emphasis = 'primary', ...props } = Astro.props;
+---
+
+<Tag data-emphasis={emphasis} {...props}>
+	<slot />
+</Tag>
+
+<style>
+	button {
+		@apply --mx-shadow;
+		@apply --mx-fg(var(--m-action-ambient-fg));
+		@apply --mx-bg(var(--m-action-ambient-bg));
+		@apply --mx-border(var(--m-action-ambient-border));
+		border-radius: var(--m-action-radius);
+		padding: var(--m-action-padding);
+		font-size: var(--m-text-secondary-size);
+		line-height: 1;
+		font-weight: var(--m-primitive-typography-weight-bold);
+
+		&[data-emphasis='primary'] {
+			@apply --mx-fg(var(--m-action-primary-fg));
+			@apply --mx-bg(var(--m-action-primary-bg));
+			@apply --mx-border(var(--m-action-primary-border));
+		}
+		&[data-emphasis='secondary'] {
+			@apply --mx-fg(var(--m-action-secondary-fg));
+			@apply --mx-bg(var(--m-action-secondary-bg));
+			@apply --mx-border(var(--m-action-secondary-border));
+		}
+
+		&:disabled {
+			@apply --mx-disabled;
+		}
+	}
+</style>

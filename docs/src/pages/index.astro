@@ -1,143 +1,95 @@
 ---
 import Logo from '../components/Logo.astro';
 import Grid from '../components/system/Grid.astro';
-import Surface from '../components/system/Surface.astro';
 import Layout from '../layouts/Homepage.astro';
 ---
 
 <Layout>
-	<Grid class="hero-grid @mode-hero">
-		<Surface
-			tag="section"
-			style="grid-area: title;"
-			emphasis="primary"
-			bordered
-		>
-			<h1 class="title">Arbor CSS</h1>
-		</Surface>
-		<Surface
-			tag="section"
-			style="grid-area: logo;"
-			class="logo-section"
-			emphasis="ambient"
-		>
-			<Logo class="logo" />
-			<span class="caption @mode-dense">Structura + Vita</span>
-		</Surface>
-		<Surface
-			tag="section"
-			style="grid-area: tagline;"
-			emphasis="secondary"
-			bordered
-		>
-			<h3>The Design System System</h3>
-		</Surface>
-	</Grid>
-	<Surface
-		tag="nav"
-		emphasis="secondary"
-		class="toc @mode-inverted @mode-dense"
-	>
-		<a href="#editor">Your design tokens, clarified</a>
-		<a href="#modes">Scalable variants with Mise en Mode</a>
-		<a href="#preprocessor">Tomorrow's CSS, today</a>
-		<a href="#design">Designers welcome</a>
-	</Surface>
-	<Grid tag="main" class="content-grid">
-		<Surface tag="section" class="content-section" bordered id="editor">
-			<h2>Your design tokens, clarified</h2>
-			<p>
-				Arbor annotates your CSS with documentation, validation, and color
-				previews.
-			</p>
-			<a href="/docs/editor">Install the extension</a>
-		</Surface>
-		<Surface tag="section" class="content-section" bordered id="modes">
-			<h2>Scalable variants with Modes</h2>
-			<p>
-				Arbor's <code>@mode</code> system, inspired by Mise en Mode, brings clarity
-				and simplicity to component variations, eliminating gaps while decimating
-				your token count.
-			</p>
-			<a href="/docs/modes">Leverage modes</a>
-		</Surface>
-		<Surface tag="section" class="content-section" bordered id="preprocessor">
-			<h2>Tomorrow's CSS, today</h2>
-			<p>
-				Arbor's PostCSS preprocessor lets you adopt CSS <code>@function</code> and
-				<code>@mixin</code> today. Your Arbor preset config superpowers them with
-				type-checked token support.
-			</p>
-			<a href="/docs/preprocessor">Make some mixins</a>
-		</Surface>
-		<Surface tag="section" class="content-section" bordered id="design">
-			<h2>Designers welcome</h2>
-			<p>
-				Arbor's mission is to make the power of code-defined systems accessible
-				to designers and non-technical stakeholders.
-			</p>
-			<a href="/docs/designer-support">Read the designer's quick-start</a>
-		</Surface>
-	</Grid>
+	<div class="container">
+		<nav>
+			<Logo class="nav-logo" />
+			<a href="/docs">Documentation</a>
+			<a href="https://github.com/a-type/arbor">GitHub</a>
+		</nav>
+
+		<Grid class="hero-grid @mode-hero">
+			<section style="grid-area: tagline;">
+				<h1 class="tagline">The CSS Design System System</h1>
+			</section>
+			<section style="grid-area: logo;" class="logo-section">
+				<Logo class="logo" />
+			</section>
+			<section style="grid-area: description;">
+				<p class="description">
+					Scale your styling, enliven your designs, and maintain fewer tokens
+				</p>
+			</section>
+		</Grid>
+
+		<div class="ctas">
+			<Copyable>
+				<code>npm install @arbor-css/core</code>
+			</Copyable>
+			<a class="button" href="/docs">Read the docs</a>
+		</div>
+	</div>
 
 	<style>
+		.container {
+			max-width: 1000px;
+			margin: 0 auto;
+			padding: var(--m-spacing-lg) var(--m-spacing);
+		}
+
 		.hero-grid {
-			grid-template-areas: 'logo' 'title' 'tagline';
-			grid-template-rows: minmax(200px, auto) auto auto auto;
+			grid-template-areas: 'logo' 'tagline' 'description';
+			grid-template-rows: minmax(200px, auto) auto auto;
 			grid-template-columns: 1fr auto;
 
-			@apply --mx-border(var(--m-surface-primary-border));
 			border-radius: var(--m-surface-radius);
 
 			@media (min-width: 400px) {
-				grid-template-areas: 'title logo' 'tagline tagline';
-				grid-template-rows: minmax(200px, auto) auto auto;
-				grid-template-columns: 1fr auto;
-			}
-			@media (min-width: 800px) {
-				grid-template-areas: 'title logo' 'tagline logo';
-				grid-template-columns: 1fr auto;
+				grid-template-areas: 'tagline logo' 'description logo';
+				grid-template-rows: auto auto;
+				grid-template-columns: 3fr 1fr;
 			}
 		}
 
 		section {
 			display: flex;
 			align-items: center;
-			justify-content: center;
+			justify-content: start;
 			text-align: left;
 		}
 
 		.logo-section {
 			gap: var(--m-spacing);
-			aspect-ratio: 1 / 1;
 			box-sizing: border-box;
 			display: flex;
 			flex-direction: column;
 			min-height: 0;
+			align-items: center;
+			justify-content: center;
 		}
 
 		.logo {
 			flex: 1;
 		}
 
-		.title {
+		.tagline {
 			@apply --mx-fg(inherit);
-			font-size: var(--m-primitive-typography-6xl-size);
+			font-size: var(--m-text-primary-size);
 			font-weight: var(--m-primitive-typography-weight-thin);
-			font-family: inherit;
-			line-height: var(--m-primitive-typography-6xl-lineHeight);
+			font-family: var(--m-text-primary-font);
+			line-height: var(--m-text-primary-lineHeight);
 		}
 
-		.caption {
+		.description {
 			@apply --mx-fg(inherit);
-			@apply --mx-fg-fade(50%);
 			font-size: var(--m-text-ambient-size);
-			font-weight: var(--m-text-ambient-weight);
+			font-weight: var(--m-primitive-typography-weight-bold);
 			font-family: var(--m-text-ambient-font);
-			line-height: 1;
-			margin-top: var(--m-spacing-sm);
-			letter-spacing: var(--m-spacing-xs);
-			font-style: italic;
+			line-height: var(--m-text-ambient-lineHeight);
 		}
 
 		a {
@@ -154,74 +106,11 @@ import Layout from '../layouts/Homepage.astro';
 		h3 {
 			margin: 0;
 		}
-		h1 {
-			font-size: var(--m-text-primary-size);
-			font-weight: var(--m-text-primary-weight);
-			font-family: var(--m-text-primary-font);
-			line-height: var(--m-text-primary-lineHeight);
-		}
-		h2 {
-			font-size: var(--m-text-secondary-size);
-			font-weight: var(--m-text-secondary-weight);
-			font-family: var(--m-text-secondary-font);
-			line-height: var(--m-text-secondary-lineHeight);
-		}
-		h3 {
-			font-size: var(--m-text-ambient-size);
-			font-weight: var(--m-text-ambient-weight);
-			font-family: var(--m-text-ambient-font);
-			line-height: var(--m-text-ambient-lineHeight);
-		}
 
-		.toc {
-			display: grid;
-			grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-			gap: var(--m-spacing);
-			& > a {
-				@apply --mx-fg(inherit);
-				font-size: var(--m-text-ambient-size);
-				font-weight: var(--m-text-ambient-weight);
-				font-family: var(--m-text-ambient-font);
-				text-decoration: none;
-				line-height: 1;
-				text-align: center;
-			}
-		}
-
-		.content-grid {
-			grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
-		}
-		.content-section {
+		.ctas {
 			display: flex;
-			flex-direction: column;
-			align-items: flex-start;
-			justify-content: flex-start;
 			gap: var(--m-spacing);
-			transition: box-shadow var(--m-duration) var(--m-easing);
-			@apply --mx-bg(transparent);
-
-			& > h2 {
-				@apply --mx-fg(inherit);
-				font-size: var(--m-text-primary-size);
-				font-weight: var(--m-primitive-typography-weight-bold);
-				font-family: var(--m-text-primary-font);
-				line-height: var(--m-text-primary-lineHeight);
-			}
-
-			& a {
-				&::after {
-					content: '→';
-					display: inline-block;
-					margin-left: var(--m-spacing-xs);
-				}
-			}
-
-			&:has(a:hover) {
-				@apply --mx-bg(var(--m-surface-ambient-bg));
-
-				@apply --mx-shadow;
-				--mx-shadow-shadow: var(--m-shadow-lg);
-			}
+			flex-wrap: wrap;
 		}
 	</style>
 </Layout>

@@ -33,8 +33,10 @@ const basePreset = presetArbor({
 		},
 	},
 	typography: {
-		sizeExponentStep: 1.25,
 		maxSize: '10rem',
+		baseWeight: 300,
+		weightStep: 100,
+		sizeExponentStep: 1.25,
 	},
 });
 
@@ -51,7 +53,21 @@ const preset = definePreset({
 			gridGap: css`calc(${$.mode.global.roundness} * ${$.mode.spacing.md})`,
 		},
 	}),
+
+	mixins: (create, $) => ({
+		disabled: create('disabled', {
+			definition: (css) => [
+				...basePreset.mixins.bgDesaturate.apply(['50%', undefined]),
+				...basePreset.mixins.fgLighten.apply([1, undefined]),
+			],
+		}),
+	}),
 });
+
+preset.$.mixins.bgFade;
+preset.$.mixins.disabled;
+// @ts-expect-error
+preset.$.mixins.aksdjfkds;
 
 function makeSeasonMode(season: 'winter' | 'spring' | 'summer' | 'fall') {
 	preset.bundleMode(season, {
@@ -72,9 +88,18 @@ preset.bundleMode('hero', {
 		density: 0.5,
 	},
 	text: {
-		primary: preset.$.mode.primitive.typography['4xl'],
-		secondary: preset.$.mode.primitive.typography['2xl'],
-		ambient: preset.$.mode.primitive.typography.md,
+		primary: {
+			...preset.$.mode.primitive.typography['6xl'],
+			font: '"Cormorant", serif',
+		},
+		secondary: {
+			...preset.$.mode.primitive.typography['2xl'],
+			font: '"Cormorant", serif',
+		},
+		ambient: {
+			...preset.$.mode.primitive.typography.md,
+			font: '"Cormorant", serif',
+		},
 	},
 });
 

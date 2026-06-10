@@ -228,5 +228,5 @@ export const presetArbor = <
 };
 
 export type PresetArborModeTokens<TRangeNames extends string> = ReturnType<
-	typeof presetArbor
+	typeof presetArbor<TRangeNames>
 >['$']['mode'];

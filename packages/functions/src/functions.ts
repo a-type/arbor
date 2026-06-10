@@ -1,4 +1,5 @@
 import {
+	CalcEvaluationContext,
 	computeEquation,
 	css,
 	Css,
@@ -9,6 +10,7 @@ import {
 import {
 	FunctionParams,
 	isFunctionParamWithMeta,
+	ParamsAsCallInputs,
 	ParamsAsInterpolations,
 	paramsAsInterpolations,
 	paramsAsString,
@@ -81,23 +83,25 @@ export function createFunctionFactory({
 			parameters,
 			equation,
 			definition: cssDefinition,
-			inline: (...params: ParamsAsInterpolations<TParams>) =>
-				definition(css, ...params),
-			compute(params: Record<string, string | number>): string {
-				const propertyValues: Record<string, string> = {};
+			compute(
+				params: ParamsAsCallInputs<TParams>,
+				ctx?: CalcEvaluationContext,
+			): string {
+				const parameterValues: Record<string, string> = {};
 				for (let index = 0; index < parameters.length; index++) {
 					const parameter = parameters[index];
 					const cssParameterName =
 						isFunctionParamWithMeta(parameter) ? parameter.name : parameter;
 					const fallback =
 						isFunctionParamWithMeta(parameter) ? parameter.fallback : undefined;
-					propertyValues[cssParameterName] = String(
-						params[cssParameterName] ?? fallback,
-					);
+					parameterValues[cssParameterName] = String(params[index] ?? fallback);
 				}
 				const result = computeEquation(equation, {
-					propertyValues,
-					skipBaking: false,
+					...ctx,
+					propertyValues: {
+						...ctx?.propertyValues,
+						...parameterValues,
+					},
 				});
 				return printComputationResult(result);
 			},
@@ -112,8 +116,10 @@ export type ArborFunction<TParams extends FunctionParams = FunctionParams> = {
 	parameters: TParams;
 	equation: Equation;
 	definition: string;
-	inline: (...params: ParamsAsInterpolations<TParams>) => Equation;
-	compute: (params: Record<string, string | number>) => string;
+	compute: (
+		params: ParamsAsCallInputs<TParams>,
+		ctx?: CalcEvaluationContext,
+	) => string;
 };
 export type PresetFunctions = Record<string, ArborFunction>;
 

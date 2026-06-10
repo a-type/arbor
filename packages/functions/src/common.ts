@@ -12,6 +12,11 @@ export type FunctionParams = readonly FunctionParam[];
 export type ParamsAsInterpolations<TParams extends FunctionParams> = {
 	[K in keyof TParams]: CalcInterpolation;
 };
+export type ParamsAsCallInputs<TParams extends FunctionParams> = {
+	[K in keyof TParams]: TParams[K] extends { fallback: string } ?
+		CalcInterpolation | undefined
+	:	CalcInterpolation;
+};
 
 export function isFunctionParamWithMeta(
 	param: CssProperty | FunctionParamWithMeta,

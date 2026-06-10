@@ -132,7 +132,7 @@ it('composes presets', () => {
 		}),
 		mixins: (create) => ({
 			demo: create('demo', {
-				parameters: [] as const,
+				parameters: [],
 				definition: (css, { tokens }) => ({
 					color: css`
 						${tokens.inputColor}
@@ -145,7 +145,7 @@ it('composes presets', () => {
 		}),
 		functions: (create) => ({
 			demo: create('demo', {
-				parameters: [] as const,
+				parameters: [],
 				definition: (css) => css`red`,
 			}),
 		}),
@@ -162,7 +162,7 @@ it('composes presets', () => {
 		extends: [basePreset],
 		mixins: (create, $) => ({
 			usesDemo: create('uses-demo', {
-				parameters: [] as const,
+				parameters: [],
 				definition: (css) => ({
 					color: css`
 						${$.mixins.demo.inputColor}
@@ -175,7 +175,7 @@ it('composes presets', () => {
 		}),
 		functions: (create, $) => ({
 			another: create('another', {
-				parameters: [] as const,
+				parameters: [],
 				definition: (css) => css`
 					${$.mixins.demo.inputColor}
 				`,
@@ -186,11 +186,6 @@ it('composes presets', () => {
 	expect(extendedPreset.$.mode.color.name).toBe('--m-color');
 	expect(extendedPreset.$.mode.size.name).toBe('--m-size');
 
-	extendedPreset.modeSchema;
-
-	// @ts-expect-error - mode extension does not fail to arbitrary shapes
-	extendedPreset.$.mode.foo;
-
 	expect(extendedPreset.$.mixins.demo).toBeDefined();
 	expect(extendedPreset.mixins.usesDemo).toBeDefined();
 	expect(extendedPreset.$.mixins.usesDemo.inputColor2.name).toBe(
@@ -198,9 +193,65 @@ it('composes presets', () => {
 	);
 
 	// typing checks
+	extendedPreset.modeSchema;
+	extendedPreset.mixins.demo;
+	// @ts-expect-error
+	extendedPreset.mixins.aslkdfjalsdkfj;
+	// @ts-expect-error - mode extension does not fail to arbitrary shapes
+	extendedPreset.$.mode.foo;
 	extendedPreset.$.mixins.demo.inputColor.name;
 	extendedPreset.functions.demo;
 	extendedPreset.functions.another;
+});
+
+it('preserves base preset typings when composing without extension', () => {
+	const basePreset = definePreset({
+		name: 'base-preset',
+		modeSchema: {
+			color: 'color',
+		},
+		baseMode: () => ({
+			color: 'red',
+		}),
+		mixins: (create) => ({
+			demo: create('demo', {
+				parameters: [],
+				definition: (css) => ({
+					color: css`
+						red
+					`,
+				}),
+				contributeTokens: {
+					inputColor: 'color',
+				},
+			}),
+		}),
+		functions: (create) => ({
+			demo: create('demo', {
+				parameters: [],
+				definition: (css) => css`red`,
+			}),
+			baseOnly: create('baseOnly', {
+				parameters: [],
+				definition: (css) => css`red`,
+			}),
+		}),
+	});
+
+	const extendedPreset = definePreset({
+		name: 'extended-preset',
+		modeSchema: {},
+		baseMode: () => ({}),
+		extends: [basePreset],
+	});
+
+	extendedPreset.$.mode.color.name;
+	extendedPreset.$.mixins.demo.inputColor.name;
+	extendedPreset.functions.baseOnly;
+	// @ts-expect-error
+	extendedPreset.functions.asdf;
+	// @ts-expect-error
+	extendedPreset.mixins.alkjsdf;
 });
 
 it('allows changing global config on all extended presets', () => {

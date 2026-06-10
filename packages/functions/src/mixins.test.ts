@@ -1,7 +1,11 @@
-import { printEquation } from '@arbor-css/calc';
+import { css, printEquation } from '@arbor-css/calc';
 import { createTokenFactory } from '@arbor-css/tokens';
 import { describe, expect, it } from 'vitest';
-import { createMixinFactory, isMixin } from './mixins.js';
+import {
+	createMixinFactory,
+	isMixin,
+	isMixinPropertyDeclaration,
+} from './mixins.js';
 
 const createToken = createTokenFactory({ tokenPrefix: '--x-' });
 const createMixin = createMixinFactory({
@@ -34,7 +38,7 @@ describe('createMixin', () => {
 		});
 
 		expect(mixin.description).toBe('Applies stacked shadow variables');
-		expect(mixin.declarations).toHaveLength(2);
+		expect(mixin.body).toHaveLength(2);
 	});
 
 	it('generates a CSS @mixin definition', () => {
@@ -68,10 +72,9 @@ describe('createMixin', () => {
 			}),
 		});
 
-		expect(mixin.declarations.map((decl) => decl.prop)).toEqual([
-			'--x-system-shadow',
-			'box-shadow',
-		]);
+		expect(
+			mixin.body.filter(isMixinPropertyDeclaration).map((decl) => decl.prop),
+		).toEqual(['--x-system-shadow', 'box-shadow']);
 	});
 
 	it('supports scoped declarations in object definitions', () => {
@@ -89,19 +92,15 @@ describe('createMixin', () => {
 		expect(mixin.definition).toBe(
 			'@mixin --x-mixin-responsive-bg { @media (max-width: 400px) { background: red; } .parent { color: blue; } }',
 		);
-		expect(mixin.inlineBody()).toEqual([
+		expect(mixin.body).toEqual([
 			{
 				scope: '@media (max-width: 400px)',
-				children: [{ prop: 'background', value: mixin.inline()[0].value }],
+				children: [{ prop: 'background', value: css`red` }],
 			},
 			{
 				scope: '.parent',
-				children: [{ prop: 'color', value: mixin.inline()[1].value }],
+				children: [{ prop: 'color', value: css`blue` }],
 			},
-		]);
-		expect(mixin.inline().map((decl) => decl.prop)).toEqual([
-			'background',
-			'color',
 		]);
 	});
 
@@ -122,11 +121,6 @@ describe('createMixin', () => {
 		expect(mixin.definition).toBe(
 			'@mixin --x-mixin-responsive-fg { color: blue; @media (max-width: 400px) { color: red; background: black; } }',
 		);
-		expect(mixin.inline().map((decl) => decl.prop)).toEqual([
-			'color',
-			'color',
-			'background',
-		]);
 	});
 
 	it('returns inlinable declarations', () => {
@@ -142,7 +136,7 @@ describe('createMixin', () => {
 		});
 
 		expect(
-			mixin.inline().map((decl) => ({
+			mixin.body.filter(isMixinPropertyDeclaration).map((decl) => ({
 				prop: decl.prop,
 				value: printEquation(decl.value),
 			})),
@@ -233,7 +227,68 @@ describe('createMixin', () => {
 		});
 
 		expect(mixin.contributeTokens.size.name).toBe(`--x-arrow-size`);
-		expect(mixin.definition).toMatchInlineSnapshot(`"@mixin --x-mixin-arrow { fill: var(--x-bg, var(--x-bgFallback)); stroke: var(--x-fg, var(--x-fgFallback)); width: var(--x-arrow-size); height: calc((var(--x-arrow-size) / 2)); position: relative; z-index: 0; transform: translate(0, 0) rotate(var(--angle, 0deg)) scale(var(--scale, 1)); &[data-side="top"] { --angle: rotate(0deg); bottom: calc((((-1 * var(--x-arrow-size)) / 2) + 1px)); } &[data-side="right"] { --angle: rotate(90deg); left: calc(((-1 * var(--x-arrow-size)) * 0.75)); } &[data-side="bottom"] { --angle: rotate(180deg); top: calc(((-1 * var(--x-arrow-size)) / 2)); } &[data-side="left"] { --angle: rotate(270deg); left: calc(((-1 * var(--x-arrow-size)) * 0.75)); } &[data-open] { opacity: 1; --scale: 1; } &[data-closed] { opacity: 0; --scale: 0; } }"`);
+		expect(mixin.definition).toMatchInlineSnapshot(
+			`"@mixin --x-mixin-arrow { fill: var(--x-bg, var(--x-bgFallback)); stroke: var(--x-fg, var(--x-fgFallback)); width: var(--x-arrow-size); height: calc((var(--x-arrow-size) / 2)); position: relative; z-index: 0; transform: translate(0, 0) rotate(var(--angle, 0deg)) scale(var(--scale, 1)); &[data-side="top"] { --angle: rotate(0deg); bottom: calc((((-1 * var(--x-arrow-size)) / 2) + 1px)); } &[data-side="right"] { --angle: rotate(90deg); left: calc(((-1 * var(--x-arrow-size)) * 0.75)); } &[data-side="bottom"] { --angle: rotate(180deg); top: calc(((-1 * var(--x-arrow-size)) / 2)); } &[data-side="left"] { --angle: rotate(270deg); left: calc(((-1 * var(--x-arrow-size)) * 0.75)); } &[data-open] { opacity: 1; --scale: 1; } &[data-closed] { opacity: 0; --scale: 0; } }"`,
+		);
+	});
+
+	it('should allow applying the mixin with parameters', () => {
+		const mixin = createMixin('shadow', {
+			parameters: ['--default-ring-color'],
+			definition: (css, { parameters: [defaultRingColor] }) => ({
+				'--x-system-shadow': css`0 0 0 0 transparent`,
+				'--x-system-ring': css`0 0 0 0 ${defaultRingColor}`,
+				'box-shadow': css`var(--x-system-ring), var(--x-system-shadow)`,
+			}),
+		});
+
+		const result = mixin.apply(['red']);
+		expect(result).toEqual([
+			{ prop: mixin.parameters[0], value: css`red` },
+			...mixin.body,
+		]);
+	});
+
+	it('should allow applying the mixin with tokens', () => {
+		const mixin = createMixin('shadow', {
+			parameters: ['--default-ring-color'],
+			definition: (css, { parameters: [defaultRingColor] }) => ({
+				'--x-system-shadow': css`0 0 0 0 transparent`,
+				'--x-system-ring': css`0 0 0 0 ${defaultRingColor}`,
+				'box-shadow': css`var(--x-system-ring), var(--x-system-shadow)`,
+			}),
+		});
+
+		const token = createToken('my-color');
+		const result = mixin.apply([token]);
+		expect(result).toEqual([
+			{
+				prop: mixin.parameters[0],
+				value: css`
+					${token}
+				`,
+			},
+			...mixin.body,
+		]);
+	});
+
+	it('should not require optional parameters in apply typings', () => {
+		const mixin = createMixin('test', {
+			parameters: [
+				'--required',
+				{ name: '--optional', fallback: 'red' },
+			] as const,
+			definition: (css, { parameters: [required, optional] }) => ({
+				color: css`
+					${required} var(${optional})
+				`,
+			}),
+		});
+
+		mixin.apply(['blue', undefined]);
+		mixin.apply(['blue', 'green']);
+		// @ts-expect-error
+		mixin.apply([]);
 	});
 });
 

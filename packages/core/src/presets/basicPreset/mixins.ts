@@ -287,5 +287,4 @@ export function createPresetMixins(
 	} as const;
 }
 
-// export type BuiltinMixins = ReturnType<typeof createPresetMixins>;
 export type BuiltinMixins = ReturnType<typeof createPresetMixins>;
