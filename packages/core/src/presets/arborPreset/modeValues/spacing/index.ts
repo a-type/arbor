@@ -13,14 +13,23 @@ export const defaultSpacingLevels = [
 ] as const;
 export type DefaultSpacingLevel = (typeof defaultSpacingLevels)[number];
 
-const defaultSpacingEquation = (step: number, $: RequiredTokens): Equation =>
-	css`(${$.baseSpacingSize} / ${$.baseFontSize}) * 1rem * pow(1.5, ${step})`;
-
 export interface SpacingConfig<
 	TSpacingLevel extends string = DefaultSpacingLevel,
 > {
 	levels?: Record<TSpacingLevel, string | number>;
 	defaultLevel?: TSpacingLevel;
+	/**
+	 * The "base" number of the scale equation - a linear scalar
+	 * multiplier. Set this to scale by some linear factor if
+	 * scaleExponent is "1"
+	 */
+	scaleBase?: number | string | Equation;
+	/**
+	 * The exponent of the scale equation - the rate of exponential growth.
+	 * `scaleBase` is raised to this exponent before being multiplied by the base spacing size.
+	 * Set this to "1" to scale linearly by the `scaleBase` factor, or set it to a value greater than "1" to have exponential growth.
+	 */
+	scaleExponent?: number | string | Equation;
 }
 
 export type CompiledSpacing<
@@ -63,7 +72,10 @@ export function compileSpacing<
 		(acc, name, i) => {
 			const nameCast = name as TSpacingLevel;
 			const levelConfig = config.levels?.[nameCast]?.toString();
-			acc[nameCast] = levelConfig ?? defaultSpacingEquation(i - baseIndex, $);
+			const step = i - baseIndex;
+			acc[nameCast] =
+				levelConfig ??
+				css`(${$.baseSpacingSize} / ${$.baseFontSize}) * 1rem * pow(${config.scaleBase ?? 2}, ${config.scaleExponent ?? 1.25} * ${step})`;
 			return acc;
 		},
 		{} as Record<TSpacingLevel, string | Equation>,

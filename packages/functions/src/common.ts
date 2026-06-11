@@ -12,10 +12,27 @@ export type FunctionParams = readonly FunctionParam[];
 export type ParamsAsInterpolations<TParams extends FunctionParams> = {
 	[K in keyof TParams]: CalcInterpolation;
 };
+export type ParamsAsNames<TParams extends FunctionParams> = {
+	[K in keyof TParams]: TParams[K] extends FunctionParamWithMeta ?
+		TParams[K]['name']
+	: TParams[K] extends CssProperty ? TParams[K]
+	: never;
+};
+/**
+ * Converts a function params list into an input record which makes
+ * parameters with defaults optional.
+ */
 export type ParamsAsCallInputs<TParams extends FunctionParams> = {
-	[K in keyof TParams]: TParams[K] extends { fallback: string } ?
-		CalcInterpolation | undefined
-	:	CalcInterpolation;
+	[K in keyof TParams as TParams[K] extends { fallback: string } ? never
+	: TParams[K] extends FunctionParamWithMeta ? TParams[K]['name']
+	: TParams[K] extends CssProperty ? TParams[K]
+	: never]: CalcInterpolation;
+} & {
+	[K in keyof TParams as TParams[K] extends (
+		{ name: CssProperty; fallback: string }
+	) ?
+		TParams[K]['name']
+	:	never]?: CalcInterpolation;
 };
 
 export function isFunctionParamWithMeta(

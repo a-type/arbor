@@ -46,6 +46,7 @@ it('allows defining functions or mixins using available tokens', () => {
 		}),
 		mixins: (create, $) => ({
 			test: create('test', {
+				parameters: ['--a'] as const,
 				definition: (css) => ({
 					color: css`
 						${$.mode.color}
@@ -58,7 +59,7 @@ it('allows defining functions or mixins using available tokens', () => {
 		}),
 		functions: (create, $) => ({
 			test: create('test', {
-				parameters: [],
+				parameters: ['--a'] as const,
 				definition: (css) => css`
 					${$.mode.color}
 				`,
@@ -76,13 +77,21 @@ it('allows defining functions or mixins using available tokens', () => {
 	// @ts-expect-error
 	expect(preset.mixins.bar).not.toBeDefined();
 	expect(preset.mixins.test.definition).toBe(
-		'@mixin --mx2-test { color: var(--m-color); }',
+		'@mixin --mx2-test(--a) { color: var(--m-color); }',
 	);
 	expect(preset.functions.test).toBeDefined();
 	// @ts-expect-error
 	expect(preset.functions.bar).not.toBeDefined();
 
 	expect(preset.$.mixins.test.foo.name).toBe('--mx2-test-foo');
+
+	// mixin params are correctly typed
+	preset.mixins.test.apply({ '--a': 'value' });
+	// @ts-expect-error
+	preset.mixins.test.apply({});
+	preset.functions.test.compute({ '--a': 'value' });
+	// @ts-expect-error
+	expect(() => preset.functions.test.compute({})).toThrow();
 });
 
 it('keeps mixin token inference narrowed when baseMode uses $ tokens', () => {

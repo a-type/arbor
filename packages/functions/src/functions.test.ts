@@ -79,7 +79,7 @@ describe('createFunction', () => {
 				parameters: ['--base', '--factor'],
 				definition: ($, base, factor) => $`calc(${base} * ${factor})`,
 			});
-			expect(fn.compute([4, 3], { propertyValues: {} })).toBe('12');
+			expect(fn.compute({ '--base': 4, '--factor': 3 })).toBe('12');
 		});
 
 		it('computes an add expression', () => {
@@ -87,7 +87,7 @@ describe('createFunction', () => {
 				parameters: ['--a', '--b'],
 				definition: ($, a, b) => $`calc(${a} + ${b})`,
 			});
-			expect(fn.compute([10, 5], { propertyValues: {} })).toBe('15');
+			expect(fn.compute({ '--a': 10, '--b': 5 })).toBe('15');
 		});
 
 		it('computes with string values that cannot be resolved numerically', () => {
@@ -95,7 +95,7 @@ describe('createFunction', () => {
 				parameters: ['--base', '--factor'],
 				definition: ($, base, factor) => $`calc(${base} * ${factor})`,
 			});
-			const result = fn.compute(['8px', 2], { propertyValues: {} });
+			const result = fn.compute({ '--base': '8px', '--factor': 2 });
 			expect(result).toBe('16px');
 		});
 
@@ -104,7 +104,20 @@ describe('createFunction', () => {
 				parameters: [],
 				definition: ($) => $`6 * 7`,
 			});
-			expect(fn.compute([], { propertyValues: {} })).toBe('42');
+			expect(fn.compute({})).toBe('42');
+		});
+
+		it('does not require specifying params with defaults', () => {
+			const fn = createFunction('test', {
+				parameters: [
+					'--required',
+					{ name: '--optional', fallback: '10' },
+				] as const,
+				definition: ($, required, optional) =>
+					$`calc(${required} + ${optional})`,
+			});
+			expect(fn.compute({ '--required': 5 })).toBe('15');
+			expect(fn.compute({ '--required': 5, '--optional': 20 })).toBe('25');
 		});
 	});
 

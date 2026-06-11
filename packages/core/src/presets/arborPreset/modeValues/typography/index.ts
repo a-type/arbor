@@ -111,7 +111,7 @@ export function compileTypography<
 			const levelConfig = config.levels?.[nameCast] ?? {};
 			acc[nameCast] = {
 				size: css`calc(clamp(${config.minSize ?? '0.75rem'}, 1rem * pow(${config.sizeBase ?? 1.125}, (${i - baseIndex} * ${config.sizeExponentStep ?? 1})) / ${[tokens.density, 1]}, ${config.maxSize ?? '3rem'}))`,
-				lineHeight: css`calc(clamp(${config.minLineHeight ?? 1}, (${config.baseLineHeight ?? 1.5} - ${config.lineHeightStep ?? 0.05} * ${i - baseIndex}), ${config.maxLineHeight ?? 2}))`,
+				lineHeight: css`calc(clamp(${config.minLineHeight ?? 0.75}, (${config.baseLineHeight ?? 1.5} - ${config.lineHeightStep ?? 0.5} * ${i - baseIndex}), ${config.maxLineHeight ?? 2}))`,
 				letterSpacing: css`calc(clamp(${config.minLetterSpacing ?? 0}, (${config.baseLetterSpacing ?? 0} + ${config.letterSpacingStep ?? 0} * ${i - baseIndex}), ${config.maxLetterSpacing ?? 0}))`,
 				...levelConfig,
 			};
@@ -129,9 +129,9 @@ export function compileTypography<
 		'black',
 	].reduce(
 		(acc, weightName, i) => {
-			const stepsFromNormal = i - 3; // normal is the 4th item in the list (index 3)
+			const stepsFromNormal = i - 2; // normal is the 3rd item in the list (index 2)
 			acc[weightName as keyof CompiledTypography['weight']] =
-				css`calc(clamp(${config.minWeight ?? 100}, ${config.baseWeight ?? 400} + ${config.weightStep ?? 25} * ${stepsFromNormal} - (${tokens.whenDark} * ${config.darkModeWeightAdjustment ?? 0}), ${config.maxWeight ?? 900}))`;
+				css`calc(clamp(${config.minWeight ?? 100}, ${config.baseWeight ?? 400} + ${config.weightStep ?? 50} * ${stepsFromNormal} - (${tokens.whenDark} * ${config.darkModeWeightAdjustment ?? 0}), ${config.maxWeight ?? 900}))`;
 			return acc;
 		},
 		{} as Record<keyof CompiledTypography['weight'], string | Equation>,

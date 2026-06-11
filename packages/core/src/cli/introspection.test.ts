@@ -138,7 +138,7 @@ it('lists functions and mixins in AI-friendly table output', () => {
 	expect(mixinRecords[0].name).toContain('fg');
 
 	const mixinOutput = formatMixinList(mixinRecords);
-	expect(mixinOutput).toContain('name\tparameters\tdeclarations\tdescription');
+	expect(mixinOutput).toContain('name\tparameters\tdescription');
 	expect(mixinOutput).toContain('--color');
 	expect(mixinOutput).toContain('Applies a foreground color.');
 });

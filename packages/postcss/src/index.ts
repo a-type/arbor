@@ -123,9 +123,9 @@ function computeFunctionCallValue({
 		return input;
 	}
 
-	const paramValues: string[] = [];
+	const paramValues: Record<string, string> = {};
 	let invalid = false;
-	fn.parameters.forEach((param, i) => {
+	fn.parameters.forEach((param: FunctionParam, i: number) => {
 		const paramName = isFunctionParamWithMeta(param) ? param.name : param;
 		const fallback =
 			isFunctionParamWithMeta(param) ? param.fallback?.toString() : undefined;
@@ -149,7 +149,7 @@ function computeFunctionCallValue({
 		}
 
 		if (value !== undefined) {
-			paramValues[i] = value;
+			paramValues[paramName] = value;
 		}
 	});
 

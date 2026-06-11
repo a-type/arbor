@@ -17,7 +17,7 @@ import '../styles/global.css';
 		/>
 	</head>
 	<body>
-		<Grid>
+		<Grid data-mode-mixer-target>
 			<slot />
 		</Grid>
 
@@ -26,6 +26,8 @@ import '../styles/global.css';
 			import preset from '../../arbor.config.js';
 			connect(preset);
 		</script>
-		<script src="../scripts/modePainter.ts"></script>
+		<script
+			src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"
+		></script>
 	</body>
 </html>

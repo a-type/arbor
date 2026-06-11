@@ -1,0 +1,27 @@
+---
+import Button from './system/Button.astro';
+
+export interface Props {
+	value: string;
+	class?: string;
+}
+const { value, ...props } = Astro.props;
+---
+
+<Button data-copyable {...props} data-value={value}>
+	<slot />
+	<iconify-icon name="mdi:content-copy"></iconify-icon>
+</Button>
+<script>
+	const copyableButtons = document.querySelectorAll('button[data-copyable]');
+	copyableButtons.forEach((button) => {
+		button.addEventListener('click', () => {
+			const value = button.getAttribute('data-value');
+			if (value) {
+				navigator.clipboard.writeText(value);
+				button.setAttribute('data-copied', 'true');
+				setTimeout(() => button.removeAttribute('data-copied'), 2000);
+			}
+		});
+	});
+</script>

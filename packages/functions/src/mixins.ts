@@ -247,12 +247,15 @@ export function createMixinFactory({
 						isFunctionParamWithMeta(parameter) ? parameter.name : parameter;
 					const fallback =
 						isFunctionParamWithMeta(parameter) ? parameter.fallback : undefined;
-					parameterDeclarations.push({
-						prop: cssParameterName,
-						value: css`
-							${params[index] ?? fallback ?? ''}
-						`,
-					});
+					const paramValue = (params as any)[cssParameterName] ?? fallback;
+					if (paramValue) {
+						parameterDeclarations.push({
+							prop: cssParameterName,
+							value: css`
+								${paramValue}
+							`,
+						});
+					}
 				}
 
 				return [...parameterDeclarations, ...body];

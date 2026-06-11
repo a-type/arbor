@@ -1,0 +1,52 @@
+---
+import Button from '../system/Button.astro';
+import SelectChip from '../system/SelectChip.astro';
+---
+
+<form id="season-picker">
+	<Button tag="label" emphasis="ambient" class="@mode-spring">
+		<input type="radio" name="season" value="spring" id="season-spring" />
+		🌸
+	</Button>
+	/
+	<Button tag="label" emphasis="ambient" class="@mode-summer">
+		<input type="radio" name="season" value="summer" id="season-summer" />
+		🍀
+	</Button>
+	/
+	<Button tag="label" emphasis="ambient" class="@mode-autumn">
+		<input type="radio" name="season" value="autumn" id="season-autumn" />
+		🍂
+	</Button>
+	/
+	<Button tag="label" emphasis="ambient" class="@mode-winter">
+		<input type="radio" name="season" value="winter" id="season-winter" />
+		❄️
+	</Button>
+</form>
+
+<style>
+	#season-picker {
+		display: inline-flex;
+		flex-direction: row;
+		gap: var(--m-spacing);
+		align-items: center;
+	}
+	input {
+		display: none;
+	}
+</style>
+
+<script>
+	const seasonPicker = document.getElementById('season-picker')!;
+	seasonPicker.addEventListener('change', (event) => {
+		const formData = new FormData(seasonPicker as HTMLFormElement);
+		const selectedSeasons = formData.getAll('season');
+		document.documentElement.classList.remove(
+			...['@mode-spring', '@mode-summer', '@mode-autumn', '@mode-winter'],
+		);
+		selectedSeasons.forEach((season) => {
+			document.documentElement.classList.add(`@mode-${season}`);
+		});
+	});
+</script>

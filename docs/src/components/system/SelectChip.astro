@@ -1,25 +1,20 @@
 ---
 export interface Props {
-	tag?: 'a' | 'button' | 'label';
-	href?: string;
-	class?: string;
-	emphasis?: 'primary' | 'secondary' | 'ambient';
-	id?: string;
+	value: string;
+	name: string;
 }
-const {
-	tag: Tag = 'button',
-	emphasis = 'primary',
-	class: className,
-	...props
-} = Astro.props;
+const { value, name, ...props } = Astro.props;
 ---
 
-<Tag data-emphasis={emphasis} class:list={['button', className]} {...props}>
-	<slot />
-</Tag>
+<label class="select-chip" {...props}>
+	<input type="checkbox" name={name} value={value} class="select-chip-input" />
+	<div class="select-chip-content">
+		<slot />
+	</div>
+</label>
 
 <style>
-	.button {
+	.select-chip {
 		@apply --mx-shadow;
 		@apply --mx-fg(var(--m-action-ambient-fg));
 		@apply --mx-bg(var(--m-action-ambient-bg));
@@ -27,25 +22,27 @@ const {
 		border-radius: var(--m-action-radius);
 		padding: var(--m-action-padding);
 		font-size: var(--m-text-secondary-size);
-		font-family: system-ui, sans-serif;
 		line-height: 1;
 		font-weight: var(--m-primitive-typography-weight-bold);
 		cursor: pointer;
+		display: block;
 
-		&[data-emphasis='primary'] {
+		&:has(.select-chip-input:checked) {
 			@apply --mx-fg(var(--m-action-primary-fg));
 			@apply --mx-bg(var(--m-action-primary-bg));
 			@apply --mx-border(var(--m-action-primary-border));
-		}
-		&[data-emphasis='secondary'] {
-			@apply --mx-fg(var(--m-action-secondary-fg));
-			@apply --mx-bg(var(--m-action-secondary-bg));
-			@apply --mx-border(var(--m-action-secondary-border));
 		}
 
 		@apply --mx-disabled;
 		@apply --mx-hover;
 		@apply --mx-focus;
 		@apply --mx-active;
+	}
+	.select-chip-input {
+		visibility: hidden;
+		position: absolute;
+		width: 0;
+		height: 0;
+		overflow: clip;
 	}
 </style>

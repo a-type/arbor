@@ -1,65 +1,232 @@
 ---
-import Logo from '../components/Logo.astro';
+import Copyable from '../components/Copyable.astro';
+import ModeMixer from '../components/demo/ModeMixer.astro';
+import RevealModes from '../components/demo/RevealModes.astro';
+import SeasonPicker from '../components/demo/SeasonPicker.astro';
+import ArborImage from '../components/graphics/ArborImage.astro';
+import Divider from '../components/graphics/Divider.astro';
+import Logo from '../components/graphics/Logo.astro';
+import Button from '../components/system/Button.astro';
 import Grid from '../components/system/Grid.astro';
 import Layout from '../layouts/Homepage.astro';
 ---
 
 <Layout>
 	<div class="container">
-		<nav>
-			<Logo class="nav-logo" />
-			<a href="/docs">Documentation</a>
-			<a href="https://github.com/a-type/arbor">GitHub</a>
+		<nav class="@mode-dense">
+			<div class="nav-start">
+				<Logo class="nav-logo" />
+				<h1 class="nav-title">Arbor CSS</h1>
+				<SeasonPicker />
+			</div>
+			<ul class="nav-links">
+				<li><a href="/docs">Documentation</a></li>
+				<li><a href="https://github.com/a-type/arbor">GitHub</a></li>
+			</ul>
 		</nav>
 
-		<Grid class="hero-grid @mode-hero">
-			<section style="grid-area: tagline;">
-				<h1 class="tagline">The CSS Design System System</h1>
+		<div class="hero @mode-hero">
+			<Grid class="hero-grid">
+				<section style="grid-area: tagline;">
+					<h1 class="tagline">
+						The CSS<br /> Design System<br />
+						<mark>System</mark>
+						<div id="mark-bg"></div>
+					</h1>
+				</section>
+				<section style="grid-area: logo;" class="logo-section">
+					<ArborImage class="arbor-image" />
+				</section>
+				<section style="grid-area: description;">
+					<p class="description">
+						Scale your styling, enliven your designs, and maintain fewer tokens
+					</p>
+				</section>
+				<div class="cta @mode-normal">
+					<Copyable class="button" value="npm install @arbor-css/core">
+						<code>npm install @arbor-css/core</code>
+					</Copyable>
+					<Button tag="a" href="/docs">Read the docs</Button>
+				</div>
+			</Grid>
+		</div>
+
+		<Divider />
+
+		<main>
+			<section>
+				<h2>Scale variations with modes</h2>
+				<RevealModes>Show modes on this page</RevealModes>
+				<p>
+					Inspired by the <a href="https://mode.place">Mise en Mode</a> methodology,
+					Arbor manages design variations with the powerful <em>mode</em> system,
+					not token groups. Define one small set of tokens, then remix them with modes
+					to quickly build out comprehensive treatments for things like <i
+						>error</i
+					>, <i>success</i>, <i>dense</i>, <i>hero</i>, and <i
+						>anything you dream up</i
+					>.
+				</p>
+				<ModeMixer />
 			</section>
-			<section style="grid-area: logo;" class="logo-section">
-				<Logo class="logo" />
-			</section>
-			<section style="grid-area: description;">
-				<p class="description">
-					Scale your styling, enliven your designs, and maintain fewer tokens
+			<section>
+				<h2>Design with rules, not artifacts</h2>
+				<p>
+					We call design tokens "decisions," but that's not really true -
+					decisions are living rules; the tokens we export are just the outcome
+					of those rules.
+				</p>
+				<p>
+					Arbor gives you the full power of modern CSS to imbue your tokens with
+					powerful, contextual, <i>real</i> rules. Adjust padding based on roundness.
+					Calculate text metrics from a density global. Then watch as these rules
+					produce emergent, consistent styles across the interface.
 				</p>
 			</section>
-		</Grid>
-
-		<div class="ctas">
-			<Copyable>
-				<code>npm install @arbor-css/core</code>
-			</Copyable>
-			<a class="button" href="/docs">Read the docs</a>
-		</div>
+			<section>
+				<h2>Your tokens, superpowered</h2>
+				<p>
+					Arbor comes with token validation, rich documentation, color previews,
+					and editor suggestions for developers. Drive token adoption with
+					carrot and stick.
+				</p>
+			</section>
+			<section>
+				<h2>Tomorrow's CSS, today</h2>
+				<p>
+					Arbor is forward-looking, using upcoming CSS standards like <code
+						>@function</code
+					> and <code>@mixin</code>, transformed with PostCSS to work in all
+					browsers today. Arbor sprinkles in token dependency resolution,
+					typechecking, and CSS simplification preprocessing on top.
+				</p>
+			</section>
+			<section>
+				<h2>Designers welcome</h2>
+				<p>
+					While Arbor takes a code-first approach to design systems to leverage
+					code's power to define expressive logic, creating and iterating on
+					modes is a matter of filling in values and watching the page come
+					alive.
+				</p>
+			</section>
+		</main>
 	</div>
 
 	<style>
 		.container {
-			max-width: 1000px;
+			display: flex;
+			flex-direction: column;
+			max-width: min(800px, 90vw);
 			margin: 0 auto;
-			padding: var(--m-spacing-lg) var(--m-spacing);
+			padding: var(--m-spacing-xl);
+			gap: var(--m-spacing-xl);
 		}
 
+		.nav-logo {
+			width: 32px;
+			height: 32px;
+		}
+
+		.nav-title {
+			@apply --mx-fg(inherit);
+			font-size: var(--m-text-primary-size);
+			font-weight: var(--m-primitive-typography-weight-bold);
+			font-family: var(--m-text-primary-font);
+			line-height: var(--m-text-primary-lineHeight);
+			margin: 0;
+		}
+
+		.nav-start {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			gap: var(--m-spacing-lg);
+			flex: 1;
+		}
+
+		.nav-links {
+			display: flex;
+			flex-direction: row;
+			gap: var(--m-spacing-lg);
+			list-style: none;
+			padding: 0;
+			margin: 0;
+		}
+
+		nav {
+			width: 100%;
+			display: flex;
+			flex-direction: row;
+			gap: var(--m-spacing);
+			padding: var(--m-spacing) 0;
+			align-items: center;
+			justify-content: between;
+		}
+
+		.hero {
+			min-height: 70vh;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+		}
 		.hero-grid {
-			grid-template-areas: 'logo' 'tagline' 'description';
+			grid-template-areas: 'logo' 'tagline' 'description' 'cta';
 			grid-template-rows: minmax(200px, auto) auto auto;
 			grid-template-columns: 1fr auto;
 
 			border-radius: var(--m-surface-radius);
 
 			@media (min-width: 400px) {
-				grid-template-areas: 'tagline logo' 'description logo';
+				grid-template-areas: 'tagline logo' 'description logo' 'cta logo';
 				grid-template-rows: auto auto;
 				grid-template-columns: 3fr 1fr;
 			}
 		}
 
+		.tagline {
+			position: relative;
+			z-index: 1;
+		}
+
+		mark {
+			anchor-name: --mark;
+			@apply --mx-fg(var(--m-color-main-ink));
+			@apply --mx-bg(transparent);
+			padding: 0;
+			border-radius: var(--m-action-radius);
+			position: relative;
+			z-index: 2;
+		}
+
+		#mark-bg {
+			content: '';
+			position: fixed;
+			position-anchor: --mark;
+			top: calc(anchor(top) + anchor-size(height) / 3);
+			left: anchor(left);
+			width: anchor-size(width);
+			height: calc(anchor-size(height) / 2);
+			@apply --mx-bg(var(--m-color-main-wash));
+			border-radius: var(--m-action-radius);
+			opacity: 0.5;
+			z-index: 0;
+		}
+
+		main {
+			display: flex;
+			flex-direction: column;
+			gap: var(--m-spacing-xl);
+		}
+
 		section {
 			display: flex;
-			align-items: center;
+			flex-direction: column;
+			align-items: start;
 			justify-content: start;
 			text-align: left;
+			gap: var(--m-spacing);
 		}
 
 		.logo-section {
@@ -72,7 +239,7 @@ import Layout from '../layouts/Homepage.astro';
 			justify-content: center;
 		}
 
-		.logo {
+		.arbor-image {
 			flex: 1;
 		}
 
@@ -87,7 +254,7 @@ import Layout from '../layouts/Homepage.astro';
 		.description {
 			@apply --mx-fg(inherit);
 			font-size: var(--m-text-ambient-size);
-			font-weight: var(--m-primitive-typography-weight-bold);
+			font-weight: var(--m-primitive-typography-weight-semiBold);
 			font-family: var(--m-text-ambient-font);
 			line-height: var(--m-text-ambient-lineHeight);
 		}
@@ -103,11 +270,13 @@ import Layout from '../layouts/Homepage.astro';
 
 		h1,
 		h2,
-		h3 {
+		h3,
+		p {
 			margin: 0;
 		}
 
-		.ctas {
+		.cta {
+			grid-area: cta;
 			display: flex;
 			gap: var(--m-spacing);
 			flex-wrap: wrap;

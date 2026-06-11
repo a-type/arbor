@@ -53,8 +53,11 @@ export function createModeInstance<T extends SimpleTokenSchema>(
 	};
 	const modeInstance = {
 		...values,
-		[INTERNALS]: internals,
 	};
+	Object.defineProperty(modeInstance, INTERNALS, {
+		enumerable: false,
+		value: internals,
+	});
 	return modeInstance;
 }
 
@@ -79,8 +82,12 @@ export function mergeModes(
 			.join('\n'),
 		name: internalsB.name || internalsA.name, // prefer B's name if it exists
 	};
-	return {
+	const instance = {
 		...values,
-		[INTERNALS as any]: internals,
 	};
+	Object.defineProperty(instance, INTERNALS, {
+		enumerable: false,
+		value: internals,
+	});
+	return instance;
 }

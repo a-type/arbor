@@ -1,0 +1,88 @@
+---
+import SelectChip from '../system/SelectChip.astro';
+
+export interface Props {
+	targetSelector: string;
+	initialValue?: string[];
+}
+const { targetSelector, initialValue = [], ...props } = Astro.props;
+---
+
+<form
+	class="mode-selector @mode-dense"
+	data-target={targetSelector}
+	data-initial={initialValue.join(',')}
+	{...props}
+>
+	<SelectChip value="@mode-light" name="mode">@mode-light</SelectChip>
+	<SelectChip value="@mode-dark" name="mode">@mode-dark</SelectChip>
+	<SelectChip value="@mode-inverted" name="mode">@mode-inverted</SelectChip>
+</form>
+
+<style>
+	.mode-selector {
+		display: inline-flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		gap: var(--m-spacing-sm);
+		align-items: center;
+	}
+</style>
+
+<script>
+	/** Bootstrap runtime mode options */
+	import { getInternals } from '@arbor-css/core';
+	import preset from '../../../arbor.config';
+
+	const modes = getInternals(preset).modes;
+
+	// clone the first child, clear children, recreate with
+	// runtime modes
+	const selectors = document.querySelectorAll('.mode-selector');
+	for (const selector of selectors) {
+		const templateItem = selector.firstElementChild;
+		selector.innerHTML = '';
+
+		const initialValueRaw = selector.getAttribute('data-initial') as string;
+		const initialValue = initialValueRaw
+			.split(',')
+			.map((v) => v.trim())
+			.filter((v) => v);
+
+		Object.keys(modes).forEach((name) => {
+			const item = templateItem?.cloneNode(true) as HTMLElement;
+			const input = item.querySelector('input') as HTMLInputElement;
+			input.name = `mode`;
+			input.value = `@mode-${name}`;
+			if (initialValue.includes(`@mode-${name}`)) {
+				input.checked = true;
+			}
+			item.querySelector('.select-chip-content')!.textContent = `@mode-${name}`;
+			selector.appendChild(item);
+		});
+
+		const targetSelector = selector.getAttribute('data-target') as string;
+
+		function applyModes(selectedModeNames: string[]) {
+			const target = document.querySelector(targetSelector) as HTMLElement;
+			// remove existing modes
+			target.classList.remove(
+				...[...target.classList.values()].filter((c) => c.startsWith('@mode-')),
+			);
+			// add selected modes
+			selectedModeNames.forEach((modeName) => {
+				target.classList.add(modeName);
+			});
+		}
+
+		// apply initial modes
+		applyModes(initialValue);
+
+		// upon change, apply modes to the target element
+		selector.addEventListener('change', () => {
+			const formData = new FormData(selector as HTMLFormElement);
+			const selectedModeNames = formData.getAll('mode') as string[];
+			applyModes(selectedModeNames);
+		});
+	}
+</script>

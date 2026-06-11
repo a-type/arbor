@@ -1,0 +1,84 @@
+---
+import Button from '../system/Button.astro';
+import Card from '../system/Card.astro';
+import ModeSelector from './ModeSelector.astro';
+---
+
+<div class="root">
+	<div class="input @mode-dark @mode-dense">
+		<span class="emphasis-code"
+			>&lt;Card <span class="ambient-code"
+				>title="Card" description="Modes stack and nest"</span
+			> class="<ModeSelector
+				targetSelector="#mode-mixer-card"
+				initialValue={['@mode-round', '@mode-autumn']}
+			/>"&gt;</span
+		>
+		<span class="emphasis-code nest-1"
+			>&lt;Button class="<ModeSelector
+				targetSelector="#mode-mixer-button"
+				initialValue={['@mode-dense']}
+			/>"&gt;</span
+		>
+		<span class="ambient-code nest-2">Button</span>
+		<span class="emphasis-code nest-1">&lt;/Button&gt;</span>
+		<span class="emphasis-code">&lt;/Card&gt;</span>
+	</div>
+	<div class="output">
+		<Card title="Card" description="Modes stack and nest" id="mode-mixer-card">
+			<Button id="mode-mixer-button">Button</Button>
+		</Card>
+	</div>
+
+	<style>
+		.root {
+			display: flex;
+			flex-direction: row;
+			width: 100%;
+			align-items: stretch;
+			justify-content: stretch;
+
+			@apply --mx-border(var(--m-surface-ambient-border));
+			@apply --mx-bg(var(--m-surface-ambient-bg));
+			border-radius: var(--m-surface-radius);
+			gap: var(--m-spacing);
+
+			& > * {
+				flex: 1;
+			}
+		}
+
+		.input {
+			display: flex;
+			flex-direction: column;
+			gap: var(--m-spacing);
+			padding: var(--m-spacing);
+
+			font-family: monospace;
+
+			@apply --mx-bg(var(--m-surface-secondary-bg));
+			@apply --mx-fg(var(--m-surface-secondary-fg));
+		}
+		.output {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			gap: var(--m-spacing);
+			padding: var(--m-spacing);
+		}
+
+		.emphasis-code {
+			@apply --mx-fg(var(--m-color-main-heavy));
+		}
+		.ambient-code {
+			@apply --mx-fg(var(--m-color-neutral-heavy));
+		}
+		.nest-1 {
+			margin-left: 3ch;
+		}
+		.nest-2 {
+			margin-left: 6ch;
+		}
+	</style>
+</div>

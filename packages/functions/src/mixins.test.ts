@@ -242,7 +242,7 @@ describe('createMixin', () => {
 			}),
 		});
 
-		const result = mixin.apply(['red']);
+		const result = mixin.apply({ '--default-ring-color': 'red' });
 		expect(result).toEqual([
 			{ prop: mixin.parameters[0], value: css`red` },
 			...mixin.body,
@@ -260,7 +260,7 @@ describe('createMixin', () => {
 		});
 
 		const token = createToken('my-color');
-		const result = mixin.apply([token]);
+		const result = mixin.apply({ '--default-ring-color': token });
 		expect(result).toEqual([
 			{
 				prop: mixin.parameters[0],
@@ -285,10 +285,10 @@ describe('createMixin', () => {
 			}),
 		});
 
-		mixin.apply(['blue', undefined]);
-		mixin.apply(['blue', 'green']);
+		mixin.apply({ '--required': 'blue', '--optional': undefined });
+		mixin.apply({ '--required': 'blue', '--optional': 'green' });
 		// @ts-expect-error
-		mixin.apply([]);
+		mixin.apply({});
 	});
 });
 

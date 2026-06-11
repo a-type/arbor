@@ -3,9 +3,12 @@ import { presetBasic } from './preset.js';
 
 describe('ring function', () => {
 	it('should compute the right value', () => {
-		const result = presetBasic.functions.ring.compute(['red', '2px', '1px'], {
-			propertyValues: {},
-		});
+		const result = presetBasic.functions.ring.compute(
+			{ '--color': 'red', '--size': '2px', '--offset': '1px' },
+			{
+				propertyValues: {},
+			},
+		);
 		expect(result).toBe(
 			`0 0 0 1px ${presetBasic.$.mode.global.trueLightColor.var}, 0 0 0 3px red`,
 		);
@@ -14,9 +17,12 @@ describe('ring function', () => {
 
 describe('fade function', () => {
 	it('should compute the right value', () => {
-		const result = presetBasic.functions.fade.compute(['red', '42%'], {
-			propertyValues: {},
-		});
+		const result = presetBasic.functions.fade.compute(
+			{ '--color': 'red', '--opacity': '42%' },
+			{
+				propertyValues: {},
+			},
+		);
 		expect(result).toBe(`oklch(from red l c h / 42%)`);
 	});
 });

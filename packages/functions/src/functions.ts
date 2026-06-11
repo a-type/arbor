@@ -53,10 +53,10 @@ export type CreateFunctionParameters<TParams extends FunctionParams> = {
  * spacing.definition // @function --spacing-scale(--base <length>, --scale <number>) { result: (var(--base) * var(--scale)); }
  * spacing.compute({ base: '8px', scale: 2 }) // 'calc(var(--base) * 2)' or '16px'
  */
-export type CreateFunction = (
+export type CreateFunction = <TParams extends FunctionParams>(
 	name: string,
-	parameters: CreateFunctionParameters<any>,
-) => ArborFunction<any>;
+	parameters: CreateFunctionParameters<TParams>,
+) => ArborFunction<TParams>;
 
 export function createFunctionFactory({
 	namePrefix = DEFAULT_FUNCTION_NAME_PREFIX,
@@ -87,14 +87,17 @@ export function createFunctionFactory({
 				params: ParamsAsCallInputs<TParams>,
 				ctx?: CalcEvaluationContext,
 			): string {
-				const parameterValues: Record<string, string> = {};
+				const parameterValues: Record<string, string | Equation> = {};
 				for (let index = 0; index < parameters.length; index++) {
 					const parameter = parameters[index];
 					const cssParameterName =
 						isFunctionParamWithMeta(parameter) ? parameter.name : parameter;
 					const fallback =
 						isFunctionParamWithMeta(parameter) ? parameter.fallback : undefined;
-					parameterValues[cssParameterName] = String(params[index] ?? fallback);
+					const paramValue = (params as any)[cssParameterName] ?? fallback;
+					parameterValues[cssParameterName] = css`
+						${paramValue}
+					`;
 				}
 				const result = computeEquation(equation, {
 					...ctx,
@@ -121,10 +124,8 @@ export type ArborFunction<TParams extends FunctionParams = FunctionParams> = {
 		ctx?: CalcEvaluationContext,
 	) => string;
 };
-export type PresetFunctions = Record<string, ArborFunction>;
+export type PresetFunctions = Record<string, ArborFunction<any>>;
 
-export function isFunction(
-	value: unknown,
-): value is ArborFunction<FunctionParams> {
+export function isFunction(value: unknown): value is ArborFunction<any> {
 	return typeof value === 'object' && value !== null && FUNCTION_BRAND in value;
 }

@@ -1,0 +1,69 @@
+---
+import Button from '../system/Button.astro';
+interface Props {
+	class?: string;
+}
+const { class: className, ...props } = Astro.props;
+---
+
+<Button class:list={['reveal-modes', className]} {...props}>
+	<slot />
+</Button>
+
+<script>
+	const revealModeButtons = document.querySelectorAll('button.reveal-modes');
+	revealModeButtons.forEach((button) => {
+		button.addEventListener('click', () => {
+			document.documentElement.classList.toggle('reveal-modes');
+		});
+	});
+
+	const elementsWithModes = document.querySelectorAll('[class*="@mode-"]');
+	elementsWithModes.forEach((el) => {
+		const modeClasses = Array.from(el.classList).filter((cls) =>
+			cls.startsWith('@mode-'),
+		);
+		if (modeClasses.length > 0) {
+			const modeInfo = modeClasses.join(', ');
+
+			const anchorId = `--a-${Math.random().toString(36).substr(2, 9)}`;
+			el.style.setProperty('anchor-name', anchorId);
+
+			const modeTag = document.createElement('div');
+			modeTag.textContent = modeInfo;
+			modeTag.classList.add('mode-tag', '@mode-denser');
+			modeTag.style.setProperty('position-anchor', anchorId);
+			document.body.appendChild(modeTag);
+		}
+	});
+</script>
+
+<style is:global>
+	.mode-tag {
+		display: none;
+
+		position: fixed;
+		left: anchor(left);
+		top: anchor(top);
+
+		@apply --mx-bg(var(--m-surface-ambient-bg));
+		@apply --mx-fg(var(--m-surface-ambient-fg));
+		@apply --mx-border(var(--m-surface-ambient-border));
+		border-radius: var(--m-surface-radius);
+		padding: var(--m-surface-padding);
+		@apply --mx-shadow;
+		--mx-shadow-shadow: var(--m-shadow-md);
+		font-size: var(--m-text-ambient-size);
+		font-family: monospace;
+		line-height: 1;
+		pointer-events: none;
+		z-index: 9999;
+		whitespace: nowrap;
+		width: max-content;
+		opacity: 0.8;
+
+		.reveal-modes & {
+			display: block;
+		}
+	}
+</style>

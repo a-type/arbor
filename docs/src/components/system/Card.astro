@@ -1,0 +1,54 @@
+---
+export interface Props {
+	tag?: 'div' | 'main' | 'section' | 'article';
+	class?: string;
+	id?: string;
+	title?: string;
+	description?: string;
+}
+const {
+	tag: TagName = 'div',
+	class: className,
+	title,
+	description,
+	...rest
+} = Astro.props;
+---
+
+<TagName class:list={['card', className]} {...rest}>
+	{title && <h2>{title}</h2>}
+	{description && <p>{description}</p>}
+	<slot />
+</TagName>
+
+<style>
+	.card {
+		@apply --mx-shadow;
+		--mx-shadow-shadow: var(--m-shadow-md);
+		@apply --mx-bg(var(--m-surface-secondary-bg));
+		@apply --mx-fg(var(--m-surface-secondary-fg));
+		@apply --mx-border(var(--m-surface-secondary-border));
+		border-radius: var(--m-surface-radius);
+		padding: var(--m-surface-padding);
+		display: flex;
+		flex-direction: column;
+		gap: var(--m-spacing-sm);
+		align-items: start;
+	}
+
+	h2 {
+		margin: 0;
+		font-size: var(--m-text-primary-size);
+		font-weight: var(--m-primitive-typography-weight-bold);
+		font-family: var(--m-text-primary-font);
+		line-height: var(--m-text-primary-lineHeight);
+	}
+	p {
+		margin: 0;
+		font-size: var(--m-text-secondary-size);
+		font-weight: var(--m-primitive-typography-weight-normal);
+		font-family: var(--m-text-secondary-font);
+		line-height: var(--m-text-secondary-lineHeight);
+		@apply --mx-fg(var(--m-surface-ambient-fg));
+	}
+</style>

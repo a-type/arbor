@@ -1,4 +1,4 @@
-import { css, definePreset } from '@arbor-css/core';
+import { definePreset } from '@arbor-css/core';
 import { presetArbor } from '@arbor-css/core/preset-arbor';
 
 const basePreset = presetArbor({
@@ -23,7 +23,7 @@ const basePreset = presetArbor({
 				hue: 158,
 				saturation: 1,
 			},
-			fall: {
+			autumn: {
 				hue: 40,
 				saturation: 0.4,
 			},
@@ -34,8 +34,7 @@ const basePreset = presetArbor({
 	},
 	typography: {
 		maxSize: '10rem',
-		baseWeight: 300,
-		weightStep: 100,
+		baseWeight: 400,
 		sizeExponentStep: 1.25,
 	},
 });
@@ -43,22 +42,75 @@ const basePreset = presetArbor({
 const preset = definePreset({
 	name: 'arbor-docs',
 	extends: [basePreset],
-	modeSchema: {
-		dynamic: {
-			gridGap: 'spacing',
-		},
-	},
-	baseMode: ($) => ({
-		dynamic: {
-			gridGap: css`calc(${$.mode.global.roundness} * ${$.mode.spacing.md})`,
-		},
-	}),
+	modeSchema: {},
+	baseMode: ($) => ({}),
 
 	mixins: (create, $) => ({
 		disabled: create('disabled', {
 			definition: (css) => [
-				...basePreset.mixins.bgDesaturate.apply(['50%', undefined]),
-				...basePreset.mixins.fgLighten.apply([1, undefined]),
+				{
+					scope: '&:disabled',
+					children: [
+						...basePreset.mixins.bgDesaturate.apply({ '--step': '2' }),
+						...basePreset.mixins.fgLighten.apply({ '--step': 1 }),
+					],
+				},
+			],
+		}),
+		hover: create('hover', {
+			definition: (css) => [
+				{
+					scope: '&:hover',
+					children: [
+						...basePreset.mixins.bgLighten.apply({ '--step': 1 }),
+						{
+							prop: basePreset.$.mixins.shadow.ring.name,
+							value: basePreset.functions.ring.compute({
+								'--size': '2px',
+								'--color': basePreset.$.mode.color.main.heavy,
+							}),
+						},
+					],
+				},
+			],
+		}),
+		focus: create('focus', {
+			definition: (css) => [
+				{
+					scope: '&:focus',
+					children: { outline: 'none' },
+				},
+				{
+					scope: '&:focus-visible',
+					children: [
+						...basePreset.mixins.bgLighten.apply({ '--step': 2 }),
+						{
+							prop: basePreset.$.mixins.shadow.ring.name,
+							value: basePreset.functions.ring.compute({
+								'--size': '3px',
+								'--color': basePreset.$.mode.color.main.heavy,
+								'--offset': '1px',
+							}),
+						},
+					],
+				},
+			],
+		}),
+		active: create('active', {
+			definition: (css) => [
+				{
+					scope: '&:active',
+					children: [
+						...basePreset.mixins.bgDarken.apply({ '--step': 1 }),
+						{
+							prop: basePreset.$.mixins.shadow.ring.name,
+							value: basePreset.functions.ring.compute({
+								'--size': '1px',
+								'--color': basePreset.$.mode.color.main.heavy,
+							}),
+						},
+					],
+				},
 			],
 		}),
 	}),
@@ -69,7 +121,7 @@ preset.$.mixins.disabled;
 // @ts-expect-error
 preset.$.mixins.aksdjfkds;
 
-function makeSeasonMode(season: 'winter' | 'spring' | 'summer' | 'fall') {
+function makeSeasonMode(season: 'winter' | 'spring' | 'summer' | 'autumn') {
 	preset.bundleMode(season, {
 		color: {
 			main: preset.$.mode.primitive.color[season],
@@ -81,7 +133,7 @@ function makeSeasonMode(season: 'winter' | 'spring' | 'summer' | 'fall') {
 makeSeasonMode('winter');
 makeSeasonMode('spring');
 makeSeasonMode('summer');
-makeSeasonMode('fall');
+makeSeasonMode('autumn');
 
 preset.bundleMode('hero', {
 	global: {
@@ -103,9 +155,21 @@ preset.bundleMode('hero', {
 	},
 });
 
+preset.bundleMode('normal', {
+	global: {
+		density: 1,
+	},
+});
+
 preset.bundleMode('dense', {
 	global: {
 		density: 1.5,
+	},
+});
+
+preset.bundleMode('denser', {
+	global: {
+		density: 2,
 	},
 });
 
