@@ -4,22 +4,28 @@ import SelectChip from '../system/SelectChip.astro';
 ---
 
 <form id="season-picker">
-	<Button tag="label" emphasis="ambient" class="@mode-spring">
+	<Button tag="label" emphasis="ambient" class="season-button @mode-spring">
 		<input type="radio" name="season" value="spring" id="season-spring" />
 		🌸
 	</Button>
 	/
-	<Button tag="label" emphasis="ambient" class="@mode-summer">
-		<input type="radio" name="season" value="summer" id="season-summer" />
+	<Button tag="label" emphasis="ambient" class="season-button @mode-summer">
+		<input
+			checked
+			type="radio"
+			name="season"
+			value="summer"
+			id="season-summer"
+		/>
 		🍀
 	</Button>
 	/
-	<Button tag="label" emphasis="ambient" class="@mode-autumn">
+	<Button tag="label" emphasis="ambient" class="season-button @mode-autumn">
 		<input type="radio" name="season" value="autumn" id="season-autumn" />
 		🍂
 	</Button>
 	/
-	<Button tag="label" emphasis="ambient" class="@mode-winter">
+	<Button tag="label" emphasis="ambient" class="season-button @mode-winter">
 		<input type="radio" name="season" value="winter" id="season-winter" />
 		❄️
 	</Button>
@@ -34,6 +40,17 @@ import SelectChip from '../system/SelectChip.astro';
 	}
 	input {
 		display: none;
+	}
+	.season-button {
+		padding: var(--m-spacing-sm);
+		aspect-ratio: 1;
+		line-height: 1;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+	}
+	.season-button:has(input:checked) {
+		@apply --mx-bg(var(--m-color-main-wash));
 	}
 </style>
 
