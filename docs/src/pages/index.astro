@@ -3,8 +3,8 @@ import Copyable from '../components/Copyable.astro';
 import ModeMixer from '../components/demo/ModeMixer.astro';
 import RevealModes from '../components/demo/RevealModes.astro';
 import SeasonPicker from '../components/demo/SeasonPicker.astro';
+import TokenHelp from '../components/demo/TokenHelp.astro';
 import ArborImage from '../components/graphics/ArborImage.astro';
-import Divider from '../components/graphics/Divider.astro';
 import Logo from '../components/graphics/Logo.astro';
 import Button from '../components/system/Button.astro';
 import Grid from '../components/system/Grid.astro';
@@ -27,21 +27,21 @@ import Layout from '../layouts/Homepage.astro';
 
 		<div class="hero @mode-hero">
 			<Grid class="hero-grid">
-				<section style="grid-area: tagline;">
+				<div style="grid-area: tagline;">
 					<h1 class="tagline">
 						The CSS<br /> Design System<br />
 						<mark>System</mark>
 						<div id="mark-bg"></div>
 					</h1>
-				</section>
-				<section style="grid-area: logo;" class="logo-section">
+				</div>
+				<div style="grid-area: logo;" class="logo-section">
 					<ArborImage class="arbor-image" />
-				</section>
-				<section style="grid-area: description;">
+				</div>
+				<div style="grid-area: description;">
 					<p class="description">
-						Scale your styling & enliven your designs,<br /> with <i>fewer</i> tokens
+						Scale your styling & enliven your designs, with <i>fewer</i> tokens
 					</p>
-				</section>
+				</div>
 				<div class="cta @mode-normal">
 					<Copyable class="button" value="npm install @arbor-css/core">
 						<code>npm install @arbor-css/core</code>
@@ -50,8 +50,6 @@ import Layout from '../layouts/Homepage.astro';
 				</div>
 			</Grid>
 		</div>
-
-		<Divider />
 
 		<main>
 			<section>
@@ -68,6 +66,12 @@ import Layout from '../layouts/Homepage.astro';
 					>.
 				</p>
 				<ModeMixer />
+				<p>
+					Modes give you the peace of mind that all tokens are defined and
+					consistent. They make it easy to do the right thing when building. And
+					they make it possible to freely layer in experimental treatments and
+					variations without revising your token set.
+				</p>
 			</section>
 			<section>
 				<h2>Design with rules, not artifacts</h2>
@@ -82,6 +86,15 @@ import Layout from '../layouts/Homepage.astro';
 					Calculate text metrics from a density global. Then watch as these rules
 					produce emergent, consistent styles across the interface.
 				</p>
+				<p>
+					Take a look at how changing one global token affects everything
+					downstream:
+				</p>
+				<arbor-mode-graph mode="dense" class="@mode-dense"></arbor-mode-graph>
+				<p>
+					Because these "living" tokens can do the work of many static tokens,
+					your token set stays small and manageable.
+				</p>
 			</section>
 			<section>
 				<h2>Your tokens, superpowered</h2>
@@ -90,27 +103,42 @@ import Layout from '../layouts/Homepage.astro';
 					and editor suggestions for developers. Drive token adoption with
 					carrot and stick.
 				</p>
+				<TokenHelp />
 			</section>
 			<section>
 				<h2>Tomorrow's CSS, today</h2>
 				<p>
-					Arbor is forward-looking, using upcoming CSS standards like <code
+					Arbor is future-proof, using upcoming CSS standards like <code
 						>@function</code
 					> and <code>@mixin</code>, transformed with PostCSS to work in all
 					browsers today. Arbor sprinkles in token dependency resolution,
 					typechecking, and CSS simplification preprocessing on top.
 				</p>
-			</section>
-			<section>
-				<h2>Designers welcome</h2>
 				<p>
-					While Arbor takes a code-first approach to design systems to leverage
-					code's power to define expressive logic, creating and iterating on
-					modes is a matter of filling in values and watching the page come
-					alive.
+					Arbor gets you started with a powerful set of built-in mixins and
+					functions.
 				</p>
+				<arbor-mixins-list></arbor-mixins-list>
+				<arbor-functions-list></arbor-functions-list>
 			</section>
 		</main>
+		<footer class="@mode-dense">
+			<div class="footer-graphic">
+				<ArborImage />
+				<i>Vita &amp; Structura</i>
+			</div>
+			<div class="footer-info">
+				<p>
+					Made by <a href="https://gfor.rest">Grant Forrest</a>
+				</p>
+				<p>
+					<a href="/docs">Documentation</a>
+				</p>
+				<p>
+					<a href="https://github.com/a-type/arbor">GitHub</a>
+				</p>
+			</div>
+		</footer>
 	</div>
 
 	<style>
@@ -119,8 +147,9 @@ import Layout from '../layouts/Homepage.astro';
 			flex-direction: column;
 			max-width: min(800px, 90vw);
 			margin: 0 auto;
-			padding: var(--m-spacing-xl);
+			padding: var(--m-spacing-md);
 			gap: var(--m-spacing-xl);
+			box-sizing: border-box;
 		}
 
 		.nav-logo {
@@ -139,10 +168,16 @@ import Layout from '../layouts/Homepage.astro';
 
 		.nav-start {
 			display: flex;
-			flex-direction: row;
-			align-items: center;
+			flex-direction: column;
+			align-items: start;
 			gap: var(--m-spacing-lg);
 			flex: 1;
+
+			@media (min-width: 600px) {
+				flex-direction: row;
+				align-items: center;
+				gap: var(--m-spacing);
+			}
 		}
 
 		.nav-links {
@@ -159,9 +194,16 @@ import Layout from '../layouts/Homepage.astro';
 			display: flex;
 			flex-direction: row;
 			gap: var(--m-spacing);
-			padding: var(--m-spacing) 0;
+			padding: var(--m-spacing);
 			align-items: center;
 			justify-content: between;
+			position: sticky;
+			top: 0;
+			@apply --mx-bg(inherit);
+			@apply --mx-border(var(--m-surface-ambient-border));
+			border-width: 0;
+			border-bottom-width: var(--m-lineWidth);
+			z-index: 100000;
 		}
 
 		.hero {
@@ -172,16 +214,24 @@ import Layout from '../layouts/Homepage.astro';
 			justify-content: center;
 		}
 		.hero-grid {
+			width: 100%;
 			grid-template-areas: 'logo' 'tagline' 'description' 'cta';
-			grid-template-rows: minmax(200px, auto) auto auto;
+			grid-template-rows: 200px auto auto;
 			grid-template-columns: 1fr auto;
+
+			& > * {
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: start;
+			}
 
 			border-radius: var(--m-surface-radius);
 
-			@media (min-width: 400px) {
-				grid-template-areas: 'tagline logo' 'description logo' 'cta logo';
+			@media (min-width: 800px) {
+				grid-template-areas: 'tagline logo' 'description logo' 'cta cta';
 				grid-template-rows: auto auto;
-				grid-template-columns: 3fr 1fr;
+				grid-template-columns: minmax(min-content, 2fr) 1fr;
 			}
 		}
 
@@ -227,6 +277,7 @@ import Layout from '../layouts/Homepage.astro';
 			justify-content: start;
 			text-align: left;
 			gap: var(--m-spacing);
+			box-sizing: border-box;
 		}
 
 		.logo-section {
@@ -261,7 +312,6 @@ import Layout from '../layouts/Homepage.astro';
 
 		a {
 			@apply --mx-fg(inherit);
-			font-size: var(--m-text-secondary-size);
 			font-weight: bold;
 			font-family: var(--m-text-secondary-font);
 			text-decoration: none;
@@ -270,9 +320,12 @@ import Layout from '../layouts/Homepage.astro';
 
 		h1,
 		h2,
-		h3,
-		p {
+		h3 {
 			margin: 0;
+		}
+		p {
+			margin-top: 0;
+			margin-bottom: var(--m-spacing-lg);
 		}
 
 		.cta {
@@ -280,6 +333,33 @@ import Layout from '../layouts/Homepage.astro';
 			display: flex;
 			gap: var(--m-spacing);
 			flex-wrap: wrap;
+		}
+
+		arbor-mode-graph {
+			width: 100%;
+			box-sizing: border-box;
+
+			--modeGraph-token-bg: var(--m-surface-secondary-bg);
+		}
+
+		footer {
+			display: flex;
+			flex-direction: column-reverse;
+			align-items: start;
+			padding: var(--m-spacing-lg);
+			gap: var(--m-spacing-lg);
+			width: 100%;
+
+			@media (min-width: 600px) {
+				flex-direction: row;
+				align-items: center;
+				justify-content: space-between;
+				font-size: var(--m-text-secondary-size);
+
+				.footer-info {
+					text-align: end;
+				}
+			}
 		}
 	</style>
 </Layout>

@@ -70,6 +70,7 @@
 		"@arbor-css/calc": "workspace:*",
 		"jiti": "^2.6.1",
 		"lil-gui": "^0.21.0",
+		"lit-element": "^4.2.2",
 		"yargs": "^18.0.0"
 	}
 }

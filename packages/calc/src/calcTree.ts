@@ -395,6 +395,11 @@ function divide(a: ComputationResult, b: ComputationResult): ComputationResult {
 	if (b.type === 'numeric' && b.value === 1 && b.unit === '') {
 		return a;
 	}
+	if (b.type === 'numeric' && b.unit === '') {
+		if (a.type === 'numeric') {
+			return { type: 'numeric', value: a.value / b.value, unit: a.unit };
+		}
+	}
 	if (a.type === 'calc' || b.type === 'calc' || a.unit !== b.unit) {
 		return {
 			type: 'calc',

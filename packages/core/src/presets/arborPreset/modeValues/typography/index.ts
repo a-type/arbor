@@ -131,7 +131,7 @@ export function compileTypography<
 		(acc, weightName, i) => {
 			const stepsFromNormal = i - 2; // normal is the 3rd item in the list (index 2)
 			acc[weightName as keyof CompiledTypography['weight']] =
-				css`calc(clamp(${config.minWeight ?? 100}, ${config.baseWeight ?? 400} + ${config.weightStep ?? 50} * ${stepsFromNormal} - (${tokens.whenDark} * ${config.darkModeWeightAdjustment ?? 0}), ${config.maxWeight ?? 900}))`;
+				css`calc(clamp(${config.minWeight ?? 100}, ${config.baseWeight ?? 400} + ${config.weightStep ?? 100} * ${stepsFromNormal} - (${tokens.whenDark} * ${config.darkModeWeightAdjustment ?? 0}), ${config.maxWeight ?? 900}))`;
 			return acc;
 		},
 		{} as Record<keyof CompiledTypography['weight'], string | Equation>,

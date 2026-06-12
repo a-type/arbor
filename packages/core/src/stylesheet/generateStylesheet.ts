@@ -6,8 +6,10 @@ export function generateStylesheet(
 	config: AnyArborPreset,
 	{
 		layer: cascadeLayerName = 'arbor',
+		skipBaking,
 	}: {
 		layer?: string | false;
+		skipBaking?: boolean;
 	} = {},
 ): string {
 	const { modes } = getInternals(config);
@@ -17,7 +19,7 @@ export function generateStylesheet(
 	${cascadeLayerName ? `@layer ${cascadeLayerName} {` : ''}
 ${[config.baseMode, ...Object.values(modes)]
 	.map((modeValue) => {
-		return modeToCss(modeValue, config);
+		return modeToCss(modeValue, config, { skipBaking });
 	})
 	.join('\n\n')}
 /* Function definitions */

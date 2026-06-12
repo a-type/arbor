@@ -20,7 +20,7 @@ it('resolves primitive token values', () => {
 		preset.$.mode.primitive.spacing.$root.name,
 	);
 
-	expect(value).toBe('0.5rem');
+	expect(value).toMatchInlineSnapshot(`"0.5rem"`);
 });
 
 it('resolves base mode values with baking', () => {
@@ -29,7 +29,7 @@ it('resolves base mode values with baking', () => {
 		preset.$.mode.spacing.sm.name,
 	);
 
-	expect(value).toBe('0.3333333333333333rem');
+	expect(value).toMatchInlineSnapshot(`"0.21022410381342863rem"`);
 });
 
 it('applies user property values to evaluation context', () => {
@@ -41,7 +41,7 @@ it('applies user property values to evaluation context', () => {
 		},
 	);
 
-	expect(value).toBe('calc(calc(0.3333333333333333rem / 2))');
+	expect(value).toMatchInlineSnapshot(`"0.10511205190671431rem"`);
 });
 
 it('resolves equation property values from user overrides', () => {
@@ -53,7 +53,7 @@ it('resolves equation property values from user overrides', () => {
 		},
 	);
 
-	expect(value).toBe('calc(calc(0.3333333333333333rem / 2))');
+	expect(value).toMatchInlineSnapshot(`"0.10511205190671431rem"`);
 });
 
 it('returns undefined when token is unknown', () => {

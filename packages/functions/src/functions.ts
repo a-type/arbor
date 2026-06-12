@@ -108,6 +108,7 @@ export function createFunctionFactory({
 				});
 				return printComputationResult(result);
 			},
+			signature: `${cssName}${paramsList}`,
 		};
 	} satisfies CreateFunction;
 }
@@ -123,6 +124,14 @@ export type ArborFunction<TParams extends FunctionParams = FunctionParams> = {
 		params: ParamsAsCallInputs<TParams>,
 		ctx?: CalcEvaluationContext,
 	) => string;
+	/**
+	 * A printed representation of the function call signature, for use in
+	 * documentation and error messages
+	 *
+	 * @example
+	 * --fn-spacing-scale(--base <length>, --scale <number>)
+	 */
+	signature: string;
 };
 export type PresetFunctions = Record<string, ArborFunction<any>>;
 

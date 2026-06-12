@@ -262,6 +262,7 @@ export function createMixinFactory({
 			},
 			parameters,
 			contributeTokens,
+			signature: `${cssName}${paramsAsString(parameters, true)}`,
 		};
 	};
 }
@@ -300,6 +301,14 @@ export type ArborMixin<
 	apply: (params: ParamsAsCallInputs<TParams>) => MixinBodyList;
 	parameters: TParams;
 	contributeTokens: TTokens;
+	/**
+	 * A printed representation of the mixin call signature, for use in
+	 * documentation and error messages
+	 *
+	 * @example
+	 * --mx-shadow(--default-ring-color <color>)
+	 */
+	signature: string;
 };
 
 export type PresetMixins = Record<string, ArborMixin<any>>;

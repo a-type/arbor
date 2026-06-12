@@ -406,6 +406,13 @@ describe('css template — arithmetic still works', () => {
 			`calc(100% + 10px)`,
 		);
 	});
+
+	it('can divide unit values by scalars', () => {
+		expect(printComputationResult(computeEquation(css`100% / 2`))).toBe(`50%`);
+		expect(printComputationResult(computeEquation(css`1rem / 2`))).toBe(
+			`0.5rem`,
+		);
+	});
 });
 
 describe('css template — if() pre-baking', () => {

@@ -1,7 +1,7 @@
 import { definePreset } from '@arbor-css/core';
 import { presetArbor } from '@arbor-css/core/preset-arbor';
 
-const basePreset = presetArbor({
+export const basePreset = presetArbor({
 	globals: {
 		saturation: 0.5,
 		shadowSpread: 1.5,
@@ -28,7 +28,7 @@ const basePreset = presetArbor({
 				saturation: 0.4,
 			},
 			attention: {
-				hue: 0,
+				hue: 20,
 			},
 		},
 	},
@@ -116,16 +116,11 @@ const preset = definePreset({
 	}),
 });
 
-preset.$.mixins.bgFade;
-preset.$.mixins.disabled;
-// @ts-expect-error
-preset.$.mixins.aksdjfkds;
-
 function makeSeasonMode(season: 'winter' | 'spring' | 'summer' | 'autumn') {
-	preset.bundleMode(season, {
+	basePreset.bundleMode(season, {
 		color: {
-			main: preset.$.mode.primitive.color[season],
-			neutral: preset.$.mode.primitive.color[season].$neutral,
+			main: basePreset.$.mode.primitive.color[season],
+			neutral: basePreset.$.mode.primitive.color[season].$neutral,
 		},
 	});
 }
@@ -135,45 +130,45 @@ makeSeasonMode('spring');
 makeSeasonMode('summer');
 makeSeasonMode('autumn');
 
-preset.bundleMode('hero', {
+basePreset.bundleMode('hero', {
 	global: {
 		density: 0.5,
 	},
 	text: {
 		primary: {
-			...preset.$.mode.primitive.typography['6xl'],
+			...basePreset.$.mode.primitive.typography['6xl'],
 			font: '"Cormorant", serif',
 		},
 		secondary: {
-			...preset.$.mode.primitive.typography['2xl'],
+			...basePreset.$.mode.primitive.typography['2xl'],
 			font: '"Cormorant", serif',
 		},
 		ambient: {
-			...preset.$.mode.primitive.typography.md,
+			...basePreset.$.mode.primitive.typography.md,
 			font: '"Cormorant", serif',
 		},
 	},
 });
 
-preset.bundleMode('normal', {
+basePreset.bundleMode('normal', {
 	global: {
 		density: 1,
 	},
 });
 
-preset.bundleMode('dense', {
+basePreset.bundleMode('dense', {
 	global: {
 		density: 1.5,
 	},
 });
 
-preset.bundleMode('denser', {
+basePreset.bundleMode('denser', {
 	global: {
 		density: 2,
 	},
 });
 
-preset.bundleMode('round', {
+basePreset.bundleMode('round', {
 	global: {
 		roundness: 1,
 	},

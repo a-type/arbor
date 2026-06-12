@@ -50,10 +50,15 @@ export function paramsAsString<TParams extends FunctionParams>(
 	}
 	const list = params
 		.map((p) => {
+			if (isFunctionParamWithMeta(p)) {
+				const type = p.type ?? '*';
+				const typeAnnotation = type === '*' ? '' : ` <${type}>`;
+				return `${p.name}${typeAnnotation}`;
+			}
 			if (isToken(p)) {
 				const type = p.type ?? '*';
 				const typeAnnotation = type === '*' ? '' : ` <${type}>`;
-				return `var(${p.name}${typeAnnotation})` as CalcInterpolation;
+				return `${p.name}${typeAnnotation}` as CalcInterpolation;
 			}
 			return p;
 		})

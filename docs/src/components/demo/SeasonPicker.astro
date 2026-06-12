@@ -29,6 +29,14 @@ import SelectChip from '../system/SelectChip.astro';
 		<input type="radio" name="season" value="winter" id="season-winter" />
 		❄️
 	</Button>
+	<Button tag="label" emphasis="ambient" class="scheme-button @mode-light">
+		<input type="radio" name="scheme" value="light" id="scheme-light" />
+		☀️
+	</Button>
+	<Button tag="label" emphasis="ambient" class="scheme-button @mode-dark">
+		<input type="radio" name="scheme" value="dark" id="scheme-dark" />
+		🌙
+	</Button>
 </form>
 
 <style>
@@ -41,7 +49,8 @@ import SelectChip from '../system/SelectChip.astro';
 	input {
 		display: none;
 	}
-	.season-button {
+	.season-button,
+	.scheme-button {
 		padding: var(--m-spacing-sm);
 		aspect-ratio: 1;
 		line-height: 1;
@@ -49,7 +58,8 @@ import SelectChip from '../system/SelectChip.astro';
 		flex-direction: row;
 		align-items: center;
 	}
-	.season-button:has(input:checked) {
+	.season-button:has(input:checked),
+	.scheme-button:has(input:checked) {
 		@apply --mx-bg(var(--m-color-main-wash));
 	}
 </style>
@@ -60,10 +70,21 @@ import SelectChip from '../system/SelectChip.astro';
 		const formData = new FormData(seasonPicker as HTMLFormElement);
 		const selectedSeasons = formData.getAll('season');
 		document.documentElement.classList.remove(
-			...['@mode-spring', '@mode-summer', '@mode-autumn', '@mode-winter'],
+			...[
+				'@mode-spring',
+				'@mode-summer',
+				'@mode-autumn',
+				'@mode-winter',
+				'@mode-dark',
+				'@mode-light',
+			],
 		);
 		selectedSeasons.forEach((season) => {
 			document.documentElement.classList.add(`@mode-${season}`);
+		});
+		const selectedSchemes = formData.getAll('scheme');
+		selectedSchemes.forEach((scheme) => {
+			document.documentElement.classList.add(`@mode-${scheme}`);
 		});
 	});
 </script>

@@ -1,0 +1,144 @@
+---
+
+---
+
+<div class="root">
+	<div class="code">
+		<span>padding: <span class="token-invalid">var(--m-spacng-md);</span></span>
+		<div>
+			<span
+				>color: <span class="token"
+					>var(<span class="color-note"></span>--m-color-main)</span
+				>;</span
+			>
+		</div>
+		<div class="token-hover">
+			<div class="color-preview" style="background: var(--m-color-main)"></div>
+			<div>
+				<strong>Token:</strong>
+				<span class="token-name">--m-color-main</span>
+			</div>
+			<div>
+				<strong>Purpose:</strong>
+				<span class="token-purpose">color</span>
+			</div>
+			<div>
+				<strong>Description:</strong>
+				<span class="token-description"
+					>A mid-range tone good for primary actions and decoration.</span
+				>
+			</div>
+			<div>
+				<strong>Value:</strong>
+				<span class="token-value">#6200ee</span>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style>
+	.root {
+		font-family: monospace;
+		font-size: var(--m-text-ambient-size);
+		line-height: 1.5;
+		position: relative;
+		padding: var(--m-spacing-lg);
+		@apply --mx-bg(inherit);
+		@apply --mx-fg(var(--m-surface-ambient-fg));
+		border-radius: var(--m-surface-radius);
+		width: 100%;
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		gap: var(--m-spacing-lg);
+	}
+	.code {
+		display: flex;
+		flex-direction: column;
+		gap: var(--m-spacing);
+	}
+	.color-preview {
+		width: 100%;
+		height: 80px;
+		@apply --mx-bg(var(--m-color-main));
+	}
+	.color-note {
+		width: 12px;
+		height: 12px;
+		display: inline-block;
+		@apply --mx-bg(var(--m-color-main));
+		@apply --mx-border(var(--m-color-neutral-ink));
+		margin-inline: var(--m-spacing-xs);
+	}
+	.token {
+		@apply --mx-fg(var(--m-color-main-ink));
+		font-weight: var(--m-primitive-typography-weight-bold);
+	}
+	.token-invalid {
+		text-decoration: underline;
+		color: var(--m-primitive-color-attention-heavy);
+	}
+	.token-hover {
+		width: 300px;
+		@apply --mx-bg(var(--m-surface-ambient-bg));
+		@apply --mx-fg(var(--m-surface-ambient-fg));
+		@apply --mx-border(var(--m-surface-ambient-border));
+		border-radius: var(--m-surface-radius);
+		padding: var(--m-spacing-md);
+		@apply --mx-shadow;
+		--mx-shadow-shadow: var(--m-shadow-md);
+		font-size: var(--m-text-ambient-size);
+		font-family: monospace;
+		line-height: 1;
+		pointer-events: none;
+		z-index: 9999;
+		gap: var(--m-spacing-sm);
+		display: flex;
+		flex-direction: column;
+	}
+</style>
+
+<script>
+	import {
+		computeEquation,
+		css,
+		printComputationResult,
+	} from '@arbor-css/core';
+
+	const tokenElement = document.querySelector('span.token')!;
+	setInterval(() => {
+		const mainColor = getComputedStyle(tokenElement)
+			.getPropertyValue('--m-color-main')
+			.trim();
+		// extract light-dark depending on the current color scheme
+		const whenDark = getComputedStyle(tokenElement)
+			.getPropertyValue('--m-global-whenDark')
+			.trim();
+		const { light, dark } = getLightDark(mainColor) || {};
+		if (!light || !dark) {
+			// oops
+			return;
+		}
+
+		const toCompute = whenDark === 'dark' ? dark : light;
+		const asEquation = css(toCompute as any);
+		const simplified = printComputationResult(
+			computeEquation(asEquation, {
+				propertyValues: {},
+				skipBaking: false,
+			}),
+		);
+		const tokenValueElement = document.querySelector('span.token-value');
+		if (tokenValueElement) {
+			tokenValueElement.textContent = simplified;
+		}
+	}, 1000);
+
+	function getLightDark(input: string) {
+		const match = /light-dark\((oklch\(.*\)),\s*(oklch\(.*\))\)/.exec(input);
+		if (match) {
+			return { light: match[1].trim(), dark: match[2].trim() };
+		}
+		return null;
+	}
+</script>

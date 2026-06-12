@@ -13,5 +13,5 @@ const debugGreen = document.createElement('main-color-range-debug');
 debugGreen.setAttribute('color', 'green');
 document.body.appendChild(debugGreen);
 
-const demo = document.createElement('arbor-system-demo');
+const demo = document.createElement('arbor-outputs');
 document.body.appendChild(demo);
