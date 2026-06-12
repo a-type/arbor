@@ -46,17 +46,16 @@ button {
 	@apply --mx-border(var(--mx-fg-ref));
 
 	/* apply ring+shadow base props, then set shadow to a default value */
-	@apply --mx-shadow;
-	--mx-shadow-shadow: var(--m-shadow-sm);
+	@apply --mx-shadow(var(--m-shadow-sm));
 
 	&[data-emphasis='primary'] {
 		@apply --mx-bg(var(--m-action-primary-bg));
 		@apply --mx-fg(var(--m-action-primary-fg));
 		&:hover {
-			@apply --mx-bg-lighten(2);
+			@apply --mx-bg-lighter(2);
 		}
 		&:active {
-			@apply --mx-bg-lighten(4);
+			@apply --mx-bg-lighter(4);
 		}
 	}
 	&,
@@ -68,7 +67,7 @@ button {
 		@apply --mx-bg(var(--m-action-ambient-bg));
 		@apply --mx-fg(var(--m-action-ambient-fg));
 		@apply --mx-border(transparent);
-		--mx-shadow-shadow: 0 0 0 0 transparent;
+		--mx-shadow-value: 0 0 0 0 transparent;
 
 		&:hover,
 		&:focus {
@@ -77,20 +76,20 @@ button {
 	}
 
 	&:hover {
-		@apply --mx-bg-darken(2);
-		--mx-shadow-ring: --fn-ring(var(--mx-bg-ref), 4px);
+		@apply --mx-bg-heavier(2);
+		--mx-ring-value: --fn-ring(var(--mx-bg-ref), 4px);
 	}
 	&:active {
-		@apply --mx-bg-darken(4);
-		--mx-shadow-ring: --fn-ring(var(--mx-bg-ref), 6px);
+		@apply --mx-bg-heavier(4);
+		--mx-ring-value: --fn-ring(var(--mx-bg-ref), 6px);
 	}
 
 	&:focus {
 		outline: none;
 	}
 	&:focus-visible {
-		@apply --mx-bg-lighten(2);
-		--mx-shadow-ring: --fn-ring(var(--m-color-main-ink), 2px);
+		@apply --mx-bg-lighter(2);
+		--mx-ring-value: --fn-ring(var(--m-color-main-ink), 2px);
 	}
 }
 
@@ -106,19 +105,18 @@ input {
 	@apply --mx-fg(var(--m-control-fg));
 	@apply --mx-border(var(--m-control-border));
 
-	@apply --mx-shadow;
-	--mx-shadow-shadow: var(--m-shadow-sm);
+	@apply --mx-shadow(var(--m-shadow-sm));
 
 	&:hover {
-		@apply --mx-bg-darken(1);
-		@apply --mx-border-darken(2);
-		--mx-shadow-ring: --fn-ring(var(--m-color-main-heavy), 2px);
+		@apply --mx-bg-heavier(1);
+		@apply --mx-border-heavier(2);
+		--mx-ring-value: --fn-ring(var(--m-color-main-heavy), 2px);
 	}
 	&:focus {
 		outline: none;
 	}
 	&:focus-visible {
-		--mx-shadow-ring: --fn-ring(var(--m-color-main-heavy), 4px);
+		--mx-ring-value: --fn-ring(var(--m-color-main-heavy), 4px);
 	}
 }
 

@@ -256,7 +256,7 @@ yargs(hideBin(process.argv))
 				.positional('globs', {
 					type: 'string',
 					array: true,
-					default: ['**/*.{css,scss,less}'],
+					default: ['**/*.{css,scss,less,astro,vue,svelte}'],
 					description: 'CSS file globs to validate',
 				})
 				.option('config', {
@@ -274,7 +274,9 @@ yargs(hideBin(process.argv))
 				const providedGlobs = (argv.globs as string[]) ?? [];
 
 				const globsToSearch =
-					providedGlobs.length > 0 ? providedGlobs : ['**/*.{css,scss,less}'];
+					providedGlobs.length > 0 ?
+						providedGlobs
+					:	['**/*.{css,scss,less,astro,vue,svelte}'];
 				const globOptions = {
 					cwd: process.cwd(),
 					ignore: Array.from(SKIPPED_DIRECTORIES).map((dir) => `${dir}/**`),

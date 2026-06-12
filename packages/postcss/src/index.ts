@@ -1,4 +1,8 @@
-import { printEquation } from '@arbor-css/calc';
+import {
+	computeEquation,
+	Equation,
+	printComputationResult,
+} from '@arbor-css/calc';
 import { AnyArborPreset, generateStylesheet } from '@arbor-css/core';
 import {
 	type ArborMixinBodyEntry,
@@ -161,15 +165,15 @@ function computeFunctionCallValue({
 }
 
 function resolveMixinValue(
-	value: string,
+	value: Equation,
 	paramValues: Record<string, string>,
 ): string {
-	let resolved = value;
-	for (const [paramName, paramValue] of Object.entries(paramValues)) {
-		resolved = resolved.replaceAll(`var(${paramName})`, paramValue);
-	}
-
-	return resolved;
+	console.log('resolving mixin value:', value, 'with params', paramValues);
+	const computed = computeEquation(value, {
+		propertyValues: paramValues,
+	});
+	console.log('computed mixin value:', computed);
+	return printComputationResult(computed);
 }
 
 function cloneScopedMixinEntry(
@@ -179,7 +183,7 @@ function cloneScopedMixinEntry(
 	if ('prop' in entry) {
 		return postcss.decl({
 			prop: entry.prop,
-			value: resolveMixinValue(printEquation(entry.value), mixinParamValues),
+			value: resolveMixinValue(entry.value, mixinParamValues),
 		});
 	}
 

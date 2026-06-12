@@ -9,7 +9,7 @@ import {
 export function modeToCss<TModeShape extends SimpleTokenSchema>(
 	mode: ModeInstance<TModeShape>,
 	preset: ArborPreset<TModeShape>,
-	{ skipBaking = false }: { skipBaking?: boolean } = {},
+	{ skipBaking }: { skipBaking?: boolean } = {},
 ): string {
 	const modeInternals = getModeInternals(mode);
 	const graph = buildModeTokenGraph(mode, preset, {

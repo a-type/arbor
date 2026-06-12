@@ -77,37 +77,37 @@ export const presetBasic = definePreset({
 			}
 		`,
 	}),
-	mixins: (create, $) => createPresetMixins($.mode.global, create),
+	mixins: (create, $, ctx) => createPresetMixins($.mode.global, create, ctx),
 	functions: (create, $) => {
-		const lightenColor = create('lighten-color', {
+		const colorLighter = create('color-lighter', {
 			description: 'Lightens a color by a specified "step" value',
 			parameters: ['--color', '--step'] as const,
 			definition: (css, color, step) =>
 				lightenColorAlteration(css, $.mode.global, color, step),
 		});
 
-		const darkenColor = create('darken-color', {
+		const colorHeavier = create('color-heavier', {
 			description: 'Darkens a color by a specified "step" value',
 			parameters: ['--color', '--step'] as const,
 			definition: (css, color, step) =>
 				darkenColorAlteration(css, $.mode.global, color, step),
 		});
 
-		const desaturateColor = create('desaturate-color', {
+		const colorDesaturated = create('color-desaturated', {
 			description: 'Desaturates a color by a specified "step" value',
 			parameters: ['--color', '--step'] as const,
 			definition: (css, color, step) =>
 				desaturateColorAlteration(css, $.mode.global, color, step),
 		});
 
-		const saturateColor = create('saturate-color', {
+		const colorSaturated = create('color-saturated', {
 			description: 'Saturates a color by a specified "step" value',
 			parameters: ['--color', '--step'] as const,
 			definition: (css, color, step) =>
 				saturateColorAlteration(css, $.mode.global, color, step),
 		});
 
-		const fade = create('fade', {
+		const colorFaded = create('color-faded', {
 			description:
 				'Applies an alpha channel to a source color using CSS relative color syntax.',
 			parameters: ['--color', '--opacity'] as const,
@@ -133,7 +133,7 @@ export const presetBasic = definePreset({
 				css`0 0 0 ${offset} ${$.mode.global.trueLightColor}, 0 0 0 calc(${size} + ${offset}) ${color}`,
 		});
 
-		const contrastColor = create('contrast-color', {
+		const colorContrast = create('color-contrast', {
 			description:
 				'Returns either black or white depending on which has better contrast with the background color. Supply a parameter to use it instead of the background.',
 			parameters: [
@@ -148,13 +148,13 @@ export const presetBasic = definePreset({
 		});
 
 		return {
-			lightenColor,
-			darkenColor,
-			desaturateColor,
-			saturateColor,
-			fade,
+			colorLighter,
+			colorHeavier,
+			colorDesaturated,
+			colorSaturated,
+			colorFaded,
 			ring,
-			contrastColor,
+			colorContrast,
 		};
 	},
 });

@@ -1,5 +1,6 @@
 import {
 	CreateToken,
+	isToken,
 	Token,
 	TokenOptions,
 	TokenPurpose,
@@ -21,7 +22,8 @@ export type SimpleTokenDefinition =
 	| {
 			purpose: TokenPurpose;
 			description?: string;
-	  };
+	  }
+	| Token;
 
 type SimpleTokenDefinitionObject = Exclude<SimpleTokenDefinition, TokenPurpose>;
 
@@ -49,6 +51,7 @@ export type SimpleTokensAsTokenDefinitions<T extends SimpleTokenSchema> =
 		{
 			[P in keyof T]: NonNullable<T[P]> extends string ? Token
 			: NonNullable<T[P]> extends SimpleTokenDefinitionObject ? Token
+			: NonNullable<T[P]> extends Token ? Token
 			: SimpleTokensAsTokenDefinitions<
 					NestedSimpleTokenSchema<NonNullable<T[P]>>
 				>;
@@ -60,6 +63,7 @@ function isProbablySimpleTokenDefinition(
 ): value is SimpleTokenDefinition {
 	return (
 		value &&
+		!isToken(value) &&
 		(typeof value === 'string' ||
 			(typeof value === 'object' &&
 				'purpose' in value &&
@@ -119,6 +123,14 @@ export function convertSimpleTokenSchema<T extends SimpleTokenSchema>(
 						propPrefix,
 						applyMeta,
 					);
+				} else if (isToken(value)) {
+					propsLevel.$root = value;
+				} else {
+					throw new Error(
+						`Invalid $root token definition at ${propPrefix}: ${JSON.stringify(
+							value,
+						)}`,
+					);
 				}
 				continue;
 			}
@@ -129,8 +141,11 @@ export function convertSimpleTokenSchema<T extends SimpleTokenSchema>(
 					value,
 					createTokenValue,
 					propPrefix,
+					applyMeta,
 				);
 				propsLevel[key] = propertyDefinition;
+			} else if (isToken(value)) {
+				propsLevel[key] = value;
 			} else if (typeof value === 'object' && value !== null) {
 				propsLevel[key] = generatePropsForSchemaLevel(value, currentPrefix);
 			}

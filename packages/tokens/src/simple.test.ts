@@ -26,3 +26,22 @@ it('converts object-form simple token definitions with descriptions', () => {
 	);
 	expect(tokens.colors.main.bg.description).toBeUndefined();
 });
+
+it('supports passing full fledged tokens', () => {
+	const existingToken = createToken('existing', { purpose: 'color' });
+	const tokens = convertSimpleTokenSchema(
+		{
+			colors: {
+				main: {
+					$root: existingToken,
+					bg: 'color',
+				},
+			},
+		},
+		'root',
+		createToken,
+	);
+
+	expect(tokens.colors.main.$root).toBe(existingToken);
+	expect(tokens.colors.main.bg.purpose).toBe('color');
+});

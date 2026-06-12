@@ -650,6 +650,12 @@ function evaluateLiteral(
 		try {
 			// replace literal with known value from context
 			return evaluateLiteral(propertyValue, context);
+		} catch (err) {
+			console.warn(
+				`Error evaluating property ${propertyName} with value ${propertyValue}:`,
+				err,
+			);
+			throw err;
 		} finally {
 			context.resolvingProperties?.delete(propertyName);
 		}
@@ -734,10 +740,9 @@ function computeEquationRaw(
 			return evaluateLiteral(equation.value.toString(), context);
 		case 'token':
 			const evaluated = evaluateLiteral(equation.value.var, context);
-			if (evaluated.type === 'numeric') {
-				return evaluated;
-			}
-			if (equation.fallback) {
+			const wasNotResolved =
+				evaluated.type === 'calc' && evaluated.value === equation.value.var;
+			if (wasNotResolved && equation.fallback) {
 				// token value is not known at runtime, so we compute the fallback and inline it too
 				const computedFallback = computeEquation(equation.fallback, context);
 				return {

@@ -17,7 +17,7 @@ describe('ring function', () => {
 
 describe('fade function', () => {
 	it('should compute the right value', () => {
-		const result = presetBasic.functions.fade.compute(
+		const result = presetBasic.functions.colorFaded.compute(
 			{ '--color': 'red', '--opacity': '42%' },
 			{
 				propertyValues: {},
@@ -29,7 +29,7 @@ describe('fade function', () => {
 
 describe('contrast color function', () => {
 	it('should compute the right default value', () => {
-		const result = presetBasic.functions.contrastColor.compute([], {
+		const result = presetBasic.functions.colorContrast.compute([], {
 			propertyValues: {},
 		});
 		expect(result).toBe(

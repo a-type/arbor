@@ -1,11 +1,12 @@
-import { $, CalcInterpolation } from '@arbor-css/calc';
-import { isToken, TokenType } from '@arbor-css/tokens';
+import { CalcInterpolation, css } from '@arbor-css/calc';
+import { createTokenFactory, isToken, PropertyType } from '@arbor-css/tokens';
 
 export type CssProperty = `--${string}`;
 export type FunctionParamWithMeta = {
 	name: CssProperty;
-	type?: TokenType;
+	type?: PropertyType;
 	fallback?: string;
+	description?: string;
 };
 export type FunctionParam = CssProperty | FunctionParamWithMeta;
 export type FunctionParams = readonly FunctionParam[];
@@ -66,23 +67,41 @@ export function paramsAsString<TParams extends FunctionParams>(
 	return `(${list})`;
 }
 
+// since params are not prefixed like tokens, this just uses the standard
+// '--' as a prefix and can be instantiated globally.
+const createParamToken = createTokenFactory({ tokenPrefix: '--' });
 export function paramsAsInterpolations<TParams extends FunctionParams>(
 	params: TParams,
 ): ParamsAsInterpolations<TParams> {
 	return params.map((p) => {
 		if (isToken(p)) {
-			return $.token(p);
+			return css`
+				${p}
+			`;
 		}
 		if (isFunctionParamWithMeta(p)) {
-			const name = p.name;
+			// convert to inline token so a value can be resolved
+			// during computation later
+			const asToken = createParamToken(p.name.replace('--', ''), {
+				type: p.type,
+			});
 			if (p.fallback) {
-				return $.val(`var(${name}, ${p.fallback})`);
+				return css`
+					${[asToken, p.fallback]}
+				`;
 			}
-			return $.val(`var(${name})`);
+			return css`
+				${asToken}
+			`;
 		}
 		if (p.startsWith('--')) {
-			return $.val(`var(${p})`);
+			const asToken = createParamToken(p.replace('--', ''), {});
+			return css`
+				${asToken}
+			`;
 		}
-		return $.val(p);
+		return css`
+			${p}
+		`;
 	}) as ParamsAsInterpolations<TParams>;
 }

@@ -23,8 +23,16 @@ export function createActionIntentValues<TColorNames extends string>(
 			fg: css`
 				${$.mode.global.trueHeavyColor}
 			`,
-			border: css`
+			borderColor: css`
 				${$.mode.color.main.heavy}
+			`,
+			borderWidth: css`
+				${$.mode.lineWidth.$root}
+			`,
+			borderStyle: 'solid',
+			border: css`
+				${$.mode.action.primary.borderWidth} ${$.mode.action.primary
+					.borderStyle} ${$.mode.action.primary.borderColor}
 			`,
 		},
 		secondary: {
@@ -34,8 +42,16 @@ export function createActionIntentValues<TColorNames extends string>(
 			fg: css`
 				${$.mode.global.trueHeavyColor}
 			`,
-			border: css`
+			borderColor: css`
 				${$.mode.color.neutral.heavy}
+			`,
+			borderWidth: css`
+				${$.mode.lineWidth.$root}
+			`,
+			borderStyle: 'solid',
+			border: css`
+				${$.mode.action.secondary.borderWidth} ${$.mode.action.secondary
+					.borderStyle} ${$.mode.action.secondary.borderColor}
 			`,
 		},
 		ambient: {
@@ -43,7 +59,15 @@ export function createActionIntentValues<TColorNames extends string>(
 			fg: css`
 				${$.mode.global.trueHeavyColor}
 			`,
-			border: 'transparent',
+			borderColor: 'transparent',
+			borderWidth: css`
+				${$.mode.lineWidth.$root}
+			`,
+			borderStyle: 'solid',
+			border: css`
+				${$.mode.action.ambient.borderWidth} ${$.mode.action.ambient
+					.borderStyle} ${$.mode.action.ambient.borderColor}
+			`,
 		},
 	} satisfies ModeValues<ArborModeSchema['action']>;
 }
@@ -68,8 +92,16 @@ export function createSurfaceIntentValues<TColorNames extends string>(
 			fg: css`
 				${$.mode.global.trueHeavyColor}
 			`,
-			border: css`
+			borderColor: css`
 				${$.mode.color.main.heavy}
+			`,
+			borderWidth: css`
+				${$.mode.lineWidth.$root}
+			`,
+			borderStyle: 'solid',
+			border: css`
+				${$.mode.surface.primary.borderWidth} ${$.mode.surface.primary
+					.borderStyle} ${$.mode.surface.primary.borderColor}
 			`,
 		},
 		secondary: {
@@ -79,6 +111,13 @@ export function createSurfaceIntentValues<TColorNames extends string>(
 			fg: css`
 				${$.mode.color.neutral.ink}
 			`,
+			borderColor: css`
+				${$.mode.color.neutral.heavy}
+			`,
+			borderWidth: css`
+				${$.mode.lineWidth.$root}
+			`,
+			borderStyle: 'solid',
 			border: css`
 				${$.mode.color.neutral.heavy}
 			`,
@@ -90,6 +129,13 @@ export function createSurfaceIntentValues<TColorNames extends string>(
 			fg: css`
 				${$.mode.color.neutral.ink}
 			`,
+			borderColor: css`
+				${$.mode.color.neutral.heavy}
+			`,
+			borderWidth: css`
+				${$.mode.lineWidth.$root}
+			`,
+			borderStyle: 'solid',
 			border: css`
 				${$.mode.color.neutral.heavy}
 			`,
@@ -105,7 +151,7 @@ export function createControlIntentValues<TColorNames extends string>(
 			$root: css`
 				${$.mode.control.padding.block} ${$.mode.control.padding.inline}
 			`,
-			block: css`calc(${$.mode.primitive.spacing.sm} / ${$.mode.global.density})`,
+			block: css`calc(${$.mode.primitive.spacing.md} / ${$.mode.global.density})`,
 			inline: css`calc((${$.mode.primitive.spacing.md} + ${$.mode.global.roundness} * ${$.mode.primitive.spacing.sm}) / ${$.mode.global.density})`,
 		},
 		roundness: 1,
@@ -116,8 +162,16 @@ export function createControlIntentValues<TColorNames extends string>(
 		fg: css`
 			${$.mode.color.neutral.ink}
 		`,
-		border: css`
+		borderColor: css`
 			${$.mode.color.neutral.heavy}
+		`,
+		borderWidth: css`
+			${$.mode.lineWidth.$root}
+		`,
+		borderStyle: 'solid',
+		border: css`
+			${$.mode.control.borderWidth} ${$.mode.control.borderStyle} ${$.mode
+				.control.borderColor}
 		`,
 	} satisfies ModeValues<ArborModeSchema['control']>;
 }

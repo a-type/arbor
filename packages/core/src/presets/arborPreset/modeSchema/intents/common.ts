@@ -1,17 +1,28 @@
 import { createModeSchema } from '@arbor-css/modes';
 
-export const colorIntents = createModeSchema({
+export const visualIntents = createModeSchema({
 	fg: {
 		purpose: 'color',
-		description: 'Intended for use as the foreground color',
+		description: 'Foreground color',
 	},
 	bg: {
+		purpose: 'other',
+		description:
+			'Background - can be a color or a more complex value like a gradient or image',
+	},
+	borderColor: {
 		purpose: 'color',
-		description: 'Intended for use as the background color',
+	},
+	borderWidth: {
+		purpose: 'border-width',
+	},
+	borderStyle: {
+		purpose: 'border-style',
 	},
 	border: {
-		purpose: 'color',
-		description: 'Intended for use as the border color, if desired',
+		purpose: 'border',
+		description:
+			'Compiles the border color, width, and style into a single token for direct assignment to border.',
 	},
 });
 
@@ -36,4 +47,5 @@ export const textAndFontIntents = createModeSchema({
 	weight: 'font-weight',
 	lineHeight: 'line-height',
 	font: 'font-family',
+	letterSpacing: 'letter-spacing',
 });

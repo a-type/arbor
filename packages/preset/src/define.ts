@@ -163,6 +163,7 @@ export interface DefinePresetConfig<
 					// this would be circular logic
 					ExtendedConfigMixins<NoInferT<TExtends>>
 				>,
+				context: GlobalContext,
 		  ) => TMixins)
 		| undefined;
 	functions?:
@@ -175,6 +176,7 @@ export interface DefinePresetConfig<
 						NoInferT<TMixins>
 					>
 				>,
+				context: GlobalContext,
 		  ) => TFunctions)
 		| undefined;
 	extends?: TExtends;
@@ -292,7 +294,7 @@ export function definePreset<
 
 		const mixins =
 			createMixins ?
-				createMixins(context.createMixin, $tokensWithoutMixins as any)
+				createMixins(context.createMixin, $tokensWithoutMixins as any, context)
 			:	({} as TMixins);
 
 		const allMixins = {
@@ -310,7 +312,7 @@ export function definePreset<
 
 		const functions =
 			createFunctions ?
-				createFunctions(context.createFunction, $tokens as any)
+				createFunctions(context.createFunction, $tokens as any, context)
 			:	({} as TFunctions);
 
 		const allFunctions = {

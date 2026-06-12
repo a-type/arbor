@@ -56,10 +56,28 @@ describe('calc computeEquation', () => {
 
 	it('should compute a token with a fallback', () => {
 		const result = computeEquation($.token(tokenA, $.val('10px')), {
-			propertyValues: {},
+			propertyValues: {
+				[tokenA.name]: '20px',
+			},
 		});
 		expect(result).toEqual({
-			value: `var(${tokenA.name}, 10px)`,
+			value: 20,
+			type: 'numeric',
+			unit: 'px',
+		});
+	});
+
+	it('should compute a concatenated token with fallback', () => {
+		const shadowResult = computeEquation(
+			$.token(tokenA, $.concat([$.val(0), $.val(0), $.val(0), $.val('black')])),
+			{
+				propertyValues: {
+					[tokenA.name]: '0 0 5px red',
+				},
+			},
+		);
+		expect(shadowResult).toEqual({
+			value: '0 0 5px red',
 			type: 'calc',
 		});
 	});

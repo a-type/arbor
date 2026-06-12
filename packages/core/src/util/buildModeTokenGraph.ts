@@ -72,14 +72,15 @@ export function buildModeTokenGraph<TModeShape extends SimpleTokenSchema>(
 			);
 		}
 
+		const explicit = explicitNames.has(token.name);
 		nodes[token.name] = {
 			token,
 			raw,
 			computed: resolveGraphValue(raw, {
-				skipBaking: options.skipBaking,
+				skipBaking: options.skipBaking ?? !explicit,
 				propertyValues: resolvedValues,
 			}),
-			explicit: explicitNames.has(token.name),
+			explicit,
 			dependencies: getGraphDependencies(raw),
 			dependents: [],
 		};

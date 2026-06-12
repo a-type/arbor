@@ -1,5 +1,6 @@
 import { Css, Equation } from '@arbor-css/calc';
-import { CreateMixin } from '@arbor-css/functions';
+import { ArborMixinDefinition, CreateMixin } from '@arbor-css/functions';
+import { GlobalContext } from '@arbor-css/globals';
 import {
 	darkenColorAlteration,
 	desaturateColorAlteration,
@@ -15,17 +16,16 @@ export function createColorMixins(
 	{
 		name,
 		property,
-		description,
 		defineExtraProperties,
 	}: {
 		name: string;
 		property: string;
-		description: string;
 		defineExtraProperties?: (css: Css) => Record<string, Equation>;
 	},
 ) {
 	const refMixin = createMixinValue(name, {
-		description,
+		description: ({ tokens }) =>
+			`Applies ${property}, and also exposes this color for reference by other mixins or functions via ${tokens.ref.name}.`,
 		parameters: ['--color'] as const,
 		definition: (css, { parameters: [color], tokens }) => {
 			return {
@@ -64,7 +64,7 @@ export function createColorMixins(
 			},
 		},
 	});
-	const lightenMixin = createMixinValue(`${name}-lighten`, {
+	const lightenMixin = createMixinValue(`${name}-lighter`, {
 		description: `Lightens the ${property} color applied to ${refMixin.name} by a number of steps.`,
 		parameters: [
 			'--step',
@@ -82,7 +82,7 @@ export function createColorMixins(
 			),
 		}),
 	});
-	const darkenMixin = createMixinValue(`${name}-darken`, {
+	const darkenMixin = createMixinValue(`${name}-heavier`, {
 		description: `Darkens the ${property} color applied to ${refMixin.name} by a number of steps.`,
 		parameters: [
 			'--step',
@@ -100,7 +100,7 @@ export function createColorMixins(
 			),
 		}),
 	});
-	const desaturateMixin = createMixinValue(`${name}-desaturate`, {
+	const desaturateMixin = createMixinValue(`${name}-desaturated`, {
 		description: `Desaturates the ${property} color applied to ${refMixin.name} by a number of steps.`,
 		parameters: [
 			'--step',
@@ -118,7 +118,7 @@ export function createColorMixins(
 			),
 		}),
 	});
-	const saturateMixin = createMixinValue(`${name}-saturate`, {
+	const saturateMixin = createMixinValue(`${name}-saturated`, {
 		description: `Saturates the ${property} color applied to ${refMixin.name} by a number of steps.`,
 		parameters: [
 			'--step',
@@ -136,7 +136,7 @@ export function createColorMixins(
 			),
 		}),
 	});
-	const fadeMixin = createMixinValue(`${name}-fade`, {
+	const fadeMixin = createMixinValue(`${name}-faded`, {
 		description: `Sets the ${property} color applied to ${refMixin.name} to a specific opacity.`,
 		parameters: [
 			'--opacity',
@@ -156,38 +156,89 @@ export function createColorMixins(
 
 	return {
 		ref: refMixin,
-		lighten: lightenMixin,
-		darken: darkenMixin,
-		desaturate: desaturateMixin,
-		saturate: saturateMixin,
-		fade: fadeMixin,
+		lighter: lightenMixin,
+		heavier: darkenMixin,
+		desaturated: desaturateMixin,
+		saturated: saturateMixin,
+		faded: fadeMixin,
 	};
 }
 
 export function createPresetMixins(
 	tokens: RequiredTokens,
 	createMixinValue: CreateMixin,
+	context: GlobalContext,
 ) {
+	// pre-create shadow tokens so they can be reused in both mixins
+	const shadowValueToken = context.createMixinToken('shadow-value', {
+		purpose: 'shadow',
+		description:
+			'The main stacked shadow layer used by the shadow mixin. Assign this property to apply a shadow.',
+	});
+	const ringValueToken = context.createMixinToken('ring-value', {
+		purpose: 'shadow',
+		description:
+			'A "ring" shadow, often used as a focus indicator. Assign this property to apply a ring. See the "ring" function.',
+	});
+
 	const shadow = createMixinValue('shadow', {
 		description:
 			'Applies stacked box-shadow layers as assignable tokens, so ring and shadow portions can be assigned independently.',
-		definition: (css, { tokens }) => ({
-			[tokens.shadow.name]: css`0 0 0 0 transparent`,
-			[tokens.ring.name]: css`0 0 0 0 transparent`,
+		parameters: [
+			{
+				name: '--shadow',
+				fallback: '0 0 0 0 transparent',
+				type: '*',
+				description:
+					'The main shadow layer, often used for elevation. If not specified, no shadow is initially applied.',
+			},
+		] as const,
+		definition: (
+			css,
+			{ tokens, parameters: [shadowParam] },
+		): ArborMixinDefinition => ({
+			[tokens.value.name]: css`
+				${shadowParam}
+			`,
 			'box-shadow': css`
-				${tokens.ring}, ${tokens.shadow}
+				${[ringValueToken, css`0 0 0 0 transparent`]}, ${[
+					tokens.value,
+					css`0 0 0 0 transparent`,
+				]}
 			`,
 		}),
 		contributeTokens: {
-			shadow: {
-				purpose: 'shadow',
-				description: 'The main stacked shadow layer used by the shadow mixin.',
-			},
-			ring: {
-				purpose: 'shadow',
+			value: shadowValueToken,
+		},
+	});
+	const ring = createMixinValue('ring', {
+		description:
+			'Creates a solid ring using box-shadow. Combines with shadows applied via the shadow mixin.',
+		parameters: [
+			{
+				name: '--ring',
+				fallback: '0 0 0 0 transparent',
+				type: '*',
 				description:
-					'A "ring" shadow, often used as a focus indicator. See the "ring" function.',
+					'The main shadow layer, often used for elevation. If not specified, no shadow is initially applied.',
 			},
+		] as const,
+		definition: (
+			css,
+			{ tokens, parameters: [ringParam] },
+		): ArborMixinDefinition => ({
+			[tokens.value.name]: css`
+				${ringParam}
+			`,
+			'box-shadow': css`
+				${[tokens.value, css`0 0 0 0 transparent`]}, ${[
+					shadowValueToken,
+					css`0 0 0 0 transparent`,
+				]}
+			`,
+		}),
+		contributeTokens: {
+			value: ringValueToken,
 		},
 	});
 
@@ -195,22 +246,16 @@ export function createPresetMixins(
 	const fgMixins = createColorMixins(createMixinValue, tokens, {
 		name: 'fg',
 		property: 'color',
-		description:
-			'Routes color assignments through intermediate tokens to allow for runtime adjustments and cross-color references.',
 	});
 
 	const bgMixins = createColorMixins(createMixinValue, tokens, {
 		name: 'bg',
 		property: 'background',
-		description:
-			'Routes background color assignments through intermediate tokens to allow for runtime adjustments and cross-color references.',
 	});
 
 	const borderMixins = createColorMixins(createMixinValue, tokens, {
 		name: 'border',
 		property: 'border-color',
-		description:
-			'Routes border color assignments through intermediate tokens to allow for runtime adjustments and cross-color references.',
 		defineExtraProperties: (css) => ({
 			'border-style': css`solid`,
 			'border-width': css`
@@ -222,68 +267,63 @@ export function createPresetMixins(
 	const fillMixins = createColorMixins(createMixinValue, tokens, {
 		name: 'fill',
 		property: 'fill',
-		description:
-			'Routes SVG fill assignments through intermediate tokens to allow for runtime adjustments and cross-color references.',
 	});
 
 	const strokeMixins = createColorMixins(createMixinValue, tokens, {
 		name: 'stroke',
 		property: 'stroke',
-		description:
-			'Routes SVG stroke assignments through intermediate tokens to allow for runtime adjustments and cross-color references.',
 	});
 
 	const accentMixins = createColorMixins(createMixinValue, tokens, {
 		name: 'accent',
 		property: 'accent-color',
-		description:
-			'Routes accent-color assignments through intermediate tokens to allow for runtime adjustments and cross-color references.',
 	});
 
 	return {
 		shadow,
+		ring,
 
 		accent: accentMixins.ref,
-		accentLighten: accentMixins.lighten,
-		accentDarken: accentMixins.darken,
-		accentDesaturate: accentMixins.desaturate,
-		accentSaturate: accentMixins.saturate,
-		accentFade: accentMixins.fade,
+		accentLighter: accentMixins.lighter,
+		accentHeavier: accentMixins.heavier,
+		accentDesaturated: accentMixins.desaturated,
+		accentSaturated: accentMixins.saturated,
+		accentFaded: accentMixins.faded,
 
 		bg: bgMixins.ref,
-		bgLighten: bgMixins.lighten,
-		bgDarken: bgMixins.darken,
-		bgDesaturate: bgMixins.desaturate,
-		bgSaturate: bgMixins.saturate,
-		bgFade: bgMixins.fade,
+		bgLighter: bgMixins.lighter,
+		bgHeavier: bgMixins.heavier,
+		bgDesaturated: bgMixins.desaturated,
+		bgSaturated: bgMixins.saturated,
+		bgFaded: bgMixins.faded,
 
 		border: borderMixins.ref,
-		borderLighten: borderMixins.lighten,
-		borderDarken: borderMixins.darken,
-		borderDesaturate: borderMixins.desaturate,
-		borderSaturate: borderMixins.saturate,
-		borderFade: borderMixins.fade,
+		borderLighter: borderMixins.lighter,
+		borderHeavier: borderMixins.heavier,
+		borderDesaturated: borderMixins.desaturated,
+		borderSaturated: borderMixins.saturated,
+		borderFaded: borderMixins.faded,
 
 		fill: fillMixins.ref,
-		fillLighten: fillMixins.lighten,
-		fillDarken: fillMixins.darken,
-		fillDesaturate: fillMixins.desaturate,
-		fillSaturate: fillMixins.saturate,
-		fillFade: fillMixins.fade,
+		fillLighter: fillMixins.lighter,
+		fillHeavier: fillMixins.heavier,
+		fillDesaturated: fillMixins.desaturated,
+		fillSaturated: fillMixins.saturated,
+		fillFaded: fillMixins.faded,
 
 		fg: fgMixins.ref,
-		fgLighten: fgMixins.lighten,
-		fgDarken: fgMixins.darken,
-		fgDesaturate: fgMixins.desaturate,
-		fgSaturate: fgMixins.saturate,
-		fgFade: fgMixins.fade,
+		fgLighter: fgMixins.lighter,
+		fgHeavier: fgMixins.heavier,
+		fgDesaturated: fgMixins.desaturated,
+		fgSaturated: fgMixins.saturated,
+		fgFaded: fgMixins.faded,
 
 		stroke: strokeMixins.ref,
-		strokeLighten: strokeMixins.lighten,
-		strokeDarken: strokeMixins.darken,
-		strokeDesaturate: strokeMixins.desaturate,
-		strokeSaturate: strokeMixins.saturate,
-		strokeFade: strokeMixins.fade,
+		strokeLighter: strokeMixins.lighter,
+		strokeHeavier: strokeMixins.heavier,
+		strokeDesaturated: strokeMixins.desaturated,
+		strokeSaturated: strokeMixins.saturated,
+		strokeFaded: strokeMixins.faded,
 	} as const;
 }
 

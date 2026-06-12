@@ -150,8 +150,6 @@ export const presetArbor = <
 			const newBorderMixins = createColorMixins(create, $.mode.global, {
 				name: 'border',
 				property: 'border-color',
-				description:
-					'Routes border color assignments through intermediate tokens to allow for runtime adjustments and cross-color references.',
 				defineExtraProperties: (css) => ({
 					'border-style': css`solid`,
 					'border-width': css`
@@ -160,13 +158,182 @@ export const presetArbor = <
 				}),
 			});
 
+			// intent mixins
+			const actionPrimary = create('action-primary', {
+				description: 'Applies all primary action intent styles.',
+				definition: (css) => [
+					...presetBasic.mixins.bg.apply({
+						'--color': $.mode.action.primary.bg,
+					}),
+					...presetBasic.mixins.fg.apply({
+						'--color': $.mode.action.primary.fg,
+					}),
+					...presetBasic.mixins.border.apply({
+						'--color': $.mode.action.primary.border,
+					}),
+					{
+						padding: $.mode.action.padding.$root,
+						'border-radius': $.mode.action.radius,
+					},
+				],
+			});
+			const actionSecondary = create('action-secondary', {
+				description: 'Applies all secondary action intent styles.',
+				definition: (css) => [
+					...presetBasic.mixins.bg.apply({
+						'--color': $.mode.action.secondary.bg,
+					}),
+					...presetBasic.mixins.fg.apply({
+						'--color': $.mode.action.secondary.fg,
+					}),
+					...presetBasic.mixins.border.apply({
+						'--color': $.mode.action.secondary.border,
+					}),
+					{
+						padding: $.mode.action.padding.$root,
+						'border-radius': $.mode.action.radius,
+					},
+				],
+			});
+			const actionAmbient = create('action-ambient', {
+				description: 'Applies all ambient action intent styles.',
+				definition: (css) => [
+					...presetBasic.mixins.bg.apply({
+						'--color': $.mode.action.ambient.bg,
+					}),
+					...presetBasic.mixins.fg.apply({
+						'--color': $.mode.action.ambient.fg,
+					}),
+					...presetBasic.mixins.border.apply({
+						'--color': $.mode.action.ambient.border,
+					}),
+					{
+						padding: $.mode.action.padding.$root,
+						'border-radius': $.mode.action.radius,
+					},
+				],
+			});
+			const surfacePrimary = create('surface-primary', {
+				description: 'Applies all primary surface intent styles.',
+				definition: (css) => [
+					...presetBasic.mixins.bg.apply({
+						'--color': $.mode.surface.primary.bg,
+					}),
+					...presetBasic.mixins.fg.apply({
+						'--color': $.mode.surface.primary.fg,
+					}),
+					...presetBasic.mixins.border.apply({
+						'--color': $.mode.surface.primary.border,
+					}),
+					{
+						padding: $.mode.surface.padding.$root,
+						'border-radius': $.mode.surface.radius,
+					},
+				],
+			});
+			const surfaceSecondary = create('surface-secondary', {
+				description: 'Applies all secondary surface intent styles.',
+				definition: (css) => [
+					...presetBasic.mixins.bg.apply({
+						'--color': $.mode.surface.secondary.bg,
+					}),
+					...presetBasic.mixins.fg.apply({
+						'--color': $.mode.surface.secondary.fg,
+					}),
+					...presetBasic.mixins.border.apply({
+						'--color': $.mode.surface.secondary.border,
+					}),
+					{
+						padding: $.mode.surface.padding.$root,
+						'border-radius': $.mode.surface.radius,
+					},
+				],
+			});
+			const surfaceAmbient = create('surface-ambient', {
+				description: 'Applies all ambient surface intent styles.',
+				definition: (css) => [
+					...presetBasic.mixins.bg.apply({
+						'--color': $.mode.surface.ambient.bg,
+					}),
+					...presetBasic.mixins.fg.apply({
+						'--color': $.mode.surface.ambient.fg,
+					}),
+					...presetBasic.mixins.border.apply({
+						'--color': $.mode.surface.ambient.border,
+					}),
+					{
+						padding: $.mode.surface.padding.$root,
+						'border-radius': $.mode.surface.radius,
+					},
+				],
+			});
+			const control = create('control', {
+				description: 'Applies all control intent styles.',
+				definition: (css) => [
+					...presetBasic.mixins.bg.apply({
+						'--color': $.mode.control.bg,
+					}),
+					...presetBasic.mixins.fg.apply({
+						'--color': $.mode.control.fg,
+					}),
+					...presetBasic.mixins.border.apply({
+						'--color': $.mode.control.border,
+					}),
+					{
+						padding: $.mode.control.padding.$root,
+						'border-radius': $.mode.control.radius,
+					},
+				],
+			});
+			const textPrimary = create('text-primary', {
+				description: 'Applies all primary text intent styles.',
+				definition: (css) => ({
+					'font-size': $.mode.text.primary.size,
+					'font-weight': $.mode.text.primary.weight,
+					font: $.mode.text.primary.font,
+					'line-height': $.mode.text.primary.lineHeight,
+					'letter-spacing': $.mode.text.primary.letterSpacing,
+				}),
+			});
+			const textSecondary = create('text-secondary', {
+				description: 'Applies all secondary text intent styles.',
+				definition: (css) => ({
+					'font-size': $.mode.text.secondary.size,
+					'font-weight': $.mode.text.secondary.weight,
+					font: $.mode.text.secondary.font,
+					'line-height': $.mode.text.secondary.lineHeight,
+					'letter-spacing': $.mode.text.secondary.letterSpacing,
+				}),
+			});
+			const textAmbient = create('text-ambient', {
+				description: 'Applies all ambient text intent styles.',
+				definition: (css) => ({
+					'font-size': $.mode.text.ambient.size,
+					'font-weight': $.mode.text.ambient.weight,
+					font: $.mode.text.ambient.font,
+					'line-height': $.mode.text.ambient.lineHeight,
+					'letter-spacing': $.mode.text.ambient.letterSpacing,
+				}),
+			});
+
 			return {
 				border: newBorderMixins.ref,
-				borderLighten: newBorderMixins.lighten,
-				borderDarken: newBorderMixins.darken,
-				borderDesaturate: newBorderMixins.desaturate,
-				borderSaturate: newBorderMixins.saturate,
-				borderFade: newBorderMixins.fade,
+				borderLighter: newBorderMixins.lighter,
+				borderHeavier: newBorderMixins.heavier,
+				borderDesaturated: newBorderMixins.desaturated,
+				borderSaturated: newBorderMixins.saturated,
+				borderFaded: newBorderMixins.faded,
+
+				actionPrimary,
+				actionSecondary,
+				actionAmbient,
+				surfacePrimary,
+				surfaceSecondary,
+				surfaceAmbient,
+				control,
+				textPrimary,
+				textSecondary,
+				textAmbient,
 			};
 		},
 		extends: [presetBasic],

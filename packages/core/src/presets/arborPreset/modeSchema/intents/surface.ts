@@ -1,5 +1,5 @@
 import { createModeSchema } from '@arbor-css/modes';
-import { boxIntents, colorIntents } from './common.js';
+import { boxIntents, visualIntents } from './common.js';
 
 export const surfaceIntents = createModeSchema({
 	padding: boxIntents,
@@ -13,7 +13,7 @@ export const surfaceIntents = createModeSchema({
 		description:
 			'This token captures the border-radius of surfaces, taking into account the overall roundness',
 	},
-	primary: colorIntents,
-	secondary: colorIntents,
-	ambient: colorIntents,
+	primary: visualIntents,
+	secondary: visualIntents,
+	ambient: visualIntents,
 });

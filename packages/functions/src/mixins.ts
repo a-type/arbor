@@ -54,7 +54,8 @@ type MixinBodyListItem =
 	| {
 			scope: string;
 			children: MixinBodyObject | MixinBodyList;
-	  };
+	  }
+	| MixinBodyObject;
 type MixinBodyList = readonly MixinBodyListItem[];
 
 export function isMixinPropertyDeclaration(
@@ -81,7 +82,8 @@ function toEquation(value: MixinValue): Equation {
 
 function normalizeBody(body: MixinBodyObject | MixinBodyList): ArborMixinBody {
 	if (Array.isArray(body)) {
-		return body.map((item) => {
+		const collected: ArborMixinBody = [];
+		body.forEach((item) => {
 			if ('scope' in item) {
 				return {
 					scope: item.scope,
@@ -89,11 +91,17 @@ function normalizeBody(body: MixinBodyObject | MixinBodyList): ArborMixinBody {
 				};
 			}
 
-			return {
-				prop: item.prop,
-				value: toEquation(item.value),
-			};
+			if ('prop' in item) {
+				return {
+					prop: item.prop,
+					value: toEquation(item.value),
+				};
+			}
+
+			collected.push(...normalizeBody(item));
 		});
+
+		return collected;
 	}
 
 	return Object.entries(body).map(([propOrScope, value]) => {
@@ -116,21 +124,6 @@ function normalizeBody(body: MixinBodyObject | MixinBodyList): ArborMixinBody {
 	});
 }
 
-function collectDeclarations(body: ArborMixinBody): ArborMixinDeclaration[] {
-	const declarations: ArborMixinDeclaration[] = [];
-
-	for (const entry of body) {
-		if (isMixinPropertyDeclaration(entry)) {
-			declarations.push(entry);
-			continue;
-		}
-
-		declarations.push(...collectDeclarations(entry.children));
-	}
-
-	return declarations;
-}
-
 function printBody(body: ArborMixinBody): string {
 	return body
 		.map((entry) => {
@@ -147,11 +140,18 @@ function printBody(body: ArborMixinBody): string {
 		.join(' ');
 }
 
+export type ArborMixinDefinition = MixinBodyObject | MixinBodyList;
+
 export interface CreateMixinParameters<
 	TParams extends FunctionParams,
 	TTokens extends SimpleTokenSchema = SimpleTokenSchema,
 > {
-	description?: string;
+	description?:
+		| string
+		| ((info: {
+				parameters: ParamsAsInterpolations<TParams>;
+				tokens: SimpleTokensAsTokenDefinitions<TTokens>;
+		  }) => string);
 	parameters?: TParams;
 	definition: (
 		css: Css,
@@ -159,7 +159,7 @@ export interface CreateMixinParameters<
 			parameters: ParamsAsInterpolations<TParams>;
 			tokens: SimpleTokensAsTokenDefinitions<TTokens>;
 		},
-	) => MixinBodyObject | MixinBodyList;
+	) => ArborMixinDefinition;
 	contributeTokens?: TTokens;
 }
 
@@ -231,7 +231,13 @@ export function createMixinFactory({
 		return {
 			[MIXIN_BRAND]: true as const,
 			name: cssName,
-			description,
+			description:
+				typeof description === 'function' ?
+					description({
+						parameters: paramsAsInterpolations(parameters),
+						tokens: contributeTokens,
+					})
+				:	description,
 			body,
 			definition: `@mixin ${cssName}${paramsAsString(parameters)} { ${cssBody} }`,
 			apply: (params) => {

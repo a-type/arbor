@@ -14,10 +14,10 @@ it('is extensible', () => {
 	});
 
 	// typecheck arbor preset
-	base.$.mixins.bgFade;
+	base.$.mixins.bgFaded;
 	// @ts-expect-error
 	base.$.mixins.askdjfs;
-	base.mixins.bgFade;
+	base.mixins.bgFaded;
 	// @ts-expect-error
 	base.mixins.askdjfs;
 
@@ -49,7 +49,7 @@ it('is extensible', () => {
 	// check typing of extended mixins
 	// @ts-expect-error
 	preset.$.mixins.adfa;
-	preset.mixins.bgFade;
+	preset.mixins.bgFaded;
 	// @ts-expect-error
 	preset.mixins.askdjfs;
 });

@@ -51,8 +51,8 @@ const preset = definePreset({
 				{
 					scope: '&:disabled',
 					children: [
-						...basePreset.mixins.bgDesaturate.apply({ '--step': '2' }),
-						...basePreset.mixins.fgLighten.apply({ '--step': 1 }),
+						...basePreset.mixins.bgDesaturated.apply({ '--step': '2' }),
+						...basePreset.mixins.fgLighter.apply({ '--step': 1 }),
 					],
 				},
 			],
@@ -62,9 +62,9 @@ const preset = definePreset({
 				{
 					scope: '&:hover',
 					children: [
-						...basePreset.mixins.bgLighten.apply({ '--step': 1 }),
+						...basePreset.mixins.bgLighter.apply({ '--step': 1 }),
 						{
-							prop: basePreset.$.mixins.shadow.ring.name,
+							prop: basePreset.$.mixins.ring.value.name,
 							value: basePreset.functions.ring.compute({
 								'--size': '2px',
 								'--color': basePreset.$.mode.color.main.heavy,
@@ -83,9 +83,9 @@ const preset = definePreset({
 				{
 					scope: '&:focus-visible',
 					children: [
-						...basePreset.mixins.bgLighten.apply({ '--step': 2 }),
+						...basePreset.mixins.bgLighter.apply({ '--step': 2 }),
 						{
-							prop: basePreset.$.mixins.shadow.ring.name,
+							prop: basePreset.$.mixins.ring.value.name,
 							value: basePreset.functions.ring.compute({
 								'--size': '3px',
 								'--color': basePreset.$.mode.color.main.heavy,
@@ -101,9 +101,9 @@ const preset = definePreset({
 				{
 					scope: '&:active',
 					children: [
-						...basePreset.mixins.bgDarken.apply({ '--step': 1 }),
+						...basePreset.mixins.bgHeavier.apply({ '--step': 1 }),
 						{
-							prop: basePreset.$.mixins.shadow.ring.name,
+							prop: basePreset.$.mixins.ring.value.name,
 							value: basePreset.functions.ring.compute({
 								'--size': '1px',
 								'--color': basePreset.$.mode.color.main.heavy,
