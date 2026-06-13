@@ -123,6 +123,27 @@ describe('createMixin', () => {
 		);
 	});
 
+	it('supports nested scoped declarations', () => {
+		const mixin = createMixin('complex', {
+			definition: () => [
+				{
+					scope: '.parent',
+					children: [
+						{ prop: 'color', value: 'blue' },
+						{
+							scope: '&:hover',
+							children: [{ prop: 'color', value: 'red' }],
+						},
+					],
+				},
+			],
+		});
+
+		expect(mixin.definition).toBe(
+			'@mixin --x-mixin-complex { .parent { color: blue; &:hover { color: red; } } }',
+		);
+	});
+
 	it('returns inlinable declarations', () => {
 		const mixin = createMixin('shadow', {
 			definition: (css) => [
