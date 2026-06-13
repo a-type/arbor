@@ -163,7 +163,17 @@ function computeFunctionCallValue({
 		return input;
 	}
 
-	return fn.compute(paramValues, { propertyValues: {} });
+	try {
+		return fn.compute(paramValues, { propertyValues: {} });
+	} catch (err) {
+		const message = err instanceof Error ? err.message : String(err);
+		console.error(`[arbor-css] Error computing function "${parsedCall.name}": ${message}`);
+		helper.result.warn(
+			`[arbor-css] Error computing function "${parsedCall.name}" — value left unchanged. ${message}`,
+			{ plugin: PLUGIN_NAME, node },
+		);
+		return input;
+	}
 }
 
 function cloneScopedMixinEntry(
@@ -282,11 +292,23 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 
 			root.walkComments((comment) => {
 				if (comment.text.trim() === 'inline-arbor-base') {
-					const generatedCss = generateStylesheet(config.preset);
-					const generatedRoot = postcss.parse(generatedCss, {
-						from: config.configPath,
-					});
-					comment.replaceWith(...generatedRoot.nodes);
+					try {
+						const generatedCss = generateStylesheet(config.preset);
+						const generatedRoot = postcss.parse(generatedCss, {
+							from: config.configPath,
+						});
+						comment.replaceWith(...generatedRoot.nodes);
+					} catch (err) {
+						const message =
+							err instanceof Error ? err.message : String(err);
+						console.error(
+							`[arbor-css] Failed to generate stylesheet: ${message}`,
+						);
+						helper.result.warn(
+							`[arbor-css] Failed to generate stylesheet — comment left in place. ${message}`,
+							{ plugin: PLUGIN_NAME, node: comment },
+						);
+					}
 				}
 			});
 		},
@@ -399,9 +421,24 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 				}),
 			);
 
-			const applied = normalizeMixinBody(mixin.apply(mixinParamValues));
-			for (const entry of applied) {
-				atRule.cloneBefore(cloneScopedMixinEntry(entry, mixinParamValues));
+			try {
+				const applied = normalizeMixinBody(mixin.apply(mixinParamValues));
+				for (const entry of applied) {
+					atRule.cloneBefore(cloneScopedMixinEntry(entry, mixinParamValues));
+				}
+			} catch (err) {
+				const message = err instanceof Error ? err.message : String(err);
+				console.error(
+					`[arbor-css] Error applying mixin "${mixinName}": ${message}`,
+				);
+				helper.result.warn(
+					`[arbor-css] Error applying mixin "${mixinName}" — @apply left in place. ${message}`,
+					{ plugin: PLUGIN_NAME, node: atRule },
+				);
+				// Remove the begin comment we already inserted and bail out,
+				// leaving the original @apply intact so the CSS is unchanged.
+				atRule.prev()?.remove();
+				return;
 			}
 
 			// add comment telling the user which mixin this was from
