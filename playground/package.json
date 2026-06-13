@@ -6,8 +6,7 @@
 		"dev": "vite --port 5222",
 		"build": "vite build",
 		"preview": "vite preview",
-		"test": "arbor validate ./*.css",
-		"test:ci": "pnpm test",
+		"validate": "arbor validate ./*.css",
 		"generate": "arbor build -o ./dist/out.css"
 	},
 	"dependencies": {
