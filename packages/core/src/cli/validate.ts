@@ -113,6 +113,16 @@ function escapeRegex(value: string): string {
 	return value.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
 }
 
+/**
+ * Replaces the interior of every CSS block comment (`/* ... *\/`) with spaces,
+ * preserving newlines so that line/column offsets remain accurate.
+ */
+function stripBlockComments(content: string): string {
+	return content.replace(/\/\*[\s\S]*?\*\//g, (match) =>
+		match.replace(/[^\n]/g, ' '),
+	);
+}
+
 function getLineStarts(content: string): number[] {
 	const lineStarts = [0];
 	for (let i = 0; i < content.length; i += 1) {
@@ -240,6 +250,9 @@ export function validateCssContent({
 }): ValidationIssue[] {
 	const issues: ValidationIssue[] = [];
 	const seen = new Set<string>();
+	// Strip block comments before scanning so references inside /* … */ are ignored.
+	// Newlines are preserved so line/column offsets remain accurate.
+	content = stripBlockComments(content);
 	const lineStarts = getLineStarts(content);
 	const tokenNames = Array.from(tokenMap.entries())
 		.filter(([, value]) => isToken(value))

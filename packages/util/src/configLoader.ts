@@ -90,34 +90,39 @@ export async function loadConfigWithDeps<TPreset = unknown>(
 	// cache as it resolves transitive imports — that's how we discover deps.
 	const cacheKeysBefore = new Set(Object.keys(jiti.cache));
 
-	const mod = await jiti.import<{ default?: TPreset } | TPreset>(configPath);
-	const preset = ((mod as any)?.default ?? mod) as TPreset;
+	try {
+		const mod = await jiti.import<{ default?: TPreset } | TPreset>(configPath);
+		const preset = ((mod as any)?.default ?? mod) as TPreset;
 
-	// Collect all cache keys that appeared during this load, then immediately
-	// evict them so the next reload re-evaluates every module from scratch
-	// (equivalent to moduleCache: false, but compatible with dep tracking).
-	const newKeys = Object.keys(jiti.cache).filter(
-		(k) => !cacheKeysBefore.has(k),
-	);
-	for (const key of newKeys) {
-		delete jiti.cache[key];
+		// Collect all cache keys that appeared during this load, then immediately
+		// evict them so the next reload re-evaluates every module from scratch
+		// (equivalent to moduleCache: false, but compatible with dep tracking).
+		const newKeys = Object.keys(jiti.cache).filter(
+			(k) => !cacheKeysBefore.has(k),
+		);
+		for (const key of newKeys) {
+			delete jiti.cache[key];
+		}
+
+		const dependencies: string[] = [];
+		for (const key of newKeys) {
+			const fsPath = toFsPath(key);
+			if (!fsPath) continue;
+			if (isNodeModule(fsPath)) continue;
+			dependencies.push(fsPath);
+		}
+
+		// Always include the entry point itself — jiti may not cache it under the
+		// exact same string we passed (e.g. file:// URL vs plain path).
+		if (!dependencies.includes(configPath)) {
+			dependencies.unshift(configPath);
+		}
+
+		return { configPath, preset, dependencies };
+	} catch (error) {
+		console.error(`Failed to load config at ${configPath}:`, error);
+		return null;
 	}
-
-	const dependencies: string[] = [];
-	for (const key of newKeys) {
-		const fsPath = toFsPath(key);
-		if (!fsPath) continue;
-		if (isNodeModule(fsPath)) continue;
-		dependencies.push(fsPath);
-	}
-
-	// Always include the entry point itself — jiti may not cache it under the
-	// exact same string we passed (e.g. file:// URL vs plain path).
-	if (!dependencies.includes(configPath)) {
-		dependencies.unshift(configPath);
-	}
-
-	return { configPath, preset, dependencies };
 }
 
 /**

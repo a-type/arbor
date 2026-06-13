@@ -4,6 +4,66 @@ import { findArbitraryValueWarnings } from './arbitraryValueDiagnostics.js';
 import { createTokenRegexes } from './regex.js';
 import { TokenProvider } from './tokenProvider.js';
 
+/**
+ * Returns true when the character position `index` on `line` is inside a CSS
+ * block comment, taking into account that a comment may have been opened on a
+ * previous line (`inBlockComment === true` on entry).
+ *
+ * Also returns the updated `inBlockComment` state after processing the full
+ * line, so the caller can pass it to the next iteration.
+ */
+function isInComment(
+	line: string,
+	index: number,
+	inBlockComment: boolean,
+): boolean {
+	let i = 0;
+	let inside = inBlockComment;
+	while (i < line.length) {
+		if (inside) {
+			const close = line.indexOf('*/', i);
+			if (close === -1) {
+				// Entire rest of line is inside a comment.
+				return index >= i;
+			}
+			// Comment closes at `close`.
+			if (index < close + 2) return true;
+			inside = false;
+			i = close + 2;
+		} else {
+			const open = line.indexOf('/*', i);
+			if (open === -1) return false;
+			if (index < open) return false;
+			inside = true;
+			i = open + 2;
+		}
+	}
+	return inside;
+}
+
+/**
+ * Advances the block-comment tracking state past a full line, returning the
+ * new state to carry into the next line.
+ */
+function advanceCommentState(line: string, inBlockComment: boolean): boolean {
+	let i = 0;
+	let inside = inBlockComment;
+	while (i < line.length) {
+		if (inside) {
+			const close = line.indexOf('*/', i);
+			if (close === -1) return true;
+			inside = false;
+			i = close + 2;
+		} else {
+			const open = line.indexOf('/*', i);
+			if (open === -1) return false;
+			inside = true;
+			i = open + 2;
+		}
+	}
+	return inside;
+}
+
 // Pure CSS-family languages handled directly.
 const supportedLanguages = [
 	'css',
@@ -76,6 +136,8 @@ export class ArborDiagnosticProvider {
 			.getConfiguration('arborCss')
 			.get<boolean>('warnOnArbitraryValues', false);
 
+		let inBlockComment = false;
+
 		for (let lineIndex = 0; lineIndex < document.lineCount; lineIndex++) {
 			const line = document.lineAt(lineIndex).text;
 
@@ -100,6 +162,7 @@ export class ArborDiagnosticProvider {
 			for (const tokenRegex of tokenRegexes) {
 				for (const match of line.matchAll(tokenRegex.anywhere())) {
 					if (match.index === undefined) continue;
+					if (isInComment(line, match.index, inBlockComment)) continue;
 					const path = match[1];
 					if (!state.tokenMap.has(path)) {
 						const start = new vscode.Position(lineIndex, match.index);
@@ -158,6 +221,8 @@ export class ArborDiagnosticProvider {
 					}
 				}
 			}
+
+			inBlockComment = advanceCommentState(line, inBlockComment);
 		}
 
 		this.diagnostics.set(document.uri, fileDiagnostics);

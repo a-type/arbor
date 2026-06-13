@@ -125,3 +125,23 @@ it('accepts existing declarations, function calls, and mixin apply usage', () =>
 
 	expect(issues).toEqual([]);
 });
+
+it('ignores unknown token, function, and mixin references inside CSS block comments', () => {
+	const preset = createTestPreset();
+	const issues = validateCssContent({
+		content: [
+			'/* --x-does-not-exist inline comment */',
+			'.card {',
+			'  /* --x-fn-missing(1) */',
+			'  /* @apply --x-mx-missing; */',
+			'  /*',
+			'   * --x-another-missing: 1px;',
+			'   */',
+			'}',
+		].join('\n'),
+		tokenMap: createTokenMap(preset),
+		prefixConfig: createPrefixValidationConfig(preset.context.tokenPrefixes),
+	});
+
+	expect(issues).toEqual([]);
+});
