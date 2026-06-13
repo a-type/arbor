@@ -20,9 +20,8 @@ export async function loadConfig(
 	options: { cwd?: string; configFile?: string } = {},
 ): Promise<LoadedConfig | null> {
 	const cwd = options.cwd ?? process.cwd();
-	const candidates = options.configFile
-		? [options.configFile]
-		: DEFAULT_CONFIG_FILES;
+	const candidates =
+		options.configFile ? [options.configFile] : DEFAULT_CONFIG_FILES;
 
 	let configPath: string | null = null;
 	for (const candidate of candidates) {

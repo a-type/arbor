@@ -1,5 +1,10 @@
-import { CalcInterpolation, css } from '@arbor-css/calc';
-import { createTokenFactory, isToken, PropertyType } from '@arbor-css/tokens';
+import { CalcInterpolation, css, Equation } from '@arbor-css/calc';
+import {
+	createTokenFactory,
+	isToken,
+	PropertyType,
+	Token,
+} from '@arbor-css/tokens';
 
 export type CssProperty = `--${string}`;
 export type FunctionParamWithMeta = {
@@ -44,64 +49,100 @@ export function isFunctionParamWithMeta(
 
 export function paramsAsString<TParams extends FunctionParams>(
 	params: TParams,
-	keepEmpty?: boolean,
+	{
+		keepEmpty,
+		nonce,
+	}: {
+		keepEmpty?: boolean;
+		nonce?: string;
+	},
 ): string {
 	if (!params.length) {
 		return keepEmpty ? '()' : '';
 	}
 	const list = params
 		.map((p) => {
+			const name = nonce ? paramAsToken(p, nonce).name : getParamName(p);
 			if (isFunctionParamWithMeta(p)) {
 				const type = p.type ?? '*';
 				const typeAnnotation = type === '*' ? '' : ` <${type}>`;
-				return `${p.name}${typeAnnotation}`;
+				return `${name}${typeAnnotation}`;
 			}
 			if (isToken(p)) {
 				const type = p.type ?? '*';
 				const typeAnnotation = type === '*' ? '' : ` <${type}>`;
-				return `${p.name}${typeAnnotation}` as CalcInterpolation;
+				return `${name}${typeAnnotation}` as CalcInterpolation;
 			}
-			return p;
+			return name;
 		})
 		.join(', ');
 	return `(${list})`;
 }
 
-// since params are not prefixed like tokens, this just uses the standard
-// '--' as a prefix and can be instantiated globally.
-const createParamToken = createTokenFactory({ tokenPrefix: '--' });
+export function getParamName(param: FunctionParam): string {
+	if (isFunctionParamWithMeta(param)) {
+		return param.name;
+	}
+	if (isToken(param)) {
+		return param.name;
+	}
+	return param;
+}
+
+export function paramAsToken(param: FunctionParam, nonce: string): Token {
+	const createParamToken = createTokenFactory({
+		tokenPrefix: `--_-param-${nonce}-`,
+	});
+	if (isToken(param)) {
+		return param.prefixed(`--_-param-${nonce}-`);
+	}
+	if (isFunctionParamWithMeta(param)) {
+		return createParamToken(param.name.replace('--', ''), {
+			type: param.type,
+			description: param.description,
+		});
+	}
+	return createParamToken(param.replace('--', ''), {});
+}
+
 export function paramsAsInterpolations<TParams extends FunctionParams>(
 	params: TParams,
+	nonce: string,
 ): ParamsAsInterpolations<TParams> {
 	return params.map((p) => {
-		if (isToken(p)) {
+		const asToken = paramAsToken(p, nonce);
+		if (isFunctionParamWithMeta(p) && p.fallback) {
 			return css`
-				${p}
-			`;
-		}
-		if (isFunctionParamWithMeta(p)) {
-			// convert to inline token so a value can be resolved
-			// during computation later
-			const asToken = createParamToken(p.name.replace('--', ''), {
-				type: p.type,
-			});
-			if (p.fallback) {
-				return css`
-					${[asToken, p.fallback]}
-				`;
-			}
-			return css`
-				${asToken}
-			`;
-		}
-		if (p.startsWith('--')) {
-			const asToken = createParamToken(p.replace('--', ''), {});
-			return css`
-				${asToken}
+				${[asToken, p.fallback]}
 			`;
 		}
 		return css`
-			${p}
+			${asToken}
 		`;
 	}) as ParamsAsInterpolations<TParams>;
+}
+
+export function applyParameters(
+	params: FunctionParams,
+	inputs: Record<string, string>,
+	nonce: string,
+	apply: (name: string, value: Equation) => void,
+) {
+	for (const param of params) {
+		const name = getParamName(param);
+		const asToken = paramAsToken(param, nonce);
+		const fallback =
+			isFunctionParamWithMeta(param) && param.fallback ?
+				param.fallback
+			:	undefined;
+		const inputValue = inputs[name] ?? fallback;
+		if (inputValue) {
+			apply(
+				asToken.name,
+				css`
+					${inputValue}
+				`,
+			);
+		}
+	}
 }

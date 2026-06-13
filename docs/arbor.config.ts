@@ -39,6 +39,64 @@ export const basePreset = presetArbor({
 	},
 });
 
+function makeSeasonMode(season: 'winter' | 'spring' | 'summer' | 'autumn') {
+	basePreset.bundleMode(season, {
+		color: {
+			main: basePreset.$.mode.primitive.color[season],
+			neutral: basePreset.$.mode.primitive.color[season].$neutral,
+		},
+	});
+}
+
+makeSeasonMode('winter');
+makeSeasonMode('spring');
+makeSeasonMode('summer');
+makeSeasonMode('autumn');
+
+basePreset.bundleMode('hero', {
+	global: {
+		density: 0.5,
+	},
+	text: {
+		primary: {
+			...basePreset.$.mode.primitive.typography['6xl'],
+			font: '"Cormorant", serif',
+		},
+		secondary: {
+			...basePreset.$.mode.primitive.typography['2xl'],
+			font: '"Cormorant", serif',
+		},
+		ambient: {
+			...basePreset.$.mode.primitive.typography.md,
+			font: '"Cormorant", serif',
+		},
+	},
+});
+
+basePreset.bundleMode('normal', {
+	global: {
+		density: 1,
+	},
+});
+
+basePreset.bundleMode('dense', {
+	global: {
+		density: 1.5,
+	},
+});
+
+basePreset.bundleMode('denser', {
+	global: {
+		density: 2,
+	},
+});
+
+basePreset.bundleMode('round', {
+	global: {
+		roundness: 1,
+	},
+});
+
 const preset = definePreset({
 	name: 'arbor-docs',
 	extends: [basePreset],
@@ -114,64 +172,6 @@ const preset = definePreset({
 			],
 		}),
 	}),
-});
-
-function makeSeasonMode(season: 'winter' | 'spring' | 'summer' | 'autumn') {
-	basePreset.bundleMode(season, {
-		color: {
-			main: basePreset.$.mode.primitive.color[season],
-			neutral: basePreset.$.mode.primitive.color[season].$neutral,
-		},
-	});
-}
-
-makeSeasonMode('winter');
-makeSeasonMode('spring');
-makeSeasonMode('summer');
-makeSeasonMode('autumn');
-
-basePreset.bundleMode('hero', {
-	global: {
-		density: 0.5,
-	},
-	text: {
-		primary: {
-			...basePreset.$.mode.primitive.typography['6xl'],
-			font: '"Cormorant", serif',
-		},
-		secondary: {
-			...basePreset.$.mode.primitive.typography['2xl'],
-			font: '"Cormorant", serif',
-		},
-		ambient: {
-			...basePreset.$.mode.primitive.typography.md,
-			font: '"Cormorant", serif',
-		},
-	},
-});
-
-basePreset.bundleMode('normal', {
-	global: {
-		density: 1,
-	},
-});
-
-basePreset.bundleMode('dense', {
-	global: {
-		density: 1.5,
-	},
-});
-
-basePreset.bundleMode('denser', {
-	global: {
-		density: 2,
-	},
-});
-
-basePreset.bundleMode('round', {
-	global: {
-		roundness: 1,
-	},
 });
 
 export default preset;

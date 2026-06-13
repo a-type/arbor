@@ -23,32 +23,23 @@ const {
 
 <style>
 	.card {
-		@apply --mx-shadow;
-		--mx-shadow-shadow: var(--m-shadow-md);
-		@apply --mx-bg(var(--m-surface-secondary-bg));
-		@apply --mx-fg(var(--m-surface-secondary-fg));
-		@apply --mx-border(var(--m-surface-secondary-border));
-		border-radius: var(--m-surface-radius);
-		padding: var(--m-surface-padding);
+		@apply --mx-shadow(var(--m-shadow-md));
+		@apply --mx-surface-secondary;
 		display: flex;
 		flex-direction: column;
-		gap: var(--m-spacing-sm);
+		gap: var(--m-spacing);
 		align-items: start;
 	}
 
 	h2 {
 		margin: 0;
-		font-size: var(--m-text-primary-size);
+		@apply --mx-text-primary;
 		font-weight: var(--m-primitive-typography-weight-bold);
-		font-family: var(--m-text-primary-font);
-		line-height: var(--m-text-primary-lineHeight);
 	}
 	p {
 		margin: 0;
-		font-size: var(--m-text-secondary-size);
+		@apply --mx-text-secondary;
 		font-weight: var(--m-primitive-typography-weight-normal);
-		font-family: var(--m-text-secondary-font);
-		line-height: var(--m-text-secondary-lineHeight);
 		@apply --mx-fg(var(--m-surface-ambient-fg));
 	}
 </style>

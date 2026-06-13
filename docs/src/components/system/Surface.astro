@@ -30,29 +30,27 @@ const {
 
 <style>
 	.surface {
-		padding: var(--m-surface-padding);
+		@apply --mx-surface-ambient;
+		border: none;
 
-		@apply --mx-bg(var(--m-surface-ambient-bg));
-		@apply --mx-fg(var(--m-surface-ambient-fg));
-		border-radius: var(--m-surface-radius);
 		&[data-bordered='true'] {
-			@apply --mx-border(var(--m-surface-ambient-border));
+			border: var(--m-surface-ambient-border);
 		}
 
 		&[data-emphasis='primary'] {
-			@apply --mx-bg(var(--m-surface-primary-bg));
-			@apply --mx-fg(var(--m-surface-primary-fg));
+			@apply --mx-surface-primary;
+			border: none;
 
 			&[data-bordered='true'] {
-				@apply --mx-border(var(--m-surface-primary-border));
+				border: var(--m-surface-primary-border);
 			}
 		}
 		&[data-emphasis='secondary'] {
-			@apply --mx-bg(var(--m-surface-secondary-bg));
-			@apply --mx-fg(var(--m-surface-secondary-fg));
+			@apply --mx-surface-secondary;
+			border: none;
 
 			&[data-bordered='true'] {
-				@apply --mx-border(var(--m-surface-secondary-border));
+				border: var(--m-surface-secondary-border);
 			}
 		}
 	}

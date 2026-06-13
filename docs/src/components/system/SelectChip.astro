@@ -16,21 +16,16 @@ const { value, name, ...props } = Astro.props;
 <style>
 	.select-chip {
 		@apply --mx-shadow;
-		@apply --mx-fg(var(--m-action-ambient-fg));
-		@apply --mx-bg(var(--m-action-ambient-bg));
-		@apply --mx-border(var(--m-action-ambient-border));
-		border-radius: var(--m-action-radius);
-		padding: var(--m-action-padding);
-		font-size: var(--m-text-secondary-size);
+		@apply --mx-action-ambient;
+		@apply --mx-text-secondary;
 		line-height: 1;
 		font-weight: var(--m-primitive-typography-weight-bold);
+
 		cursor: pointer;
 		display: block;
 
 		&:has(.select-chip-input:checked) {
-			@apply --mx-fg(var(--m-action-primary-fg));
-			@apply --mx-bg(var(--m-action-primary-bg));
-			@apply --mx-border(var(--m-action-primary-border));
+			@apply --mx-action-primary;
 		}
 
 		@apply --mx-disabled;

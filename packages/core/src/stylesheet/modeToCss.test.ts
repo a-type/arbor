@@ -64,9 +64,9 @@ it('prints a partial mode with derived dependencies it doesnt declare', () => {
 	expect(css).toMatchInlineSnapshot(`
 		".\\@mode-partial {
 			--_-meta-modeName: partial;
-			--m-derived-once: color-mix(in hsl, blue, black);
+			--m-derived-once: color-mix(in hsl, var(--m-value), black);
 			--m-derived-twice: color-mix(in hsl, var(--m-derived-once), transparent);
-			--m-derived-again: color-mix(in hsl, blue, red);
+			--m-derived-again: color-mix(in hsl, var(--m-value), red);
 			--m-derived-direct: var(--m-value);
 			--m-value: blue;
 			} "
@@ -78,7 +78,7 @@ it('prints a partial mode which overrides derived dependencies from base and doe
 	expect(css).toMatchInlineSnapshot(`
 		".\\@mode-underived {
 			--_-meta-modeName: underived;
-			--m-derived-twice: color-mix(in hsl, green, transparent);
+			--m-derived-twice: color-mix(in hsl, var(--m-derived-once), transparent);
 			--m-derived-once: green;
 			} "
 	`);

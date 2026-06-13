@@ -30,7 +30,7 @@ describe('createFunction', () => {
 				definition: ($, base, factor) => $`calc(${base} * ${factor})`,
 			});
 			expect(fn.definition).toBe(
-				'@function --x-fn-scale(--base, --factor) { result: calc((var(--base) * var(--factor))); }',
+				'@function --x-fn-scale(--_-param-scale-base, --_-param-scale-factor) { result: calc((var(--_-param-scale-base) * var(--_-param-scale-factor))); }',
 			);
 		});
 
@@ -40,7 +40,7 @@ describe('createFunction', () => {
 				definition: ($, value) => $`${value}`,
 			});
 			expect(fn.definition).toBe(
-				'@function --x-fn-passthrough(--value) { result: var(--value); }',
+				'@function --x-fn-passthrough(--_-param-passthrough-value) { result: var(--_-param-passthrough-value); }',
 			);
 		});
 
@@ -50,7 +50,7 @@ describe('createFunction', () => {
 				definition: ($, value) => $`${value}`,
 			});
 			expect(fn.definition).toBe(
-				'@function --x-fn-passthrough(--value) { result: var(--value); }',
+				'@function --x-fn-passthrough(--_-param-passthrough-value) { result: var(--_-param-passthrough-value); }',
 			);
 		});
 
@@ -68,7 +68,7 @@ describe('createFunction', () => {
 				definition: ($, value, min, max) => $`clamp(${min}, ${value}, ${max})`,
 			});
 			expect(fn.definition).toBe(
-				'@function --x-fn-clamped(--value, --min, --max) { result: clamp(var(--min), var(--value), var(--max)); }',
+				'@function --x-fn-clamped(--_-param-clamped-value, --_-param-clamped-min, --_-param-clamped-max) { result: clamp(var(--_-param-clamped-min), var(--_-param-clamped-value), var(--_-param-clamped-max)); }',
 			);
 		});
 	});
@@ -127,7 +127,9 @@ describe('createFunction', () => {
 				parameters: ['--x'],
 				definition: ($, x) => $`calc(${x} * 2)`,
 			});
-			expect(printEquation(fn.equation)).toBe('calc((var(--x) * 2))');
+			expect(printEquation(fn.equation)).toBe(
+				'calc((var(--_-param-test-x) * 2))',
+			);
 		});
 	});
 });

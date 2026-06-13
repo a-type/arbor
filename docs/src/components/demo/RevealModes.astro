@@ -18,7 +18,9 @@ const { class: className, ...props } = Astro.props;
 		});
 	});
 
-	const elementsWithModes = document.querySelectorAll('[class*="@mode-"]');
+	const elementsWithModes = document.querySelectorAll(
+		'[class*="@mode-"]',
+	) as NodeListOf<HTMLElement>;
 	elementsWithModes.forEach((el) => {
 		const modeClasses = Array.from(el.classList).filter((cls) =>
 			cls.startsWith('@mode-'),
@@ -49,10 +51,9 @@ const { class: className, ...props } = Astro.props;
 		@apply --mx-bg(var(--m-surface-ambient-bg));
 		@apply --mx-fg(var(--m-surface-ambient-fg));
 		@apply --mx-border(var(--m-surface-ambient-border));
+		@apply --mx-shadow(var(--m-shadow-md));
 		border-radius: var(--m-surface-radius);
 		padding: var(--m-spacing-sm);
-		@apply --mx-shadow;
-		--mx-shadow-shadow: var(--m-shadow-md);
 		font-size: var(--m-text-ambient-size);
 		font-family: monospace;
 		line-height: 1;

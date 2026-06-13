@@ -77,7 +77,7 @@ it('allows defining functions or mixins using available tokens', () => {
 	// @ts-expect-error
 	expect(preset.mixins.bar).not.toBeDefined();
 	expect(preset.mixins.test.definition).toBe(
-		'@mixin --mx2-test(--a) { color: var(--m-color); }',
+		'@mixin --mx2-test(--_-param-test-a) { color: var(--m-color); }',
 	);
 	expect(preset.functions.test).toBeDefined();
 	// @ts-expect-error
@@ -91,7 +91,7 @@ it('allows defining functions or mixins using available tokens', () => {
 	preset.mixins.test.apply({});
 	preset.functions.test.compute({ '--a': 'value' });
 	// @ts-expect-error
-	expect(() => preset.functions.test.compute({})).toThrow();
+	preset.functions.test.compute({});
 });
 
 it('keeps mixin token inference narrowed when baseMode uses $ tokens', () => {
@@ -159,6 +159,9 @@ it('composes presets', () => {
 			}),
 		}),
 	});
+	basePreset.bundleMode('blue', {
+		color: 'blue',
+	});
 
 	const extendedPreset = definePreset({
 		name: 'extended-preset',
@@ -192,6 +195,11 @@ it('composes presets', () => {
 		}),
 	});
 
+	extendedPreset.bundleMode('green', {
+		color: 'green',
+		size: '32px',
+	});
+
 	expect(extendedPreset.$.mode.color.name).toBe('--m-color');
 	expect(extendedPreset.$.mode.size.name).toBe('--m-size');
 
@@ -200,6 +208,10 @@ it('composes presets', () => {
 	expect(extendedPreset.$.mixins.usesDemo.inputColor2.name).toBe(
 		'--mx-uses-demo-inputColor2',
 	);
+
+	const internals = getInternals(extendedPreset);
+	expect(internals.modes.blue).toBeDefined();
+	expect(internals.modes.green).toBeDefined();
 
 	// typing checks
 	extendedPreset.modeSchema;

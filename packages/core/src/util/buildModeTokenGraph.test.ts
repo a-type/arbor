@@ -44,7 +44,9 @@ it('resolves token dependencies and sub-dependencies', () => {
 	]);
 	expect(graphFromSetRoot.nodes['--m-unrelated']).toBeDefined();
 
-	const graphFromSetUnrelated = buildModeTokenGraph(setUnrelatedMode, preset);
+	const graphFromSetUnrelated = buildModeTokenGraph(setUnrelatedMode, preset, {
+		skipBaking: false,
+	});
 
 	expect(graphFromSetUnrelated.roots).toEqual(['--m-unrelated']);
 	expect(graphFromSetUnrelated.nodes['--m-unrelated'].dependents).toEqual([]);
@@ -66,7 +68,9 @@ it('resolves and computes complicated dependency chains', () => {
 		global: { density: 2 },
 	});
 
-	const graphWithDensity = buildModeTokenGraph(mode, preset);
+	const graphWithDensity = buildModeTokenGraph(mode, preset, {
+		skipBaking: false,
+	});
 
 	expect(
 		graphWithDensity.nodes['--m-primitive-spacing-md'].computed,

@@ -20,5 +20,5 @@ it("generates a preset's CSS, including globals, primitives, modes, and function
 	expect(css).toContain('--m-global-roundness: 1');
 	expect(css).toContain('--m-primitive-color-brand-mid: ');
 	expect(css).toContain('--m-color-main: ');
-	expect(css).toContain('@function --fn-lighten-color');
+	expect(css).toContain('@function --fn-color-lighter');
 });

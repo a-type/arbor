@@ -32,7 +32,7 @@ const { targetSelector, initialValue = [], ...props } = Astro.props;
 <script>
 	/** Bootstrap runtime mode options */
 	import { getInternals } from '@arbor-css/core';
-	import preset from '../../../arbor.config';
+	import { basePreset as preset } from '../../../arbor.config';
 
 	const modes = getInternals(preset).modes;
 

@@ -1,8 +1,4 @@
-import {
-	computeEquation,
-	Equation,
-	printComputationResult,
-} from '@arbor-css/calc';
+import { printEquation } from '@arbor-css/calc';
 import { AnyArborPreset, generateStylesheet } from '@arbor-css/core';
 import {
 	type ArborMixinBodyEntry,
@@ -10,6 +6,7 @@ import {
 	isFunction,
 	isFunctionParamWithMeta,
 	isMixin,
+	normalizeMixinBody,
 } from '@arbor-css/functions';
 import { stat } from 'node:fs/promises';
 import postcss, { Plugin } from 'postcss';
@@ -164,18 +161,6 @@ function computeFunctionCallValue({
 	return fn.compute(paramValues, { propertyValues: {} });
 }
 
-function resolveMixinValue(
-	value: Equation,
-	paramValues: Record<string, string>,
-): string {
-	console.log('resolving mixin value:', value, 'with params', paramValues);
-	const computed = computeEquation(value, {
-		propertyValues: paramValues,
-	});
-	console.log('computed mixin value:', computed);
-	return printComputationResult(computed);
-}
-
 function cloneScopedMixinEntry(
 	entry: ArborMixinBodyEntry,
 	mixinParamValues: Record<string, string>,
@@ -183,7 +168,7 @@ function cloneScopedMixinEntry(
 	if ('prop' in entry) {
 		return postcss.decl({
 			prop: entry.prop,
-			value: resolveMixinValue(entry.value, mixinParamValues),
+			value: printEquation(entry.value),
 		});
 	}
 
@@ -397,7 +382,8 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 				}),
 			);
 
-			for (const entry of mixin.body) {
+			const applied = normalizeMixinBody(mixin.apply(mixinParamValues));
+			for (const entry of applied) {
 				atRule.cloneBefore(cloneScopedMixinEntry(entry, mixinParamValues));
 			}
 

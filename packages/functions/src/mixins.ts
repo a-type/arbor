@@ -12,11 +12,13 @@ import {
 	isToken,
 	SimpleTokensAsTokenDefinitions,
 	SimpleTokenSchema,
+	Token,
 	TokenSchema,
 } from '@arbor-css/tokens';
 import {
+	applyParameters,
 	FunctionParams,
-	isFunctionParamWithMeta,
+	paramAsToken,
 	ParamsAsCallInputs,
 	paramsAsInterpolations,
 	ParamsAsInterpolations,
@@ -46,7 +48,7 @@ type MixinBodyObject = Record<
 	string,
 	MixinValue | MixinScopedBodyObject | MixinBodyList
 >;
-type MixinBodyListItem =
+export type MixinBodyListItem =
 	| {
 			prop: string;
 			value: MixinValue;
@@ -80,25 +82,25 @@ function toEquation(value: MixinValue): Equation {
 	`;
 }
 
-function normalizeBody(body: MixinBodyObject | MixinBodyList): ArborMixinBody {
+export function normalizeMixinBody(
+	body: MixinBodyObject | MixinBodyList,
+): ArborMixinBody {
 	if (Array.isArray(body)) {
 		const collected: ArborMixinBody = [];
 		body.forEach((item) => {
 			if ('scope' in item) {
-				return {
+				collected.push({
 					scope: item.scope,
-					children: normalizeBody(item.children),
-				};
-			}
-
-			if ('prop' in item) {
-				return {
+					children: normalizeMixinBody(item.children),
+				});
+			} else if ('prop' in item) {
+				collected.push({
 					prop: item.prop,
 					value: toEquation(item.value),
-				};
+				});
+			} else {
+				collected.push(...normalizeMixinBody(item));
 			}
-
-			collected.push(...normalizeBody(item));
 		});
 
 		return collected;
@@ -113,7 +115,7 @@ function normalizeBody(body: MixinBodyObject | MixinBodyList): ArborMixinBody {
 		) {
 			return {
 				scope: propOrScope,
-				children: normalizeBody(value as MixinBodyObject | MixinBodyList),
+				children: normalizeMixinBody(value as MixinBodyObject | MixinBodyList),
 			};
 		}
 
@@ -220,55 +222,50 @@ export function createMixinFactory({
 				contributedBy: cssName,
 			},
 		);
-		const body = normalizeBody(
-			definition(css, {
-				parameters: paramsAsInterpolations(parameters),
-				tokens: contributeTokens,
-			}),
-		);
+
+		const tokensAndParams = {
+			parameters: paramsAsInterpolations(parameters, name),
+			tokens: contributeTokens,
+		};
+
+		const body = normalizeMixinBody(definition(css, tokensAndParams));
 		const cssBody = printBody(body);
+
+		const parameterTokens = parameters.map((p) => paramAsToken(p, name));
 
 		return {
 			[MIXIN_BRAND]: true as const,
 			name: cssName,
 			description:
 				typeof description === 'function' ?
-					description({
-						parameters: paramsAsInterpolations(parameters),
-						tokens: contributeTokens,
-					})
+					description(tokensAndParams)
 				:	description,
 			body,
-			definition: `@mixin ${cssName}${paramsAsString(parameters)} { ${cssBody} }`,
-			apply: (params) => {
+			definition: `@mixin ${cssName}${paramsAsString(parameters, {
+				nonce: name,
+			})} { ${cssBody} }`,
+			apply: (values) => {
 				// we "apply" a mixin within another mixin by assigning
 				// the provided parameters to properties matching their names,
 				// prepending that to this mixin's body statements, and
 				// returning it all.
 
 				const parameterDeclarations: ArborMixinDeclaration[] = [];
-				for (let index = 0; index < parameters.length; index++) {
-					const parameter = parameters[index];
-					const cssParameterName =
-						isFunctionParamWithMeta(parameter) ? parameter.name : parameter;
-					const fallback =
-						isFunctionParamWithMeta(parameter) ? parameter.fallback : undefined;
-					const paramValue = (params as any)[cssParameterName] ?? fallback;
-					if (paramValue) {
-						parameterDeclarations.push({
-							prop: cssParameterName,
-							value: css`
-								${paramValue}
-							`,
-						});
-					}
-				}
+				applyParameters(parameters, values, name, (name, value) => {
+					parameterDeclarations.push({
+						prop: name,
+						value,
+					});
+				});
 
 				return [...parameterDeclarations, ...body];
 			},
 			parameters,
+			parameterTokens,
 			contributeTokens,
-			signature: `${cssName}${paramsAsString(parameters, true)}`,
+			signature: `${cssName}${paramsAsString(parameters, {
+				keepEmpty: false,
+			})}`,
 		};
 	};
 }
@@ -298,14 +295,17 @@ export type ArborMixin<
 	 * });
 	 *
 	 * const extendedMixin = createMixin('extended', {
-	 *   definition: (css, { parameters }, { mixins }) => ({
+	 *   definition: (css, { parameters }, { mixins }) => [
 	 *     ...mixins.base.apply('red'),
-	 *     background: 'black',
-	 *   }),
+	 *     {
+	 *       background: 'black',
+	 *     },
+	 *   ],
 	 * });
 	 */
 	apply: (params: ParamsAsCallInputs<TParams>) => MixinBodyList;
 	parameters: TParams;
+	parameterTokens: Token[];
 	contributeTokens: TTokens;
 	/**
 	 * A printed representation of the mixin call signature, for use in

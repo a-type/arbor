@@ -154,7 +154,7 @@ describe('createMixin', () => {
 		});
 
 		expect(mixin.definition).toBe(
-			'@mixin --x-mixin-shadow(--default-ring-color) { --x-system-shadow: 0 0 0 0 transparent; --x-system-ring: 0 0 0 0 var(--default-ring-color); box-shadow: var(--x-system-ring), var(--x-system-shadow); }',
+			'@mixin --x-mixin-shadow(--_-param-shadow-default-ring-color) { --x-system-shadow: 0 0 0 0 transparent; --x-system-ring: 0 0 0 0 var(--_-param-shadow-default-ring-color); box-shadow: var(--x-system-ring), var(--x-system-shadow); }',
 		);
 	});
 
@@ -244,7 +244,7 @@ describe('createMixin', () => {
 
 		const result = mixin.apply({ '--default-ring-color': 'red' });
 		expect(result).toEqual([
-			{ prop: mixin.parameters[0], value: css`red` },
+			{ prop: mixin.parameterTokens[0].name, value: css`red` },
 			...mixin.body,
 		]);
 	});
@@ -263,7 +263,7 @@ describe('createMixin', () => {
 		const result = mixin.apply({ '--default-ring-color': token });
 		expect(result).toEqual([
 			{
-				prop: mixin.parameters[0],
+				prop: mixin.parameterTokens[0].name,
 				value: css`
 					${token}
 				`,
@@ -289,6 +289,58 @@ describe('createMixin', () => {
 		mixin.apply({ '--required': 'blue', '--optional': 'green' });
 		// @ts-expect-error
 		mixin.apply({});
+	});
+
+	it('should compose multiple mixins', () => {
+		const mixinA = createMixin('a', {
+			definition: () => ({
+				color: 'red',
+			}),
+		});
+
+		const mixinB = createMixin('b', {
+			definition: () => [
+				...mixinA.apply({}),
+				{
+					background: 'blue',
+				},
+			],
+		});
+
+		expect(mixinB.apply({})).toEqual([
+			{ prop: 'color', value: css`red` },
+			{ prop: 'background', value: css`blue` },
+		]);
+	});
+
+	it('should handle composing multiple mixins with the same param names', () => {
+		const mixinA = createMixin('a', {
+			parameters: ['--color'] as const,
+			definition: (css, { parameters: [color] }) => ({
+				color,
+			}),
+		});
+
+		const mixinB = createMixin('b', {
+			parameters: ['--color'] as const,
+			definition: (css, { parameters: [color] }) => [
+				...mixinA.apply({ '--color': 'green' }),
+				{
+					background: color,
+				},
+			],
+		});
+
+		const mixed = createMixin('mixed', {
+			parameters: ['--color'] as const,
+			definition: (css, { parameters: [color] }) => [
+				...mixinB.apply({ '--color': color }),
+			],
+		});
+
+		expect(mixed.definition).toMatchInlineSnapshot(
+			`"@mixin --x-mixin-mixed(--_-param-mixed-color) { --_-param-b-color: var(--_-param-mixed-color); --_-param-a-color: green; color: var(--_-param-a-color); background: var(--_-param-b-color); }"`,
+		);
 	});
 });
 

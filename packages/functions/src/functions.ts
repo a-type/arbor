@@ -7,9 +7,11 @@ import {
 	printComputationResult,
 	printEquation,
 } from '@arbor-css/calc';
+import { Token } from '@arbor-css/tokens';
 import {
+	applyParameters,
 	FunctionParams,
-	isFunctionParamWithMeta,
+	paramAsToken,
 	ParamsAsCallInputs,
 	ParamsAsInterpolations,
 	paramsAsInterpolations,
@@ -70,9 +72,15 @@ export function createFunctionFactory({
 		{ description, parameters, definition }: CreateFunctionParameters<TParams>,
 	): ArborFunction<TParams> {
 		const cssName = `${functionPrefix}${name}`;
-		const paramsList = paramsAsString(parameters, true);
-
-		const equation = definition(css, ...paramsAsInterpolations(parameters));
+		const paramsList = paramsAsString(parameters, {
+			keepEmpty: true,
+			nonce: name,
+		});
+		const paramsAsTokens = parameters.map((p) => paramAsToken(p, name));
+		const equation = definition(
+			css,
+			...paramsAsInterpolations(parameters, name),
+		);
 		const body = printEquation(equation);
 		const cssDefinition = `@function ${cssName}${paramsList} { result: ${body}; }`;
 
@@ -81,6 +89,7 @@ export function createFunctionFactory({
 			name: cssName,
 			description,
 			parameters,
+			parameterTokens: paramsAsTokens,
 			equation,
 			definition: cssDefinition,
 			compute(
@@ -88,17 +97,9 @@ export function createFunctionFactory({
 				ctx?: CalcEvaluationContext,
 			): string {
 				const parameterValues: Record<string, string | Equation> = {};
-				for (let index = 0; index < parameters.length; index++) {
-					const parameter = parameters[index];
-					const cssParameterName =
-						isFunctionParamWithMeta(parameter) ? parameter.name : parameter;
-					const fallback =
-						isFunctionParamWithMeta(parameter) ? parameter.fallback : undefined;
-					const paramValue = (params as any)[cssParameterName] ?? fallback;
-					parameterValues[cssParameterName] = css`
-						${paramValue}
-					`;
-				}
+				applyParameters(parameters, params, name, (paramName, value) => {
+					parameterValues[paramName] = value;
+				});
 				const result = computeEquation(equation, {
 					...ctx,
 					propertyValues: {
@@ -108,7 +109,7 @@ export function createFunctionFactory({
 				});
 				return printComputationResult(result);
 			},
-			signature: `${cssName}${paramsList}`,
+			signature: `${cssName}${paramsAsString(parameters, { keepEmpty: true })}`,
 		};
 	} satisfies CreateFunction;
 }
@@ -118,6 +119,7 @@ export type ArborFunction<TParams extends FunctionParams = FunctionParams> = {
 	name: string;
 	description?: string;
 	parameters: TParams;
+	parameterTokens: Token[];
 	equation: Equation;
 	definition: string;
 	compute: (
