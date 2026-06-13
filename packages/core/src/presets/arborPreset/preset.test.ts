@@ -33,6 +33,19 @@ it('is extensible', () => {
 				roundness: 0.5,
 			},
 		}),
+		mixins: (create, $) => ({
+			disabled: create('disabled', {
+				definition: () => ({
+					...base.mixins.bgFaded.apply({ '--opacity': '0.5' }),
+				}),
+			}),
+		}),
+		functions: (create, $) => ({
+			test: create('test', {
+				parameters: [],
+				definition: (css) => css`red`,
+			}),
+		}),
 	});
 
 	expect(preset.$.mode.primitive.color.red.mid.name).toEqual(

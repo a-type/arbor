@@ -58,6 +58,9 @@ const preset = presetArbor({
 });
 ```
 
+> ⚠️ **Functions must come last**
+> Due to the complexity of the typechecking on presets, always define your `functions` _after_ `mixins` in your preset config. This allows `functions` to access tokens contributed from the mixins you define, and not doing so produces a confusing type error on `mixins`.
+
 ## Extending other presets
 
 The `extends` array in a `definePreset` config allows you to inherit lots of things from another preset. Your own config will be deeply merged to the preset(s) you extend. This includes mode schema, primitives, mixins, and functions.
