@@ -254,7 +254,7 @@ export function createPresetMixins(
 	});
 
 	const borderMixins = createColorMixins(createMixinValue, tokens, {
-		name: 'border',
+		name: 'borderColor',
 		property: 'border-color',
 		defineExtraProperties: (css) => ({
 			'border-style': css`solid`,
@@ -297,12 +297,12 @@ export function createPresetMixins(
 		bgSaturated: bgMixins.saturated,
 		bgFaded: bgMixins.faded,
 
-		border: borderMixins.ref,
-		borderLighter: borderMixins.lighter,
-		borderHeavier: borderMixins.heavier,
-		borderDesaturated: borderMixins.desaturated,
-		borderSaturated: borderMixins.saturated,
-		borderFaded: borderMixins.faded,
+		borderColor: borderMixins.ref,
+		borderColorLighter: borderMixins.lighter,
+		borderColorHeavier: borderMixins.heavier,
+		borderColorDesaturated: borderMixins.desaturated,
+		borderColorSaturated: borderMixins.saturated,
+		borderColorFaded: borderMixins.faded,
 
 		fill: fillMixins.ref,
 		fillLighter: fillMixins.lighter,

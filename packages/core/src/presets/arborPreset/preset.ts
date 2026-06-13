@@ -168,12 +168,14 @@ export const presetArbor = <
 					...presetBasic.mixins.fg.apply({
 						'--color': $.mode.action.primary.fg,
 					}),
-					...presetBasic.mixins.border.apply({
+					...presetBasic.mixins.borderColor.apply({
 						'--color': $.mode.action.primary.borderColor,
 					}),
 					{
 						padding: $.mode.action.padding.$root,
 						'border-radius': $.mode.action.radius,
+						'border-width': $.mode.action.primary.borderWidth,
+						'border-style': $.mode.action.primary.borderStyle,
 					},
 				],
 			});
@@ -186,12 +188,14 @@ export const presetArbor = <
 					...presetBasic.mixins.fg.apply({
 						'--color': $.mode.action.secondary.fg,
 					}),
-					...presetBasic.mixins.border.apply({
+					...presetBasic.mixins.borderColor.apply({
 						'--color': $.mode.action.secondary.borderColor,
 					}),
 					{
 						padding: $.mode.action.padding.$root,
 						'border-radius': $.mode.action.radius,
+						'border-width': $.mode.action.secondary.borderWidth,
+						'border-style': $.mode.action.secondary.borderStyle,
 					},
 				],
 			});
@@ -204,12 +208,14 @@ export const presetArbor = <
 					...presetBasic.mixins.fg.apply({
 						'--color': $.mode.action.ambient.fg,
 					}),
-					...presetBasic.mixins.border.apply({
+					...presetBasic.mixins.borderColor.apply({
 						'--color': $.mode.action.ambient.borderColor,
 					}),
 					{
 						padding: $.mode.action.padding.$root,
 						'border-radius': $.mode.action.radius,
+						'border-width': $.mode.action.ambient.borderWidth,
+						'border-style': $.mode.action.ambient.borderStyle,
 					},
 				],
 			});
@@ -222,7 +228,7 @@ export const presetArbor = <
 					...presetBasic.mixins.fg.apply({
 						'--color': $.mode.surface.primary.fg,
 					}),
-					...presetBasic.mixins.border.apply({
+					...presetBasic.mixins.borderColor.apply({
 						'--color': $.mode.surface.primary.borderColor,
 					}),
 					{
@@ -234,19 +240,21 @@ export const presetArbor = <
 			const surfaceSecondary = create('surface-secondary', {
 				description: 'Applies all secondary surface intent styles.',
 				definition: (css) => [
-					{
-						padding: $.mode.surface.padding.$root,
-						'border-radius': $.mode.surface.radius,
-					},
 					...presetBasic.mixins.bg.apply({
 						'--color': $.mode.surface.secondary.bg,
 					}),
 					...presetBasic.mixins.fg.apply({
 						'--color': $.mode.surface.secondary.fg,
 					}),
-					...presetBasic.mixins.border.apply({
+					...presetBasic.mixins.borderColor.apply({
 						'--color': $.mode.surface.secondary.borderColor,
 					}),
+					{
+						padding: $.mode.surface.padding.$root,
+						'border-radius': $.mode.surface.radius,
+						'border-width': $.mode.surface.secondary.borderWidth,
+						'border-style': $.mode.surface.secondary.borderStyle,
+					},
 				],
 			});
 			const surfaceAmbient = create('surface-ambient', {
@@ -258,12 +266,14 @@ export const presetArbor = <
 					...presetBasic.mixins.fg.apply({
 						'--color': $.mode.surface.ambient.fg,
 					}),
-					...presetBasic.mixins.border.apply({
+					...presetBasic.mixins.borderColor.apply({
 						'--color': $.mode.surface.ambient.borderColor,
 					}),
 					{
 						padding: $.mode.surface.padding.$root,
 						'border-radius': $.mode.surface.radius,
+						'border-width': $.mode.surface.ambient.borderWidth,
+						'border-style': $.mode.surface.ambient.borderStyle,
 					},
 				],
 			});
@@ -276,12 +286,14 @@ export const presetArbor = <
 					...presetBasic.mixins.fg.apply({
 						'--color': $.mode.control.fg,
 					}),
-					...presetBasic.mixins.border.apply({
+					...presetBasic.mixins.borderColor.apply({
 						'--color': $.mode.control.borderColor,
 					}),
 					{
 						padding: $.mode.control.padding.$root,
 						'border-radius': $.mode.control.radius,
+						'border-width': $.mode.control.borderWidth,
+						'border-style': $.mode.control.borderStyle,
 					},
 				],
 			});
