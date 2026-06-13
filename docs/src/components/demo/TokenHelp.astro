@@ -69,7 +69,7 @@
 		position: relative;
 		top: 2px;
 		@apply --mx-bg(var(--m-color-main));
-		@apply --mx-border(var(--m-color-neutral-ink));
+		@apply --mx-borderColor(var(--m-color-neutral-ink));
 		margin-inline: var(--m-spacing-xs);
 	}
 	.token {
@@ -84,11 +84,10 @@
 		width: 300px;
 		@apply --mx-bg(var(--m-surface-ambient-bg));
 		@apply --mx-fg(var(--m-surface-ambient-fg));
-		@apply --mx-border(var(--m-surface-ambient-border));
+		@apply --mx-borderColor(var(--m-surface-ambient-border));
+		@apply --mx-shadow(var(--m-shadow-md));
 		border-radius: var(--m-surface-radius);
 		padding: var(--m-spacing-md);
-		@apply --mx-shadow;
-		--mx-shadow-shadow: var(--m-shadow-md);
 		font-size: var(--m-text-ambient-size);
 		font-family: monospace;
 		line-height: 1;
