@@ -28,11 +28,16 @@ export interface ArborPluginOptions {
 
 const PLUGIN_NAME = 'arbor-css';
 
+interface DepStat {
+	mtimeMs: number;
+	size: number;
+}
+
 interface CachedConfig {
 	configPath: string;
 	preset: AnyArborPreset;
-	mtimeMs: number;
-	size: number;
+	/** Stat fingerprints for every file in the dependency graph. */
+	depStats: Map<string, DepStat>;
 }
 
 function parsePrefixedCall(input: string, namePrefix: string) {
@@ -200,14 +205,21 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 	}): Promise<CachedConfig | null> {
 		if (cachedConfig) {
 			try {
-				const currentStats = await stat(cachedConfig.configPath);
-				if (
-					currentStats.mtimeMs === cachedConfig.mtimeMs &&
-					currentStats.size === cachedConfig.size
-				) {
-					return cachedConfig;
+				// Re-stat every dependency; evict the cache if any have changed.
+				let stale = false;
+				for (const [depPath, stored] of cachedConfig.depStats) {
+					const current = await stat(depPath);
+					if (
+						current.mtimeMs !== stored.mtimeMs ||
+						current.size !== stored.size
+					) {
+						stale = true;
+						break;
+					}
 				}
+				if (!stale) return cachedConfig;
 			} catch {
+				// A file disappeared or is unreadable — treat as stale
 				cachedConfig = null;
 			}
 		}
@@ -225,20 +237,21 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 			return null;
 		}
 
-		let mtimeMs = 0;
-		let size = 0;
-		try {
-			const currentStats = await stat(loaded.configPath);
-			mtimeMs = currentStats.mtimeMs;
-			size = currentStats.size;
-		} catch {
-			// config path may be virtual (e.g. in tests); skip mtime caching
+		// Build fresh stat fingerprints for every dependency
+		const depStats = new Map<string, DepStat>();
+		for (const dep of loaded.dependencies) {
+			try {
+				const s = await stat(dep);
+				depStats.set(dep, { mtimeMs: s.mtimeMs, size: s.size });
+			} catch {
+				// virtual / synthetic paths (e.g. in tests) — skip stat
+			}
 		}
+
 		cachedConfig = {
 			configPath: loaded.configPath,
 			preset: loaded.preset,
-			mtimeMs,
-			size,
+			depStats,
 		};
 		return cachedConfig;
 	}
@@ -256,12 +269,16 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 				return;
 			}
 
-			// watch the config file for changes and re-run transforms when it changes
-			helper.result.messages.push({
-				type: 'dependency',
-				plugin: PLUGIN_NAME,
-				file: config.configPath,
-			});
+			// Tell the host bundler / build tool to watch every file in the
+			// dependency graph so that changes to any imported module trigger
+			// a rebuild (not just the top-level config file).
+			for (const depPath of config.depStats.keys()) {
+				helper.result.messages.push({
+					type: 'dependency',
+					plugin: PLUGIN_NAME,
+					file: depPath,
+				});
+			}
 
 			root.walkComments((comment) => {
 				if (comment.text.trim() === 'inline-arbor-base') {

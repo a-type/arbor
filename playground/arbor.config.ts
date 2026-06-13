@@ -1,5 +1,6 @@
 import { definePreset } from '@arbor-css/core';
 import { compileSingleColor, presetArbor } from '@arbor-css/core/preset-arbor';
+import { makeMixins } from './mixins';
 
 const preset = definePreset({
 	name: 'test',
@@ -48,6 +49,7 @@ const preset = definePreset({
 			},
 		},
 	}),
+	mixins: makeMixins,
 });
 
 preset.bundleMode('success', {

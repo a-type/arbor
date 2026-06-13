@@ -1,6 +1,11 @@
 body {
 	background: var(--m-color-main-paper);
 	color: var(--m-color-main-ink);
+
+	@apply --mx-foo;
+	@apply --mx-bar;
+	@apply --mx-baz;
+	@apply --mx-qux;
 }
 
 .surface {

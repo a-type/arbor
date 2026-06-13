@@ -27,6 +27,8 @@ export interface ConfigState {
 	preset: AnyArborPreset;
 	tokenMap: TokenMap;
 	tokenPrefixes: string[];
+	/** All local files transitively imported by this config (incl. the config itself). */
+	dependencies: string[];
 }
 
 /**
@@ -38,7 +40,15 @@ export class TokenProvider {
 		string,
 		Promise<ConfigState | null>
 	>();
-	private readonly configWatchers = new Map<string, vscode.FileSystemWatcher>();
+	/**
+	 * File watchers keyed by *watched path* (a dependency file).
+	 * Each entry maps to the config entry-point path it belongs to so we know
+	 * which cached state to evict when the file changes.
+	 */
+	private readonly depWatchers = new Map<
+		string,
+		{ watcher: vscode.FileSystemWatcher; configPath: string }
+	>();
 	private readonly workspaceWatcher: vscode.FileSystemWatcher;
 	private onChangeEmitter = new vscode.EventEmitter<void>();
 
@@ -165,16 +175,18 @@ export class TokenProvider {
 		configPath: string,
 	): Promise<ConfigState | null> {
 		try {
-			const preset = await loadConfigFile(configPath);
-			if (!preset || !('$' in preset)) {
+			const loaded = await loadConfigFile(configPath);
+			if (!loaded || !loaded.preset || !('$' in loaded.preset)) {
 				this.outputChannel.appendLine(
 					`Failed to load config from ${configPath}: did not return valid config`,
 				);
 				this.outputChannel.appendLine(
-					`Loaded config content: ${JSON.stringify(preset)}`,
+					`Loaded config content: ${JSON.stringify(loaded?.preset)}`,
 				);
 				return null;
 			}
+
+			const { preset, dependencies } = loaded;
 
 			const tokenMap = new Map<
 				string,
@@ -192,9 +204,14 @@ export class TokenProvider {
 				tokenMap.set(mixin.name, mixin);
 			}
 
-			this.ensureConfigWatcher(configPath);
+			// Register watchers for every dependency (incl. the config file itself)
+			this.syncDepWatchers(configPath, dependencies);
+
 			this.outputChannel.appendLine(
-				`Loaded config from ${configPath} (${tokenMap.size} tokens / functions)`,
+				`Loaded config from ${configPath} (${tokenMap.size} tokens / functions, ${dependencies.length} dependencies)`,
+			);
+			this.outputChannel.appendLine(
+				`Watching dependencies:\n${dependencies.map((d) => `  ${d}`).join('\n')}`,
 			);
 			this.onChangeEmitter.fire();
 			const configuredPrefixes = Object.values(
@@ -210,6 +227,7 @@ export class TokenProvider {
 				preset,
 				tokenMap,
 				tokenPrefixes,
+				dependencies,
 			};
 		} catch (err) {
 			this.outputChannel.appendLine(
@@ -222,20 +240,39 @@ export class TokenProvider {
 		}
 	}
 
-	private ensureConfigWatcher(configPath: string): void {
-		if (this.configWatchers.has(configPath)) return;
+	/**
+	 * Reconcile the per-dependency file watchers for a given config entry-point.
+	 * Adds watchers for new deps, removes watchers for deps no longer present.
+	 */
+	private syncDepWatchers(configPath: string, dependencies: string[]): void {
+		const newDepSet = new Set(dependencies);
 
-		const watcher = vscode.workspace.createFileSystemWatcher(configPath);
-		watcher.onDidChange(() => this.handleConfigChanged(configPath));
-		watcher.onDidCreate(() => this.handleConfigChanged(configPath));
-		watcher.onDidDelete(() =>
-			this.handleConfigCreatedOrDeleted(vscode.Uri.file(configPath), 'deleted'),
-		);
-		this.configWatchers.set(configPath, watcher);
+		// Remove stale watchers that belong to this config but are no longer deps
+		for (const [depPath, entry] of this.depWatchers) {
+			if (entry.configPath === configPath && !newDepSet.has(depPath)) {
+				entry.watcher.dispose();
+				this.depWatchers.delete(depPath);
+			}
+		}
+
+		// Add watchers for new deps
+		for (const depPath of dependencies) {
+			if (this.depWatchers.has(depPath)) continue;
+
+			const watcher = vscode.workspace.createFileSystemWatcher(depPath);
+			watcher.onDidChange(() => this.handleConfigChanged(configPath));
+			watcher.onDidCreate(() => this.handleConfigChanged(configPath));
+			watcher.onDidDelete(() =>
+				this.handleConfigCreatedOrDeleted(
+					vscode.Uri.file(configPath),
+					'deleted',
+				),
+			);
+			this.depWatchers.set(depPath, { watcher, configPath });
+		}
 	}
 
 	private handleConfigChanged(configPath: string): void {
-		if (!this.configStateCache.has(configPath)) return;
 		this.configStateCache.delete(configPath);
 		this.outputChannel.appendLine(`Reloading Arbor config ${configPath}`);
 		this.onChangeEmitter.fire();
@@ -250,8 +287,13 @@ export class TokenProvider {
 		this.configStateCache.delete(configPath);
 
 		if (action === 'deleted') {
-			this.configWatchers.get(configPath)?.dispose();
-			this.configWatchers.delete(configPath);
+			// Dispose all dependency watchers that belong to this config
+			for (const [depPath, entry] of this.depWatchers) {
+				if (entry.configPath === configPath) {
+					entry.watcher.dispose();
+					this.depWatchers.delete(depPath);
+				}
+			}
 		}
 
 		this.outputChannel.appendLine(
@@ -282,7 +324,7 @@ export class TokenProvider {
 	}
 
 	dispose(): void {
-		for (const watcher of this.configWatchers.values()) {
+		for (const { watcher } of this.depWatchers.values()) {
 			watcher.dispose();
 		}
 		this.workspaceWatcher.dispose();

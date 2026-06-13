@@ -30,6 +30,14 @@ export function activate(context: vscode.ExtensionContext): void {
 	const tokenProvider = new TokenProvider(outputChannel);
 
 	context.subscriptions.push(
+		vscode.commands.registerCommand('arborCss.reloadConfig', () => {
+			tokenProvider.reset();
+			void vscode.window.showInformationMessage('Arbor CSS: config reloaded.');
+		}),
+	);
+	outputChannel.appendLine('Registered reloadConfig command.');
+
+	context.subscriptions.push(
 		vscode.workspace.onDidChangeWorkspaceFolders(() => {
 			tokenProvider.reset();
 		}),

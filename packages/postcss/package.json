@@ -33,6 +33,7 @@
 		"@arbor-css/functions": "workspace:*",
 		"@arbor-css/tokens": "workspace:*",
 		"@arbor-css/globals": "workspace:*",
+		"@arbor-css/util": "workspace:*",
 		"jiti": "^2.4.2",
 		"postcss": "^8.5.4"
 	},

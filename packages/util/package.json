@@ -17,6 +17,12 @@
 			"node": "./dist/index.js",
 			"types": "./dist/index.d.ts",
 			"default": "./dist/index.js"
+		},
+		"./config-loader": {
+			"import": "./dist/configLoader.js",
+			"node": "./dist/configLoader.js",
+			"types": "./dist/configLoader.d.ts",
+			"default": "./dist/configLoader.js"
 		}
 	},
 	"sideEffects": false,
@@ -26,6 +32,7 @@
 		"prepublishOnly": "pnpm build"
 	},
 	"devDependencies": {
+		"@types/node": "catalog:",
 		"typescript": "catalog:"
 	},
 	"dependencies": {}

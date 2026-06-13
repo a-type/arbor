@@ -26,6 +26,12 @@
 		"onLanguage:html"
 	],
 	"contributes": {
+		"commands": [
+			{
+				"command": "arborCss.reloadConfig",
+				"title": "Arbor CSS: Reload Config"
+			}
+		],
 		"languages": [
 			{
 				"id": "css",
@@ -69,6 +75,7 @@
 	},
 	"dependencies": {
 		"@arbor-css/core": "workspace:*",
+		"@arbor-css/util": "workspace:*",
 		"color-name": "^2.1.0",
 		"escalade": "^3.2.0",
 		"jiti": "^2.7.0"

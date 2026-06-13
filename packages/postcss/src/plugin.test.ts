@@ -31,6 +31,7 @@ beforeEach(() => {
 function makeConfigResult(preset: object) {
 	return {
 		configPath: '/fake/arbor.config.ts',
+		dependencies: ['/fake/arbor.config.ts'],
 		preset: {
 			context: {
 				tokenPrefixes: {

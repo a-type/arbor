@@ -8,5 +8,5 @@
 		"types": ["node"]
 	},
 	"include": ["src"],
-	"references": [{ "path": "../tokens" }, { "path": "../globals" }]
+	"references": [{ "path": "../tokens" }, { "path": "../globals" }, { "path": "../util" }]
 }

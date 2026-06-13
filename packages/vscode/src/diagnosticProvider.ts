@@ -72,12 +72,9 @@ export class ArborDiagnosticProvider {
 
 		const tokenRegexes = createTokenRegexes(state.tokenPrefixes);
 		const fileDiagnostics: vscode.Diagnostic[] = [];
-		const warnOnArbitraryValues = vscode
-			.workspace.getConfiguration('arborCss')
-			.get<boolean>(
-			'warnOnArbitraryValues',
-			false,
-			);
+		const warnOnArbitraryValues = vscode.workspace
+			.getConfiguration('arborCss')
+			.get<boolean>('warnOnArbitraryValues', false);
 
 		for (let lineIndex = 0; lineIndex < document.lineCount; lineIndex++) {
 			const line = document.lineAt(lineIndex).text;
@@ -112,7 +109,7 @@ export class ArborDiagnosticProvider {
 						);
 						const diagnostic = new vscode.Diagnostic(
 							new vscode.Range(start, end),
-							`Unknown Arbor ${path.includes('fn-') ? 'function' : 'token'}: ${path}`,
+							`Unknown Arbor token/function/mixin: ${path}`,
 							vscode.DiagnosticSeverity.Error,
 						);
 						diagnostic.source = 'arbor-css';
