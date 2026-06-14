@@ -105,6 +105,12 @@ basePreset.bundleMode('square', {
 	},
 });
 
+basePreset.bundleMode('thick', {
+	global: {
+		lineWidth: 2,
+	},
+});
+
 const preset = definePreset({
 	name: 'arbor-docs',
 	extends: [basePreset],
