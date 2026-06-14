@@ -1,6 +1,6 @@
 {
 	"name": "@arbor-css/calc",
-	"version": "0.0.107",
+	"version": "0.0.108",
 	"type": "module",
 	"publishConfig": {
 		"access": "public"
