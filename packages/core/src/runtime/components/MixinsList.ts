@@ -5,11 +5,8 @@ class MixinsList extends LitElement {
 	static get styles() {
 		return css`
 			:host {
-				display: block;
-				box-sizing: border-box;
 				width: 100%;
-			}
-			.root {
+				min-width: 100px;
 				display: flex;
 				flex-direction: column;
 				width: 100%;
@@ -44,12 +41,17 @@ class MixinsList extends LitElement {
 				margin: 0;
 				padding: 0;
 				width: 100%;
+				min-width: 100px;
+				overflow: auto;
+				max-height: 400px;
 			}
 
 			li {
 				display: flex;
 				flex-direction: column;
 				width: 100%;
+				min-width: 100px;
+				box-sizing: border-box;
 				padding: var(
 					--functionsList-item-padding,
 					var(--m-surface-padding, 8px)
@@ -58,7 +60,10 @@ class MixinsList extends LitElement {
 					--functionsList-item-border,
 					1px solid var(--m-border-color, #ccc)
 				);
-				border-radius: var(--functionsList-item-border-radius, 4px)
+				border-radius: var(
+					--functionsList-item-border-radius,
+					var(--m-surface-radius, 4px)
+				);
 				font-size: var(
 					--functionsList-item-size,
 					var(--m-primitive-typography-size, 1rem)
@@ -107,18 +112,16 @@ class MixinsList extends LitElement {
 			a.name.localeCompare(b.name),
 		);
 		return html`
-			<div class="root">
-				<h2>Mixins</h2>
-				<ul>
-					${mixins.map(
-						(mx) =>
-							html`<li>
-								<span class="name">${mx.signature}</span>
-								<span class="description">${mx.description}</span>
-							</li>`,
-					)}
-				</ul>
-			</div>
+			<h2>Mixins</h2>
+			<ul>
+				${mixins.map(
+					(mx) =>
+						html`<li>
+							<span class="name">${mx.signature}</span>
+							<span class="description">${mx.description}</span>
+						</li>`,
+				)}
+			</ul>
 		`;
 	}
 }

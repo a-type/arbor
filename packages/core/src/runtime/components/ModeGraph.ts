@@ -1,5 +1,6 @@
 import { isCalcEquation, printEquation } from '@arbor-css/calc';
 import { ArborPreset, getInternals } from '@arbor-css/preset';
+import { isToken } from '@arbor-css/tokens';
 import { css, html, LitElement } from 'lit-element';
 import {
 	buildModeTokenGraph,
@@ -105,6 +106,8 @@ class ModeGraphToken extends LitElement {
 		return {
 			mode: { type: String },
 			name: { type: String },
+			dependency: { type: String, optional: true },
+			depth: { type: Number, optional: true },
 		};
 	}
 
@@ -113,8 +116,8 @@ class ModeGraphToken extends LitElement {
 			details {
 				padding: var(--modeGraph-token-padding, var(--m-surface-padding, 8px));
 				border: var(
-					--modeGraph-token-border,
-					var(--m-lineWidth, 1) solid var(--m-surface-ambient-border, gray)
+					--modeGraph-token-borderColor,
+					var(--m-lineWidth, 1) solid var(--m-surface-ambient-borderColor, gray)
 				);
 				border-radius: var(
 					--modeGraph-token-border-radius,
@@ -266,6 +269,8 @@ class ModeGraphToken extends LitElement {
 
 	name = '';
 	mode = '';
+	dependency = '@@none';
+	depth = 0;
 	preset = getPreset();
 
 	render() {
@@ -279,55 +284,67 @@ class ModeGraphToken extends LitElement {
 			</div>`;
 		}
 
+		const definitionRaw =
+			isCalcEquation(tokenNode.raw) ? printEquation(tokenNode.raw)
+			: isToken(tokenNode.raw) ? tokenNode.raw.name
+			: tokenNode.raw.toString();
+
+		const changed = baseGraph.nodes[this.name]?.computed !== tokenNode.computed;
+
+		// replace reference to the referenced token with a span so it's highlighted in the definition
+		const definitionRest = definitionRaw.split(this.dependency);
+		const definitionInterleaved = [];
+		for (let i = 0; i < definitionRest.length; i++) {
+			definitionInterleaved.push(definitionRest[i]);
+			if (i < definitionRest.length - 1) {
+				definitionInterleaved.push(
+					html`<span class="dependent-reference">${this.dependency}</span>`,
+				);
+			}
+		}
+
 		return html`
 			<details>
 				<summary>
 					<div class="summary-line">
 						<span class="name">${this.name}</span>
 						<span class="value">
-							<span class="base-computed"
-								>${baseGraph.nodes[this.name]?.computed ?? 'n/a'}</span
-							>
+							${changed ?
+								html`<span class="base-computed"
+									>${baseGraph.nodes[this.name]?.computed ?? 'n/a'}</span
+								>`
+							:	''}
 							<span class="computed">${tokenNode.computed}</span>
 						</span>
 					</div>
-					<div class="summary-line sub-line">
-						<span>
-							<div class="caret">&gt;</div>
-							<span>${tokenNode.dependents.length} dependents</span>
-						</span>
-					</div>
+					${this.depth > 0 ?
+						html`<div class="summary-line sub-line">
+							<span class="definition"> ${definitionInterleaved} </span>
+						</div>`
+					:	''}
+					${tokenNode.dependents.length > 0 ?
+						html`
+							<div class="summary-line sub-line" style="margin-bottom: 4px;	">
+								<span>
+									<div class="caret">&gt;</div>
+									<span
+										>${tokenNode.dependents.length} dependent(s) - tap to
+										show</span
+									>
+								</span>
+							</div>
+						`
+					:	''}
 				</summary>
 				<ul class="dependents">
 					${tokenNode.dependents.map((dep) => {
-						const depNode = graph.nodes[dep];
-						const definitionRaw =
-							isCalcEquation(depNode.raw) ?
-								printEquation(depNode.raw)
-							:	depNode.raw.toString();
-
-						// replace reference to the referenced token with a span so it's highlighted in the definition
-						const definitionRest = definitionRaw.split(this.name);
-						const definitionInterleaved = [];
-						for (let i = 0; i < definitionRest.length; i++) {
-							definitionInterleaved.push(definitionRest[i]);
-							if (i < definitionRest.length - 1) {
-								definitionInterleaved.push(
-									html`<span class="dependent-reference">${this.name}</span>`,
-								);
-							}
-						}
 						return html`<li class="dependent">
-							<div class="dependent-summary">
-								<span class="name">${dep}</span>
-								<span class="value">
-									<span class="base-computed"
-										>${baseGraph.nodes[dep]?.computed ?? 'n/a'}</span
-									>
-									<span class="computed">${depNode.computed}</span>
-								</span>
-							</div>
-							<div class="dependent-definition">${definitionInterleaved}</div>
+							<arbor-mode-graph-token
+								mode=${this.mode}
+								name=${dep}
+								dependency=${this.name}
+								depth=${this.depth + 1}
+							></arbor-mode-graph-token>
 						</li> `;
 					})}
 				</ul>

@@ -19,7 +19,14 @@ body {
 		'Open Sans',
 		'Helvetica Neue',
 		sans-serif;
+}
+
+body {
 	font-size: var(--m-text-secondary-size);
 	font-weight: var(--m-text-secondary-weight);
 	line-height: var(--m-text-secondary-lineHeight);
+}
+
+* {
+	box-sizing: border-box;
 }

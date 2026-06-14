@@ -1,0 +1,57 @@
+---
+export interface Props {
+	class?: string;
+	id?: string;
+}
+const { class: className, ...props } = Astro.props;
+---
+
+<label class:list={['switch', className]} {...props}>
+	<input type="checkbox" class="switch-input" />
+	<div class="switch-track">
+		<div class="switch-thumb"></div>
+	</div>
+</label>
+
+<style>
+	.switch {
+		display: inline-flex;
+		align-items: center;
+		cursor: pointer;
+	}
+	.switch-input {
+		visibility: hidden;
+		position: absolute;
+		width: 0;
+		height: 0;
+		overflow: clip;
+	}
+	.switch-track {
+		@apply --mx-control;
+		width: 32px;
+		height: 16px;
+		position: relative;
+	}
+	.switch-thumb {
+		width: 12px;
+		height: 12px;
+		border-radius: 50%;
+		background-color: var(--m-control-fg);
+		position: absolute;
+		top: 2px;
+		left: 2px;
+		transform-origin: center left;
+		transform: translateX(0);
+		transition-property: transform, background-color, box-shadow;
+		transition-duration: var(--m-duration-short);
+		transition-timing-function: var(--m-easing);
+	}
+	input[type='checkbox']:checked + .switch-track .switch-thumb {
+		transform: translateX(16px);
+		@apply --mx-bg(var(--m-color-main-heavy));
+		@apply --mx-ring(var(--m-color-main-light));
+	}
+	input[type='checkbox']:checked + .switch-track {
+		@apply --mx-bg(var(--m-color-main-light));
+	}
+</style>

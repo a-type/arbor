@@ -5,6 +5,7 @@ export interface Props {
 	class?: string;
 	emphasis?: 'primary' | 'secondary' | 'ambient';
 	id?: string;
+	[key: string]: any;
 }
 const {
 	tag: Tag = 'button',
@@ -28,7 +29,7 @@ const {
 		line-height: 1;
 		font-weight: var(--m-primitive-typography-weight-bold);
 
-		transition-property: background-color, color, border-color;
+		transition-property: all;
 		transition-duration: var(--m-duration-short);
 		transition-timing-function: var(--m-easing);
 		cursor: pointer;

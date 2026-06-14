@@ -1,21 +1,22 @@
 ---
-import Button from '../system/Button.astro';
+import Switch from '../system/Switch.astro';
 interface Props {
 	class?: string;
 }
 const { class: className, ...props } = Astro.props;
 ---
 
-<Button class:list={['reveal-modes', className]} {...props}>
+<label class:list={['reveal-modes', className]} {...props}>
+	<Switch id="reveal-modes" />
 	<slot />
-</Button>
+</label>
 
 <script>
-	const revealModeButtons = document.querySelectorAll('button.reveal-modes');
-	revealModeButtons.forEach((button) => {
-		button.addEventListener('click', () => {
-			document.documentElement.classList.toggle('reveal-modes');
-		});
+	const revealModeInput = document.getElementById(
+		'reveal-modes',
+	) as HTMLInputElement;
+	revealModeInput.addEventListener('change', () => {
+		document.documentElement.classList.toggle('reveal-modes');
 	});
 
 	const elementsWithModes = document.querySelectorAll(

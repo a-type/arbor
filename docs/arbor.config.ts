@@ -7,7 +7,8 @@ export const basePreset = presetArbor({
 		shadowSpread: 1.5,
 		shadowBlur: 0,
 		lineWidth: 1,
-		roundness: 0,
+		roundness: 0.5,
+		baseFontSize: 'calc(10px + 0.5vw)',
 	},
 	color: {
 		mainColor: 'summer',
@@ -34,6 +35,7 @@ export const basePreset = presetArbor({
 	},
 	typography: {
 		maxSize: '10rem',
+		minSize: '14px',
 		baseWeight: 400,
 		sizeExponentStep: 1.25,
 	},
@@ -97,11 +99,17 @@ basePreset.bundleMode('round', {
 	},
 });
 
+basePreset.bundleMode('square', {
+	global: {
+		roundness: 0,
+	},
+});
+
 const preset = definePreset({
 	name: 'arbor-docs',
 	extends: [basePreset],
 	modeSchema: {},
-	baseMode: ($) => ({}),
+	baseMode: () => ({}),
 
 	mixins: (create, $) => ({
 		disabled: create('disabled', {

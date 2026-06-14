@@ -1,23 +1,32 @@
 ---
 import SelectChip from '../system/SelectChip.astro';
+import { getInternals } from '@arbor-css/core';
+import { basePreset as preset } from '../../../arbor.config';
 
 export interface Props {
 	targetSelector: string;
-	initialValue?: string[];
+	exclude?: string[];
 }
-const { targetSelector, initialValue = [], ...props } = Astro.props;
+const { targetSelector, ...props } = Astro.props;
+const modeNames = Object.keys(getInternals(preset).modes).filter(
+	(modeName) => !props.exclude || !props.exclude.includes(modeName),
+);
 ---
 
-<form
+<mode-selector
 	class="mode-selector @mode-dense"
 	data-target={targetSelector}
-	data-initial={initialValue.join(',')}
 	{...props}
 >
-	<SelectChip value="@mode-light" name="mode">@mode-light</SelectChip>
-	<SelectChip value="@mode-dark" name="mode">@mode-dark</SelectChip>
-	<SelectChip value="@mode-inverted" name="mode">@mode-inverted</SelectChip>
-</form>
+	{
+		modeNames.map((name) => (
+			<SelectChip
+				value={`@mode-${name}`}
+				name="mode"
+			>{`@mode-${name}`}</SelectChip>
+		))
+	}
+</mode-selector>
 
 <style>
 	.mode-selector {
@@ -30,59 +39,82 @@ const { targetSelector, initialValue = [], ...props } = Astro.props;
 </style>
 
 <script>
-	/** Bootstrap runtime mode options */
-	import { getInternals } from '@arbor-css/core';
-	import { basePreset as preset } from '../../../arbor.config';
+	class ModeSelectorElement extends HTMLElement {
+		private target: HTMLElement | null = null;
+		private observer: MutationObserver | null = null;
+		private pauseSync = false;
+		private pauseListener = false;
 
-	const modes = getInternals(preset).modes;
-
-	// clone the first child, clear children, recreate with
-	// runtime modes
-	const selectors = document.querySelectorAll('.mode-selector');
-	for (const selector of selectors) {
-		const templateItem = selector.firstElementChild;
-		selector.innerHTML = '';
-
-		const initialValueRaw = selector.getAttribute('data-initial') as string;
-		const initialValue = initialValueRaw
-			.split(',')
-			.map((v) => v.trim())
-			.filter((v) => v);
-
-		Object.keys(modes).forEach((name) => {
-			const item = templateItem?.cloneNode(true) as HTMLElement;
-			const input = item.querySelector('input') as HTMLInputElement;
-			input.name = `mode`;
-			input.value = `@mode-${name}`;
-			if (initialValue.includes(`@mode-${name}`)) {
-				input.checked = true;
+		connectedCallback() {
+			this.target = this.getTarget();
+			if (!this.target) {
+				return;
 			}
-			item.querySelector('.select-chip-content')!.textContent = `@mode-${name}`;
-			selector.appendChild(item);
-		});
 
-		const targetSelector = selector.getAttribute('data-target') as string;
-
-		function applyModes(selectedModeNames: string[]) {
-			const target = document.querySelector(targetSelector) as HTMLElement;
-			// remove existing modes
-			target.classList.remove(
-				...[...target.classList.values()].filter((c) => c.startsWith('@mode-')),
-			);
-			// add selected modes
-			selectedModeNames.forEach((modeName) => {
-				target.classList.add(modeName);
+			this.addEventListener('change', this.onChange);
+			this.observer = new MutationObserver(this.syncFromTarget);
+			this.observer.observe(this.target, {
+				attributes: true,
+				attributeFilter: ['class'],
 			});
+			this.syncFromTarget();
 		}
 
-		// apply initial modes
-		applyModes(initialValue);
+		disconnectedCallback() {
+			this.removeEventListener('change', this.onChange);
+			this.observer?.disconnect();
+			this.observer = null;
+		}
 
-		// upon change, apply modes to the target element
-		selector.addEventListener('change', () => {
-			const formData = new FormData(selector as HTMLFormElement);
-			const selectedModeNames = formData.getAll('mode') as string[];
-			applyModes(selectedModeNames);
-		});
+		private getTarget() {
+			const targetSelector = this.getAttribute('data-target');
+			if (!targetSelector) {
+				return null;
+			}
+
+			return document.querySelector(targetSelector) as HTMLElement | null;
+		}
+
+		private onChange = () => {
+			if (!this.target || this.pauseListener) {
+				return;
+			}
+
+			const selectedModeNames = Array.from(
+				this.querySelectorAll('input[name="mode"]:checked'),
+				(input) => (input as HTMLInputElement).value,
+			);
+
+			const existingModeClasses = [...this.target.classList.values()].filter(
+				(c) => c.startsWith('@mode-'),
+			);
+			this.pauseSync = true;
+			this.target.classList.remove(...existingModeClasses);
+			this.target.classList.add(...selectedModeNames);
+			this.pauseSync = false;
+		};
+
+		private syncFromTarget = () => {
+			if (!this.target || this.pauseSync) {
+				return;
+			}
+
+			const modeClasses = [...this.target.classList.values()].filter((c) =>
+				c.startsWith('@mode-'),
+			);
+
+			const inputs = this.querySelectorAll(
+				'input',
+			) as NodeListOf<HTMLInputElement>;
+			this.pauseListener = true;
+			inputs.forEach((input) => {
+				input.checked = modeClasses.includes(input.value);
+			});
+			this.pauseListener = false;
+		};
+	}
+
+	if (!customElements.get('mode-selector')) {
+		customElements.define('mode-selector', ModeSelectorElement);
 	}
 </script>

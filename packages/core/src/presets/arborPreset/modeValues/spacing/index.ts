@@ -75,7 +75,7 @@ export function compileSpacing<
 			const step = i - baseIndex;
 			acc[nameCast] =
 				levelConfig ??
-				css`(${$.baseSpacingSize} / ${$.baseFontSize}) * 1rem * pow(${config.scaleBase ?? 2}, ${config.scaleExponent ?? 1.25} * ${step})`;
+				css`(${$.baseSpacingSize} / ${$.baseFontSize}) * 1rem * pow(${config.scaleBase ?? 2}, ${config.scaleExponent ?? 1} * ${step})`;
 			return acc;
 		},
 		{} as Record<TSpacingLevel, string | Equation>,

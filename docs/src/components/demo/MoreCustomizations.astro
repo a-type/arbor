@@ -1,0 +1,38 @@
+---
+import Button from '../system/Button.astro';
+import ModeSelector from './ModeSelector.astro';
+---
+
+<Button
+	emphasis="ambient"
+	popovertarget="customizations-popover"
+	class="customize-button"
+	type="button"
+>
+	♾️
+</Button>
+<div class="popover" popover id="customizations-popover">
+	<ModeSelector
+		targetSelector="html"
+		exclude={['winter', 'spring', 'summer', 'autumn', 'dark', 'light']}
+	/>
+</div>
+
+<style>
+	.customize-button {
+		aspect-ratio: 1;
+		padding: var(--m-spacing-sm);
+	}
+
+	#customizations-popover {
+		position: fixed;
+		position-area: bottom;
+		inset: auto;
+		transform-origin: top;
+		margin: 0;
+		margin-top: var(--m-spacing);
+
+		@apply --mx-surface-ambient;
+		@apply --mx-shadow(var(--m-shadow-md));
+	}
+</style>

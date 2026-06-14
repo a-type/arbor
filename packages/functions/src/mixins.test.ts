@@ -363,6 +363,43 @@ describe('createMixin', () => {
 			`"@mixin --x-mixin-mixed(--_-param-mixed-color) { --_-param-b-color: var(--_-param-mixed-color); --_-param-a-color: green; color: var(--_-param-a-color); background: var(--_-param-b-color); }"`,
 		);
 	});
+
+	// TODO: make this work...
+	// it('has useful typechecking for definition', () => {
+	// 	createMixin('test', {
+	// 		parameters: ['--color'] as const,
+	// 		definition: (css, { parameters: [color] }) => [
+	// 			// valid
+	// 			{
+	// 				scope: '&:hover',
+	// 				children: [{ prop: 'color', value: color }],
+	// 			},
+	// 			{
+	// 				prop: 'background',
+	// 				value: color,
+	// 			},
+	// 			// invalid
+	// 			// @ts-expect-error
+	// 			{
+	// 				scope: '&:hover',
+	// 			},
+	// 			// @ts-expect-error
+	// 			{
+	// 				scope: '&:hover',
+	// 				declarations: [],
+	// 			},
+	// 			// @ts-expect-error
+	// 			{
+	// 				prop: 'color',
+	// 			},
+	// 			// @ts-expect-error
+	// 			{
+	// 				prop: 'color',
+	// 				unrelated: 'any',
+	// 			},
+	// 		],
+	// 	});
+	// });
 });
 
 describe('isMixin', () => {

@@ -15,7 +15,7 @@ export function createActionIntentValues<TColorNames extends string>(
 			inline: css`calc((${$.mode.primitive.spacing.lg} + ${$.mode.global.roundness} * ${$.mode.primitive.spacing.sm}) / ${$.mode.global.density})`,
 		},
 		roundness: 1,
-		radius: css`calc(${$.mode.radius.sm} * ${$.mode.action.roundness})`,
+		radius: css`calc(${$.mode.radius.md} * ${$.mode.action.roundness})`,
 		primary: {
 			bg: css`
 				${$.mode.color.main.mid}
@@ -83,7 +83,7 @@ export function createSurfaceIntentValues<TColorNames extends string>(
 			block: css`calc(${$.mode.spacing.lg} * max(1, ${$.mode.surface.roundness} * ${$.mode.global.roundness}))`,
 			inline: css`calc(${$.mode.spacing.lg} * max(1, ${$.mode.surface.roundness} * ${$.mode.global.roundness}))`,
 		},
-		roundness: 0.75,
+		roundness: 1,
 		radius: css`calc(${$.mode.radius.md} * ${$.mode.surface.roundness})`,
 		primary: {
 			bg: css`
@@ -119,7 +119,8 @@ export function createSurfaceIntentValues<TColorNames extends string>(
 			`,
 			borderStyle: 'solid',
 			border: css`
-				${$.mode.color.neutral.heavy}
+				${$.mode.surface.secondary.borderWidth} ${$.mode.surface.secondary
+					.borderStyle} ${$.mode.surface.secondary.borderColor}
 			`,
 		},
 		ambient: {
@@ -137,7 +138,8 @@ export function createSurfaceIntentValues<TColorNames extends string>(
 			`,
 			borderStyle: 'solid',
 			border: css`
-				${$.mode.color.neutral.heavy}
+				${$.mode.surface.ambient.borderWidth} ${$.mode.surface.ambient
+					.borderStyle} ${$.mode.surface.ambient.borderColor}
 			`,
 		},
 	} satisfies ModeValues<ArborModeSchema['surface']>;
@@ -155,7 +157,7 @@ export function createControlIntentValues<TColorNames extends string>(
 			inline: css`calc((${$.mode.primitive.spacing.md} + ${$.mode.global.roundness} * ${$.mode.primitive.spacing.sm}) / ${$.mode.global.density})`,
 		},
 		roundness: 1,
-		radius: css`calc(${$.mode.radius.sm} * ${$.mode.control.roundness})`,
+		radius: css`calc(${$.mode.radius.md} * ${$.mode.control.roundness})`,
 		bg: css`
 			${$.mode.color.neutral.paper}
 		`,

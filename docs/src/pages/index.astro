@@ -1,8 +1,7 @@
 ---
 import Copyable from '../components/Copyable.astro';
+import GlobalModes from '../components/demo/GlobalModes.astro';
 import ModeMixer from '../components/demo/ModeMixer.astro';
-import RevealModes from '../components/demo/RevealModes.astro';
-import SeasonPicker from '../components/demo/SeasonPicker.astro';
 import TokenHelp from '../components/demo/TokenHelp.astro';
 import ArborImage from '../components/graphics/ArborImage.astro';
 import Logo from '../components/graphics/Logo.astro';
@@ -15,9 +14,11 @@ import Layout from '../layouts/Homepage.astro';
 	<div class="container">
 		<nav class="@mode-dense">
 			<div class="nav-start">
-				<Logo class="nav-logo" />
-				<h1 class="nav-title">Arbor CSS</h1>
-				<SeasonPicker />
+				<div class="logo-wrap">
+					<Logo class="nav-logo" />
+					<h1 class="nav-title">Arbor CSS</h1>
+				</div>
+				<GlobalModes />
 			</div>
 			<ul class="nav-links">
 				<li><a href="/docs">Documentation</a></li>
@@ -54,7 +55,6 @@ import Layout from '../layouts/Homepage.astro';
 		<main>
 			<section>
 				<h2>Scale variations with modes</h2>
-				<RevealModes>Show modes on this page</RevealModes>
 				<p>
 					Inspired by the <a href="https://mode.place">Mise en Mode</a> methodology,
 					Arbor manages design variations with the powerful <em>mode</em> system,
@@ -70,7 +70,7 @@ import Layout from '../layouts/Homepage.astro';
 					Modes give you the peace of mind that all tokens are defined and
 					consistent. They make it easy to do the right thing when building. And
 					they make it possible to freely layer in experimental treatments and
-					variations without revising your token set.
+					variations without piling on endless tokens.
 				</p>
 			</section>
 			<section>
@@ -119,8 +119,12 @@ import Layout from '../layouts/Homepage.astro';
 					typechecking, and CSS simplification preprocessing on top.
 				</p>
 				<p>
-					Arbor gets you started with a powerful set of built-in mixins and
-					functions.
+					Built-in light, dark, and inverted modes use <code>light-dark</code>.
+					Modes leverage cascading to seamlessly layer rules. This is all just
+					CSS!
+				</p>
+				<p>
+					Gets started with a powerful set of built-in mixins and functions.
 				</p>
 				<arbor-mixins-list></arbor-mixins-list>
 				<arbor-functions-list></arbor-functions-list>
@@ -161,6 +165,13 @@ import Layout from '../layouts/Homepage.astro';
 			height: 32px;
 		}
 
+		.logo-wrap {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			gap: var(--m-spacing);
+		}
+
 		.nav-title {
 			@apply --mx-fg(inherit);
 			font-size: var(--m-text-primary-size);
@@ -186,11 +197,15 @@ import Layout from '../layouts/Homepage.astro';
 
 		.nav-links {
 			display: flex;
-			flex-direction: row;
+			flex-direction: column;
 			gap: var(--m-spacing-lg);
 			list-style: none;
 			padding: 0;
 			margin: 0;
+
+			@media (min-width: 600px) {
+				flex-direction: row;
+			}
 		}
 
 		nav {
@@ -327,6 +342,10 @@ import Layout from '../layouts/Homepage.astro';
 		h3 {
 			margin: 0;
 		}
+		h2 {
+			@apply --mx-text-primary;
+			font-weight: var(--m-primitive-typography-weight-bold);
+		}
 		p {
 			margin-top: 0;
 			margin-bottom: var(--m-spacing-lg);
@@ -344,6 +363,12 @@ import Layout from '../layouts/Homepage.astro';
 			box-sizing: border-box;
 
 			--modeGraph-token-bg: var(--m-surface-secondary-bg);
+		}
+
+		arbor-mixins-list,
+		arbor-functions-list {
+			width: 100%;
+			min-width: 0;
 		}
 
 		footer {
