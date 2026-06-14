@@ -34,7 +34,7 @@ class SpacingScale extends LitElement {
 	render() {
 		const steps = Object.values(this.preset.$.mode.spacing)
 			.filter(isToken)
-			.map((token) => ({
+			.map((token: any) => ({
 				name: token.name,
 				value: resolveComputedTokenValue(this.preset, token.name),
 			}));
