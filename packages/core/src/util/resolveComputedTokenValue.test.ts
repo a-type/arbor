@@ -29,7 +29,7 @@ it('resolves base mode values with baking', () => {
 		preset.$.mode.spacing.sm.name,
 	);
 
-	expect(value).toMatchInlineSnapshot(`"0.21022410381342863rem"`);
+	expect(value).toMatchInlineSnapshot(`"0.25rem"`);
 });
 
 it('applies user property values to evaluation context', () => {
@@ -41,7 +41,7 @@ it('applies user property values to evaluation context', () => {
 		},
 	);
 
-	expect(value).toMatchInlineSnapshot(`"0.10511205190671431rem"`);
+	expect(value).toMatchInlineSnapshot(`"0.125rem"`);
 });
 
 it('resolves equation property values from user overrides', () => {
@@ -53,7 +53,7 @@ it('resolves equation property values from user overrides', () => {
 		},
 	);
 
-	expect(value).toMatchInlineSnapshot(`"0.10511205190671431rem"`);
+	expect(value).toMatchInlineSnapshot(`"0.125rem"`);
 });
 
 it('returns undefined when token is unknown', () => {

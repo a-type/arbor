@@ -47,11 +47,9 @@ it('allows defining functions or mixins using available tokens', () => {
 		mixins: (create, $) => ({
 			test: create('test', {
 				parameters: ['--a'] as const,
-				definition: (css) => ({
-					color: css`
-						${$.mode.color}
-					`,
-				}),
+				definition: (css) => css`
+					color: ${$.mode.color};
+				`,
 				contributeTokens: {
 					foo: 'other',
 				},
@@ -105,9 +103,9 @@ it('keeps mixin token inference narrowed when baseMode uses $ tokens', () => {
 		}),
 		mixins: (create) => ({
 			bg: create('bg', {
-				definition: (css) => ({
-					'background-color': css`transparent`,
-				}),
+				definition: (css) => css`
+					background-color: transparent;
+				`,
 				contributeTokens: {
 					contrast: 'color',
 				},
@@ -142,11 +140,9 @@ it('composes presets', () => {
 		mixins: (create) => ({
 			demo: create('demo', {
 				parameters: [],
-				definition: (css, { tokens }) => ({
-					color: css`
-						${tokens.inputColor}
-					`,
-				}),
+				definition: (css, { tokens }) => css`
+					color: ${tokens.inputColor};
+				`,
 				contributeTokens: {
 					inputColor: 'color',
 				},
@@ -175,11 +171,9 @@ it('composes presets', () => {
 		mixins: (create, $) => ({
 			usesDemo: create('uses-demo', {
 				parameters: [],
-				definition: (css) => ({
-					color: css`
-						${$.mixins.demo.inputColor}
-					`,
-				}),
+				definition: (css) => css`
+					color: ${$.mixins.demo.inputColor};
+				`,
 				contributeTokens: {
 					inputColor2: 'color',
 				},
@@ -237,11 +231,9 @@ it('preserves base preset typings when composing without extension', () => {
 		mixins: (create) => ({
 			demo: create('demo', {
 				parameters: [],
-				definition: (css) => ({
-					color: css`
-						red
-					`,
-				}),
+				definition: (css) => css`
+					color: red;
+				`,
 				contributeTokens: {
 					inputColor: 'color',
 				},

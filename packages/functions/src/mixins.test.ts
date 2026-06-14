@@ -1,4 +1,9 @@
-import { css, printEquation } from '@arbor-css/calc';
+import {
+	css,
+	isCssStylesheet,
+	printEquation,
+	printStylesheet,
+} from '@arbor-css/calc';
 import { createTokenFactory } from '@arbor-css/tokens';
 import { describe, expect, it } from 'vitest';
 import {
@@ -16,7 +21,9 @@ const createMixin = createMixinFactory({
 describe('createMixin', () => {
 	it('sets the CSS name with -- prefix', () => {
 		const mixin = createMixin('shadow', {
-			definition: () => [],
+			definition: (css) => css`
+				box-shadow: none;
+			`,
 		});
 
 		expect(mixin.name).toBe('--x-mixin-shadow');
@@ -25,38 +32,24 @@ describe('createMixin', () => {
 	it('stores description and declarations', () => {
 		const mixin = createMixin('shadow', {
 			description: 'Applies stacked shadow variables',
-			definition: (css) => [
-				{
-					prop: '--x-system-shadow',
-					value: css`0 0 0 0 transparent`,
-				},
-				{
-					prop: 'box-shadow',
-					value: css`var(--x-system-ring), var(--x-system-shadow)`,
-				},
-			],
+			definition: (css) => css`
+				--x-system-shadow: 0 0 0 0 transparent;
+				--x-system-ring: 0 0 0 0 transparent;
+				box-shadow: var(--x-system-ring), var(--x-system-shadow);
+			`,
 		});
 
 		expect(mixin.description).toBe('Applies stacked shadow variables');
-		expect(mixin.body).toHaveLength(2);
+		expect(mixin.body).toHaveLength(3);
 	});
 
 	it('generates a CSS @mixin definition', () => {
 		const mixin = createMixin('shadow', {
-			definition: (css) => [
-				{
-					prop: '--x-system-shadow',
-					value: css`0 0 0 0 transparent`,
-				},
-				{
-					prop: '--x-system-ring',
-					value: css`0 0 0 0 transparent`,
-				},
-				{
-					prop: 'box-shadow',
-					value: css`var(--x-system-ring), var(--x-system-shadow)`,
-				},
-			],
+			definition: (css) => css`
+				--x-system-shadow: 0 0 0 0 transparent;
+				--x-system-ring: 0 0 0 0 transparent;
+				box-shadow: var(--x-system-ring), var(--x-system-shadow);
+			`,
 		});
 
 		expect(mixin.definition).toBe(
@@ -64,29 +57,17 @@ describe('createMixin', () => {
 		);
 	});
 
-	it('supports object definitions', () => {
-		const mixin = createMixin('shadow', {
-			definition: (css) => ({
-				'--x-system-shadow': css`0 0 0 0 transparent`,
-				'box-shadow': css`var(--x-system-ring), var(--x-system-shadow)`,
-			}),
-		});
-
-		expect(
-			mixin.body.filter(isMixinPropertyDeclaration).map((decl) => decl.prop),
-		).toEqual(['--x-system-shadow', 'box-shadow']);
-	});
-
-	it('supports scoped declarations in object definitions', () => {
+	it('supports scoped declarations', () => {
 		const mixin = createMixin('responsive-bg', {
-			definition: () => ({
-				'@media (max-width: 400px)': {
-					background: 'red',
-				},
-				'.parent': {
-					color: 'blue',
-				},
-			}),
+			definition: () => css`
+				@media (max-width: 400px) {
+					background: red;
+				}
+
+				.parent {
+					color: blue;
+				}
+			`,
 		});
 
 		expect(mixin.definition).toBe(
@@ -104,39 +85,16 @@ describe('createMixin', () => {
 		]);
 	});
 
-	it('supports scoped declarations in list definitions', () => {
-		const mixin = createMixin('responsive-fg', {
-			definition: () => [
-				{ prop: 'color', value: 'blue' },
-				{
-					scope: '@media (max-width: 400px)',
-					children: [
-						{ prop: 'color', value: 'red' },
-						{ prop: 'background', value: 'black' },
-					],
-				},
-			],
-		});
-
-		expect(mixin.definition).toBe(
-			'@mixin --x-mixin-responsive-fg { color: blue; @media (max-width: 400px) { color: red; background: black; } }',
-		);
-	});
-
 	it('supports nested scoped declarations', () => {
 		const mixin = createMixin('complex', {
-			definition: () => [
-				{
-					scope: '.parent',
-					children: [
-						{ prop: 'color', value: 'blue' },
-						{
-							scope: '&:hover',
-							children: [{ prop: 'color', value: 'red' }],
-						},
-					],
-				},
-			],
+			definition: () => css`
+				.parent {
+					color: blue;
+					&:hover {
+						color: red;
+					}
+				}
+			`,
 		});
 
 		expect(mixin.definition).toBe(
@@ -146,14 +104,9 @@ describe('createMixin', () => {
 
 	it('returns inlinable declarations', () => {
 		const mixin = createMixin('shadow', {
-			definition: (css) => [
-				{
-					prop: '--x-system-shadow',
-					value: css`
-						${'0 0 0 0 transparent'}
-					`,
-				},
-			],
+			definition: (css) => css`
+				--x-system-shadow: 0 0 0 0 transparent;
+			`,
 		});
 
 		expect(
@@ -167,11 +120,11 @@ describe('createMixin', () => {
 	it('supports parameters in definitions', () => {
 		const mixin = createMixin('shadow', {
 			parameters: ['--default-ring-color'] as const,
-			definition: (css, { parameters: [defaultRingColor] }) => ({
-				'--x-system-shadow': css` 0 0 0 0 transparent`,
-				'--x-system-ring': css`0 0 0 0 ${defaultRingColor}`,
-				'box-shadow': css`var(--x-system-ring), var(--x-system-shadow)`,
-			}),
+			definition: (css, { parameters: [defaultRingColor] }) => css`
+				--x-system-shadow: 0 0 0 0 transparent;
+				--x-system-ring: 0 0 0 0 ${defaultRingColor};
+				box-shadow: var(--x-system-ring), var(--x-system-shadow);
+			`,
 		});
 
 		expect(mixin.definition).toBe(
@@ -181,9 +134,9 @@ describe('createMixin', () => {
 
 	it('supports contributing tokens', () => {
 		const mixin = createMixin('colored-shadow', {
-			definition: (css, { tokens: { token } }) => ({
-				'--x-colored-shadow': css`0 0 0 0 ${token}`,
-			}),
+			definition: (css, { tokens: { token } }) => css`
+				--x-colored-shadow: 0 0 0 0 ${token};
+			`,
 			contributeTokens: { token: 'color' },
 		});
 
@@ -202,46 +155,42 @@ describe('createMixin', () => {
 		};
 
 		const mixin = createMixin('arrow', {
-			definition: (css, { tokens }) => ({
-				fill: css`
-					${[externalTokens.bg, externalTokens.bgFallback]}
-				`,
-				stroke: css`
-					${[externalTokens.fg, externalTokens.fgFallback]}
-				`,
-				width: tokens.size,
-				height: css`calc(${tokens.size} / 2)`,
-				position: 'relative',
-				'z-index': 0,
-				transform:
-					'translate(0, 0) rotate(var(--angle, 0deg)) scale(var(--scale, 1))',
+			definition: (css, { tokens }) => css`
+				fill: ${[externalTokens.bg, externalTokens.bgFallback]};
+				stroke: ${[externalTokens.fg, externalTokens.fgFallback]};
+				width: ${tokens.size};
+				height: calc(${tokens.size} / 2);
+				position: relative;
+				z-index: 0;
+				transform: translate(0, 0) rotate(var(--angle, 0deg))
+					scale(var(--scale, 1));
 
-				'&[data-side="top"]': {
-					'--angle': 'rotate(0deg)',
-					bottom: css`calc(-1 * ${tokens.size} / 2 + 1px)`,
-				},
-				'&[data-side="right"]': {
-					'--angle': 'rotate(90deg)',
-					left: css`calc(-1 * ${tokens.size} * 0.75)`,
-				},
-				'&[data-side="bottom"]': {
-					'--angle': 'rotate(180deg)',
-					top: css`calc(-1 * ${tokens.size} / 2)`,
-				},
-				'&[data-side="left"]': {
-					'--angle': 'rotate(270deg)',
-					left: css`calc(-1 * ${tokens.size} * 0.75)`,
-				},
+				&[data-side='top']: {
+					--angle: rotate(0deg);
+					bottom: calc(-1 * ${tokens.size} / 2 + 1px);
+				}
+				&[data-side='right']: {
+					--angle: rotate(90deg);
+					left: calc(-1 * ${tokens.size} * 0.75);
+				}
+				&[data-side='bottom']: {
+					--angle: rotate(180deg);
+					top: calc(-1 * ${tokens.size} / 2);
+				}
+				&[data-side='left']: {
+					--angle: rotate(270deg);
+					left: calc(-1 * ${tokens.size} * 0.75);
+				}
 
-				'&[data-open]': {
-					opacity: 1,
-					'--scale': 1,
-				},
-				'&[data-closed]': {
-					opacity: 0,
-					'--scale': 0,
-				},
-			}),
+				&[data-open]: {
+					opacity: 1;
+					--scale: 1;
+				}
+				&[data-closed]: {
+					opacity: 0;
+					--scale: 0;
+				}
+			`,
 			contributeTokens: {
 				size: 'size',
 			},
@@ -249,48 +198,51 @@ describe('createMixin', () => {
 
 		expect(mixin.contributeTokens.size.name).toBe(`--x-arrow-size`);
 		expect(mixin.definition).toMatchInlineSnapshot(
-			`"@mixin --x-mixin-arrow { fill: var(--x-bg, var(--x-bgFallback)); stroke: var(--x-fg, var(--x-fgFallback)); width: var(--x-arrow-size); height: calc((var(--x-arrow-size) / 2)); position: relative; z-index: 0; transform: translate(0, 0) rotate(var(--angle, 0deg)) scale(var(--scale, 1)); &[data-side="top"] { --angle: rotate(0deg); bottom: calc((((-1 * var(--x-arrow-size)) / 2) + 1px)); } &[data-side="right"] { --angle: rotate(90deg); left: calc(((-1 * var(--x-arrow-size)) * 0.75)); } &[data-side="bottom"] { --angle: rotate(180deg); top: calc(((-1 * var(--x-arrow-size)) / 2)); } &[data-side="left"] { --angle: rotate(270deg); left: calc(((-1 * var(--x-arrow-size)) * 0.75)); } &[data-open] { opacity: 1; --scale: 1; } &[data-closed] { opacity: 0; --scale: 0; } }"`,
+			`"@mixin --x-mixin-arrow { fill: var(--x-bg, var(--x-bgFallback)); stroke: var(--x-fg, var(--x-fgFallback)); width: var(--x-arrow-size); height: calc((var(--x-arrow-size) / 2)); position: relative; z-index: 0; transform: translate(0, 0) rotate(var(--angle, 0deg)) scale(var(--scale, 1)); &[data-side='top']: { --angle: rotate(0deg); bottom: calc((((-1 * var(--x-arrow-size)) / 2) + 1px)); } &[data-side='right']: { --angle: rotate(90deg); left: calc(((-1 * var(--x-arrow-size)) * 0.75)); } &[data-side='bottom']: { --angle: rotate(180deg); top: calc(((-1 * var(--x-arrow-size)) / 2)); } &[data-side='left']: { --angle: rotate(270deg); left: calc(((-1 * var(--x-arrow-size)) * 0.75)); } &[data-open]: { opacity: 1; --scale: 1; } &[data-closed]: { opacity: 0; --scale: 0; } }"`,
 		);
 	});
 
 	it('should allow applying the mixin with parameters', () => {
 		const mixin = createMixin('shadow', {
 			parameters: ['--default-ring-color'],
-			definition: (css, { parameters: [defaultRingColor] }) => ({
-				'--x-system-shadow': css`0 0 0 0 transparent`,
-				'--x-system-ring': css`0 0 0 0 ${defaultRingColor}`,
-				'box-shadow': css`var(--x-system-ring), var(--x-system-shadow)`,
-			}),
+			definition: (css, { parameters: [defaultRingColor] }) => css`
+				--x-system-shadow: 0 0 0 0 transparent;
+				--x-system-ring: 0 0 0 0 ${defaultRingColor};
+				box-shadow: var(--x-system-ring), var(--x-system-shadow);
+			`,
 		});
 
 		const result = mixin.apply({ '--default-ring-color': 'red' });
-		expect(result).toEqual([
-			{ prop: mixin.parameterTokens[0].name, value: css`red` },
-			...mixin.body,
-		]);
+		// apply() now returns a CssStylesheet fragment
+		expect(isCssStylesheet(result)).toBe(true);
+		// Verify the printed output includes the parameter assignment + body
+		expect(printStylesheet(result)).toBe(
+			`${mixin.parameterTokens[0].name}: red;\n` +
+				mixin.body
+					.filter(isMixinPropertyDeclaration)
+					.map((d) => `${d.prop}: ${printEquation(d.value)};`)
+					.join('\n'),
+		);
 	});
 
 	it('should allow applying the mixin with tokens', () => {
 		const mixin = createMixin('shadow', {
 			parameters: ['--default-ring-color'],
-			definition: (css, { parameters: [defaultRingColor] }) => ({
-				'--x-system-shadow': css`0 0 0 0 transparent`,
-				'--x-system-ring': css`0 0 0 0 ${defaultRingColor}`,
-				'box-shadow': css`var(--x-system-ring), var(--x-system-shadow)`,
-			}),
+			definition: (css, { parameters: [defaultRingColor] }) => css`
+				--x-system-shadow: 0 0 0 0 transparent;
+				--x-system-ring: 0 0 0 0 ${defaultRingColor};
+				box-shadow: var(--x-system-ring), var(--x-system-shadow);
+			`,
 		});
 
 		const token = createToken('my-color');
 		const result = mixin.apply({ '--default-ring-color': token });
-		expect(result).toEqual([
-			{
-				prop: mixin.parameterTokens[0].name,
-				value: css`
-					${token}
-				`,
-			},
-			...mixin.body,
-		]);
+		// apply() now returns a CssStylesheet fragment
+		expect(isCssStylesheet(result)).toBe(true);
+		// The parameter declaration should use the token's var()
+		expect(printStylesheet(result)).toContain(
+			`${mixin.parameterTokens[0].name}: ${token.var};`,
+		);
 	});
 
 	it('should not require optional parameters in apply typings', () => {
@@ -299,11 +251,9 @@ describe('createMixin', () => {
 				'--required',
 				{ name: '--optional', fallback: 'red' },
 			] as const,
-			definition: (css, { parameters: [required, optional] }) => ({
-				color: css`
-					${required} var(${optional})
-				`,
-			}),
+			definition: (css, { parameters: [required, optional] }) => css`
+				color: ${required} var(${optional});
+			`,
 		});
 
 		mixin.apply({ '--required': 'blue', '--optional': undefined });
@@ -314,49 +264,45 @@ describe('createMixin', () => {
 
 	it('should compose multiple mixins', () => {
 		const mixinA = createMixin('a', {
-			definition: () => ({
-				color: 'red',
-			}),
+			definition: (css) => css`
+				color: red;
+			`,
 		});
 
 		const mixinB = createMixin('b', {
-			definition: () => [
-				...mixinA.apply({}),
-				{
-					background: 'blue',
-				},
-			],
+			definition: (css) => css`
+				${mixinA.apply({})}
+				background: blue;
+			`,
 		});
 
-		expect(mixinB.apply({})).toEqual([
-			{ prop: 'color', value: css`red` },
-			{ prop: 'background', value: css`blue` },
-		]);
+		// mixinB.apply() returns a CssStylesheet with the body of A + background
+		const result = mixinB.apply({});
+		expect(isCssStylesheet(result)).toBe(true);
+		expect(printStylesheet(result)).toBe('color: red;\nbackground: blue;');
 	});
 
 	it('should handle composing multiple mixins with the same param names', () => {
 		const mixinA = createMixin('a', {
 			parameters: ['--color'] as const,
-			definition: (css, { parameters: [color] }) => ({
-				color,
-			}),
+			definition: (css, { parameters: [color] }) => css`
+				color: ${color};
+			`,
 		});
 
 		const mixinB = createMixin('b', {
 			parameters: ['--color'] as const,
-			definition: (css, { parameters: [color] }) => [
-				...mixinA.apply({ '--color': 'green' }),
-				{
-					background: color,
-				},
-			],
+			definition: (css, { parameters: [color] }) => css`
+				${mixinA.apply({ '--color': 'green' })}
+				background: ${color};
+			`,
 		});
 
 		const mixed = createMixin('mixed', {
 			parameters: ['--color'] as const,
-			definition: (css, { parameters: [color] }) => [
-				...mixinB.apply({ '--color': color }),
-			],
+			definition: (css, { parameters: [color] }) => css`
+				${mixinB.apply({ '--color': color })}
+			`,
 		});
 
 		expect(mixed.definition).toMatchInlineSnapshot(
@@ -405,7 +351,9 @@ describe('createMixin', () => {
 describe('isMixin', () => {
 	it('returns true for a created mixin', () => {
 		const mixin = createMixin('shadow', {
-			definition: () => [],
+			definition: (css) => css`
+				box-shadow: none;
+			`,
 		});
 
 		expect(isMixin(mixin)).toBe(true);

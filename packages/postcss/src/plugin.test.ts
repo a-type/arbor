@@ -54,26 +54,11 @@ it('inlines @apply for an Arbor mixin', async () => {
 	const createMixin = createMixinFactory({ namePrefix: '--mx-', createToken });
 	const shadow = createMixin('shadow', {
 		description: 'Stacked shadow setup',
-		definition: (css) => [
-			{
-				prop: '--_-system-shadow',
-				value: css`
-					${'0 0 0 0 transparent'}
-				`,
-			},
-			{
-				prop: '--_-system-ring',
-				value: css`
-					${'0 0 0 0 transparent'}
-				`,
-			},
-			{
-				prop: 'box-shadow',
-				value: css`
-					${'var(--_-system-ring), var(--_-system-shadow)'}
-				`,
-			},
-		],
+		definition: (css) => css`
+			--_-system-shadow: 0 0 0 0 transparent;
+			--_-system-ring: 0 0 0 0 transparent;
+			box-shadow: var(--_-system-ring), var(--_-system-shadow);
+		`,
 	});
 
 	// Fake stat so cache check passes
@@ -222,11 +207,9 @@ it('inlines @apply mixin arguments into parameterized mixin declarations', async
 	const createMixin = createMixinFactory({ namePrefix: '--mx-', createToken });
 	const fg = createMixin('fg', {
 		parameters: ['--color'] as const,
-		definition: (css, { parameters: [color] }) => ({
-			color: css`
-				${color}
-			`,
-		}),
+		definition: (css, { parameters: [color] }) => css`
+			color: ${color};
+		`,
 	});
 
 	mockLoadConfig.mockResolvedValue(
@@ -258,11 +241,9 @@ it('inlines function results passed as @apply mixin arguments', async () => {
 
 	const fg = createMixin('fg', {
 		parameters: ['--color'] as const,
-		definition: (css, { parameters: [color] }) => ({
-			color: css`
-				${color}
-			`,
-		}),
+		definition: (css, { parameters: [color] }) => css`
+			color: ${color};
+		`,
 	});
 
 	mockLoadConfig.mockResolvedValue(
@@ -286,11 +267,9 @@ it('warns when @apply omits a required mixin argument', async () => {
 	const createMixin = createMixinFactory({ namePrefix: '--mx-', createToken });
 	const fg = createMixin('fg', {
 		parameters: ['--color'] as const,
-		definition: (css, { parameters: [color] }) => ({
-			color: css`
-				${color}
-			`,
-		}),
+		definition: (css, { parameters: [color] }) => css`
+			color: ${color};
+		`,
 	});
 	mockLoadConfig.mockResolvedValue(
 		makeConfigResult({ functions: {}, mixins: { fg }, $: undefined }),
@@ -313,11 +292,11 @@ it('inlines scoped mixin declarations under at-rules', async () => {
 	const createToken = createTokenFactory({ tokenPrefix: '--mx-' });
 	const createMixin = createMixinFactory({ namePrefix: '--mx-', createToken });
 	const responsiveBg = createMixin('responsive-bg', {
-		definition: () => ({
-			'@media (max-width: 400px)': {
-				background: 'red',
-			},
-		}),
+		definition: (css) => css`
+			@media (max-width: 400px) {
+				background: red;
+			}
+		`,
 	});
 
 	mockLoadConfig.mockResolvedValue(
@@ -329,9 +308,12 @@ it('inlines scoped mixin declarations under at-rules', async () => {
 	);
 
 	const plugin = ArborPlugin({ cwd: '/fake' });
-	const result = await postcss([plugin]).process(`.btn { @apply --mx-responsive-bg; }`, {
-		from: undefined,
-	});
+	const result = await postcss([plugin]).process(
+		`.btn { @apply --mx-responsive-bg; }`,
+		{
+			from: undefined,
+		},
+	);
 
 	expect(result.css).toContain('@media (max-width: 400px)');
 	expect(result.css).toContain('background: red');
@@ -343,13 +325,12 @@ it('inlines scoped mixin declarations from list syntax with parameter values', a
 	const createMixin = createMixinFactory({ namePrefix: '--mx-', createToken });
 	const responsiveFg = createMixin('responsive-fg', {
 		parameters: ['--color'] as const,
-		definition: (css, { parameters: [color] }) => [
-			{ prop: 'color', value: css`${color}` },
-			{
-				scope: '@media (max-width: 400px)',
-				children: [{ prop: 'color', value: css`${color}` }],
-			},
-		],
+		definition: (css, { parameters: [color] }) => css`
+			color: ${color};
+			@media (max-width: 400px) {
+				color: ${color};
+			}
+		`,
 	});
 
 	mockLoadConfig.mockResolvedValue(
@@ -374,8 +355,16 @@ it('evicts the cache when the config file size changes even if mtime is the same
 	const FAKE_PATH = '/fake/arbor.config.ts';
 	const FIXED_MTIME = 1_700_000_000_000;
 
-	const firstPreset = makeConfigResult({ functions: {}, mixins: {}, $: undefined });
-	const secondPreset = makeConfigResult({ functions: {}, mixins: {}, $: undefined });
+	const firstPreset = makeConfigResult({
+		functions: {},
+		mixins: {},
+		$: undefined,
+	});
+	const secondPreset = makeConfigResult({
+		functions: {},
+		mixins: {},
+		$: undefined,
+	});
 
 	mockLoadConfig
 		.mockResolvedValueOnce({ ...firstPreset, configPath: FAKE_PATH })

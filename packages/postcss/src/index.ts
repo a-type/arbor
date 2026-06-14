@@ -1,4 +1,4 @@
-import { printEquation } from '@arbor-css/calc';
+import { printEquation, printStylesheet } from '@arbor-css/calc';
 import { AnyArborPreset, generateStylesheet } from '@arbor-css/core';
 import {
 	type ArborMixinBodyEntry,
@@ -6,7 +6,6 @@ import {
 	isFunction,
 	isFunctionParamWithMeta,
 	isMixin,
-	normalizeMixinBody,
 } from '@arbor-css/functions';
 import { stat } from 'node:fs/promises';
 import postcss, { Plugin } from 'postcss';
@@ -167,7 +166,9 @@ function computeFunctionCallValue({
 		return fn.compute(paramValues, { propertyValues: {} });
 	} catch (err) {
 		const message = err instanceof Error ? err.message : String(err);
-		console.error(`[arbor-css] Error computing function "${parsedCall.name}": ${message}`);
+		console.error(
+			`[arbor-css] Error computing function "${parsedCall.name}": ${message}`,
+		);
 		helper.result.warn(
 			`[arbor-css] Error computing function "${parsedCall.name}" — value left unchanged. ${message}`,
 			{ plugin: PLUGIN_NAME, node },
@@ -299,8 +300,7 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 						});
 						comment.replaceWith(...generatedRoot.nodes);
 					} catch (err) {
-						const message =
-							err instanceof Error ? err.message : String(err);
+						const message = err instanceof Error ? err.message : String(err);
 						console.error(
 							`[arbor-css] Failed to generate stylesheet: ${message}`,
 						);
@@ -422,10 +422,17 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 			);
 
 			try {
-				const applied = normalizeMixinBody(mixin.apply(mixinParamValues));
-				for (const entry of applied) {
-					atRule.cloneBefore(cloneScopedMixinEntry(entry, mixinParamValues));
-				}
+				const applied = mixin.apply(mixinParamValues);
+				const printed = printStylesheet(applied, {
+					propertyValues: mixinParamValues,
+				});
+				const generatedRoot = postcss.parse(printed, {
+					from: config.configPath,
+				});
+				atRule.replaceWith(
+					...generatedRoot.nodes,
+					postcss.comment({ text: `end: ${mixinApplyCall}` }),
+				);
 			} catch (err) {
 				const message = err instanceof Error ? err.message : String(err);
 				console.error(
@@ -440,15 +447,6 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 				atRule.prev()?.remove();
 				return;
 			}
-
-			// add comment telling the user which mixin this was from
-			atRule.before(
-				postcss.comment({
-					text: `end: ${mixinApplyCall}`,
-				}),
-			);
-
-			atRule.remove();
 		},
 	};
 }

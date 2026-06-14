@@ -11,7 +11,67 @@ export interface CalcEvaluationContext {
 
 export function isCalcEquation(value: any): value is Equation {
 	return (
-		value && typeof value === 'object' && 'type' in value && 'tokens' in value
+		value &&
+		typeof value === 'object' &&
+		'type' in value &&
+		'tokens' in value &&
+		value.type !== 'stylesheet'
+	);
+}
+
+// ─── Stylesheet types ────────────────────────────────────────────────────────
+
+/**
+ * A CSS declaration: `property: value;`
+ * The `property` is a printable string (may have been built from interpolations).
+ * The `value` is an `Equation` that will be baked when printing the stylesheet.
+ */
+export interface CssDeclaration {
+	type: 'declaration';
+	property: string;
+	value: Equation;
+}
+
+/**
+ * A scoped block: `selector-or-atrule { ...children }`.
+ * Used for `@media`, `&:hover`, `.parent`, etc.
+ * The `scope` is a printable string.
+ */
+export interface CssBlock {
+	type: 'block';
+	scope: string;
+	children: CssStylesheetNode[];
+}
+
+/**
+ * A stylesheet fragment — an inline block from another source, e.g. from
+ * `.apply()` — whose children are spliced into the surrounding stylesheet.
+ */
+export interface CssFragment {
+	type: 'fragment';
+	children: CssStylesheetNode[];
+}
+
+export type CssStylesheetNode = CssDeclaration | CssBlock | CssFragment;
+
+/**
+ * A "stylesheet" — a flat or nested block of CSS property declarations and
+ * scoped rules. This is the multi-line counterpart to `Equation` (which
+ * represents a single CSS value).
+ *
+ * Returned by `css\`\`` when the template contains property declarations
+ * (i.e. contains `:` + `;` at the top level).
+ *
+ * Use {@link printStylesheet} to render it as a baked CSS string.
+ */
+export interface CssStylesheet {
+	type: 'stylesheet';
+	children: CssStylesheetNode[];
+}
+
+export function isCssStylesheet(value: any): value is CssStylesheet {
+	return (
+		value && typeof value === 'object' && 'type' in value && value.type === 'stylesheet'
 	);
 }
 
@@ -190,6 +250,13 @@ function printFunctionCall(
 }
 
 export function printEquation(equation: Equation): string {
+	if ((equation as any).type === 'stylesheet') {
+		const preview = JSON.stringify(equation).slice(0, 80);
+		throw new TypeError(
+			`printEquation: expected a CSS value, but received a stylesheet block. ` +
+				`Use printStylesheet() to render stylesheet blocks. Got: '${preview}'`,
+		);
+	}
 	switch (equation.type) {
 		case 'literal':
 			return equation.value.toString();
@@ -230,6 +297,54 @@ export function printEquation(equation: Equation): string {
 			throw new Error(`Unknown equation type: ${(equation as any).type}`);
 	}
 }
+
+// ─── Stylesheet printing ─────────────────────────────────────────────────────
+
+function printStylesheetNode(
+	node: CssStylesheetNode,
+	context: CalcEvaluationContext,
+	indent: string,
+): string {
+	if (node.type === 'declaration') {
+		const computed = computeEquation(node.value, context);
+		const value = printComputationResult(computed);
+		return `${indent}${node.property}: ${value};`;
+	}
+	if (node.type === 'block') {
+		const inner = node.children
+			.map((child) => printStylesheetNode(child, context, indent + '  '))
+			.join('\n');
+		return `${indent}${node.scope} {\n${inner}\n${indent}}`;
+	}
+	if (node.type === 'fragment') {
+		return node.children
+			.map((child) => printStylesheetNode(child, context, indent))
+			.join('\n');
+	}
+	throw new Error(`Unknown stylesheet node type: ${(node as any).type}`);
+}
+
+/**
+ * Renders a {@link CssStylesheet} to a CSS string, baking all property values
+ * using {@link computeEquation} with the provided context.
+ *
+ * @example
+ * const sheet = css`
+ *   color: ${token};
+ *   background: ${bgToken};
+ * `;
+ * printStylesheet(sheet);
+ * // → "color: var(--token);\nbackground: var(--bg-token);"
+ */
+export function printStylesheet(
+	stylesheet: CssStylesheet,
+	context: CalcEvaluationContext = { propertyValues: {} },
+): string {
+	return stylesheet.children
+		.map((node) => printStylesheetNode(node, context, ''))
+		.join('\n');
+}
+
 
 export type NumericComputationResult = {
 	type: 'numeric';
@@ -710,6 +825,13 @@ export function computeEquation(
 	equation: Equation,
 	userContext: CalcEvaluationContext = { propertyValues: {} },
 ): ComputationResult {
+	if ((equation as any).type === 'stylesheet') {
+		const preview = JSON.stringify(equation).slice(0, 80);
+		throw new TypeError(
+			`computeEquation: expected a CSS value, but received a stylesheet block. ` +
+				`Use printStylesheet() to render stylesheet blocks. Got: '${preview}'`,
+		);
+	}
 	const rawResult = computeEquationRaw(equation, userContext);
 
 	// attempt to simplify before continuing; if the result is

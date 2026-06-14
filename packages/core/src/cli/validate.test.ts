@@ -37,9 +37,9 @@ function createTestPreset() {
 		mixins: (create) => ({
 			fg: create('fg', {
 				parameters: ['--color'] as const,
-				definition: ($, { parameters: [color] }) => ({
-					color: $`${color}`,
-				}),
+				definition: (css, { parameters: [color] }) => css`
+					color: ${color};
+				`,
 			}),
 		}),
 	});

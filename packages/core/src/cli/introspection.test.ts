@@ -53,9 +53,9 @@ function createTestPreset() {
 			fg: create('fg', {
 				description: 'Applies a foreground color.',
 				parameters: ['--color'] as const,
-				definition: ($, { parameters: [color] }) => ({
-					color: $`${color}`,
-				}),
+				definition: (css, { parameters: [color] }) => css`
+					color: ${color};
+				`,
 			}),
 		}),
 	});

@@ -119,71 +119,54 @@ const preset = definePreset({
 
 	mixins: (create, $) => ({
 		disabled: create('disabled', {
-			definition: (css) => [
-				{
-					scope: '&:disabled',
-					children: [
-						...basePreset.mixins.bgDesaturated.apply({ '--step': '2' }),
-						...basePreset.mixins.fgLighter.apply({ '--step': 1 }),
-					],
-				},
-			],
+			definition: (css) => css`
+				&:disabled {
+					${basePreset.mixins.bgDesaturated.apply({ '--step': '2' })}
+					${basePreset.mixins.fgLighter.apply({ '--step': 1 })}
+				}
+			`,
 		}),
 		hover: create('hover', {
-			definition: (css) => [
-				{
-					scope: '&:hover',
-					children: [
-						...basePreset.mixins.bgLighter.apply({ '--step': 1 }),
-						{
-							prop: basePreset.$.mixins.ring.value.name,
-							value: basePreset.functions.ring.compute({
-								'--size': '2px',
-								'--color': basePreset.$.mode.color.main.heavy,
-							}),
-						},
-					],
-				},
-			],
+			definition: (css) => css`
+				&:hover {
+					${basePreset.mixins.bgLighter.apply({ '--step': 1 })}
+					${basePreset.$.mixins.ring.value
+						.name}: ${basePreset.functions.ring.compute({
+						'--size': '2px',
+						'--color': basePreset.$.mode.color.main.heavy,
+					})};
+					cursor: pointer;
+				}
+			`,
 		}),
 		focus: create('focus', {
-			definition: (css) => [
-				{
-					scope: '&:focus',
-					children: { outline: 'none' },
-				},
-				{
-					scope: '&:focus-visible',
-					children: [
-						...basePreset.mixins.bgLighter.apply({ '--step': 2 }),
-						{
-							prop: basePreset.$.mixins.ring.value.name,
-							value: basePreset.functions.ring.compute({
-								'--size': '3px',
-								'--color': basePreset.$.mode.color.main.heavy,
-								'--offset': '1px',
-							}),
-						},
-					],
-				},
-			],
+			definition: (css) => css`
+				&:focus {
+					outline: none;
+				}
+
+				&:focus-visible {
+					${basePreset.mixins.bgLighter.apply({ '--step': 2 })}
+					${basePreset.$.mixins.ring.value
+						.name}: ${basePreset.functions.ring.compute({
+						'--size': '3px',
+						'--color': basePreset.$.mode.color.main.heavy,
+						'--offset': '1px',
+					})};
+				}
+			`,
 		}),
 		active: create('active', {
-			definition: (css) => [
-				{
-					scope: '&:active',
-					children: [
-						...basePreset.mixins.bgHeavier.apply({ '--step': 1 }),
-						{
-							prop: basePreset.$.mixins.ring.value.name,
-							value: basePreset.functions.ring.compute({
-								'--size': '1px',
-								'--color': basePreset.$.mode.color.main.heavy,
-							}),
-						},
-					],
-				},
-			],
+			definition: (css) => css`
+				&:active {
+					${basePreset.mixins.bgHeavier.apply({ '--step': 1 })}
+					${basePreset.$.mixins.ring.value
+						.name}: ${basePreset.functions.ring.compute({
+						'--size': '1px',
+						'--color': basePreset.$.mode.color.main.heavy,
+					})};
+				}
+			`,
 		}),
 	}),
 });

@@ -1,4 +1,4 @@
-import { Css, Equation } from '@arbor-css/calc';
+import { CalcInterpolation, Css } from '@arbor-css/calc';
 import { ArborMixinDefinition, CreateMixin } from '@arbor-css/functions';
 import { GlobalContext } from '@arbor-css/globals';
 import {
@@ -16,11 +16,11 @@ export function createColorMixins(
 	{
 		name,
 		property,
-		defineExtraProperties,
+		extra,
 	}: {
 		name: string;
 		property: string;
-		defineExtraProperties?: (css: Css) => Record<string, Equation>;
+		extra?: (css: Css) => CalcInterpolation;
 	},
 ) {
 	const refMixin = createMixinValue(name, {
@@ -28,25 +28,13 @@ export function createColorMixins(
 			`Applies ${property}, and also exposes this color for reference by other mixins or functions via ${tokens.ref.name}.`,
 		parameters: ['--color'] as const,
 		definition: (css, { parameters: [color], tokens }) => {
-			return {
-				[tokens.applied.name]: css`
-					${color}
-				`,
-				[tokens.ref.name]: css`
-					${tokens.applied.var}
-				`,
-				...(tokens.contrast ?
-					{
-						[tokens.contrast.name]: css`
-							${tokens.applied.var}
-						`,
-					}
-				:	{}),
-				[property]: css`
-					${tokens.ref.var}
-				`,
-				...defineExtraProperties?.(css),
-			};
+			return css`
+				${tokens.applied.name}: ${color};
+				${tokens.ref.name}: ${tokens.applied.var};
+				${tokens.contrast.name}: ${tokens.applied.var};
+				${property}: ${tokens.ref.var};
+				${extra ? extra(css) : ''}
+			`;
 		},
 		contributeTokens: {
 			applied: {
@@ -73,14 +61,14 @@ export function createColorMixins(
 				fallback: refMixin.contributeTokens.applied.var,
 			},
 		] as const,
-		definition: (css, { parameters: [step, source] }) => ({
-			[refMixin.contributeTokens.ref.name]: lightenColorAlteration(
+		definition: (css, { parameters: [step, source] }) => css`
+			${refMixin.contributeTokens.ref.name}: ${lightenColorAlteration(
 				css,
 				tokens,
 				source,
 				step,
-			),
-		}),
+			)}
+		`,
 	});
 	const darkenMixin = createMixinValue(`${name}-heavier`, {
 		description: `Darkens the ${property} color applied to ${refMixin.name} by a number of steps.`,
@@ -91,14 +79,14 @@ export function createColorMixins(
 				fallback: refMixin.contributeTokens.applied.var,
 			},
 		] as const,
-		definition: (css, { parameters: [step, source] }) => ({
-			[refMixin.contributeTokens.ref.name]: darkenColorAlteration(
+		definition: (css, { parameters: [step, source] }) => css`
+			${refMixin.contributeTokens.ref.name}: ${darkenColorAlteration(
 				css,
 				tokens,
 				source,
 				step,
-			),
-		}),
+			)}
+		`,
 	});
 	const desaturateMixin = createMixinValue(`${name}-desaturated`, {
 		description: `Desaturates the ${property} color applied to ${refMixin.name} by a number of steps.`,
@@ -109,14 +97,14 @@ export function createColorMixins(
 				fallback: refMixin.contributeTokens.applied.var,
 			},
 		] as const,
-		definition: (css, { parameters: [step, source] }) => ({
-			[refMixin.contributeTokens.ref.name]: desaturateColorAlteration(
+		definition: (css, { parameters: [step, source] }) => css`
+			${refMixin.contributeTokens.ref.name}: ${desaturateColorAlteration(
 				css,
 				tokens,
 				source,
 				step,
-			),
-		}),
+			)}
+		`,
 	});
 	const saturateMixin = createMixinValue(`${name}-saturated`, {
 		description: `Saturates the ${property} color applied to ${refMixin.name} by a number of steps.`,
@@ -127,14 +115,14 @@ export function createColorMixins(
 				fallback: refMixin.contributeTokens.applied.var,
 			},
 		] as const,
-		definition: (css, { parameters: [step, source] }) => ({
-			[refMixin.contributeTokens.ref.name]: saturateColorAlteration(
+		definition: (css, { parameters: [step, source] }) => css`
+			${refMixin.contributeTokens.ref.name}: ${saturateColorAlteration(
 				css,
 				tokens,
 				source,
 				step,
-			),
-		}),
+			)}
+		`,
 	});
 	const fadeMixin = createMixinValue(`${name}-faded`, {
 		description: `Sets the ${property} color applied to ${refMixin.name} to a specific opacity.`,
@@ -145,13 +133,13 @@ export function createColorMixins(
 				fallback: refMixin.contributeTokens.applied.var,
 			},
 		] as const,
-		definition: (css, { parameters: [opacity, source] }) => ({
-			[refMixin.contributeTokens.ref.name]: fadeColorAlteration(
+		definition: (css, { parameters: [opacity, source] }) => css`
+			${refMixin.contributeTokens.ref.name}: ${fadeColorAlteration(
 				css,
 				source,
 				opacity,
-			),
-		}),
+			)}
+		`,
 	});
 
 	return {
@@ -196,17 +184,12 @@ export function createPresetMixins(
 		definition: (
 			css,
 			{ tokens, parameters: [shadowParam] },
-		): ArborMixinDefinition => ({
-			[tokens.value.name]: css`
-				${shadowParam}
-			`,
-			'box-shadow': css`
-				${[ringValueToken, css`0 0 0 0 transparent`]}, ${[
-					tokens.value,
-					css`0 0 0 0 transparent`,
-				]}
-			`,
-		}),
+		): ArborMixinDefinition => css`
+			${tokens.value.name}: ${shadowParam};
+			box-shadow:
+				${[ringValueToken, css`0 0 0 0 transparent`]},
+				${[tokens.value, css`0 0 0 0 transparent`]};
+		`,
 		contributeTokens: {
 			value: shadowValueToken,
 		},
@@ -226,17 +209,12 @@ export function createPresetMixins(
 		definition: (
 			css,
 			{ tokens, parameters: [ringParam] },
-		): ArborMixinDefinition => ({
-			[tokens.value.name]: css`
-				${ringParam}
-			`,
-			'box-shadow': css`
-				${[tokens.value, css`0 0 0 0 transparent`]}, ${[
-					shadowValueToken,
-					css`0 0 0 0 transparent`,
-				]}
-			`,
-		}),
+		): ArborMixinDefinition => css`
+			${tokens.value.name}: ${ringParam};
+			box-shadow:
+				${[tokens.value, css`0 0 0 0 transparent`]},
+				${[shadowValueToken, css`0 0 0 0 transparent`]};
+		`,
 		contributeTokens: {
 			value: ringValueToken,
 		},
@@ -256,12 +234,10 @@ export function createPresetMixins(
 	const borderMixins = createColorMixins(createMixinValue, tokens, {
 		name: 'borderColor',
 		property: 'border-color',
-		defineExtraProperties: (css) => ({
-			'border-style': css`solid`,
-			'border-width': css`
-				1px
-			`,
-		}),
+		extra: (css) => css`
+			border-style: solid;
+			border-width: 1px;
+		`,
 	});
 
 	const fillMixins = createColorMixins(createMixinValue, tokens, {

@@ -2,8 +2,11 @@ import {
 	CalcInterpolation,
 	css,
 	Css,
+	type CssStylesheet,
+	type CssStylesheetNode,
 	type Equation,
 	isCalcEquation,
+	isCssStylesheet,
 	printEquation,
 } from '@arbor-css/calc';
 import {
@@ -79,7 +82,64 @@ function toEquation(value: MixinValue): Equation {
 
 	return css`
 		${value}
-	`;
+	` as Equation;
+}
+
+/**
+ * Converts a `CssStylesheet` (from a `css\`\`` template literal) into a
+ * normalized `ArborMixinBody`. This allows mixin `definition` callbacks to
+ * return either the legacy object/array form or a `css\`\`` template result.
+ */
+function stylesheetToMixinBody(stylesheet: CssStylesheet): ArborMixinBody {
+	return stylesheetNodesToMixinBody(stylesheet.children);
+}
+
+function stylesheetNodesToMixinBody(
+	nodes: CssStylesheetNode[],
+): ArborMixinBody {
+	const result: ArborMixinBody = [];
+	for (const node of nodes) {
+		if (node.type === 'declaration') {
+			result.push({ prop: node.property, value: node.value });
+		} else if (node.type === 'block') {
+			result.push({
+				scope: node.scope,
+				children: stylesheetNodesToMixinBody(node.children),
+			});
+		} else if (node.type === 'fragment') {
+			result.push(...stylesheetNodesToMixinBody(node.children));
+		}
+	}
+	return result;
+}
+
+/**
+ * Converts a normalized `ArborMixinBody` into a `CssStylesheet` fragment.
+ * Used by `.apply()` to return a stylesheet that can be interpolated into
+ * other `css\`\`` templates.
+ */
+function mixinBodyToStylesheet(body: ArborMixinBody): CssStylesheet {
+	return {
+		type: 'stylesheet',
+		children: mixinBodyToStylesheetNodes(body),
+	};
+}
+
+function mixinBodyToStylesheetNodes(body: ArborMixinBody): CssStylesheetNode[] {
+	return body.map((entry): CssStylesheetNode => {
+		if (isMixinPropertyDeclaration(entry)) {
+			return {
+				type: 'declaration',
+				property: entry.prop,
+				value: entry.value,
+			};
+		}
+		return {
+			type: 'block',
+			scope: entry.scope,
+			children: mixinBodyToStylesheetNodes(entry.children),
+		};
+	});
 }
 
 export function normalizeMixinBody(
@@ -142,7 +202,16 @@ function printBody(body: ArborMixinBody): string {
 		.join(' ');
 }
 
-export type ArborMixinDefinition = MixinBodyObject | MixinBodyList;
+/**
+ * The definition returned by a mixin's `definition` callback.
+ * - Stylesheet form: `css\`color: red;\`` (multi-line template with declarations)
+ *
+ * Note: the `css\`\`` tagged template literal always returns `Equation` by type,
+ * but at runtime, a template containing property declarations (`;` at top level)
+ * or scoped blocks (`{...}`) produces a `CssStylesheet`. The mixin factory
+ * detects this at runtime using `isCssStylesheet()`.
+ */
+export type ArborMixinDefinition = Equation;
 
 export interface CreateMixinParameters<
 	TParams extends FunctionParams,
@@ -189,7 +258,7 @@ export type CreateMixin = <
 	TTokens extends SimpleTokenSchema,
 >(
 	name: string,
-	parameters: CreateMixinParameters<TParams, TTokens>,
+	config: CreateMixinParameters<TParams, TTokens>,
 ) => ArborMixin<TParams, SimpleTokensAsTokenDefinitions<TTokens>>;
 
 export function createMixinFactory({
@@ -228,7 +297,15 @@ export function createMixinFactory({
 			tokens: contributeTokens,
 		};
 
-		const body = normalizeMixinBody(definition(css, tokensAndParams));
+		const rawDefinition = definition(css as Css, tokensAndParams);
+		// css`` returns Equation by TS type but may actually produce a CssStylesheet
+		// at runtime when the template contains property declarations or blocks.
+		if (!isCssStylesheet(rawDefinition)) {
+			throw new Error(
+				`Mixin definition must be a CSS declaration block or contain scoped blocks (received: ${printEquation(rawDefinition)}) If you intended to return a single equation, wrap it in a declaration, e.g. css\`--value: ${rawDefinition};\``,
+			);
+		}
+		const body = stylesheetToMixinBody(rawDefinition);
 		const cssBody = printBody(body);
 
 		const parameterTokens = parameters.map((p) => paramAsToken(p, name));
@@ -245,10 +322,15 @@ export function createMixinFactory({
 				nonce: name,
 			})} { ${cssBody} }`,
 			apply: (values) => {
+				// TODO: convert this to directly pass property assignments
+				// into a CssStylesheet via css`` templating, rather than
+				// constructing an intermediate array of declarations and
+				// passing it through mixinBodyToStylesheet.
+
 				// we "apply" a mixin within another mixin by assigning
 				// the provided parameters to properties matching their names,
 				// prepending that to this mixin's body statements, and
-				// returning it all.
+				// returning it all as a CssStylesheet fragment.
 
 				const parameterDeclarations: ArborMixinDeclaration[] = [];
 				applyParameters(parameters, values, name, (name, value) => {
@@ -258,7 +340,7 @@ export function createMixinFactory({
 					});
 				});
 
-				return [...parameterDeclarations, ...body];
+				return mixinBodyToStylesheet([...parameterDeclarations, ...body]);
 			},
 			parameters,
 			parameterTokens,
@@ -280,30 +362,27 @@ export type ArborMixin<
 	body: ArborMixinBody;
 	definition: string;
 	/**
-	 * Computes the mixin's body based on provided parameters. This
-	 * can be used to compose mixins together, by applying one mixin from
-	 * an extended preset "into" another mixin you define by spreading the
-	 * result of this method.
+	 * Computes the mixin's body based on provided parameters and returns it
+	 * as a {@link CssStylesheet} fragment. This can be used to compose mixins
+	 * together by interpolating the result into a `css\`\`` template:
 	 *
 	 * @example
 	 * const baseMixin = createMixin('base', {
 	 *   parameters: ['--color'] as const,
-	 *   definition: (colorParam) => ({
-	 *     color: colorParam,
-	 *     padding: '8px',
-	 *   }),
+	 *   definition: (css, { parameters: [color] }) => css`
+	 *     color: ${color};
+	 *     padding: 8px;
+	 *   `,
 	 * });
 	 *
 	 * const extendedMixin = createMixin('extended', {
-	 *   definition: (css, { parameters }, { mixins }) => [
-	 *     ...mixins.base.apply('red'),
-	 *     {
-	 *       background: 'black',
-	 *     },
-	 *   ],
+	 *   definition: (css, { parameters: [color] }) => css`
+	 *     ${baseMixin.apply({ '--color': color })}
+	 *     background: black;
+	 *   `,
 	 * });
 	 */
-	apply: (params: ParamsAsCallInputs<TParams>) => MixinBodyList;
+	apply: (params: ParamsAsCallInputs<TParams>) => CssStylesheet;
 	parameters: TParams;
 	parameterTokens: Token[];
 	contributeTokens: TTokens;

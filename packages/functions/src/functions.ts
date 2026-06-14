@@ -4,6 +4,7 @@ import {
 	css,
 	Css,
 	type Equation,
+	isCssStylesheet,
 	printComputationResult,
 	printEquation,
 } from '@arbor-css/calc';
@@ -77,10 +78,18 @@ export function createFunctionFactory({
 			nonce: name,
 		});
 		const paramsAsTokens = parameters.map((p) => paramAsToken(p, name));
-		const equation = definition(
+		const rawEquation = definition(
 			css,
 			...paramsAsInterpolations(parameters, name),
 		);
+		if (isCssStylesheet(rawEquation as unknown)) {
+			throw new TypeError(
+				`createFunction: the definition callback for '${cssName}' returned a stylesheet block, ` +
+					`but functions must return a single CSS value expression. ` +
+					`Use mixin (createMixin) instead for block-level definitions.`,
+			);
+		}
+		const equation = rawEquation as Equation;
 		const body = printEquation(equation);
 		const cssDefinition = `@function ${cssName}${paramsList} { result: ${body}; }`;
 

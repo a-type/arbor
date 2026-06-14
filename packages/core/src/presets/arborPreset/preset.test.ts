@@ -35,9 +35,9 @@ it('is extensible', () => {
 		}),
 		mixins: (create, $) => ({
 			disabled: create('disabled', {
-				definition: () => ({
-					...base.mixins.bgFaded.apply({ '--opacity': '0.5' }),
-				}),
+				definition: (css) => css`
+					${base.mixins.bgFaded.apply({ '--opacity': '0.5' })}
+				`,
 			}),
 		}),
 		functions: (create, $) => ({

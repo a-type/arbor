@@ -141,7 +141,7 @@ export function applyParameters(
 				asToken.name,
 				css`
 					${inputValue}
-				`,
+				` as Equation,
 			);
 		}
 	}
