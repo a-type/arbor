@@ -6,22 +6,88 @@ export interface Props {
 	class?: string;
 }
 const { value, ...props } = Astro.props;
+const anchorName = `--copyable-${Math.random().toString(36).slice(2)}`;
+const popoverId = anchorName.slice(2); // strip leading --
 ---
 
-<Button data-copyable {...props} data-value={value}>
+<Button
+	data-copyable
+	{...props}
+	data-value={value}
+	data-popover-id={popoverId}
+	style={`anchor-name: ${anchorName}`}
+>
 	<slot />
-	<iconify-icon name="mdi:content-copy"></iconify-icon>
+	<iconify-icon icon="material-symbols-light:content-copy-outline"
+	></iconify-icon>
 </Button>
+<div
+	class="copied-notice @mode-dense"
+	popover
+	id={popoverId}
+	style={`position-anchor: ${anchorName}`}
+>
+	Copied to clipboard
+</div>
+
 <script>
-	const copyableButtons = document.querySelectorAll('button[data-copyable]');
+	const copyableButtons = document.querySelectorAll<HTMLButtonElement>(
+		'button[data-copyable]',
+	);
 	copyableButtons.forEach((button) => {
 		button.addEventListener('click', () => {
 			const value = button.getAttribute('data-value');
-			if (value) {
+			const popoverId = button.getAttribute('data-popover-id');
+			if (value && popoverId) {
 				navigator.clipboard.writeText(value);
-				button.setAttribute('data-copied', 'true');
-				setTimeout(() => button.removeAttribute('data-copied'), 2000);
+				const popover = document.getElementById(popoverId) as HTMLElement & {
+					showPopover: () => void;
+					hidePopover: () => void;
+				};
+				popover?.showPopover();
+				setTimeout(() => popover?.hidePopover(), 2000);
 			}
 		});
 	});
 </script>
+
+<style>
+	iconify-icon {
+		display: inline-flex;
+		font-size: 1em;
+		width: 1em;
+		height: 1em;
+		flex-shrink: 0;
+	}
+
+	.copied-notice {
+		position: fixed;
+		position-area: bottom center;
+		inset: auto;
+		margin: 0;
+		margin-top: var(--m-spacing-sm);
+
+		@apply --mx-surface-ambient;
+		@apply --mx-text-secondary;
+		@apply --mx-shadow(var(--m-shadow-md));
+
+		border: var(--m-surface-ambient-border);
+		border-radius: var(--m-surface-radius);
+		padding: var(--m-surface-padding);
+
+		transition:
+			opacity var(--m-duration-short) var(--m-easing),
+			display var(--m-duration-short) var(--m-easing) allow-discrete,
+			overlay var(--m-duration-short) var(--m-easing) allow-discrete;
+
+		&:not(:popover-open) {
+			opacity: 0;
+		}
+
+		@starting-style {
+			&:popover-open {
+				opacity: 0;
+			}
+		}
+	}
+</style>
