@@ -77,7 +77,16 @@
 			"script": "bump",
 			"problemMatcher": [],
 			"label": "Bump version",
-			"detail": "bumpp -r"
+			"detail": "bumpp -r",
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "shared",
+				"showReuseMessage": false,
+				"clear": true
+			}
 		}
 	]
 }
