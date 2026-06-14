@@ -25,7 +25,7 @@ jobs:
         with:
           path: ./docs
           build-cmd: pnpm --filter @arbor-css/docs run build
-					package-manager: pnpm@latest
+          package-manager: pnpm@latest
 
   deploy:
     needs: build
