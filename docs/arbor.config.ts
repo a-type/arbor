@@ -8,7 +8,7 @@ export const basePreset = presetArbor({
 		shadowBlur: 0,
 		lineWidth: 1,
 		roundness: 0.5,
-		baseFontSize: 'calc(10px + 0.5vw)',
+		baseFontSize: 'calc(clamp(12px, 12px + 0.5vw, 18px))',
 	},
 	color: {
 		mainColor: 'summer',
@@ -35,7 +35,7 @@ export const basePreset = presetArbor({
 	},
 	typography: {
 		maxSize: '10rem',
-		minSize: '14px',
+		minSize: '0.9rem',
 		baseWeight: 400,
 		sizeExponentStep: 1.25,
 	},

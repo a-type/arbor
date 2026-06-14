@@ -153,11 +153,15 @@ import Layout from '../layouts/Homepage.astro';
 		.container {
 			display: flex;
 			flex-direction: column;
-			max-width: min(800px, 90vw);
+			max-width: min(800px, 95vw);
 			margin: 0 auto;
 			padding: var(--m-spacing-md);
 			gap: var(--m-spacing-xl);
 			box-sizing: border-box;
+
+			@media (min-width: 600px) {
+				max-width: min(900px, 90vw);
+			}
 		}
 
 		.nav-logo {
