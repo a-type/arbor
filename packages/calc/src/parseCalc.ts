@@ -98,6 +98,7 @@ function resolveInterpolationToString(
 		return forPropertyName ? value.name : `var(${value.name})`;
 	}
 	if (isCssStylesheet(value)) {
+		collectedTokens.push(...collectStylesheetTokens(value));
 		return '__ARBOR_SHEET_FRAGMENT__';
 	}
 	if (isCalcEquation(value)) {
@@ -334,6 +335,19 @@ function parseAsStylesheet(
 		type: 'stylesheet',
 		children: parseStylesheetItems(items, tokens, rawIf),
 	};
+}
+
+function collectStylesheetTokens(sheet: CssStylesheet): Token[] {
+	const tokens: Token[] = [];
+	function collectFromNode(node: CssStylesheetNode) {
+		if (node.type === 'declaration') {
+			tokens.push(...node.value.tokens);
+		} else if (node.type === 'block' || node.type === 'fragment') {
+			node.children.forEach(collectFromNode);
+		}
+	}
+	sheet.children.forEach(collectFromNode);
+	return tokens;
 }
 
 // ─── Public API ───────────────────────────────────────────────────────────────

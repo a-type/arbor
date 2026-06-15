@@ -12,6 +12,7 @@ const createToken = createTokenFactory({ tokenPrefix: '--x-' });
 
 const tokenA = createToken('foo');
 const tokenB = createToken('bar');
+const tokenC = createToken('baz');
 
 function expectSingleAstNode(
 	result: Equation,
@@ -151,6 +152,19 @@ describe('css template — token interpolation', () => {
 		`;
 		expect(eq.ast).toEqual(css`var(--x-foo, 10px)`.ast);
 		expect(eq.tokens).toEqual([tokenA]);
+	});
+
+	it.fails('collects tokens from nested stylesheet interpolations', () => {
+		const sheetA = css`
+			${tokenA}: 10px;
+			color: ${tokenB};
+		`;
+		const sheetB = css`
+			${sheetA}
+			background: ${tokenC};
+		`;
+
+		expect(sheetB.tokens).toEqual([tokenA, tokenB, tokenC]);
 	});
 });
 

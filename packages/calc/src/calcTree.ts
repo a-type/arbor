@@ -11,8 +11,6 @@ import { isToken, Token } from '@arbor-css/tokens';
 import type {
 	FunctionNode as CssFunction,
 	CssNode,
-	List as CssTreeList,
-	ListItem,
 	NumberNode,
 	StringNode,
 } from 'css-tree';
@@ -29,20 +27,30 @@ export interface CalcEvaluationContext {
 	resolvingProperties?: Set<string>;
 }
 
-/**
- * A CSS value expression backed by a css-tree AST.
- * - `source`: preserved original CSS string, used by `printEquation`
- * - `ast`: css-tree AST node, used for semantic evaluation
- * - `tokens`: all `Token` objects referenced in this expression
- * - `_rawIf`: map of `--arbor-if-N` → original `if(…)` expression
- * - `_isConcatenated`: true when the expression is a space-separated
- *   multi-value built with `$.concat` or `css\`${a} ${b}\``
- */
 export interface Equation {
+	/**
+	 * Original source provided to construct the representation.
+	 */
 	readonly source: string;
+	/**
+	 * The raw CSSTree AST
+	 */
 	readonly ast: CssNode;
+	/**
+	 * All Token objects referenced in this CSS.
+	 */
 	readonly tokens: Token[];
+	/**
+	 * @internal Used to preserve original `if(…)` expressions when they are baked into
+	 * `var(--arbor-if-N)` placeholders during evaluation.
+	 * TODO: why is this replacement necessary?
+	 */
 	readonly _rawIf?: Record<string, string>;
+	/**
+	 * @internal Used to mark an equation as a concatenated list of values, which should be
+	 * printed with spaces between parts, rather than as a single value. This is needed to
+	 * preserve the intended structure of multi-value expressions like `box-shadow: ${a} ${b}`
+	 */
 	readonly _isConcatenated?: boolean;
 }
 
@@ -92,8 +100,6 @@ export function isCssStylesheet(value: any): value is CssStylesheet {
 	);
 }
 
-// ─── ComputationResult ────────────────────────────────────────────────────────
-
 export type NumericComputationResult = {
 	type: 'numeric';
 	value: number;
@@ -104,15 +110,14 @@ export type ComputationResult =
 	| { type: 'calc'; value: string }
 	| { type: 'concatenated'; value: string };
 
-// ─── Internal helpers ─────────────────────────────────────────────────────────
-
 function formatNumericValue(value: number): string {
 	const rounded = Math.round(value * 1e10) / 1e10;
 	return String(rounded);
 }
 
-// ─── printEquation ────────────────────────────────────────────────────────────
-
+/**
+ * Prints a CSS value as-is, with no baking or simplification.
+ */
 export function printEquation(equation: Equation): string {
 	if (isCssStylesheet(equation as any)) {
 		const preview = JSON.stringify(equation).slice(0, 80);
@@ -630,225 +635,6 @@ function parseCommaSeparatedFnArgs(
 		const tempValue: CssNode = { type: 'Value', children: tempList } as any;
 		return computeValueNode(tempValue as csstree.Value, ctx, rawIf);
 	});
-}
-
-// ─── bakeValue — in-place CSSTree AST transformation ─────────────────────────
-
-type Replacement = {
-	item: ListItem<CssNode>;
-	list: CssTreeList<CssNode>;
-	nodes: CssNode[];
-};
-
-function bakeValue(
-	ast: CssNode,
-	ctx: CalcEvaluationContext,
-	rawIf: Record<string, string>,
-): void {
-	if (ctx.skipBaking) return;
-
-	// Phase 1: var() substitution (skip if() placeholders)
-	const varReplacements: Replacement[] = [];
-
-	csstree.walk(ast, {
-		visit: 'Function',
-		leave(
-			node: CssFunction,
-			item: ListItem<CssNode>,
-			list: CssTreeList<CssNode>,
-		) {
-			if (node.name !== 'var' || !item || !list) return;
-
-			const propNameNode = [...node.children].find(
-				(n) => n.type === 'Identifier',
-			) as csstree.Identifier | undefined;
-			if (!propNameNode) return;
-			const propName = propNameNode.name;
-			const fallbackStr = getVarFallbackString(node);
-
-			// Skip if() placeholders — handled after bakeValue
-			if (rawIf[propName] !== undefined) return;
-
-			// Cycle guard
-			if (ctx.resolvingProperties?.has(propName)) {
-				if (fallbackStr) {
-					const fbAst = csstree.parse(fallbackStr, {
-						context: 'value',
-					}) as csstree.Value;
-					bakeValue(fbAst, addResolvingProp(ctx, propName), rawIf);
-					varReplacements.push({ item, list, nodes: [...fbAst.children] });
-				}
-				return;
-			}
-
-			const knownValue = ctx.propertyValues[propName];
-			if (knownValue === undefined) {
-				if (fallbackStr) {
-					const fbAst = csstree.parse(fallbackStr, {
-						context: 'value',
-					}) as csstree.Value;
-					bakeValue(fbAst, addResolvingProp(ctx, propName), rawIf);
-					varReplacements.push({ item, list, nodes: [...fbAst.children] });
-				}
-				return;
-			}
-
-			// Get the string representation WITHOUT calling computeEquation
-			// (to avoid exponential recursion)
-			let knownStr: string;
-			if (typeof knownValue === 'string') knownStr = knownValue;
-			else if (typeof knownValue === 'number') knownStr = String(knownValue);
-			else if (isCalcEquation(knownValue))
-				knownStr = printEquation(knownValue as Equation);
-			else return;
-
-			if (!knownStr) return;
-
-			const knownAst = csstree.parse(knownStr, {
-				context: 'value',
-				parseCustomProperty: true,
-			}) as csstree.Value;
-			bakeValue(knownAst, addResolvingProp(ctx, propName), rawIf);
-			varReplacements.push({ item, list, nodes: [...knownAst.children] });
-		},
-	} as any);
-
-	for (const { item, list, nodes } of varReplacements) {
-		const tempList = new csstree.List<CssNode>();
-		for (const n of nodes) tempList.appendData(csstree.clone(n));
-		(list as any).insertList(tempList, item);
-		list.remove(item);
-	}
-
-	// Phase 2: calc() and math function simplification
-	const calcReplacements: {
-		item: ListItem<CssNode>;
-		list: CssTreeList<CssNode>;
-		node: CssNode;
-	}[] = [];
-
-	csstree.walk(ast, {
-		visit: 'Function',
-		leave(
-			node: CssFunction,
-			item: ListItem<CssNode>,
-			list: CssTreeList<CssNode>,
-		) {
-			if (!item || !list) return;
-			const result = tryEvalFunctionToNode(node, ctx, rawIf);
-			if (result !== null) calcReplacements.push({ item, list, node: result });
-		},
-	} as any);
-
-	for (const { item, list, node } of calcReplacements) {
-		list.insertData(node, item);
-		list.remove(item);
-	}
-}
-
-function tryEvalFunctionToNode(
-	fn: CssFunction,
-	ctx: CalcEvaluationContext,
-	rawIf: Record<string, string>,
-): CssNode | null {
-	if (fn.name !== 'calc' && !CSS_MATH_FUNCTIONS.has(fn.name)) return null;
-	if (fn.name === 'var') return null;
-
-	let result: ComputationResult;
-	if (fn.name === 'calc') result = computeCalcFunction(fn, ctx, rawIf);
-	else result = computeMathFunctionNode(fn, ctx, rawIf);
-
-	if (result.type === 'numeric') {
-		const { value, unit } = result;
-		const vs = formatNumericValue(value);
-		if (unit === '%')
-			return { type: 'Percentage', value: vs } as csstree.Percentage;
-		if (unit === '') return { type: 'Number', value: vs } as NumberNode;
-		return { type: 'Dimension', value: vs, unit } as csstree.Dimension;
-	}
-
-	if (result.type === 'calc' || result.type === 'concatenated') {
-		const resultStr = result.value;
-		if (resultStr === csstree.generate(fn)) return null;
-		const repAst = csstree.parse(resultStr, {
-			context: 'value',
-			parseCustomProperty: true,
-		}) as csstree.Value;
-		const repChildren = [...repAst.children].filter(
-			(n) => n.type !== 'WhiteSpace',
-		);
-		if (repChildren.length === 1) return repChildren[0];
-		return null;
-	}
-	return null;
-}
-
-function computeFromBakedAst(
-	ast: CssNode,
-	isConcatenated: boolean,
-): ComputationResult {
-	if (ast.type !== 'Value') {
-		if (ast.type === 'Dimension')
-			return {
-				type: 'numeric',
-				value: parseFloat((ast as csstree.Dimension).value),
-				unit: (ast as csstree.Dimension).unit,
-			};
-		if (ast.type === 'Number')
-			return {
-				type: 'numeric',
-				value: parseFloat((ast as NumberNode).value),
-				unit: '',
-			};
-		if (ast.type === 'Percentage')
-			return {
-				type: 'numeric',
-				value: parseFloat((ast as csstree.Percentage).value),
-				unit: '%',
-			};
-		return { type: 'calc', value: csstree.generate(ast) };
-	}
-
-	const node = ast as csstree.Value;
-	const children = [...node.children].filter((n) => n.type !== 'WhiteSpace');
-	if (children.length === 0) return { type: 'calc', value: '' };
-
-	if (children.length === 1) {
-		const child = children[0];
-		if (child.type === 'Dimension')
-			return {
-				type: 'numeric',
-				value: parseFloat((child as csstree.Dimension).value),
-				unit: (child as csstree.Dimension).unit,
-			};
-		if (child.type === 'Number')
-			return {
-				type: 'numeric',
-				value: parseFloat((child as NumberNode).value),
-				unit: '',
-			};
-		if (child.type === 'Percentage')
-			return {
-				type: 'numeric',
-				value: parseFloat((child as csstree.Percentage).value),
-				unit: '%',
-			};
-		if (child.type === 'Parentheses') {
-			return computeFromBakedAst(
-				{ type: 'Value', children: (child as any).children } as any,
-				isConcatenated,
-			);
-		}
-		return { type: 'calc', value: csstree.generate(child) };
-	}
-
-	if (isConcatenated) {
-		return {
-			type: 'concatenated',
-			value: children.map((n) => csstree.generate(n)).join(' '),
-		};
-	}
-	return { type: 'calc', value: csstree.generate(node) };
 }
 
 // ─── computeEquation ─────────────────────────────────────────────────────────
