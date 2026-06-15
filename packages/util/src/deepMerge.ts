@@ -15,6 +15,11 @@ export function deepMerge<T>(target: T, ...sources: DeepPartial<T>[]): T {
 }
 
 function isObject(item: any): item is Record<string, any> {
+	// Treat calc Equation objects as atomic (not recursively merged),
+	// since their `ast` property can be a deeply-nested css-tree AST.
+	if (item && typeof item === 'object' && 'source' in item && 'ast' in item && 'tokens' in item) {
+		return false;
+	}
 	return item && typeof item === 'object' && !Array.isArray(item);
 }
 

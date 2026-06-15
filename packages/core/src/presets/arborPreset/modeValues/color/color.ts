@@ -1,7 +1,5 @@
 import {
-	$,
 	CalcEvaluationContext,
-	CalcOperations,
 	ComputationResult,
 	Equation,
 	computeEquation,
@@ -38,14 +36,14 @@ export interface OklchColorEquation {
 }
 
 export function oklchBuilder(
-	impl: ($: CalcOperations) => {
+	impl: () => {
 		from?: Equation;
 		l: Equation;
 		c: Equation;
 		h: Equation;
 	},
 ): OklchColorEquation {
-	const equations = impl($);
+	const equations = impl();
 
 	function compute(context: CalcEvaluationContext) {
 		const l = computeEquation(equations.l, context);

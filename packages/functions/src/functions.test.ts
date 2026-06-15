@@ -30,7 +30,7 @@ describe('createFunction', () => {
 				definition: ($, base, factor) => $`calc(${base} * ${factor})`,
 			});
 			expect(fn.definition).toBe(
-				'@function --x-fn-scale(--_-param-scale-base, --_-param-scale-factor) { result: calc((var(--_-param-scale-base) * var(--_-param-scale-factor))); }',
+				'@function --x-fn-scale(--_-param-scale-base, --_-param-scale-factor) { result: calc(var(--_-param-scale-base) * var(--_-param-scale-factor)); }',
 			);
 		});
 
@@ -128,7 +128,7 @@ describe('createFunction', () => {
 				definition: ($, x) => $`calc(${x} * 2)`,
 			});
 			expect(printEquation(fn.equation)).toBe(
-				'calc((var(--_-param-test-x) * 2))',
+				'calc(var(--_-param-test-x) * 2)',
 			);
 		});
 	});

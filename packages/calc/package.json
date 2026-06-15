@@ -32,6 +32,8 @@
 		"vitest": "catalog:"
 	},
 	"dependencies": {
-		"@arbor-css/tokens": "workspace:*"
+		"@arbor-css/tokens": "workspace:*",
+		"@types/css-tree": "^2.3.11",
+		"css-tree": "^3.2.1"
 	}
 }

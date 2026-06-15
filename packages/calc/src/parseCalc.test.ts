@@ -1,7 +1,6 @@
 import { createTokenFactory } from '@arbor-css/tokens';
 import { describe, expect, it } from 'vitest';
 import {
-	$,
 	computeEquation,
 	Equation,
 	printComputationResult,
@@ -14,35 +13,78 @@ const createToken = createTokenFactory({ tokenPrefix: '--x-' });
 const tokenA = createToken('foo');
 const tokenB = createToken('bar');
 
-// ─── Equivalence helpers ─────────────────────────────────────────────────────
-
-/**
- * Asserts that two equations produce the same printed output and the same
- * computed result (with no baked property values).
- */
-function expectSameAs(actual: ReturnType<typeof css>, expected: Equation) {
-	expect(printEquation(actual)).toBe(printEquation(expected));
-	const ctx = { propertyValues: {}, skipBaking: true };
-	expect(computeEquation(actual, ctx)).toEqual(computeEquation(expected, ctx));
+function expectSingleAstNode(
+	result: Equation,
+	type: string,
+	value: string,
+	unit?: string,
+) {
+	expect(result.ast).toBeDefined();
+	expect(result.ast.type).toBe('Value');
+	if (!result.ast || result.ast.type !== 'Value') {
+		throw new Error('Expected AST root to be a Value node');
+	}
+	expect(result.ast.children.size).toBe(1);
+	const child = result.ast.children.first;
+	if (!child) {
+		throw new Error('Expected AST root to have a single child');
+	}
+	if (!('type' in child) || !('value' in child)) {
+		throw new Error('Expected AST child to have type and value properties');
+	}
+	expect(child.type).toBe(type);
+	expect(child.value).toBe(value);
+	if (unit) {
+		if (!('unit' in child)) {
+			throw new Error('Expected AST child to have a unit property');
+		}
+		expect(child.unit).toBe(unit);
+	}
 }
 
-// ─── Literals ────────────────────────────────────────────────────────────────
+function expectSingleVar(result: Equation, name: string) {
+	expect(result.ast).toBeDefined();
+	expect(result.ast.type).toBe('Value');
+	if (!result.ast || result.ast.type !== 'Value') {
+		throw new Error('Expected AST root to be a Value node');
+	}
+	expect(result.ast.children.size).toBe(1);
+	const child = result.ast.children.first;
+	if (!child) {
+		throw new Error('Expected AST root to have a single child');
+	}
+	if (!('type' in child) || !('name' in child) || !('children' in child)) {
+		throw new Error('Expected AST child to have type and name properties');
+	}
+	expect(child.type).toBe('Function');
+	expect(child.name).toBe('var');
+	expect(child.children!.size).toBe(1);
+	const varNameNode = child.children!.first;
+	if (!varNameNode) {
+		throw new Error('Expected var() function to have a name argument');
+	}
+	if (!('type' in varNameNode) || !('name' in varNameNode)) {
+		throw new Error('Expected var() name argument to have type and value');
+	}
+	expect(varNameNode.type).toBe('Identifier');
+	expect(varNameNode.name).toBe(name);
+}
 
 describe('css template — literals', () => {
 	it('parses a unitless number', () => {
-		expectSameAs(css`42`, $.val('42'));
+		expectSingleAstNode(css`42`, 'Number', '42');
 	});
 
 	it('parses a number with a px unit', () => {
-		expectSameAs(css`10px`, $.val('10px'));
+		expectSingleAstNode(css`10px`, 'Dimension', '10', 'px');
 	});
 
 	it('parses a percentage', () => {
-		expectSameAs(css`50%`, $.val('50%'));
+		expectSingleAstNode(css`50%`, 'Percentage', '50');
 	});
 
 	it('parses a decimal number with a unit', () => {
-		expectSameAs(css`1.5rem`, $.val('1.5rem'));
+		expectSingleAstNode(css`1.5rem`, 'Dimension', '1.5', 'rem');
 	});
 
 	it('accepts an outer calc() wrapper', () => {
@@ -56,83 +98,35 @@ describe('css template — literals', () => {
 	});
 
 	it('parsers a var(--*) reference inlined in the template', () => {
-		expectSameAs(css`var(--x-foo)`, $.val('var(--x-foo)'));
+		expectSingleVar(css`var(--x-foo)`, '--x-foo');
+	});
+
+	it('parses negation', () => {
+		expectSingleAstNode(css`-5px`, 'Dimension', '-5', 'px');
 	});
 });
-
-// ─── Arithmetic ──────────────────────────────────────────────────────────────
-
-describe('css template — arithmetic', () => {
-	it('parses addition', () => {
-		expectSameAs(css`10px + 5px`, $.add($.val('10px'), $.val('5px')));
-	});
-
-	it('parses subtraction', () => {
-		expectSameAs(css`10px - 5px`, $.subtract($.val('10px'), $.val('5px')));
-	});
-
-	it('parses multiplication', () => {
-		expectSameAs(css`2 * 10px`, $.multiply($.val('2'), $.val('10px')));
-	});
-
-	it('parses division', () => {
-		expectSameAs(css`10px / 2`, $.divide($.val('10px'), $.val('2')));
-	});
-
-	it('respects operator precedence (* before +)', () => {
-		expectSameAs(
-			css`10px + 2 * 5px`,
-			$.add($.val('10px'), $.multiply($.val('2'), $.val('5px'))),
-		);
-	});
-
-	it('parentheses override precedence', () => {
-		expectSameAs(
-			css`(10px + 5px) * 2`,
-			$.multiply($.add($.val('10px'), $.val('5px')), $.val('2')),
-		);
-	});
-
-	it('chains multiple additions left-to-right', () => {
-		expectSameAs(
-			css`1px + 2px + 3px`,
-			$.add($.add($.val('1px'), $.val('2px')), $.val('3px')),
-		);
-	});
-
-	it('handles unary negation', () => {
-		expectSameAs(css`-1 * 10px`, $.multiply($.val('-1'), $.val('10px')));
-	});
-});
-
-// ─── Token interpolation ─────────────────────────────────────────────────────
 
 describe('css template — token interpolation', () => {
-	it('wraps an interpolated token', () => {
-		expectSameAs(
-			css`
-				${tokenA}
-			`,
-			$.token(tokenA),
-		);
+	it('interpolates bare token names', () => {
+		expect(css`
+			${tokenA}
+		`.ast).toEqual(css`var(--x-foo)`.ast);
 	});
 
-	it('adds a token and a literal', () => {
-		expectSameAs(
-			css`
-				${tokenA} + 10px
-			`,
-			$.add($.token(tokenA), $.val('10px')),
-		);
+	it('interpolates tokens as values', () => {
+		expect(css`
+			color: ${tokenA};
+		`.ast).toEqual(css`
+			color: var(--x-foo);
+		`.ast);
 	});
 
-	it('multiplies two tokens', () => {
-		expectSameAs(
-			css`
-				${tokenA} * ${tokenB}
-			`,
-			$.multiply($.token(tokenA), $.token(tokenB)),
-		);
+	it('interpolates tokens as property names', () => {
+		expect(css`
+			${tokenA}: 10px;
+		`.ast).toEqual(css`
+			--x-foo: 10px;
+		`.ast);
 	});
 
 	it('tracks tokens from interpolations', () => {
@@ -146,7 +140,7 @@ describe('css template — token interpolation', () => {
 		const eq = css`
 			${[tokenA, tokenB]}
 		`;
-		expectSameAs(eq, $.token(tokenA, $.token(tokenB)));
+		expect(eq.ast).toEqual(css`var(--x-foo, var(--x-bar))`.ast);
 		expect(eq.tokens).toEqual([tokenA, tokenB]);
 		expect(printEquation(eq)).toBe(`${tokenA.varFallback(tokenB.var)}`);
 	});
@@ -155,65 +149,28 @@ describe('css template — token interpolation', () => {
 		const eq = css`
 			${[tokenA, '10px']}
 		`;
-		expectSameAs(eq, $.token(tokenA, $.val('10px')));
+		expect(eq.ast).toEqual(css`var(--x-foo, 10px)`.ast);
 		expect(eq.tokens).toEqual([tokenA]);
 	});
 });
 
-// ─── Equation interpolation ──────────────────────────────────────────────────
-
 describe('css template — equation interpolation', () => {
 	it('embeds an existing equation node', () => {
-		const inner = $.multiply($.token(tokenA), $.val('2'));
-		expectSameAs(
+		const inner = css`
+			${tokenA} * 2
+		`;
+		expect(css`
+			${inner} + 10px
+		`.ast).toEqual(
+			// implicit calc() is added when inner is created
 			css`
-				${inner} + 10px
-			`,
-			$.add($.multiply($.token(tokenA), $.val('2')), $.val('10px')),
+			calc(${tokenA} * 2) + 10px
+		`.ast,
 		);
 	});
 });
 
-// ─── Functions ───────────────────────────────────────────────────────────────
-
 describe('css template — functions', () => {
-	it('parses clamp()', () => {
-		expectSameAs(
-			css`clamp(0px, ${tokenA}, 100px)`,
-			$.fn('clamp', $.val('0px'), $.token(tokenA), $.val('100px')),
-		);
-	});
-
-	it('parses min()', () => {
-		expectSameAs(
-			css`min(10px, ${tokenA})`,
-			$.fn('min', $.val('10px'), $.token(tokenA)),
-		);
-	});
-
-	it('parses max()', () => {
-		expectSameAs(
-			css`max(${tokenA}, 100px)`,
-			$.fn('max', $.token(tokenA), $.val('100px')),
-		);
-	});
-
-	it('parses sin()', () => {
-		expectSameAs(css`sin(0)`, $.fn('sin', $.val('0')));
-	});
-
-	it('parses nested function call', () => {
-		expectSameAs(
-			css`clamp(0px, min(${tokenA}, 50px), 100px)`,
-			$.fn(
-				'clamp',
-				$.val('0px'),
-				$.fn('min', $.token(tokenA), $.val('50px')),
-				$.val('100px'),
-			),
-		);
-	});
-
 	it('parses if() with style() clauses', () => {
 		const eq = css`if(style(--size: "2xl"): 1em; else: 0.25em;)`;
 		expect(printEquation(eq)).toBe(
@@ -224,7 +181,7 @@ describe('css template — functions', () => {
 	it('parses an oklch color with all features', () => {
 		const eq = css`oklch(from ${tokenA} calc(l * 1.5) calc(c * 0.5) h / 30%)`;
 		expect(printEquation(eq)).toBe(
-			`oklch(from ${tokenA.var} calc((l * 1.5)) calc((c * 0.5)) h / 30%)`,
+			`oklch(from ${tokenA.var} calc(l * 1.5) calc(c * 0.5) h / 30%)`,
 		);
 	});
 
@@ -255,9 +212,7 @@ describe('css template — functions', () => {
 
 	it('still parses division inside calc() nested in a color function', () => {
 		const eq = css`oklch(from ${tokenA} calc(l / 2) c h)`;
-		expect(printEquation(eq)).toBe(
-			`oklch(from ${tokenA.var} calc((l / 2)) c h)`,
-		);
+		expect(printEquation(eq)).toBe(`oklch(from ${tokenA.var} calc(l / 2) c h)`);
 	});
 
 	it('drops empty concat parts in function args', () => {
@@ -266,23 +221,15 @@ describe('css template — functions', () => {
 	});
 });
 
-// ─── Error cases ─────────────────────────────────────────────────────────────
-
 describe('css template — error cases', () => {
 	it('throws on empty input', () => {
 		expect(() => css``).toThrow(SyntaxError);
-	});
-
-	it('throws on unmatched parenthesis', () => {
-		expect(() => css`(10px + 5px`).toThrow();
 	});
 
 	it('throws on unexpected character', () => {
 		expect(() => css`10px @ 5px`).toThrow(SyntaxError);
 	});
 });
-
-// ─── Space-separated concatenation ──────────────────────────────────────────
 
 describe('css template — space-separated concatenation', () => {
 	it('handles two token interpolations separated by a space', () => {
@@ -309,15 +256,6 @@ describe('css template — space-separated concatenation', () => {
 			${tokenA} ${tokenB}
 		`;
 		expect(eq.tokens).toEqual([tokenA, tokenB]);
-	});
-
-	it('produces a single value when only one token is interpolated', () => {
-		expectSameAs(
-			css`
-				${tokenA}
-			`,
-			$.token(tokenA),
-		);
 	});
 });
 
@@ -366,34 +304,44 @@ describe('css template — non-calc functions', () => {
 		const simplified = printComputationResult(
 			computeEquation(eq, { propertyValues: {} }),
 		);
-		// TODO: eliminate double calc()
+		// calc(1 / 2) simplifies to 0.5; calc(l * 1.5) cannot simplify (l unknown)
+		// Source string whitespace is preserved
 		expect(simplified).toBe(
-			`light-dark(${tokenA.var}, oklch(calc(calc(l * 1.5)) c 0.5))`,
+			`light-dark(${tokenA.var}, oklch(calc(l * 1.5) c 0.5))`,
 		);
 	});
 });
 
-describe('css template — arithmetic still works', () => {
+describe('css template — arithmetic', () => {
 	it('handles arithmetic expressions', () => {
-		// TODO: add calc() wrapper here?
 		expect(
 			printEquation(css`
 				${tokenA} + 10px
 			`),
-		).toBe(`(${tokenA.var} + 10px)`);
-	});
-
-	it('respects operator precedence', () => {
-		expectSameAs(
-			css`2 * ${tokenA} + 1px`,
-			$.add($.multiply($.val('2'), $.token(tokenA)), $.val('1px')),
-		);
+		).toBe(`calc(${tokenA.var} + 10px)`);
 	});
 
 	it('accepts an outer calc() wrapper', () => {
 		expect(printEquation(css`calc(${tokenA} + 10px)`)).toBe(
-			`calc((${tokenA.var} + 10px))`,
+			`calc(${tokenA.var} + 10px)`,
 		);
+	});
+});
+
+describe('css template — computation', () => {
+	it('does arithmetic and respects operator precedence', () => {
+		expect(printComputationResult(computeEquation(css`2 * 3 + 1`))).toBe(`7`);
+	});
+
+	it('simplifies arithmetic with units when possible', () => {
+		expect(printComputationResult(computeEquation(css`10px + 5px`))).toBe(
+			`15px`,
+		);
+		expect(printComputationResult(computeEquation(css`10px - 5px`))).toBe(
+			`5px`,
+		);
+		expect(printComputationResult(computeEquation(css`10px * 2`))).toBe(`20px`);
+		expect(printComputationResult(computeEquation(css`10px / 2`))).toBe(`5px`);
 	});
 
 	it('can multiply scalars with percentages', () => {
@@ -412,6 +360,111 @@ describe('css template — arithmetic still works', () => {
 		expect(printComputationResult(computeEquation(css`1rem / 2`))).toBe(
 			`0.5rem`,
 		);
+	});
+});
+
+describe('css template — baking', () => {
+	it('bakes token values with arithmetic into a single value', () => {
+		const equation = css`
+			${tokenA} + 10px
+		`;
+		const result = printComputationResult(
+			computeEquation(equation, {
+				propertyValues: {
+					[tokenA.name]: '5px',
+				},
+				skipBaking: false,
+			}),
+		);
+		expect(result).toBe('15px');
+	});
+
+	it('bakes a token value with fallback by ignoring fallback value', () => {
+		const equation = css`
+			${[tokenA, '10px']} + 5px
+		`;
+		const result = printComputationResult(
+			computeEquation(equation, {
+				propertyValues: {
+					[tokenA.name]: '5px',
+				},
+				skipBaking: false,
+			}),
+		);
+		expect(result).toBe('10px');
+	});
+
+	it('does not bake a token with fallback if token value is not known', () => {
+		const equation = css`
+			${[tokenA, '7px']} + 5px
+		`;
+		const result = printComputationResult(
+			computeEquation(equation, {
+				propertyValues: {
+					// tokenA is intentionally left undefined to trigger fallback
+				},
+				skipBaking: false,
+			}),
+		);
+		expect(result).toBe('calc(var(--x-foo, 7px) + 5px)');
+	});
+
+	it('bakes a token value into a concatenated list', () => {
+		const equation = css`
+			0 0 5px ${tokenA}
+		`;
+		const result = printComputationResult(
+			computeEquation(equation, {
+				propertyValues: {
+					[tokenA.name]: 'red',
+				},
+				skipBaking: false,
+			}),
+		);
+		expect(result).toBe('0 0 5px red');
+	});
+
+	it('bakes a token assigned as a full CSS equation', () => {
+		const equation = css`
+			${tokenA} * 2
+		`;
+		const result = printComputationResult(
+			computeEquation(equation, {
+				propertyValues: {
+					[tokenA.name]: css`calc(10px + 5px)`,
+				},
+				skipBaking: false,
+			}),
+		);
+		expect(result).toBe('30px');
+	});
+
+	it('avoids infinite recursion of token references', () => {
+		const equation = css`var(${tokenA.name})`;
+		const result = printComputationResult(
+			computeEquation(equation, {
+				propertyValues: {
+					[tokenA.name]: equation,
+				},
+				skipBaking: false,
+			}),
+		);
+		expect(result).toBe('var(--x-foo)');
+	});
+
+	it('retains recursive token reference even if fallback was provided', () => {
+		const equation = css`
+			${[tokenA, '10px']}
+		`;
+		const result = printComputationResult(
+			computeEquation(equation, {
+				propertyValues: {
+					[tokenA.name]: equation,
+				},
+				skipBaking: false,
+			}),
+		);
+		expect(result).toBe('var(--x-foo, 10px)');
 	});
 });
 

@@ -198,7 +198,7 @@ describe('createMixin', () => {
 
 		expect(mixin.contributeTokens.size.name).toBe(`--x-arrow-size`);
 		expect(mixin.definition).toMatchInlineSnapshot(
-			`"@mixin --x-mixin-arrow { fill: var(--x-bg, var(--x-bgFallback)); stroke: var(--x-fg, var(--x-fgFallback)); width: var(--x-arrow-size); height: calc((var(--x-arrow-size) / 2)); position: relative; z-index: 0; transform: translate(0, 0) rotate(var(--angle, 0deg)) scale(var(--scale, 1)); &[data-side='top']: { --angle: rotate(0deg); bottom: calc((((-1 * var(--x-arrow-size)) / 2) + 1px)); } &[data-side='right']: { --angle: rotate(90deg); left: calc(((-1 * var(--x-arrow-size)) * 0.75)); } &[data-side='bottom']: { --angle: rotate(180deg); top: calc(((-1 * var(--x-arrow-size)) / 2)); } &[data-side='left']: { --angle: rotate(270deg); left: calc(((-1 * var(--x-arrow-size)) * 0.75)); } &[data-open]: { opacity: 1; --scale: 1; } &[data-closed]: { opacity: 0; --scale: 0; } }"`,
+			`"@mixin --x-mixin-arrow { fill: var(--x-bg, var(--x-bgFallback)); stroke: var(--x-fg, var(--x-fgFallback)); width: var(--x-arrow-size); height: calc(var(--x-arrow-size) / 2); position: relative; z-index: 0; transform: translate(0, 0) rotate(var(--angle, 0deg)) scale(var(--scale, 1)); &[data-side='top']: { --angle: rotate(0deg); bottom: calc(-1 * var(--x-arrow-size) / 2 + 1px); } &[data-side='right']: { --angle: rotate(90deg); left: calc(-1 * var(--x-arrow-size) * 0.75); } &[data-side='bottom']: { --angle: rotate(180deg); top: calc(-1 * var(--x-arrow-size) / 2); } &[data-side='left']: { --angle: rotate(270deg); left: calc(-1 * var(--x-arrow-size) * 0.75); } &[data-open]: { opacity: 1; --scale: 1; } &[data-closed]: { opacity: 0; --scale: 0; } }"`,
 		);
 	});
 

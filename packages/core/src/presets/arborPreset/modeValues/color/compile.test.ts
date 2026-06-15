@@ -66,27 +66,27 @@ it('compiles a set of color ranges with default schemes and no precalculated glo
 		{
 		  "alt": {
 		    "$neutral": {
-		      "$root": "light-dark(oklch(0.8602483517886919 0.011250000000000001 210), oklch(0.4856387300380706 0.012000000000000002 210))",
-		      "heavy": "light-dark(oklch(0.17653786308766073 0.00825 210), oklch(0.9906565781856719 0.004800000000000001 210))",
-		      "light": "light-dark(oklch(0.9996018928294464 0.0007500000000000007 210), oklch(0.0787065459868453 0.0015000000000000013 210))",
-		      "mid": "light-dark(oklch(0.8602483517886919 0.011250000000000001 210), oklch(0.4856387300380706 0.012000000000000002 210))",
+		      "$root": "light-dark(oklch(0.8602483518 0.01125 210), oklch(0.48563873 0.012 210))",
+		      "heavy": "light-dark(oklch(0.1765378631 0.00825 210), oklch(0.9906565782 0.0048 210))",
+		      "light": "light-dark(oklch(0.9996018928 0.00075 210), oklch(0.078706546 0.0015 210))",
+		      "mid": "light-dark(oklch(0.8602483518 0.01125 210), oklch(0.48563873 0.012 210))",
 		    },
-		    "$root": "light-dark(oklch(0.9 0.15000000000000002 210), oklch(0.53 0.16000000000000003 210))",
-		    "heavy": "light-dark(oklch(0.20000000000000007 0.11000000000000001 210), oklch(1 0.06400000000000002 210))",
-		    "light": "light-dark(oklch(1 0.010000000000000009 210), oklch(0.08000000000000002 0.020000000000000018 210))",
-		    "mid": "light-dark(oklch(0.9 0.15000000000000002 210), oklch(0.53 0.16000000000000003 210))",
+		    "$root": "light-dark(oklch(0.9 0.15 210), oklch(0.53 0.16 210))",
+		    "heavy": "light-dark(oklch(0.2 0.11 210), oklch(1 0.064 210))",
+		    "light": "light-dark(oklch(1 0.01 210), oklch(0.08 0.02 210))",
+		    "mid": "light-dark(oklch(0.9 0.15 210), oklch(0.53 0.16 210))",
 		  },
 		  "primary": {
 		    "$neutral": {
-		      "$root": "light-dark(oklch(0.8602483517886919 0.011250000000000001 90), oklch(0.4856387300380706 0.012000000000000002 90))",
-		      "heavy": "light-dark(oklch(0.17653786308766073 0.00825 90), oklch(0.9906565781856719 0.004800000000000001 90))",
-		      "light": "light-dark(oklch(0.9996018928294464 0.0007500000000000007 90), oklch(0.0787065459868453 0.0015000000000000013 90))",
-		      "mid": "light-dark(oklch(0.8602483517886919 0.011250000000000001 90), oklch(0.4856387300380706 0.012000000000000002 90))",
+		      "$root": "light-dark(oklch(0.8602483518 0.01125 90), oklch(0.48563873 0.012 90))",
+		      "heavy": "light-dark(oklch(0.1765378631 0.00825 90), oklch(0.9906565782 0.0048 90))",
+		      "light": "light-dark(oklch(0.9996018928 0.00075 90), oklch(0.078706546 0.0015 90))",
+		      "mid": "light-dark(oklch(0.8602483518 0.01125 90), oklch(0.48563873 0.012 90))",
 		    },
-		    "$root": "light-dark(oklch(0.9 0.15000000000000002 90), oklch(0.53 0.16000000000000003 90))",
-		    "heavy": "light-dark(oklch(0.20000000000000007 0.11000000000000001 90), oklch(1 0.06400000000000002 90))",
-		    "light": "light-dark(oklch(1 0.010000000000000009 90), oklch(0.08000000000000002 0.020000000000000018 90))",
-		    "mid": "light-dark(oklch(0.9 0.15000000000000002 90), oklch(0.53 0.16000000000000003 90))",
+		    "$root": "light-dark(oklch(0.9 0.15 90), oklch(0.53 0.16 90))",
+		    "heavy": "light-dark(oklch(0.2 0.11 90), oklch(1 0.064 90))",
+		    "light": "light-dark(oklch(1 0.01 90), oklch(0.08 0.02 90))",
+		    "mid": "light-dark(oklch(0.9 0.15 90), oklch(0.53 0.16 90))",
 		  },
 		}
 	`);
@@ -125,27 +125,27 @@ it('compiles a set of color ranges with a custom scheme', () => {
 		{
 		  "alt": {
 		    "$neutral": {
-		      "$root": "light-dark(oklch(0 0 210), oklch(0.4856387300380706 0.012000000000000002 210))",
-		      "heavy": "light-dark(oklch(0 0 210), oklch(0.9906565781856719 0.004800000000000001 210))",
-		      "light": "light-dark(oklch(0 0 210), oklch(0.0787065459868453 0.0015000000000000013 210))",
-		      "mid": "light-dark(oklch(0 0 210), oklch(0.4856387300380706 0.012000000000000002 210))",
+		      "$root": "light-dark(oklch(0 0 210), oklch(0.48563873 0.012 210))",
+		      "heavy": "light-dark(oklch(0 0 210), oklch(0.9906565782 0.0048 210))",
+		      "light": "light-dark(oklch(0 0 210), oklch(0.078706546 0.0015 210))",
+		      "mid": "light-dark(oklch(0 0 210), oklch(0.48563873 0.012 210))",
 		    },
-		    "$root": "light-dark(oklch(0 0 210), oklch(0.53 0.16000000000000003 210))",
-		    "heavy": "light-dark(oklch(0 0 210), oklch(1 0.06400000000000002 210))",
-		    "light": "light-dark(oklch(0 0 210), oklch(0.08000000000000002 0.020000000000000018 210))",
-		    "mid": "light-dark(oklch(0 0 210), oklch(0.53 0.16000000000000003 210))",
+		    "$root": "light-dark(oklch(0 0 210), oklch(0.53 0.16 210))",
+		    "heavy": "light-dark(oklch(0 0 210), oklch(1 0.064 210))",
+		    "light": "light-dark(oklch(0 0 210), oklch(0.08 0.02 210))",
+		    "mid": "light-dark(oklch(0 0 210), oklch(0.53 0.16 210))",
 		  },
 		  "primary": {
 		    "$neutral": {
-		      "$root": "light-dark(oklch(0 0 90), oklch(0.4856387300380706 0.012000000000000002 90))",
-		      "heavy": "light-dark(oklch(0 0 90), oklch(0.9906565781856719 0.004800000000000001 90))",
-		      "light": "light-dark(oklch(0 0 90), oklch(0.0787065459868453 0.0015000000000000013 90))",
-		      "mid": "light-dark(oklch(0 0 90), oklch(0.4856387300380706 0.012000000000000002 90))",
+		      "$root": "light-dark(oklch(0 0 90), oklch(0.48563873 0.012 90))",
+		      "heavy": "light-dark(oklch(0 0 90), oklch(0.9906565782 0.0048 90))",
+		      "light": "light-dark(oklch(0 0 90), oklch(0.078706546 0.0015 90))",
+		      "mid": "light-dark(oklch(0 0 90), oklch(0.48563873 0.012 90))",
 		    },
-		    "$root": "light-dark(oklch(0 0 90), oklch(0.53 0.16000000000000003 90))",
-		    "heavy": "light-dark(oklch(0 0 90), oklch(1 0.06400000000000002 90))",
-		    "light": "light-dark(oklch(0 0 90), oklch(0.08000000000000002 0.020000000000000018 90))",
-		    "mid": "light-dark(oklch(0 0 90), oklch(0.53 0.16000000000000003 90))",
+		    "$root": "light-dark(oklch(0 0 90), oklch(0.53 0.16 90))",
+		    "heavy": "light-dark(oklch(0 0 90), oklch(1 0.064 90))",
+		    "light": "light-dark(oklch(0 0 90), oklch(0.08 0.02 90))",
+		    "mid": "light-dark(oklch(0 0 90), oklch(0.53 0.16 90))",
 		  },
 		}
 	`);
@@ -179,10 +179,10 @@ it('supports color-level saturation', () => {
 	});
 
 	expect(compiled.primaryLight.light).toMatchInlineSnapshot(
-		`"light-dark(oklch(0.9802741561760231 0.056269363558927955 90), oklch(0.4095887657359654 0.06126936355892796 90))"`,
+		`"light-dark(oklch(0.9802741562 0.0562693636 90), oklch(0.4095887657 0.0612693636 90))"`,
 	);
 	expect(compiled.primary.light).toMatchInlineSnapshot(
-		`"light-dark(oklch(0.9802741561760231 0.11253872711785591 90), oklch(0.4095887657359654 0.12253872711785592 90))"`,
+		`"light-dark(oklch(0.9802741562 0.1125387271 90), oklch(0.4095887657 0.1225387271 90))"`,
 	);
 	expect(compiled.primaryLight.light).not.toEqual(compiled.primary.light);
 });
@@ -197,7 +197,7 @@ it('supports hue defined as a CSS property', () => {
 	});
 
 	expect(compiled.primary.light).toMatchInlineSnapshot(
-		`"light-dark(oklch(0.9802741561760231 0.11253872711785591 var(--my-hue)), oklch(0.4095887657359654 0.12253872711785592 var(--my-hue)))"`,
+		`"light-dark(oklch(0.9802741562 0.1125387271 var(--my-hue)), oklch(0.4095887657 0.1225387271 var(--my-hue)))"`,
 	);
 });
 
