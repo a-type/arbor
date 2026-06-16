@@ -1,176 +1,180 @@
 /**
  * @file calcTree.ts
- * CSS value representation built on css-tree.
  *
- * `Equation` is a thin wrapper around a css-tree Value AST node paired with
- * token-tracking metadata. The preserved `source` string is used for faithful
- * round-trip printing; the AST is used for semantic operations (baking).
+ * CSS value and stylesheet representation backed by css-tree.
+ *
+ * Design principles:
+ *  - A single `Equation` type represents ALL css`` results: both value
+ *    expressions (`10px`, `var(--x)`) and stylesheet blocks (`color: red;`).
+ *  - The `ast` field is always a css-tree node. Callers use `isCssStylesheet`
+ *    to check whether the AST is a DeclarationList vs a Value.
+ *  - Token tracking works uniformly across both shapes.
+ *  - Baking / simplification operates directly on the css-tree AST via
+ *    `walk` + list-mutation, never on raw strings.
+ *  - `if(…)` functions (Arbor's custom non-standard syntax) are hoisted out
+ *    before css-tree parsing via `_rawIf` and restored at print time.
  */
 
 import { isToken, Token } from '@arbor-css/tokens';
 import type {
-	FunctionNode as CssFunction,
 	CssNode,
+	DeclarationList,
+	FunctionNode,
+	List,
+	ListItem,
 	NumberNode,
-	StringNode,
 } from 'css-tree';
 import * as csstree from 'css-tree';
 import { functionResolvers } from './functions.js';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// ─── Core types ───────────────────────────────────────────────────────────────
+
+/**
+ * The one return type from `css\`\``.
+ *
+ * `ast` is a css-tree node:
+ *  - `Value`           — for single-value expressions (`10px`, `var(--x)`, …)
+ *  - `DeclarationList` — for stylesheet blocks (`color: red; &:hover { … }`)
+ *
+ * Use `isCssStylesheet(eq)` to discriminate at runtime.
+ */
+export interface Equation {
+	readonly ast: CssNode;
+	readonly tokens: Token[];
+	/** @internal  if() placeholder → original if(…) expression */
+	readonly _rawIf?: Record<string, string>;
+}
 
 export interface CalcEvaluationContext {
 	propertyValues: Record<string, string | Equation | undefined>;
-	/** Prevents the baking of known literals into calculations. */
+	/** Prevents baking known literals in browsers. */
 	skipBaking?: boolean;
-	/** @internal Tracks nested property evaluation to prevent cycles. */
+	/** @internal cycle guard */
 	resolvingProperties?: Set<string>;
 }
 
-export interface Equation {
-	/**
-	 * Original source provided to construct the representation.
-	 */
-	readonly source: string;
-	/**
-	 * The raw CSSTree AST
-	 */
-	readonly ast: CssNode;
-	/**
-	 * All Token objects referenced in this CSS.
-	 */
-	readonly tokens: Token[];
-	/**
-	 * @internal Used to preserve original `if(…)` expressions when they are baked into
-	 * `var(--arbor-if-N)` placeholders during evaluation.
-	 * TODO: why is this replacement necessary?
-	 */
-	readonly _rawIf?: Record<string, string>;
-	/**
-	 * @internal Used to mark an equation as a concatenated list of values, which should be
-	 * printed with spaces between parts, rather than as a single value. This is needed to
-	 * preserve the intended structure of multi-value expressions like `box-shadow: ${a} ${b}`
-	 */
-	readonly _isConcatenated?: boolean;
-}
+// ─── Type guards ──────────────────────────────────────────────────────────────
 
-export function isCalcEquation(value: any): value is Equation {
+/** True when `value` is an `Equation` (either value or stylesheet shape). */
+export function isCalcEquation(value: unknown): value is Equation {
 	return (
-		value &&
+		value != null &&
 		typeof value === 'object' &&
-		'source' in value &&
 		'ast' in value &&
-		'tokens' in value &&
-		!isCssStylesheet(value)
+		'tokens' in value
 	);
-}
-
-// ─── Stylesheet types ─────────────────────────────────────────────────────────
-
-export interface CssDeclaration {
-	type: 'declaration';
-	property: string;
-	value: Equation;
-}
-
-export interface CssBlock {
-	type: 'block';
-	scope: string;
-	children: CssStylesheetNode[];
-}
-
-export interface CssFragment {
-	type: 'fragment';
-	children: CssStylesheetNode[];
-}
-
-export type CssStylesheetNode = CssDeclaration | CssBlock | CssFragment;
-
-export interface CssStylesheet {
-	type: 'stylesheet';
-	children: CssStylesheetNode[];
-}
-
-export function isCssStylesheet(value: any): value is CssStylesheet {
-	return (
-		value &&
-		typeof value === 'object' &&
-		'type' in value &&
-		value.type === 'stylesheet'
-	);
-}
-
-export type NumericComputationResult = {
-	type: 'numeric';
-	value: number;
-	unit: '%' | string;
-};
-export type ComputationResult =
-	| NumericComputationResult
-	| { type: 'calc'; value: string }
-	| { type: 'concatenated'; value: string };
-
-function formatNumericValue(value: number): string {
-	const rounded = Math.round(value * 1e10) / 1e10;
-	return String(rounded);
 }
 
 /**
- * Prints a CSS value as-is, with no baking or simplification.
+ * True when `value` is an `Equation` whose `ast` is a `DeclarationList` —
+ * i.e. the result of parsing a stylesheet block rather than a single value.
  */
+export function isCssStylesheet(
+	value: unknown,
+): value is Equation & { ast: DeclarationList } {
+	return (
+		isCalcEquation(value) && (value as Equation).ast.type === 'DeclarationList'
+	);
+}
+
+// ─── Internal helpers ─────────────────────────────────────────────────────────
+function gen(ast: CssNode): string {
+	return csstree.generate(ast);
+}
+
+function restoreRawIf(
+	str: string,
+	rawIf: Record<string, string> | undefined,
+): string {
+	if (!rawIf) return str;
+	let s = str;
+	for (const [key, val] of Object.entries(rawIf)) {
+		s = s.replace(`var(${key})`, val);
+	}
+	return s;
+}
+
+// ─── printEquation ────────────────────────────────────────────────────────────
+
 export function printEquation(equation: Equation): string {
-	if (isCssStylesheet(equation as any)) {
-		const preview = JSON.stringify(equation).slice(0, 80);
+	if (isCssStylesheet(equation)) {
 		throw new TypeError(
-			`printEquation: expected a CSS value, but received a stylesheet block. ` +
-				`Use printStylesheet() to render stylesheet blocks. Got: '${preview}'`,
+			`printEquation: expected a CSS value but received a stylesheet block. ` +
+				`Use printStylesheet() to render stylesheet blocks.`,
 		);
 	}
-	let source = equation.source;
-	if (equation._rawIf) {
-		for (const [key, val] of Object.entries(equation._rawIf)) {
-			source = source.replace(`var(${key})`, val);
-		}
-	}
-	return source;
+	return restoreRawIf(gen(equation.ast), equation._rawIf);
 }
 
-// ─── Stylesheet printing ──────────────────────────────────────────────────────
+// ─── printStylesheet ─────────────────────────────────────────────────────────
 
-function printStylesheetNode(
-	node: CssStylesheetNode,
-	context: CalcEvaluationContext,
-	indent: string,
-): string {
-	if (node.type === 'declaration') {
-		const computed = computeEquation(node.value, context);
-		const value = printComputationResult(computed);
-		return `${indent}${node.property}: ${value};`;
-	}
-	if (node.type === 'block') {
-		const inner = node.children
-			.map((child) => printStylesheetNode(child, context, indent + '  '))
-			.join('\n');
-		return `${indent}${node.scope} {\n${inner}\n${indent}}`;
-	}
-	if (node.type === 'fragment') {
-		return node.children
-			.map((child) => printStylesheetNode(child, context, indent))
-			.join('\n');
-	}
-	throw new Error(`Unknown stylesheet node type: ${(node as any).type}`);
-}
-
+/**
+ * Renders a stylesheet `Equation` (one whose `ast` is a `DeclarationList`)
+ * to a formatted CSS string, baking declaration values with the given context.
+ */
 export function printStylesheet(
-	stylesheet: CssStylesheet,
+	eq: Equation,
 	context: CalcEvaluationContext = { propertyValues: {} },
 ): string {
-	return stylesheet.children
-		.map((node) => printStylesheetNode(node, context, ''))
+	if (!isCssStylesheet(eq)) {
+		throw new TypeError(
+			'printStylesheet: expected a stylesheet Equation (DeclarationList ast)',
+		);
+	}
+	const rawIf = eq._rawIf ?? {};
+	return formatDeclListChildren(
+		[...(eq.ast as DeclarationList).children],
+		context,
+		rawIf,
+		'',
+	);
+}
+
+function formatDeclListChildren(
+	nodes: CssNode[],
+	ctx: CalcEvaluationContext,
+	rawIf: Record<string, string>,
+	indent: string,
+): string {
+	return nodes
+		.map((node) => formatNode(node, ctx, rawIf, indent))
+		.filter(Boolean)
 		.join('\n');
 }
 
-// ─── if() parsing and evaluation ─────────────────────────────────────────────
+function formatNode(
+	node: CssNode,
+	ctx: CalcEvaluationContext,
+	rawIf: Record<string, string>,
+	indent: string,
+): string {
+	if (node.type === 'Declaration') {
+		const decl = node as csstree.Declaration;
+		const valueEq: Equation = { ast: decl.value, tokens: [], _rawIf: rawIf };
+		const baked = computeEquation(valueEq, ctx);
+		return `${indent}${decl.property}: ${printComputationResult(baked)};`;
+	}
+	if (node.type === 'Rule') {
+		const rule = node as csstree.Rule;
+		const scope = gen(rule.prelude).trim();
+		const children = [...rule.block.children];
+		const inner = formatDeclListChildren(children, ctx, rawIf, indent + '  ');
+		return `${indent}${scope} {\n${inner}\n${indent}}`;
+	}
+	if (node.type === 'Atrule') {
+		const atrule = node as csstree.Atrule;
+		const scope = `@${atrule.name}${atrule.prelude ? ' ' + gen(atrule.prelude) : ''}`;
+		if (atrule.block) {
+			const children = [...atrule.block.children];
+			const inner = formatDeclListChildren(children, ctx, rawIf, indent + '  ');
+			return `${indent}${scope} {\n${inner}\n${indent}}`;
+		}
+		return `${indent}${scope};`;
+	}
+	return '';
+}
+
+// ─── computeEquation ─────────────────────────────────────────────────────────
 
 const CSS_MATH_FUNCTIONS = new Set([
 	'calc',
@@ -196,9 +200,197 @@ const CSS_MATH_FUNCTIONS = new Set([
 	'sign',
 ]);
 
-function isArithmeticOperator(op: string): boolean {
-	const t = op.trim();
-	return t === '+' || t === '-' || t === '*' || t === '/';
+export function computeEquation(
+	equation: Equation,
+	userContext: CalcEvaluationContext = { propertyValues: {} },
+): ComputationResult {
+	if (isCssStylesheet(equation)) {
+		throw new TypeError(
+			`computeEquation: expected a CSS value but received a stylesheet block. ` +
+				`Use printStylesheet() to render stylesheet blocks.`,
+		);
+	}
+
+	const context: CalcEvaluationContext = {
+		propertyValues: userContext.propertyValues,
+		skipBaking: userContext.skipBaking ?? typeof window !== 'undefined',
+		resolvingProperties: userContext.resolvingProperties ?? new Set(),
+	};
+
+	const rawIf = equation._rawIf ?? {};
+
+	// Clone and bake the AST in-place via css-tree walk transformations.
+	const bakedAst = csstree.clone(equation.ast);
+	bakeValue(bakedAst, context, rawIf);
+
+	// Restore if() placeholders in the generated string.
+	const generated = restoreRawIf(gen(bakedAst), rawIf);
+
+	// Inspect the baked AST to determine the result type.
+	return inferResult(bakedAst, generated);
+}
+
+// ─── bakeValue — CSSTree AST walk-based baking ───────────────────────────────
+
+type Replacement = {
+	item: ListItem<CssNode>;
+	list: List<CssNode>;
+	nodes: CssNode[];
+};
+
+/**
+ * Mutates `ast` in-place via two passes:
+ *  1. Replace `var(--prop)` nodes whose values are known in `context`.
+ *  2. Evaluate `calc(…)` and math function nodes where all operands are known.
+ *
+ * `if(…)` placeholder vars (`var(--arbor-if-N)`) are evaluated via
+ * `evaluateIfString` and replaced with the result (or kept if undetermined).
+ */
+function bakeValue(
+	ast: CssNode,
+	ctx: CalcEvaluationContext,
+	rawIf: Record<string, string>,
+): void {
+	if (ctx.skipBaking) return;
+
+	// ── Pass 1: var() substitution ────────────────────────────────────────────
+	const varSubs: Replacement[] = [];
+
+	csstree.walk(ast, {
+		visit: 'Function',
+		leave(node: FunctionNode, item: ListItem<CssNode>, list: List<CssNode>) {
+			if (node.name !== 'var' || !item || !list) return;
+
+			const propNode = [...node.children].find(
+				(n): n is csstree.Identifier => n.type === 'Identifier',
+			);
+			if (!propNode) return;
+			const propName = propNode.name;
+			const fallbackStr = getVarFallback(node);
+
+			// if() placeholder
+			if (rawIf[propName] !== undefined) {
+				const result = evaluateIfString(rawIf[propName], ctx, rawIf);
+				if (!result.startsWith('if(')) {
+					// Fully evaluated — replace with the baked result.
+					const repAst = csstree.parse(result, {
+						context: 'value',
+					}) as csstree.Value;
+					bakeValue(repAst, ctx, rawIf);
+					varSubs.push({ item, list, nodes: [...repAst.children] });
+				}
+				// Partially/unevaluated — leave the var(--arbor-if-N) node so
+				// printEquation can restore the if() string.
+				return;
+			}
+
+			// Cycle guard
+			if (ctx.resolvingProperties?.has(propName)) {
+				if (fallbackStr) {
+					const fbAst = csstree.parse(fallbackStr, {
+						context: 'value',
+					}) as csstree.Value;
+					bakeValue(fbAst, addResolvingProp(ctx, propName), rawIf);
+					varSubs.push({ item, list, nodes: [...fbAst.children] });
+				}
+				return;
+			}
+
+			const known = ctx.propertyValues[propName];
+			if (known === undefined) {
+				// Unknown — bake the fallback inline (if any) but keep the var().
+				if (fallbackStr) {
+					const fbAst = csstree.parse(fallbackStr, {
+						context: 'value',
+					}) as csstree.Value;
+					bakeValue(fbAst, addResolvingProp(ctx, propName), rawIf);
+					const bakedFb = gen(fbAst);
+					if (bakedFb !== fallbackStr) {
+						// Rebuild the var() with the baked fallback.
+						const newVar = csstree.parse(`var(${propName}, ${bakedFb})`, {
+							context: 'value',
+						}) as csstree.Value;
+						varSubs.push({ item, list, nodes: [...newVar.children] });
+					}
+				}
+				return;
+			}
+
+			// Known value
+			const knownStr = knownValueToString(propName, known, ctx);
+			if (!knownStr) return;
+
+			const repAst = csstree.parse(knownStr, {
+				context: 'value',
+				parseCustomProperty: true,
+			}) as csstree.Value;
+			bakeValue(repAst, addResolvingProp(ctx, propName), rawIf);
+			varSubs.push({ item, list, nodes: [...repAst.children] });
+		},
+	} as any);
+
+	// Apply var() substitutions.
+	for (const { item, list, nodes } of varSubs) {
+		const tmp = new csstree.List<CssNode>();
+		nodes.forEach((n) => tmp.appendData(csstree.clone(n)));
+		(list as any).insertList(tmp, item);
+		list.remove(item);
+	}
+
+	// ── Pass 2: calc() / math function simplification ─────────────────────────
+	const calcSubs: {
+		item: ListItem<CssNode>;
+		list: List<CssNode>;
+		node: CssNode;
+	}[] = [];
+
+	csstree.walk(ast, {
+		visit: 'Function',
+		leave(node: FunctionNode, item: ListItem<CssNode>, list: List<CssNode>) {
+			if (!item || !list) return;
+			if (node.name === 'var') return;
+			if (!CSS_MATH_FUNCTIONS.has(node.name)) return;
+			const simplified = trySimplifyFn(node, ctx, rawIf);
+			if (simplified) calcSubs.push({ item, list, node: simplified });
+		},
+	} as any);
+
+	for (const { item, list, node } of calcSubs) {
+		list.insertData(node, item);
+		list.remove(item);
+	}
+}
+
+// ─── AST inspection utilities ─────────────────────────────────────────────────
+
+function getVarFallback(fn: FunctionNode): string | undefined {
+	const children = [...fn.children];
+	const ci = children.findIndex(
+		(n) => n.type === 'Operator' && (n as csstree.Operator).value === ',',
+	);
+	if (ci === -1) return undefined;
+	return children
+		.slice(ci + 1)
+		.map(gen)
+		.join('')
+		.trim();
+}
+
+function knownValueToString(
+	propName: string,
+	value: string | Equation | undefined,
+	ctx: CalcEvaluationContext,
+): string | null {
+	if (isToken(value)) throw new Error(`Unexpected token for ${propName}`);
+	if (value === undefined) return null;
+	if (typeof value === 'string') return value;
+	if (typeof value === 'number') return String(value);
+	if (isCalcEquation(value)) {
+		if (ctx.resolvingProperties?.has(propName)) return `var(${propName})`;
+		const newCtx = addResolvingProp(ctx, propName);
+		return printComputationResult(computeEquation(value, newCtx));
+	}
+	return null;
 }
 
 function addResolvingProp(
@@ -211,372 +403,127 @@ function addResolvingProp(
 	};
 }
 
-function splitIfClauses(
-	content: string,
-): { condition: string; value: string; isElse: boolean }[] {
-	const clauses: { condition: string; value: string; isElse: boolean }[] = [];
-	let depth = 0;
-	let clauseStart = 0;
+// ─── Arithmetic helpers ───────────────────────────────────────────────────────
 
-	for (let i = 0; i <= content.length; i++) {
-		const ch = content[i];
-		if (ch === '(' || ch === '[') depth++;
-		else if (ch === ')' || ch === ']') depth--;
-		else if ((ch === ';' || i === content.length) && depth === 0) {
-			const clauseStr = content.slice(clauseStart, i).trim();
-			clauseStart = i + 1;
-			if (!clauseStr) continue;
-
-			let colIdx = -1;
-			let d = 0;
-			for (let j = 0; j < clauseStr.length; j++) {
-				if (clauseStr[j] === '(' || clauseStr[j] === '[') d++;
-				else if (clauseStr[j] === ')' || clauseStr[j] === ']') d--;
-				else if (clauseStr[j] === ':' && d === 0) {
-					colIdx = j;
-					break;
-				}
-			}
-			if (colIdx === -1) continue;
-			const condition = clauseStr.slice(0, colIdx).trim();
-			const value = clauseStr.slice(colIdx + 1).trim();
-			clauses.push({ condition, value, isElse: condition === 'else' });
-		}
-	}
-	return clauses;
-}
-
-function evaluateStyleConditionString(
-	condStr: string,
-	ctx: CalcEvaluationContext,
-): boolean | null {
-	if (!condStr.startsWith('style(') || !condStr.endsWith(')')) return null;
-	const content = condStr.slice(6, -1);
-
-	let colIdx = -1;
-	let depth = 0;
-	for (let i = 0; i < content.length; i++) {
-		if (content[i] === '(') depth++;
-		else if (content[i] === ')') depth--;
-		else if (content[i] === ':' && depth === 0) {
-			colIdx = i;
-			break;
-		}
-	}
-	if (colIdx === -1) return null;
-
-	const propName = content.slice(0, colIdx).trim();
-	const expectedValue = content.slice(colIdx + 1).trim();
-
-	if (!propName.startsWith('--')) return null;
-	if (ctx.skipBaking) return null;
-
-	const actualValue = ctx.propertyValues[propName];
-	if (actualValue === undefined) return null;
-
-	const actualStr =
-		typeof actualValue === 'string' ? actualValue
-		: typeof actualValue === 'number' ? String(actualValue)
-		: null;
-	if (actualStr === null) return null;
-
-	return actualStr.trim() === expectedValue;
-}
-
-/** Evaluates an `if(…)` expression (including the outer wrapper) and returns
- *  the baked result, or the (partially simplified) `if(…)` string. */
-function evaluateIfString(
-	ifExpr: string,
+function trySimplifyFn(
+	fn: FunctionNode,
 	ctx: CalcEvaluationContext,
 	rawIf: Record<string, string>,
-): string {
-	if (ctx.skipBaking) return ifExpr;
-	if (!ifExpr.startsWith('if(') || !ifExpr.endsWith(')')) return ifExpr;
-	const ifContent = ifExpr.slice(3, -1);
+): CssNode | null {
+	if (fn.name === 'calc') return trySimplifyCalc(fn, ctx, rawIf);
+	return trySimplifyMathFn(fn, ctx, rawIf);
+}
 
-	const clauses = splitIfClauses(ifContent);
-	let hasUnknownCondition = false;
-	const partialClauses: string[] = [];
+function trySimplifyCalc(
+	fn: FunctionNode,
+	ctx: CalcEvaluationContext,
+	rawIf: Record<string, string>,
+): CssNode | null {
+	const nodes = [...fn.children].filter((n) => n.type !== 'WhiteSpace');
+	if (nodes.length === 0) return null;
+	if (nodes.length === 1) {
+		const r = computeAstNode(nodes[0], ctx, rawIf);
+		return resultToNode(r);
+	}
+	const r = computeArithSeq(nodes, ctx, rawIf);
+	return resultToNode(r);
+}
 
-	for (const clause of clauses) {
-		if (clause.isElse) {
-			const bakedVal = printComputationResult(
-				computeEquationStringRaw(clause.value, ctx, rawIf),
-			);
-			if (!hasUnknownCondition) return bakedVal;
-			partialClauses.push(`else: ${bakedVal};`);
-			break;
-		}
-		const decision = evaluateStyleConditionString(clause.condition, ctx);
-		if (decision === true) {
-			return printComputationResult(
-				computeEquationStringRaw(clause.value, ctx, rawIf),
-			);
-		} else if (decision === false) {
-			// Skip this false branch
+function trySimplifyMathFn(
+	fn: FunctionNode,
+	ctx: CalcEvaluationContext,
+	rawIf: Record<string, string>,
+): CssNode | null {
+	// Parse comma-separated args.
+	const argGroups: CssNode[][] = [[]];
+	for (const n of fn.children) {
+		if (n.type === 'Operator' && (n as csstree.Operator).value === ',') {
+			argGroups.push([]);
 		} else {
-			hasUnknownCondition = true;
-			const bakedVal = printComputationResult(
-				computeEquationStringRaw(clause.value, ctx, rawIf),
-			);
-			partialClauses.push(`${clause.condition}: ${bakedVal};`);
+			argGroups[argGroups.length - 1].push(n);
 		}
 	}
-
-	if (!hasUnknownCondition && partialClauses.length === 0) {
-		return `if(${ifContent})`;
-	}
-	return `if(${partialClauses.join(' ')})`;
+	const args = argGroups.map((g) => {
+		const f = g.filter((n) => n.type !== 'WhiteSpace');
+		if (f.length === 1) return computeAstNode(f[0], ctx, rawIf);
+		if (f.length === 0) return { type: 'calc', value: '' } as ComputationResult;
+		const tmpList = new csstree.List<CssNode>();
+		f.forEach((n) => tmpList.appendData(n));
+		return computeArithSeq(f, ctx, rawIf);
+	});
+	const r = fnCall(fn.name, ...args);
+	return resultToNode(r);
 }
 
-/** Finds all `if(…)` patterns in a CSS string and evaluates each. */
-function evaluateIfExpressionsInString(
-	str: string,
-	ctx: CalcEvaluationContext,
-	rawIf: Record<string, string>,
-): string {
-	let result = str;
-	let i = 0;
-	while (i < result.length) {
-		const idx = result.indexOf('if(', i);
-		if (idx === -1) break;
-		let depth = 0;
-		let end = idx + 3;
-		while (end < result.length) {
-			if (result[end] === '(') depth++;
-			else if (result[end] === ')') {
-				if (depth === 0) {
-					end++;
-					break;
-				}
-				depth--;
-			}
-			end++;
-		}
-		const ifExpr = result.slice(idx, end);
-		const evaluated = evaluateIfString(ifExpr, ctx, rawIf);
-		result = result.slice(0, idx) + evaluated + result.slice(end);
-		i = idx + evaluated.length;
-	}
-	return result;
-}
-
-// ─── AST-based evaluation helpers ─────────────────────────────────────────────
-
-function computeEquationStringRaw(
-	str: string,
+function computeAstNode(
+	node: CssNode,
 	ctx: CalcEvaluationContext,
 	rawIf: Record<string, string>,
 ): ComputationResult {
-	if (!str) return { type: 'calc', value: '' };
-	const ast = csstree.parse(str, {
-		context: 'value',
-		parseCustomProperty: true,
-	}) as CssNode;
-	return computeEquationFromAst(ast, ctx, rawIf);
-}
-
-function computeEquationFromAst(
-	ast: CssNode,
-	ctx: CalcEvaluationContext,
-	rawIf: Record<string, string>,
-): ComputationResult {
-	switch (ast.type) {
-		case 'Value':
-			return computeValueNode(ast as csstree.Value, ctx, rawIf);
-		case 'Function':
-			return computeFunctionNode(ast as CssFunction, ctx, rawIf);
+	switch (node.type) {
 		case 'Dimension': {
-			const d = ast as csstree.Dimension;
+			const d = node as csstree.Dimension;
 			return { type: 'numeric', value: parseFloat(d.value), unit: d.unit };
 		}
 		case 'Number': {
-			const n = ast as NumberNode;
+			const n = node as NumberNode;
 			return { type: 'numeric', value: parseFloat(n.value), unit: '' };
 		}
 		case 'Percentage': {
-			const p = ast as csstree.Percentage;
+			const p = node as csstree.Percentage;
 			return { type: 'numeric', value: parseFloat(p.value), unit: '%' };
 		}
 		case 'Identifier': {
-			const id = ast as csstree.Identifier;
+			const id = node as csstree.Identifier;
 			if (id.name === 'PI')
 				return { type: 'numeric', value: Math.PI, unit: '' };
 			return { type: 'calc', value: id.name };
 		}
-		case 'Parentheses': {
-			const inner: CssNode = {
-				type: 'Value',
-				children: (ast as any).children,
-			} as any;
-			return computeValueNode(inner as csstree.Value, ctx, rawIf);
+		case 'Function': {
+			const fn = node as FunctionNode;
+			if (fn.name === 'var') {
+				// Already replaced in pass 1 — keep as-is.
+				return { type: 'calc', value: gen(fn) };
+			}
+			if (CSS_MATH_FUNCTIONS.has(fn.name)) {
+				const r = trySimplifyFn(fn, ctx, rawIf);
+				if (r) return nodeToResult(r);
+			}
+			return { type: 'calc', value: gen(fn) };
 		}
-		case 'Raw':
-			return computeEquationStringRaw(
-				(ast as csstree.Raw).value.trim(),
-				ctx,
-				rawIf,
+		case 'Parentheses': {
+			const inner = [...(node as csstree.Parentheses).children].filter(
+				(n) => n.type !== 'WhiteSpace',
 			);
-		case 'String':
-			return { type: 'calc', value: (ast as StringNode).value };
+			if (inner.length === 1) return computeAstNode(inner[0], ctx, rawIf);
+			return computeArithSeq(inner, ctx, rawIf);
+		}
 		default:
-			return { type: 'calc', value: csstree.generate(ast) };
+			return { type: 'calc', value: gen(node) };
 	}
 }
 
-function computeValueNode(
-	node: csstree.Value,
-	ctx: CalcEvaluationContext,
-	rawIf: Record<string, string>,
-): ComputationResult {
-	const children = [...node.children].filter((n) => n.type !== 'WhiteSpace');
-	if (children.length === 0) return { type: 'calc', value: '' };
-	if (children.length === 1)
-		return computeEquationFromAst(children[0], ctx, rawIf);
-
-	if (
-		children.some(
-			(n) =>
-				n.type === 'Operator' &&
-				isArithmeticOperator((n as csstree.Operator).value),
-		)
-	) {
-		return computeArithmeticChildren(children, ctx, rawIf);
-	}
-
-	const parts = children.map((n) =>
-		printComputationResult(computeEquationFromAst(n, ctx, rawIf)),
-	);
-	return { type: 'concatenated', value: parts.join(' ') };
-}
-
-function computeFunctionNode(
-	fn: CssFunction,
-	ctx: CalcEvaluationContext,
-	rawIf: Record<string, string>,
-): ComputationResult {
-	if (fn.name === 'var') return computeVarFunction(fn, ctx, rawIf);
-	if (fn.name === 'calc') return computeCalcFunction(fn, ctx, rawIf);
-	if (CSS_MATH_FUNCTIONS.has(fn.name) && fn.name !== 'calc') {
-		return computeMathFunctionNode(fn, ctx, rawIf);
-	}
-	return { type: 'calc', value: csstree.generate(fn) };
-}
-
-function getVarFallbackString(fn: CssFunction): string | undefined {
-	const children = [...fn.children];
-	const commaIdx = children.findIndex(
-		(n) => n.type === 'Operator' && (n as csstree.Operator).value === ',',
-	);
-	if (commaIdx === -1) return undefined;
-	const fallbackNodes = children.slice(commaIdx + 1);
-	if (fallbackNodes.length === 0) return undefined;
-	return fallbackNodes
-		.map((n) => csstree.generate(n))
-		.join('')
-		.trim();
-}
-
-function computeVarFunction(
-	fn: CssFunction,
-	ctx: CalcEvaluationContext,
-	rawIf: Record<string, string>,
-): ComputationResult {
-	const children = [...fn.children];
-	const propNameNode = children.find((n) => n.type === 'Identifier') as
-		| csstree.Identifier
-		| undefined;
-	if (!propNameNode) return { type: 'calc', value: csstree.generate(fn) };
-	const propName = propNameNode.name;
-	const fallback = getVarFallbackString(fn);
-
-	if (rawIf[propName] !== undefined) {
-		const ifResult = evaluateIfString(rawIf[propName], ctx, rawIf);
-		return { type: 'calc', value: ifResult };
-	}
-
-	// loop detected: we are already resolving this property up the chain
-	if (ctx.resolvingProperties?.has(propName)) {
-		return { type: 'calc', value: `var(${propName})` };
-	}
-
-	const knownValue = ctx.propertyValues[propName];
-	if (knownValue === undefined || ctx.skipBaking) {
-		// The main property reference is not known, so we can't
-		// simplify further (even if fallback exists - this allows
-		// the runtime property to be utilized). Return the original.
-		return { type: 'calc', value: csstree.generate(fn) };
-	}
-
-	const knownStr = evaluatePropertyValueToString(propName, knownValue, ctx);
-	if (knownStr === undefined)
-		return { type: 'calc', value: csstree.generate(fn) };
-	const newCtx = addResolvingProp(ctx, propName);
-	return computeEquationStringRaw(knownStr, newCtx, rawIf);
-}
-
-function evaluatePropertyValueToString(
-	propName: string,
-	value: string | Equation | undefined,
-	ctx: CalcEvaluationContext,
-): string | undefined {
-	if (isToken(value)) {
-		throw new Error(
-			`Unexpected token for property ${propName}. Got token: ${(value as any).name}`,
-		);
-	}
-	if (value === undefined) return undefined;
-	if (typeof value === 'string') return value;
-	if (typeof value === 'number') return String(value);
-	if (isCalcEquation(value)) {
-		if (ctx.resolvingProperties?.has(propName)) return `var(${propName})`;
-		const newCtx = addResolvingProp(ctx, propName);
-		return printComputationResult(computeEquation(value as Equation, newCtx));
-	}
-	return undefined;
-}
-
-function computeCalcFunction(
-	fn: CssFunction,
-	ctx: CalcEvaluationContext,
-	rawIf: Record<string, string>,
-): ComputationResult {
-	if (ctx.skipBaking) return { type: 'calc', value: csstree.generate(fn) };
-	const children = [...fn.children].filter((n) => n.type !== 'WhiteSpace');
-	if (children.length === 0) return { type: 'calc', value: '' };
-	if (children.length === 1)
-		return computeEquationFromAst(children[0], ctx, rawIf);
-	return computeArithmeticChildren(children, ctx, rawIf);
-}
-
-function computeArithmeticChildren(
+function computeArithSeq(
 	nodes: CssNode[],
 	ctx: CalcEvaluationContext,
 	rawIf: Record<string, string>,
 ): ComputationResult {
 	const operands: CssNode[] = [];
 	const operators: string[] = [];
-
-	for (const node of nodes) {
-		if (node.type === 'Operator') {
-			operators.push((node as csstree.Operator).value.trim());
-		} else {
-			operands.push(node);
-		}
+	for (const n of nodes) {
+		if (n.type === 'Operator')
+			operators.push((n as csstree.Operator).value.trim());
+		else operands.push(n);
 	}
-
 	if (operands.length === 0) return { type: 'calc', value: '' };
 	if (operators.length !== operands.length - 1) {
-		return {
-			type: 'calc',
-			value: nodes.map((n) => csstree.generate(n)).join(''),
-		};
+		return { type: 'calc', value: nodes.map(gen).join('') };
 	}
 
-	const results = operands.map((n) => computeEquationFromAst(n, ctx, rawIf));
+	const vals = operands.map((n) => computeAstNode(n, ctx, rawIf));
 	const ops = [...operators];
-	const vals = [...results];
 
+	// Evaluate * and / first.
 	let i = 0;
 	while (i < ops.length) {
 		if (ops[i] === '*') {
@@ -588,6 +535,7 @@ function computeArithmeticChildren(
 		} else i++;
 	}
 
+	// Then + and -.
 	let acc = vals[0];
 	for (let j = 0; j < ops.length; j++) {
 		if (ops[j] === '+') acc = add(acc, vals[j + 1]);
@@ -601,286 +549,58 @@ function computeArithmeticChildren(
 	return acc;
 }
 
-function computeMathFunctionNode(
-	fn: CssFunction,
-	ctx: CalcEvaluationContext,
-	rawIf: Record<string, string>,
-): ComputationResult {
-	const args = parseCommaSeparatedFnArgs(fn, ctx, rawIf);
-	return fnCall(fn.name, ...args);
-}
-
-function parseCommaSeparatedFnArgs(
-	fn: CssFunction,
-	ctx: CalcEvaluationContext,
-	rawIf: Record<string, string>,
-): ComputationResult[] {
-	const children = [...fn.children];
-	const argGroups: CssNode[][] = [[]];
-	for (const node of children) {
-		if (node.type === 'Operator' && (node as csstree.Operator).value === ',') {
-			argGroups.push([]);
-		} else {
-			argGroups[argGroups.length - 1].push(node);
-		}
+function resultToNode(r: ComputationResult): CssNode | null {
+	if (r.type === 'numeric') {
+		const v = fmtNum(r.value);
+		if (r.unit === '%')
+			return { type: 'Percentage', value: v } as csstree.Percentage;
+		if (r.unit === '') return { type: 'Number', value: v } as NumberNode;
+		return { type: 'Dimension', value: v, unit: r.unit } as csstree.Dimension;
 	}
-	return argGroups.map((nodes) => {
-		const filtered = nodes.filter((n) => n.type !== 'WhiteSpace');
-		if (filtered.length === 0)
-			return { type: 'calc', value: '' } as ComputationResult;
-		if (filtered.length === 1)
-			return computeEquationFromAst(filtered[0], ctx, rawIf);
-		const tempList = new csstree.List<CssNode>();
-		for (const n of filtered) tempList.appendData(n);
-		const tempValue: CssNode = { type: 'Value', children: tempList } as any;
-		return computeValueNode(tempValue as csstree.Value, ctx, rawIf);
-	});
-}
-
-// ─── computeEquation ─────────────────────────────────────────────────────────
-
-export function computeEquation(
-	equation: Equation,
-	userContext: CalcEvaluationContext = { propertyValues: {} },
-): ComputationResult {
-	if (isCssStylesheet(equation as any)) {
-		const preview = JSON.stringify(equation).slice(0, 80);
-		throw new TypeError(
-			`computeEquation: expected a CSS value, but received a stylesheet block. ` +
-				`Use printStylesheet() to render stylesheet blocks. Got: '${preview}'`,
-		);
-	}
-
-	const context: CalcEvaluationContext = {
-		propertyValues: userContext.propertyValues,
-		skipBaking: userContext.skipBaking ?? typeof window !== 'undefined',
-		resolvingProperties: userContext.resolvingProperties ?? new Set(),
-	};
-
-	const rawIf = equation._rawIf ?? {};
-
-	// Start with the source-preserved string (retains original whitespace).
-	let str = printEquation(equation);
-
-	if (!context.skipBaking) {
-		// Step 1: Evaluate if() expressions (string-based, preserves spacing).
-		if (Object.keys(rawIf).length > 0) {
-			str = evaluateIfExpressionsInString(str, context, rawIf);
-		}
-
-		// Step 2: Substitute var() references (string-based, preserves spacing).
-		str = substituteVarsInString(str, context);
-
-		// Step 3: Simplify calc() expressions via CSSTree AST evaluation.
-		str = simplifyCalcExpressions(str, context, rawIf);
-	}
-
-	// Determine the ComputationResult type from the final string.
-	const trimmed = str.trim();
-	const extracted = extractLiteralFromSimpleCalc(trimmed);
-	const numericResult = parseLiteralToNumeric(extracted);
-	if (numericResult) return numericResult;
-
-	if (equation._isConcatenated) return { type: 'concatenated', value: str };
-
-	if (extracted !== trimmed) {
-		const n2 = parseLiteralToNumeric(extracted);
-		if (n2) return n2;
-		return { type: 'calc', value: extracted };
-	}
-
-	return { type: 'calc', value: str };
-}
-
-// ─── String-based baking helpers ─────────────────────────────────────────────
-
-/**
- * Resolves a single `var(--prop)` expression if the property is known.
- * For var() with fallback, if the property is known, the fallback is
- * discarded. If the property is unknown, the fallback is baked in place
- * and the property reference is retained.
- * Returns the resolved string, or null if unknown.
- */
-function tryResolveVarExpr(
-	varExpr: string,
-	ctx: CalcEvaluationContext,
-): string | null {
-	// Parse: var(--prop[, fallback])
-	const inner = varExpr.slice(4, -1); // between 'var(' and ')'
-
-	let commaIdx = -1;
-	let depth = 0;
-	for (let k = 0; k < inner.length; k++) {
-		if (inner[k] === '(') depth++;
-		else if (inner[k] === ')') depth--;
-		else if (inner[k] === ',' && depth === 0) {
-			commaIdx = k;
-			break;
-		}
-	}
-
-	const propName =
-		commaIdx === -1 ? inner.trim() : inner.slice(0, commaIdx).trim();
-	const fallback =
-		commaIdx === -1 ? undefined : inner.slice(commaIdx + 1).trim();
-
-	if (ctx.resolvingProperties?.has(propName)) {
-		// Cycle detected. Like native CSS, we give up. Does NOT use fallback here.
-		return null;
-	}
-
-	const knownValue = ctx.propertyValues[propName];
-	if (knownValue === undefined || ctx.skipBaking) {
-		if (fallback !== undefined && !ctx.skipBaking) {
-			// Property unknown: preserve the var() but bake the fallback inline
-			const bakedFallback = substituteVarsInString(
-				fallback,
-				addResolvingProp(ctx, propName),
+	// Non-numeric: only replace if it's genuinely simpler than the original.
+	if (r.type === 'calc' && !r.value.startsWith('calc(')) {
+		try {
+			const repAst = csstree.parse(r.value, {
+				context: 'value',
+			}) as csstree.Value;
+			const children = [...repAst.children].filter(
+				(n) => n.type !== 'WhiteSpace',
 			);
-			if (bakedFallback !== fallback) {
-				return `var(${propName}, ${bakedFallback})`;
-			}
-		}
-		return null; // keep original var() unchanged
-	}
-
-	const knownStr =
-		typeof knownValue === 'string' ? knownValue
-		: typeof knownValue === 'number' ? String(knownValue)
-		: isCalcEquation(knownValue) ? printEquation(knownValue as Equation)
-		: null;
-
-	if (knownStr === null) return null;
-	return substituteVarsInString(knownStr, addResolvingProp(ctx, propName));
-}
-
-/** Replaces all `var(--prop)` occurrences in a CSS string with known values,
- *  preserving surrounding whitespace and operators. */
-function substituteVarsInString(
-	str: string,
-	ctx: CalcEvaluationContext,
-): string {
-	let result = '';
-	let i = 0;
-
-	while (i < str.length) {
-		const varStart = str.indexOf('var(', i);
-		if (varStart === -1) {
-			result += str.slice(i);
-			break;
-		}
-		result += str.slice(i, varStart);
-
-		// Find the matching closing paren for var(
-		let depth = 0;
-		let j = varStart + 4;
-		while (j < str.length) {
-			if (str[j] === '(') depth++;
-			else if (str[j] === ')') {
-				if (depth === 0) {
-					j++;
-					break;
-				}
-				depth--;
-			}
-			j++;
-		}
-
-		const varExpr = str.slice(varStart, j);
-		const resolved = tryResolveVarExpr(varExpr, ctx);
-		result += resolved !== null ? resolved : varExpr;
-		i = j;
-	}
-
-	return result;
-}
-
-/** Parses a CSS value string and simplifies any evaluatable calc() or math
- *  function nodes using targeted string-level replacement, preserving all
- *  surrounding whitespace and separators. */
-function simplifyCalcExpressions(
-	str: string,
-	ctx: CalcEvaluationContext,
-	rawIf: Record<string, string>,
-): string {
-	if (ctx.skipBaking) return str;
-
-	// Also try to simplify other math functions
-	const mathFnNames = [...CSS_MATH_FUNCTIONS];
-	let result = str;
-
-	for (const fnName of mathFnNames) {
-		let i = 0;
-		while (i < result.length) {
-			const fnStart = result.indexOf(`${fnName}(`, i);
-			if (fnStart === -1) break;
-
-			// Find the matching closing paren
-			let depth = 0;
-			let j = fnStart + fnName.length + 1; // after 'name('
-			while (j < result.length) {
-				if (result[j] === '(') depth++;
-				else if (result[j] === ')') {
-					if (depth === 0) {
-						j++;
-						break;
-					}
-					depth--;
-				}
-				j++;
-			}
-
-			const fnExpr = result.slice(fnStart, j); // e.g. 'calc(2px + 1px)'
-			const simplified = trySimplifyMathFnExpr(fnExpr, fnName, ctx, rawIf);
-			if (simplified !== null && simplified !== fnExpr) {
-				result = result.slice(0, fnStart) + simplified + result.slice(j);
-				i = fnStart + simplified.length;
-			} else {
-				i = fnStart + fnExpr.length;
-			}
+			if (children.length === 1) return children[0];
+		} catch {
+			/* ignore */
 		}
 	}
-
-	return result;
+	return null;
 }
 
-function trySimplifyMathFnExpr(
-	fnExpr: string,
-	fnName: string,
-	ctx: CalcEvaluationContext,
-	rawIf: Record<string, string>,
-): string | null {
-	try {
-		const ast = csstree.parse(fnExpr, {
-			context: 'value',
-			parseCustomProperty: true,
-		}) as csstree.Value;
-		const children = [...ast.children].filter((n) => n.type !== 'WhiteSpace');
-		if (children.length !== 1 || children[0].type !== 'Function') return null;
-		const fn = children[0] as CssFunction;
-		if (fn.name !== fnName) return null;
-
-		let result: ComputationResult;
-		if (fn.name === 'calc') result = computeCalcFunction(fn, ctx, rawIf);
-		else result = computeMathFunctionNode(fn, ctx, rawIf);
-
-		if (result.type === 'numeric') {
-			return `${formatNumericValue(result.value)}${result.unit}`;
-		}
-		if (
-			result.type === 'calc' &&
-			result.value !== fnExpr &&
-			result.value !== csstree.generate(fn)
-		) {
-			return result.value;
-		}
-		return null;
-	} catch {
-		return null;
-	}
+function nodeToResult(n: CssNode): ComputationResult {
+	if (n.type === 'Dimension')
+		return {
+			type: 'numeric',
+			value: parseFloat((n as csstree.Dimension).value),
+			unit: (n as csstree.Dimension).unit,
+		};
+	if (n.type === 'Number')
+		return {
+			type: 'numeric',
+			value: parseFloat((n as NumberNode).value),
+			unit: '',
+		};
+	if (n.type === 'Percentage')
+		return {
+			type: 'numeric',
+			value: parseFloat((n as csstree.Percentage).value),
+			unit: '%',
+		};
+	return { type: 'calc', value: gen(n) };
 }
 
-// ─── Arithmetic helpers ───────────────────────────────────────────────────────
+function fmtNum(v: number): string {
+	return String(Math.round(v * 1e10) / 1e10);
+}
+
+// ─── Arithmetic helpers (ComputationResult level) ─────────────────────────────
 
 function add(a: ComputationResult, b: ComputationResult): ComputationResult {
 	if (a.type === 'concatenated' || b.type === 'concatenated') {
@@ -889,11 +609,11 @@ function add(a: ComputationResult, b: ComputationResult): ComputationResult {
 			value: `${printComputationResult(a)} + ${printComputationResult(b)}`,
 		};
 	}
-	if (a.value === 0) return b;
-	if (b.value === 0) return a;
-	const an = a as NumericComputationResult;
-	const bn = b as NumericComputationResult;
-	if (a.type === 'calc' || b.type === 'calc' || an.unit !== bn.unit) {
+	const an = a as NumericComputationResult,
+		bn = b as NumericComputationResult;
+	if (a.type === 'numeric' && an.value === 0) return b;
+	if (b.type === 'numeric' && bn.value === 0) return a;
+	if (a.type !== 'numeric' || b.type !== 'numeric' || an.unit !== bn.unit) {
 		return {
 			type: 'calc',
 			value: `calc(${printComputationResult(a)} + ${printComputationResult(b)})`,
@@ -912,13 +632,13 @@ function subtract(
 			value: `${printComputationResult(a)} - ${printComputationResult(b)}`,
 		};
 	}
-	const an = a as NumericComputationResult;
-	const bn = b as NumericComputationResult;
+	const an = a as NumericComputationResult,
+		bn = b as NumericComputationResult;
 	if (b.type === 'numeric' && bn.value === 0) return a;
 	if (a.type === 'numeric' && an.value === 0 && b.type === 'numeric') {
 		return { type: 'numeric', value: -bn.value, unit: bn.unit };
 	}
-	if (a.type === 'calc' || b.type === 'calc' || an.unit !== bn.unit) {
+	if (a.type !== 'numeric' || b.type !== 'numeric' || an.unit !== bn.unit) {
 		return {
 			type: 'calc',
 			value: `calc(${printComputationResult(a)} - ${printComputationResult(b)})`,
@@ -937,36 +657,32 @@ function multiply(
 			value: `${printComputationResult(a)} * ${printComputationResult(b)}`,
 		};
 	}
-	const an = a as NumericComputationResult;
-	const bn = b as NumericComputationResult;
+	const an = a as NumericComputationResult,
+		bn = b as NumericComputationResult;
 	if (a.type === 'numeric' && an.value === 0)
 		return { type: 'numeric', value: 0, unit: an.unit };
 	if (b.type === 'numeric' && bn.value === 0)
 		return { type: 'numeric', value: 0, unit: bn.unit };
-	if (a.type === 'numeric' && b.type === 'numeric' && an.unit === '')
-		return { type: 'numeric', value: bn.value * an.value, unit: bn.unit };
-	if (a.type === 'numeric' && b.type === 'numeric' && bn.unit === '')
-		return { type: 'numeric', value: an.value * bn.value, unit: an.unit };
-	if (a.type === 'numeric' && an.unit === '' && an.value === 1) return b;
-	if (b.type === 'numeric' && bn.unit === '' && bn.value === 1) return a;
-	if (a.type === 'numeric' && an.unit === '%' && an.value === 100) {
-		if (b.type !== 'numeric') return b;
-		return { type: 'numeric', value: bn.value * 100, unit: '%' };
-	}
-	if (b.type === 'numeric' && bn.unit === '%' && bn.value === 100) {
-		if (a.type !== 'numeric') return a;
-		return { type: 'numeric', value: an.value * 100, unit: '%' };
-	}
-	if (a.type === 'calc' || b.type === 'calc') {
-		return {
-			type: 'calc',
-			value: `calc(${printComputationResult(a)} * ${printComputationResult(b)})`,
-		};
-	}
-	if (an.unit === bn.unit) {
-		if (an.unit === '%')
-			return { type: 'numeric', value: (an.value * bn.value) / 100, unit: '%' };
-		return { type: 'numeric', value: an.value * bn.value, unit: an.unit };
+	if (a.type === 'numeric' && b.type === 'numeric') {
+		if (an.unit === '')
+			return { type: 'numeric', value: bn.value * an.value, unit: bn.unit };
+		if (bn.unit === '')
+			return { type: 'numeric', value: an.value * bn.value, unit: an.unit };
+		if (an.unit === '' && an.value === 1) return b;
+		if (bn.unit === '' && bn.value === 1) return a;
+		if (an.unit === '%' && an.value === 100)
+			return { type: 'numeric', value: bn.value * 100, unit: '%' };
+		if (bn.unit === '%' && bn.value === 100)
+			return { type: 'numeric', value: an.value * 100, unit: '%' };
+		if (an.unit === bn.unit) {
+			if (an.unit === '%')
+				return {
+					type: 'numeric',
+					value: (an.value * bn.value) / 100,
+					unit: '%',
+				};
+			return { type: 'numeric', value: an.value * bn.value, unit: an.unit };
+		}
 	}
 	return {
 		type: 'calc',
@@ -981,8 +697,8 @@ function divide(a: ComputationResult, b: ComputationResult): ComputationResult {
 			value: `${printComputationResult(a)} / ${printComputationResult(b)}`,
 		};
 	}
-	const an = a as NumericComputationResult;
-	const bn = b as NumericComputationResult;
+	const an = a as NumericComputationResult,
+		bn = b as NumericComputationResult;
 	if (b.type === 'numeric' && bn.value === 0)
 		throw new Error('Division by zero');
 	if (a.type === 'numeric' && an.value === 0)
@@ -991,13 +707,7 @@ function divide(a: ComputationResult, b: ComputationResult): ComputationResult {
 	if (b.type === 'numeric' && bn.unit === '' && a.type === 'numeric') {
 		return { type: 'numeric', value: an.value / bn.value, unit: an.unit };
 	}
-	if (a.type === 'calc' || b.type === 'calc') {
-		return {
-			type: 'calc',
-			value: `calc(${printComputationResult(a)} / ${printComputationResult(b)})`,
-		};
-	}
-	if (a.type === 'numeric' && b.type === 'numeric') {
+	if (a.type === 'numeric' && b.type === 'numeric' && an.unit === bn.unit) {
 		return { type: 'numeric', value: an.value / bn.value, unit: '' };
 	}
 	return {
@@ -1007,57 +717,228 @@ function divide(a: ComputationResult, b: ComputationResult): ComputationResult {
 }
 
 function fnCall(name: string, ...args: ComputationResult[]): ComputationResult {
-	if (args.every((arg) => arg.type === 'numeric')) {
+	if (args.every((a) => a.type === 'numeric')) {
 		const resolver = functionResolvers[name];
 		if (resolver) return resolver(...(args as NumericComputationResult[]));
 	}
-	const isConcatenated = args.some((arg) => arg.type === 'concatenated');
-	const printArgs = args.map(printComputationResult);
-	if (isConcatenated)
-		return { type: 'concatenated', value: `${name}(${printArgs.join(', ')})` };
-	return { type: 'calc', value: `${name}(${printArgs.join(', ')})` };
+	const isCat = args.some((a) => a.type === 'concatenated');
+	const printed = args.map(printComputationResult).join(', ');
+	return isCat ?
+			{ type: 'concatenated', value: `${name}(${printed})` }
+		:	{ type: 'calc', value: `${name}(${printed})` };
 }
 
-// ─── Utility functions ────────────────────────────────────────────────────────
+// ─── if() evaluation ──────────────────────────────────────────────────────────
 
-function parseLiteralToNumeric(literal: string): ComputationResult | null {
-	if (literal.endsWith('%')) {
-		const n = Number(literal.slice(0, -1));
-		if (isNaN(n)) return null;
-		return { type: 'numeric', value: n, unit: '%' };
+function evaluateIfString(
+	ifExpr: string,
+	ctx: CalcEvaluationContext,
+	rawIf: Record<string, string>,
+): string {
+	if (ctx.skipBaking) return ifExpr;
+	if (!ifExpr.startsWith('if(') || !ifExpr.endsWith(')')) return ifExpr;
+	const content = ifExpr.slice(3, -1);
+	const clauses = splitIfClauses(content);
+
+	let hasUnknown = false;
+	const partial: string[] = [];
+
+	for (const clause of clauses) {
+		if (clause.isElse) {
+			const v = printComputationResult(
+				computeEquationStringRaw(clause.value, ctx, rawIf),
+			);
+			if (!hasUnknown) return v;
+			partial.push(`else: ${v};`);
+			break;
+		}
+		const dec = evalStyleCondition(clause.condition, ctx);
+		if (dec === true) {
+			return printComputationResult(
+				computeEquationStringRaw(clause.value, ctx, rawIf),
+			);
+		} else if (dec === false) {
+			// skip
+		} else {
+			hasUnknown = true;
+			const v = printComputationResult(
+				computeEquationStringRaw(clause.value, ctx, rawIf),
+			);
+			partial.push(`${clause.condition}: ${v};`);
+		}
 	}
-	const match = literal.match(/^(-?\d*\.?\d+)([a-zA-Z]*)$/);
-	if (!match) return null;
-	const n = Number(match[1]);
-	if (isNaN(n)) return null;
-	return { type: 'numeric', value: n, unit: match[2] };
+
+	if (!hasUnknown && partial.length === 0) return ifExpr;
+	return `if(${partial.join(' ')})`;
 }
 
-function removeWrappingParens(value: string): string {
-	let current = value.trim();
-	while (current.startsWith('(') && current.endsWith(')')) {
-		current = current.slice(1, -1).trim();
-	}
-	return current;
+function computeEquationStringRaw(
+	str: string,
+	ctx: CalcEvaluationContext,
+	rawIf: Record<string, string>,
+): ComputationResult {
+	if (!str) return { type: 'calc', value: '' };
+	const ast = csstree.parse(str, {
+		context: 'value',
+		parseCustomProperty: true,
+	}) as CssNode;
+	bakeValue(ast, ctx, rawIf);
+	return inferResult(ast, restoreRawIf(gen(ast), rawIf));
 }
+
+function splitIfClauses(
+	content: string,
+): { condition: string; value: string; isElse: boolean }[] {
+	const clauses: { condition: string; value: string; isElse: boolean }[] = [];
+	let depth = 0,
+		start = 0;
+	for (let i = 0; i <= content.length; i++) {
+		const ch = content[i];
+		if (ch === '(' || ch === '[') depth++;
+		else if (ch === ')' || ch === ']') depth--;
+		else if ((ch === ';' || i === content.length) && depth === 0) {
+			const s = content.slice(start, i).trim();
+			start = i + 1;
+			if (!s) continue;
+			let ci = -1,
+				d = 0;
+			for (let j = 0; j < s.length; j++) {
+				if (s[j] === '(' || s[j] === '[') d++;
+				else if (s[j] === ')' || s[j] === ']') d--;
+				else if (s[j] === ':' && d === 0) {
+					ci = j;
+					break;
+				}
+			}
+			if (ci === -1) continue;
+			const cond = s.slice(0, ci).trim();
+			const val = s.slice(ci + 1).trim();
+			clauses.push({ condition: cond, value: val, isElse: cond === 'else' });
+		}
+	}
+	return clauses;
+}
+
+function evalStyleCondition(
+	condStr: string,
+	ctx: CalcEvaluationContext,
+): boolean | null {
+	if (!condStr.startsWith('style(') || !condStr.endsWith(')')) return null;
+	const inner = condStr.slice(6, -1);
+	let ci = -1,
+		d = 0;
+	for (let i = 0; i < inner.length; i++) {
+		if (inner[i] === '(') d++;
+		else if (inner[i] === ')') d--;
+		else if (inner[i] === ':' && d === 0) {
+			ci = i;
+			break;
+		}
+	}
+	if (ci === -1) return null;
+	const prop = inner.slice(0, ci).trim();
+	const expected = inner.slice(ci + 1).trim();
+	if (!prop.startsWith('--') || ctx.skipBaking) return null;
+	const actual = ctx.propertyValues[prop];
+	if (actual === undefined) return null;
+	const actualStr =
+		typeof actual === 'string' ? actual
+		: typeof actual === 'number' ? String(actual)
+		: null;
+	if (!actualStr) return null;
+	return actualStr.trim() === expected;
+}
+
+// ─── inferResult ──────────────────────────────────────────────────────────────
+
+function inferResult(ast: CssNode, generated: string): ComputationResult {
+	if (ast.type !== 'Value') {
+		// Direct non-Value node (unlikely but handle gracefully)
+		return nodeToResult(ast);
+	}
+	const value = ast as csstree.Value;
+	const children = [...value.children].filter((n) => n.type !== 'WhiteSpace');
+
+	if (children.length === 1) {
+		const child = children[0];
+		if (child.type === 'Dimension')
+			return {
+				type: 'numeric',
+				value: parseFloat((child as csstree.Dimension).value),
+				unit: (child as csstree.Dimension).unit,
+			};
+		if (child.type === 'Number')
+			return {
+				type: 'numeric',
+				value: parseFloat((child as NumberNode).value),
+				unit: '',
+			};
+		if (child.type === 'Percentage')
+			return {
+				type: 'numeric',
+				value: parseFloat((child as csstree.Percentage).value),
+				unit: '%',
+			};
+		if (child.type === 'Parentheses') {
+			const inner = [...(child as csstree.Parentheses).children].filter(
+				(n) => n.type !== 'WhiteSpace',
+			);
+			if (inner.length === 1) return nodeToResult(inner[0]);
+		}
+	}
+
+	// Multiple children with no arithmetic operators → concatenated
+	if (children.length > 1 && !children.some((n) => n.type === 'Operator')) {
+		return { type: 'concatenated', value: generated };
+	}
+
+	// Try extracting a simple literal from a calc() wrapper.
+	const extracted = extractLiteralFromSimpleCalc(generated);
+	if (extracted !== generated) {
+		const n = parseLiteralToNumeric(extracted);
+		if (n) return n;
+		return { type: 'calc', value: extracted };
+	}
+
+	return { type: 'calc', value: generated };
+}
+
+// ─── Utility ──────────────────────────────────────────────────────────────────
 
 export function extractLiteralFromSimpleCalc(value: string): string {
-	const insideCalc = value.trim().match(/^calc\((.+)\)$/);
-	if (insideCalc) {
-		const insideValue = removeWrappingParens(insideCalc[1].trim());
-		const isComplex =
-			insideValue.match(/[+*/]/) ||
-			insideValue.match(/.-\d/) ||
-			insideValue.match(/\d+\(/) ||
-			insideValue.match(/\s/);
-		if (!isComplex) return insideValue;
+	const m = value.trim().match(/^calc\((.+)\)$/);
+	if (m) {
+		let inner = m[1].trim();
+		while (inner.startsWith('(') && inner.endsWith(')'))
+			inner = inner.slice(1, -1).trim();
+		if (
+			!/[+*/]/.test(inner) &&
+			!inner.match(/\.-\d/) &&
+			!inner.match(/\d+\(/) &&
+			!inner.match(/\s/)
+		) {
+			return inner;
+		}
 	}
 	return value;
 }
 
+function parseLiteralToNumeric(s: string): ComputationResult | null {
+	if (s.endsWith('%')) {
+		const n = Number(s.slice(0, -1));
+		if (!isNaN(n)) return { type: 'numeric', value: n, unit: '%' };
+	}
+	const m = s.match(/^(-?\d*\.?\d+)([a-zA-Z]*)$/);
+	if (m) {
+		const n = Number(m[1]);
+		if (!isNaN(n)) return { type: 'numeric', value: n, unit: m[2] };
+	}
+	return null;
+}
+
 export function printComputationResult(result: ComputationResult): string {
-	if (result.type === 'calc')
-		return extractLiteralFromSimpleCalc(result.value.trim());
+	if (result.type === 'numeric')
+		return `${fmtNum(result.value)}${result.unit}`.trim();
 	if (result.type === 'concatenated') return result.value;
-	return `${(result as NumericComputationResult).value}${(result as NumericComputationResult).unit}`.trim();
+	return extractLiteralFromSimpleCalc(result.value.trim());
 }

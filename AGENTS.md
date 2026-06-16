@@ -1,6 +1,6 @@
 # Agent Instructions for Arbor CSS
 
-**Arbor CSS** is a modular, TypeScript-first CSS framework, with optional CSS utility classes (Tailwind-like) built on UnoCSS. It provides type-safe design system primitives (colors, typography, spacing, shadows) with dynamic theming, mode switching, and zero-runtime overhead through compile-time rule generation.
+**Arbor CSS** is a modular, TypeScript-first CSS framework for design systems. It provides type-safe design system primitives (colors, typography, spacing, shadows) with dynamic theming, mode switching, and zero-runtime overhead through compile-time rule generation.
 
 ## Background
 
@@ -13,17 +13,12 @@ arbor-css (pnpm monorepo)
 ├── packages/
 │   ├── core/          # Main library where most concepts come together: create primitives, modes and generate CSS from them
 │   ├── preset/        # The "Arbor preset" — a ready-to-use collection of primitives, schemes, and mode schema bundled together. Also re-exports everything needed to define an arbor.config.ts.
-│   ├── primitives/    # Assembles compiled colors, typography, spacing, and shadows into a typed token tree used by `preset` and `core`
-│   ├── plugin/        # PostCSS plugin. Applies CSS extensions for the color system and resolves `@import 'arbor:css'` to generated CSS at build time.
+│   ├── postcss/        # PostCSS plugin. Applies CSS extensions for the color system and resolves `@import 'arbor:css'` to generated CSS at build time.
 │   ├── vscode/        # VS Code extension. Provides syntax highlighting, token autocomplete, and hover previews for CSS files.
 │   ├── tokens/        # Design Token abstraction that captures intent/usage and can write to various CSS representations (name, var, property definition)
 │   ├── modes/         # Defines Mode schemas
 │   ├── globals/       # Defines common global user configuration and token / function namespacing
 │   ├── calc/          # A subset implementation of CSS `calc` in TS, allowing "baking" of equations before CSS generation and sharing the same logic in both CSS and runtime
-│   ├── colors/        # Generates primitive OKLCH color ranges, scheme projections of colors
-│   ├── typography/    # Generates typography primitives
-│   ├── spacing/       # Generates spacing scale primitives
-│   ├── shadows/       # Generates shadow primitives
 │   └── util/          # Shared tools for common low-level needs
 └── docs/              # Astro documentation and homepage
 ```
@@ -57,12 +52,6 @@ Primitive tokens are 1:1 named mappings to literal values, like OKCLH colors or 
 
 See: [packages/core](packages/core)
 
-#### Schemes
-
-Schemes are color configurations which project primitive color ramps into usable palettes for different color schemes like "light" and "dark." Although these are commonly referred to as "light mode," etc, in Arbor we call them "schemes."
-
-See: [packages/colors](packages/colors) and [packages/core](packages/core)
-
 #### Modes
 
 Modes are configurable applications of primitive tokens (filtered through Schemes, if they are colors) designed for semantic clarity and direct use by developers in their UI. A mode maps generic primitive values to clear, purposeful names. Each Arbor system has a Mode Schema, which defines all possible semantic values and their purposes. For example, a Mode might feature "action.primary.bg" which determines the background color of a primary button, toggle switch, or checked checkbox.
@@ -81,7 +70,7 @@ See: [packages/modes](packages/modes)
 
 #### Preset
 
-`preset` is the standard entry point for end-users defining an `arbor.config.ts`. It bundles the Arbor default mode schema, default color schemes (light/dark), and a `createArborPreset()` helper that accepts user configuration (color ranges, typography, spacing, shadows, modes) and returns a fully typed preset object consumed by `core`, `classes`, and `plugin`.
+`preset` is the standard entry point for end-users defining an `arbor.config.ts`. It bundles the mode schema, base mode implementation, functions, and mixins. Presets can inherit from others, allowing users to extend built-in presets with their own concepts.
 
 See: [packages/preset](packages/preset)
 
@@ -91,16 +80,15 @@ In `packages/calc` you'll find a CSS parser which is able to interpolate Tokens 
 
 This CSS parser and preprocessor powers both the `functions` capabilities and the more advanced use of mode token assignment which allows full CSS `calc()`, color functions, etc.
 
+CSS constructed with this parser tracks Token usage, which is vital for mode functionality. We allow a user to define a minimal set of token changes in a custom mode, but the actual written CSS must then re-declare all dependent token values for them to 'capture' the new user-supplied value of their dependencies.
+
 #### PostCSS Plugin
 
-`plugin` is a PostCSS plugin for existing CSS pipelines. It performs two transforms at build time:
-
-1. **`.css` files** — Replaces the assignment of certain properties related to color with a more advanced assignment which exposes the color as a custom property to be used in other CSS properties. For example, the background color can be copied and darkened to create a focus ring color.
-2. **Any CSS file with `@import 'arbor:css'`** — expands that import into the full generated Arbor stylesheet for the project.
+`plugin` is a PostCSS plugin for existing CSS pipelines. It inlines function and mixin calls, allowing users to utilize this future syntax in CSS today.
 
 The plugin looks for a single `arbor.config.ts` relative to the current working directory (where PostCSS is invoked) and caches the resolved preset.
 
-See: [packages/plugin](packages/plugin)
+See: [packages/postcss](packages/postcss)
 
 #### VS Code Extension
 
@@ -108,18 +96,11 @@ See: [packages/plugin](packages/plugin)
 
 - **Token autocomplete** — Pulls completions for `--x-` (or user-configured prefixed) properties from the project's `arbor.config.ts`
 - **Hover previews** — shows the resolved CSS variable name and value for a token reference under the cursor
+- **Diagnostics** - detects invalid Arbor token names and surfaces errors
 
 The extension loads the config using the same `jiti`-based loader as the bundler plugin.
 
 See: [packages/vscode](packages/vscode)
-
-### Dependency Flow
-
-`core` depends on most other things: `tokens` to define and interpret design tokens, `globals` to declare what things a user can tweak, `modes` to declare what a mode is and how it becomes CSS and tokens, and `colors`, `shadows`, `typography`, `spacing` to generate primitives for the "arbor preset."
-
-`preset` depends on `primitives`, `colors`, `typography`, `spacing`, `shadows`, `modes`, `globals`, and `tokens` — it is the high-level assembly point for a complete Arbor configuration.
-
-`plugin` and `vscode` depend on `core` (and `preset` transitively) to load and interpret an `arbor.config.ts` at tooling time.
 
 ## Development Patterns
 
@@ -135,14 +116,12 @@ See working example: [playground/arbor.config.ts](playground/arbor.config.ts)
 - [packages/modes/src/modeToCss.ts](packages/modes/src/modeToCss.ts) - Convert mode values to CSS variables
 - [packages/colors/src/index.ts](packages/colors/src/index.ts) - Color system (OKLCH ranges, schemes)
 
-### Color System
+## Coding practices
 
-Colors use **OKLCH** color space (perceptually uniform). Key patterns:
-
-- `createColorRange()` - Generate shade ranges (paper, wash, light, mid, heavy, ink)
-- `createScheme()` - Create light/dark scheme with auto-derived neutrals
-
-See: [packages/colors/](packages/colors)
+- State and decisions should live in one place. Avoid duplicating state and risking getting out of sync; derive dependent state from one source of truth as needed.
+- Do not add needless comment documentation or sectioning. If you have some large groups of related functionalities in one file, split them into their own modules rather than delineating sections with comment blocks. Give functions and variables clear names and add JSDoc as needed for clarity.
+- Avoid redundant computation and abstractions. Look out for logic flows where data is transformed from one representation, to another, and then back. Changes in representation should be meaningful.
+- Don't bias too heavily to whatever approach was taken before; align the codebase to the current best idea of how the logic should work. For internal-use packages like `calc`, we don't have to worry too much about breaking changes. Prefer clarity to continuity.
 
 ## Testing
 
@@ -157,22 +136,9 @@ See: [packages/colors/](packages/colors)
 - Base config: [tsconfig.base.json](tsconfig.base.json)
 - Generics: Heavy use of TypeScript generics for type safety
 
-## Common Pitfalls
-
-⚠️ **Modes and schemes**: "Mode" does not mean "light mode" or "dark mode." Those are "schemes." "Modes" are semantic applications of tokens in the UI. See the section on Modes in this document.
-
-⚠️ **Workspace protocols**: Internal dependencies use `workspace:*`. Ensure `pnpm` is used (not npm).
-
-## Documentation to Reference
-
-- **Architecture**: No dedicated ARCHITECTURE.md; see package READMEs for details
-- **Examples**: [docs/src/components/](docs/src/components) - Live Astro components
-- **Classes demo**: [packages/classes/demo/](packages/classes/demo) - Interactive testing app
-- **Test examples**: [packages/classes/src/rules/](packages/classes/src/rules) - Extensive `.test.ts` files
-
 ## Process
 
-- When working from a promt file, once the work is complete, clean up the prompt file and any other notes or comments that aren't relevant to the final state of the project.
+- When working from a prompt file, once the work is complete, clean up the prompt file and any other notes or comments that aren't relevant to the final state of the project.
 
 ## Environment
 

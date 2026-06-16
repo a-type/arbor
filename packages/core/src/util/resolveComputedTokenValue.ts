@@ -1,6 +1,6 @@
 import {
-	$,
 	computeEquation,
+	css,
 	isCalcEquation,
 	printComputationResult,
 	type Equation,
@@ -32,16 +32,15 @@ export function resolveComputedTokenValue(
 		...propertyValues,
 	};
 
-	const computed =
-		typeof tokenValue === 'string' ?
-			computeEquation($.val(tokenValue), {
-				propertyValues: contextValues,
-				skipBaking: false,
-			})
-		:	computeEquation(tokenValue, {
-				propertyValues: contextValues,
-				skipBaking: false,
-			});
+	const computed = computeEquation(
+		css`
+			${tokenValue}
+		`,
+		{
+			propertyValues: contextValues,
+			skipBaking: false,
+		},
+	);
 
 	return printComputationResult(computed);
 }

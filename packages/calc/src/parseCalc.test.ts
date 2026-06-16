@@ -141,9 +141,9 @@ describe('css template — token interpolation', () => {
 		const eq = css`
 			${[tokenA, tokenB]}
 		`;
-		expect(eq.ast).toEqual(css`var(--x-foo, var(--x-bar))`.ast);
+		expect(eq.ast).toEqual(css`var(--x-foo,var(--x-bar))`.ast);
 		expect(eq.tokens).toEqual([tokenA, tokenB]);
-		expect(printEquation(eq)).toBe(`${tokenA.varFallback(tokenB.var)}`);
+		expect(printEquation(eq)).toBe(`var(--x-foo,var(--x-bar))`);
 	});
 
 	it('supports token fallback to a literal', () => {
@@ -154,7 +154,7 @@ describe('css template — token interpolation', () => {
 		expect(eq.tokens).toEqual([tokenA]);
 	});
 
-	it.fails('collects tokens from nested stylesheet interpolations', () => {
+	it('collects tokens from nested stylesheet interpolations', () => {
 		const sheetA = css`
 			${tokenA}: 10px;
 			color: ${tokenB};
