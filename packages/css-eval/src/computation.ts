@@ -28,6 +28,7 @@ export async function resolveCss(
 	const result = await transform({
 		filename: 'input.css',
 		code: cssToTransform,
+		minify: true,
 		visitor: {
 			// substitute known variables with their values
 			Variable(variable) {
