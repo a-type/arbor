@@ -28,29 +28,26 @@ export async function resolveCss(
 	const result = await transform({
 		filename: 'input.css',
 		code: cssToTransform,
-		// minify: false,
-		// analyzeDependencies: false,
-		// cssModules: false,
-		// visitor: {
-		// 	// substitute known variables with their values
-		// 	Variable(variable) {
-		// 		if (skipBaking) {
-		// 			return { type: 'var', value: variable };
-		// 		}
+		visitor: {
+			// substitute known variables with their values
+			Variable(variable) {
+				if (skipBaking) {
+					return { type: 'var', value: variable };
+				}
 
-		// 		const name = variable.name.ident;
-		// 		const value = propertyValues[name];
-		// 		if (value) {
-		// 			if (typeof value === 'string') {
-		// 				return { raw: value };
-		// 			} else if ('text' in value && 'tokens' in value) {
-		// 				return { raw: value.text };
-		// 			}
-		// 		}
+				const name = variable.name.ident;
+				const value = propertyValues[name];
+				if (value) {
+					if (typeof value === 'string') {
+						return { raw: value };
+					} else if ('text' in value && 'tokens' in value) {
+						return { raw: value.text };
+					}
+				}
 
-		// 		return { type: 'var', value: variable };
-		// 	},
-		// },
+				return { type: 'var', value: variable };
+			},
+		},
 	});
 
 	if (isSingle) {
