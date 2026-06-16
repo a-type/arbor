@@ -39,6 +39,18 @@ it('is extensible', () => {
 					${base.mixins.bgFaded.apply({ '--opacity': '0.5' })}
 				`,
 			}),
+			hover: create('hover', {
+				definition: (css) => css`
+					&:hover {
+						${base.mixins.bgLighter.apply({ '--step': 1 })}
+						${base.$.mixins.ring.value}: ${base.functions.ring.compute({
+							'--size': '2px',
+							'--color': base.$.mode.color.main.heavy,
+						})};
+						cursor: pointer;
+					}
+				`,
+			}),
 		}),
 		functions: (create, $) => ({
 			test: create('test', {
@@ -58,6 +70,11 @@ it('is extensible', () => {
 	expect(getInternals(preset).modes.dark).toBeDefined();
 	expect(getInternals(preset).modes.light).toBeDefined();
 	expect(getInternals(preset).modes.inverted).toBeDefined();
+
+	const hoverBodyText = preset.mixins.hover.body.text;
+	expect(hoverBodyText).toMatchInlineSnapshot(
+		`"&:hover { --_-param-bg-lighter-step: 1;--_-param-bg-lighter-source: var(--mx-bg-applied); --mx-bg-ref: oklch(from var(--_-param-bg-lighter-source, var(--mx-bg-applied)) calc(l + var(--_-param-bg-lighter-step) * 0.5 * (var(--m-global-whenLight, 1) * calc(pow(1 - l, 0.5)) * 2 + var(--m-global-whenDark, 1) * -0.08)) calc(c * calc(1 + var(--_-param-bg-lighter-step) * 0.5 * (var(--m-global-whenLight, 1) * -0.08) + (var(--m-global-whenDark, 1) * -0.02))) h); var(--mx-ring-value): 0 0 0 0px var(--m-global-trueLightColor), 0 0 0 calc(2px + 0px) var(--m-color-main-heavy); cursor: pointer; }"`,
+	);
 
 	// check typing of extended mixins
 	// @ts-expect-error
@@ -86,7 +103,7 @@ it('allows augmenting built-in modes', () => {
 		},
 	});
 
-	const css = modeToCss(darkMode, preset);
+	const css = modeToCss(darkMode, preset, {});
 	expect(css).toContain('.\\@mode-dark');
 	expect(css).toContain('--m-action-primary-bg: var(--m-color-main-heavy);');
 	// still includes built-in stuff

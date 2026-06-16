@@ -28,7 +28,7 @@
 		"prepublishOnly": "pnpm build"
 	},
 	"dependencies": {
-		"@arbor-css/calc": "workspace:*",
+		"@arbor-css/css-eval": "workspace:*",
 		"@arbor-css/core": "workspace:*",
 		"@arbor-css/functions": "workspace:*",
 		"@arbor-css/tokens": "workspace:*",

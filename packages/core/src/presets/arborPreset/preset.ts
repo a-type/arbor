@@ -1,3 +1,4 @@
+import { css } from '@arbor-css/css-eval';
 import { ArborPrefixConfig } from '@arbor-css/globals';
 import { ModeValues } from '@arbor-css/modes';
 import { definePreset } from '@arbor-css/preset';
@@ -150,7 +151,7 @@ export const presetArbor = <
 			const newBorderMixins = createColorMixins(create, $.mode.global, {
 				name: 'border',
 				property: 'border-color',
-				extra: (css) => css`
+				extra: () => css`
 					border-style: solid;
 					border-width: calc(1px * ${$.mode.global.lineWidth});
 				`,

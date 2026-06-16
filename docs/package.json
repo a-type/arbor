@@ -9,7 +9,8 @@
 		"build": "astro build",
 		"preview": "astro preview",
 		"astro": "astro",
-		"validate": "arbor validate ./src/**/*.{css,astro}"
+		"validate": "arbor validate ./src/**/*.{css,astro}",
+		"generate": "arbor build -o generated.css"
 	},
 	"dependencies": {
 		"@arbor-css/core": "workspace:^",

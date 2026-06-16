@@ -1,5 +1,6 @@
 /// <reference types="node" />
 
+import { simplifier } from '@arbor-css/css-eval/node';
 import { createJiti } from 'jiti';
 import fs from 'node:fs';
 import { glob } from 'node:fs/promises';
@@ -64,6 +65,7 @@ yargs(hideBin(process.argv))
 					description: 'Path to the output file',
 				}),
 		async (argv) => {
+			const startTime = Date.now();
 			try {
 				console.log('Building with config:', argv.config);
 				console.log('Output file:', argv.output);
@@ -82,11 +84,15 @@ yargs(hideBin(process.argv))
 			} catch (error) {
 				console.error(error instanceof Error ? error.message : String(error));
 				process.exit(1);
+			} finally {
+				const endTime = Date.now();
+				const duration = ((endTime - startTime) / 1000).toFixed(2);
+				console.log(`Build completed in ${duration} seconds.`);
 			}
 		},
 	)
 	.command(
-		'tokens list',
+		'tokens:list',
 		'List all tokens in the Arbor config',
 		(y) =>
 			y
@@ -117,7 +123,7 @@ yargs(hideBin(process.argv))
 		},
 	)
 	.command(
-		'functions list',
+		'functions:list',
 		'List all Arbor functions in the config',
 		(y) =>
 			y.option('config', {
@@ -141,7 +147,7 @@ yargs(hideBin(process.argv))
 		},
 	)
 	.command(
-		'mixins list',
+		'mixins:list',
 		'List all Arbor mixins in the config',
 		(y) =>
 			y.option('config', {
@@ -165,7 +171,7 @@ yargs(hideBin(process.argv))
 		},
 	)
 	.command(
-		'token info',
+		'token:info',
 		'Show detailed info for a token. Pass a token name as a positional argument.',
 		(y) =>
 			y.option('config', {
@@ -204,7 +210,7 @@ yargs(hideBin(process.argv))
 		},
 	)
 	.command(
-		'token resolve',
+		'token:resolve',
 		'Resolve and print a token value using default scheme and base mode.',
 		(y) =>
 			y.option('config', {
@@ -235,7 +241,9 @@ yargs(hideBin(process.argv))
 					process.exit(1);
 				}
 
-				const resolved = resolveComputedTokenValue(arbor, record.token.name);
+				const resolved = resolveComputedTokenValue(arbor, record.token.name, {
+					simplifier,
+				});
 				if (resolved === undefined) {
 					console.error(`Token could not be resolved: ${record.token.name}`);
 					process.exit(1);

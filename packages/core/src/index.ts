@@ -1,10 +1,4 @@
-export * from '@arbor-css/calc';
-export {
-	computeEquation,
-	css,
-	printComputationResult,
-	printEquation,
-} from '@arbor-css/calc';
+export * from '@arbor-css/css-eval';
 export * from '@arbor-css/functions';
 export {
 	DEFAULT_META_TOKEN_PREFIX,
@@ -20,6 +14,7 @@ export { definePreset } from '@arbor-css/preset';
 export * from '@arbor-css/preset/config';
 export * from '@arbor-css/tokens';
 export * from './getStructuredTokensMap.js';
+export { resolveCss } from './publicResolve.js';
 export { generateStylesheet } from './stylesheet/generateStylesheet.js';
 export {
 	buildModeTokenGraph,

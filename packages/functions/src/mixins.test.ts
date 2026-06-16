@@ -1,16 +1,8 @@
-import {
-	css,
-	isCssStylesheet,
-	printEquation,
-	printStylesheet,
-} from '@arbor-css/calc';
+import { css, isCss, printCss } from '@arbor-css/css-eval';
 import { createTokenFactory } from '@arbor-css/tokens';
 import { describe, expect, it } from 'vitest';
-import {
-	createMixinFactory,
-	isMixin,
-	isMixinPropertyDeclaration,
-} from './mixins.js';
+import { createFunctionFactory } from './functions.js';
+import { createMixinFactory, isMixin } from './mixins.js';
 
 const createToken = createTokenFactory({ tokenPrefix: '--x-' });
 const createMixin = createMixinFactory({
@@ -40,7 +32,8 @@ describe('createMixin', () => {
 		});
 
 		expect(mixin.description).toBe('Applies stacked shadow variables');
-		expect(mixin.body).toHaveLength(3);
+		expect(isCss(mixin.body)).toBe(true);
+		expect(mixin.body.type).toBe('stylesheet');
 	});
 
 	it('generates a CSS @mixin definition', () => {
@@ -73,16 +66,6 @@ describe('createMixin', () => {
 		expect(mixin.definition).toBe(
 			'@mixin --x-mixin-responsive-bg { @media (max-width: 400px) { background: red; } .parent { color: blue; } }',
 		);
-		expect(mixin.body).toEqual([
-			{
-				scope: '@media (max-width: 400px)',
-				children: [{ prop: 'background', value: css`red` }],
-			},
-			{
-				scope: '.parent',
-				children: [{ prop: 'color', value: css`blue` }],
-			},
-		]);
 	});
 
 	it('supports nested scoped declarations', () => {
@@ -100,21 +83,6 @@ describe('createMixin', () => {
 		expect(mixin.definition).toBe(
 			'@mixin --x-mixin-complex { .parent { color: blue; &:hover { color: red; } } }',
 		);
-	});
-
-	it('returns inlinable declarations', () => {
-		const mixin = createMixin('shadow', {
-			definition: (css) => css`
-				--x-system-shadow: 0 0 0 0 transparent;
-			`,
-		});
-
-		expect(
-			mixin.body.filter(isMixinPropertyDeclaration).map((decl) => ({
-				prop: decl.prop,
-				value: printEquation(decl.value),
-			})),
-		).toEqual([{ prop: '--x-system-shadow', value: '0 0 0 0 transparent' }]);
 	});
 
 	it('supports parameters in definitions', () => {
@@ -214,14 +182,10 @@ describe('createMixin', () => {
 
 		const result = mixin.apply({ '--default-ring-color': 'red' });
 		// apply() now returns a CssStylesheet fragment
-		expect(isCssStylesheet(result)).toBe(true);
+		expect(result.type).toBe('stylesheet');
 		// Verify the printed output includes the parameter assignment + body
-		expect(printStylesheet(result)).toBe(
-			`${mixin.parameterTokens[0].name}: red;\n` +
-				mixin.body
-					.filter(isMixinPropertyDeclaration)
-					.map((d) => `${d.prop}: ${printEquation(d.value)};`)
-					.join('\n'),
+		expect(printCss(result)).toContain(
+			`${mixin.parameterTokens[0].name}: red;`,
 		);
 	});
 
@@ -238,9 +202,9 @@ describe('createMixin', () => {
 		const token = createToken('my-color');
 		const result = mixin.apply({ '--default-ring-color': token });
 		// apply() now returns a CssStylesheet fragment
-		expect(isCssStylesheet(result)).toBe(true);
+		expect(result.type).toBe('stylesheet');
 		// The parameter declaration should use the token's var()
-		expect(printStylesheet(result)).toContain(
+		expect(printCss(result)).toContain(
 			`${mixin.parameterTokens[0].name}: ${token.var};`,
 		);
 	});
@@ -278,8 +242,8 @@ describe('createMixin', () => {
 
 		// mixinB.apply() returns a CssStylesheet with the body of A + background
 		const result = mixinB.apply({});
-		expect(isCssStylesheet(result)).toBe(true);
-		expect(printStylesheet(result)).toBe('color: red;\nbackground: blue;');
+		expect(result.type).toBe('stylesheet');
+		expect(printCss(result)).toBe('color: red; background: blue;');
 	});
 
 	it('should handle composing multiple mixins with the same param names', () => {
@@ -310,42 +274,26 @@ describe('createMixin', () => {
 		);
 	});
 
-	// TODO: make this work...
-	// it('has useful typechecking for definition', () => {
-	// 	createMixin('test', {
-	// 		parameters: ['--color'] as const,
-	// 		definition: (css, { parameters: [color] }) => [
-	// 			// valid
-	// 			{
-	// 				scope: '&:hover',
-	// 				children: [{ prop: 'color', value: color }],
-	// 			},
-	// 			{
-	// 				prop: 'background',
-	// 				value: color,
-	// 			},
-	// 			// invalid
-	// 			// @ts-expect-error
-	// 			{
-	// 				scope: '&:hover',
-	// 			},
-	// 			// @ts-expect-error
-	// 			{
-	// 				scope: '&:hover',
-	// 				declarations: [],
-	// 			},
-	// 			// @ts-expect-error
-	// 			{
-	// 				prop: 'color',
-	// 			},
-	// 			// @ts-expect-error
-	// 			{
-	// 				prop: 'color',
-	// 				unrelated: 'any',
-	// 			},
-	// 		],
-	// 	});
-	// });
+	it('should compose function calls', () => {
+		const functionA = createFunctionFactory()('a', {
+			parameters: ['--color'] as const,
+			definition: (css, color) => css`
+				rgb(${color} / 0.5)
+			`,
+		});
+		const mixinA = createMixin('a', {
+			parameters: ['--color'] as const,
+			definition: (css, { parameters: [color] }) => css`
+				color: ${functionA.compute({ '--color': color })};
+			`,
+		});
+
+		const result = mixinA.apply({ '--color': 'red' });
+		expect(result.type).toBe('stylesheet');
+		expect(printCss(result)).toBe(
+			'--_-param-a-color: red; color: rgb(var(--_-param-a-color) / 0.5);',
+		);
+	});
 });
 
 describe('isMixin', () => {

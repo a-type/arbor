@@ -130,8 +130,8 @@ const preset = definePreset({
 			definition: (css) => css`
 				&:hover {
 					${basePreset.mixins.bgLighter.apply({ '--step': 1 })}
-					${basePreset.$.mixins.ring.value
-						.name}: ${basePreset.functions.ring.compute({
+					${basePreset.$.mixins.ring
+						.value}: ${basePreset.functions.ring.compute({
 						'--size': '2px',
 						'--color': basePreset.$.mode.color.main.heavy,
 					})};
@@ -147,8 +147,8 @@ const preset = definePreset({
 
 				&:focus-visible {
 					${basePreset.mixins.bgLighter.apply({ '--step': 2 })}
-					${basePreset.$.mixins.ring.value
-						.name}: ${basePreset.functions.ring.compute({
+					${basePreset.$.mixins.ring
+						.value}: ${basePreset.functions.ring.compute({
 						'--size': '3px',
 						'--color': basePreset.$.mode.color.main.heavy,
 						'--offset': '1px',
@@ -160,8 +160,8 @@ const preset = definePreset({
 			definition: (css) => css`
 				&:active {
 					${basePreset.mixins.bgHeavier.apply({ '--step': 1 })}
-					${basePreset.$.mixins.ring.value
-						.name}: ${basePreset.functions.ring.compute({
+					${basePreset.$.mixins.ring
+						.value}: ${basePreset.functions.ring.compute({
 						'--size': '1px',
 						'--color': basePreset.$.mode.color.main.heavy,
 					})};

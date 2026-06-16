@@ -1,22 +1,12 @@
-import { Equation, isCalcEquation } from '@arbor-css/calc';
-import {
-	isToken,
-	SimpleTokenDefinition,
-	SimpleTokenSchema,
-	Token,
-} from '@arbor-css/tokens';
+import { CssInterpolation, isCssInterpolation } from '@arbor-css/css-eval';
+import { SimpleTokenDefinition, SimpleTokenSchema } from '@arbor-css/tokens';
 import { deepMerge, DeepPartial } from '@arbor-css/util';
 
 export type ModeSchemaProperty = SimpleTokenDefinition;
 
-export type ModeValue = string | number | Token | Equation;
+export type ModeValue = CssInterpolation;
 export function isModeValue(value: any): value is ModeValue {
-	return (
-		isCalcEquation(value) ||
-		isToken(value) ||
-		typeof value === 'string' ||
-		typeof value === 'number'
-	);
+	return isCssInterpolation(value);
 }
 export type ModeValues<T extends SimpleTokenSchema> = {
 	[P in keyof T]: NonNullable<T[P]> extends ModeSchemaProperty ? ModeValue

@@ -1,4 +1,4 @@
-import { css } from '@arbor-css/calc';
+import { css } from '@arbor-css/css-eval';
 import { definePreset } from '@arbor-css/preset';
 import { SimpleTokenSchema } from '@arbor-css/tokens';
 import {
@@ -83,36 +83,35 @@ export const presetBasic = definePreset({
 			description: 'Lightens a color by a specified "step" value',
 			parameters: ['--color', '--step'] as const,
 			definition: (css, color, step) =>
-				lightenColorAlteration(css, $.mode.global, color, step),
+				lightenColorAlteration($.mode.global, color, step),
 		});
 
 		const colorHeavier = create('color-heavier', {
 			description: 'Darkens a color by a specified "step" value',
 			parameters: ['--color', '--step'] as const,
 			definition: (css, color, step) =>
-				darkenColorAlteration(css, $.mode.global, color, step),
+				darkenColorAlteration($.mode.global, color, step),
 		});
 
 		const colorDesaturated = create('color-desaturated', {
 			description: 'Desaturates a color by a specified "step" value',
 			parameters: ['--color', '--step'] as const,
 			definition: (css, color, step) =>
-				desaturateColorAlteration(css, $.mode.global, color, step),
+				desaturateColorAlteration($.mode.global, color, step),
 		});
 
 		const colorSaturated = create('color-saturated', {
 			description: 'Saturates a color by a specified "step" value',
 			parameters: ['--color', '--step'] as const,
 			definition: (css, color, step) =>
-				saturateColorAlteration(css, $.mode.global, color, step),
+				saturateColorAlteration($.mode.global, color, step),
 		});
 
 		const colorFaded = create('color-faded', {
 			description:
 				'Applies an alpha channel to a source color using CSS relative color syntax.',
 			parameters: ['--color', '--opacity'] as const,
-			definition: (css, color, opacity) =>
-				fadeColorAlteration(css, color, opacity),
+			definition: (css, color, opacity) => fadeColorAlteration(color, opacity),
 		});
 
 		const ring = create('ring', {

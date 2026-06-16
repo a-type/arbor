@@ -82,30 +82,11 @@ importers:
         specifier: ^1.7.5
         version: 1.7.5
 
-  packages/calc:
-    dependencies:
-      '@arbor-css/tokens':
-        specifier: workspace:*
-        version: link:../tokens
-      '@types/css-tree':
-        specifier: ^2.3.11
-        version: 2.3.11
-      css-tree:
-        specifier: ^3.2.1
-        version: 3.2.1
-    devDependencies:
-      typescript:
-        specifier: 'catalog:'
-        version: 6.0.3
-      vitest:
-        specifier: 'catalog:'
-        version: 4.1.7(@types/node@25.9.1)(@vitest/browser-playwright@4.1.5)(vite@8.0.13(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(yaml@2.8.4))
-
   packages/core:
     dependencies:
-      '@arbor-css/calc':
+      '@arbor-css/css-eval':
         specifier: workspace:*
-        version: link:../calc
+        version: link:../css-eval
       '@arbor-css/functions':
         specifier: workspace:*
         version: link:../functions
@@ -164,10 +145,16 @@ importers:
       lightningcss:
         specifier: ^1.32.0
         version: 1.32.0
+      magic-string:
+        specifier: ^0.30.21
+        version: 0.30.21
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
         version: 25.9.1
+      lightningcss-wasm:
+        specifier: 1.32.0
+        version: 1.32.0
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -177,9 +164,9 @@ importers:
 
   packages/functions:
     dependencies:
-      '@arbor-css/calc':
+      '@arbor-css/css-eval':
         specifier: workspace:*
-        version: link:../calc
+        version: link:../css-eval
       '@arbor-css/tokens':
         specifier: workspace:*
         version: link:../tokens
@@ -212,9 +199,9 @@ importers:
 
   packages/modes:
     dependencies:
-      '@arbor-css/calc':
+      '@arbor-css/css-eval':
         specifier: workspace:*
-        version: link:../calc
+        version: link:../css-eval
       '@arbor-css/globals':
         specifier: workspace:*
         version: link:../globals
@@ -234,12 +221,12 @@ importers:
 
   packages/postcss:
     dependencies:
-      '@arbor-css/calc':
-        specifier: workspace:*
-        version: link:../calc
       '@arbor-css/core':
         specifier: workspace:*
         version: link:../core
+      '@arbor-css/css-eval':
+        specifier: workspace:*
+        version: link:../css-eval
       '@arbor-css/functions':
         specifier: workspace:*
         version: link:../functions
@@ -271,9 +258,9 @@ importers:
 
   packages/preset:
     dependencies:
-      '@arbor-css/calc':
+      '@arbor-css/css-eval':
         specifier: workspace:*
-        version: link:../calc
+        version: link:../css-eval
       '@arbor-css/functions':
         specifier: workspace:*
         version: link:../functions
@@ -1434,9 +1421,6 @@ packages:
   '@types/chai@5.2.3':
     resolution: {integrity: sha512-Mw558oeA9fFbv65/y4mHtXDs9bPnFMZAL/jxdPFUpOHHIXX91mcgEHbS5Lahr+pwZFR8A7GQleRWeI6cGFC2UA==}
 
-  '@types/css-tree@2.3.11':
-    resolution: {integrity: sha512-aEokibJOI77uIlqoBOkVbaQGC9zII0A+JH1kcTNKW2CwyYWD8KM6qdo+4c77wD3wZOQfJuNWAr9M4hdk+YhDIg==}
-
   '@types/debug@4.1.12':
     resolution: {integrity: sha512-vIChWdVG3LG1SMxEvI/AK+FWJthlrqlTu7fbrlywTkkaONwk/UAGaULXRlf8vkzFBLVm0zkMdCquhL5aOjhXPQ==}
 
@@ -1942,10 +1926,6 @@ packages:
 
   css-tree@3.1.0:
     resolution: {integrity: sha512-0eW44TGN5SQXU1mWSkKwFstI/22X2bG1nYzZTYMAWjylYURhse752YgbE4Cx46AC+bAvI+/dYTPRk1LqSUnu6w==}
-    engines: {node: ^10 || ^12.20.0 || ^14.13.0 || >=15.0.0}
-
-  css-tree@3.2.1:
-    resolution: {integrity: sha512-X7sjQzceUhu1u7Y/ylrRZFU2FS6LRiFVp6rKLPg23y3x3c3DOKAwuXGDp+PAGjh6CSnCjYeAul8pcT8bAl+lSA==}
     engines: {node: ^10 || ^12.20.0 || ^14.13.0 || >=15.0.0}
 
   css-what@6.2.2:
@@ -2577,6 +2557,12 @@ packages:
     os: [linux]
     libc: [musl]
 
+  lightningcss-wasm@1.32.0:
+    resolution: {integrity: sha512-SteAkCtRuSCDYPGHKhLV/dDs5Bk+7I4QUxWxfk4xwsTI1rQk8MQyYtpGcd3NECsUGzK0q2/KqoVS+YHCqKHUTQ==}
+    engines: {node: '>= 12.0.0'}
+    bundledDependencies:
+      - napi-wasm
+
   lightningcss-win32-arm64-msvc@1.32.0:
     resolution: {integrity: sha512-8SbC8BR40pS6baCM8sbtYDSwEVQd4JlFTOlaD3gWGHfThTcABnNDBda6eTZeqbofalIJhFx0qKzgHJmcPTnGdw==}
     engines: {node: '>= 12.0.0'}
@@ -2726,9 +2712,6 @@ packages:
 
   mdn-data@2.12.2:
     resolution: {integrity: sha512-IEn+pegP1aManZuckezWCO+XZQDplx1366JoVhTpMpBB1sPey/SbveZQUosKiKiGYjg1wH4pMlNgXbCiYgihQA==}
-
-  mdn-data@2.27.1:
-    resolution: {integrity: sha512-9Yubnt3e8A0OKwxYSXyhLymGW4sCufcLG6VdiDdUGVkPhpqLxlvP5vl1983gQjJl3tqbrM731mjaZaP68AgosQ==}
 
   mdurl@2.0.0:
     resolution: {integrity: sha512-Lf+9+2r+Tdp5wXDXC4PcIBjTDtq4UKjCPMQhKIuzpJNW0b96kVqSwW0bT7FhRSfmAiFYgP+SCRvdrDozfh0U5w==}
@@ -4974,8 +4957,6 @@ snapshots:
       '@types/deep-eql': 4.0.2
       assertion-error: 2.0.1
 
-  '@types/css-tree@2.3.11': {}
-
   '@types/debug@4.1.12':
     dependencies:
       '@types/ms': 2.1.0
@@ -5681,11 +5662,6 @@ snapshots:
   css-tree@3.1.0:
     dependencies:
       mdn-data: 2.12.2
-      source-map-js: 1.2.1
-
-  css-tree@3.2.1:
-    dependencies:
-      mdn-data: 2.27.1
       source-map-js: 1.2.1
 
   css-what@6.2.2: {}
@@ -6424,6 +6400,8 @@ snapshots:
   lightningcss-linux-x64-musl@1.32.0:
     optional: true
 
+  lightningcss-wasm@1.32.0: {}
+
   lightningcss-win32-arm64-msvc@1.32.0:
     optional: true
 
@@ -6691,8 +6669,6 @@ snapshots:
   mdn-data@2.0.28: {}
 
   mdn-data@2.12.2: {}
-
-  mdn-data@2.27.1: {}
 
   mdurl@2.0.0: {}
 

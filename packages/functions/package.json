@@ -33,7 +33,7 @@
 		"vite": "catalog:"
 	},
 	"dependencies": {
-		"@arbor-css/calc": "workspace:*",
+		"@arbor-css/css-eval": "workspace:*",
 		"@arbor-css/tokens": "workspace:*"
 	}
 }

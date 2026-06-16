@@ -1,4 +1,4 @@
-import { CalcInterpolation, css, Equation } from '@arbor-css/calc';
+import { css, Css, CssInterpolation } from '@arbor-css/css-eval';
 import {
 	createTokenFactory,
 	isToken,
@@ -16,7 +16,7 @@ export type FunctionParamWithMeta = {
 export type FunctionParam = CssProperty | FunctionParamWithMeta;
 export type FunctionParams = readonly FunctionParam[];
 export type ParamsAsInterpolations<TParams extends FunctionParams> = {
-	[K in keyof TParams]: CalcInterpolation;
+	[K in keyof TParams]: CssInterpolation;
 };
 export type ParamsAsNames<TParams extends FunctionParams> = {
 	[K in keyof TParams]: TParams[K] extends FunctionParamWithMeta ?
@@ -32,13 +32,13 @@ export type ParamsAsCallInputs<TParams extends FunctionParams> = {
 	[K in keyof TParams as TParams[K] extends { fallback: string } ? never
 	: TParams[K] extends FunctionParamWithMeta ? TParams[K]['name']
 	: TParams[K] extends CssProperty ? TParams[K]
-	: never]: CalcInterpolation;
+	: never]: CssInterpolation;
 } & {
 	[K in keyof TParams as TParams[K] extends (
 		{ name: CssProperty; fallback: string }
 	) ?
 		TParams[K]['name']
-	:	never]?: CalcInterpolation;
+	:	never]?: CssInterpolation;
 };
 
 export function isFunctionParamWithMeta(
@@ -71,7 +71,7 @@ export function paramsAsString<TParams extends FunctionParams>(
 			if (isToken(p)) {
 				const type = p.type ?? '*';
 				const typeAnnotation = type === '*' ? '' : ` <${type}>`;
-				return `${name}${typeAnnotation}` as CalcInterpolation;
+				return `${name}${typeAnnotation}` as CssInterpolation;
 			}
 			return name;
 		})
@@ -126,7 +126,7 @@ export function applyParameters(
 	params: FunctionParams,
 	inputs: Record<string, string>,
 	nonce: string,
-	apply: (name: string, value: Equation) => void,
+	apply: (name: string, value: Css) => void,
 ) {
 	for (const param of params) {
 		const name = getParamName(param);
@@ -141,7 +141,7 @@ export function applyParameters(
 				asToken.name,
 				css`
 					${inputValue}
-				` as Equation,
+				`,
 			);
 		}
 	}

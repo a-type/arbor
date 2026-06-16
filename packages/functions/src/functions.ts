@@ -1,13 +1,10 @@
 import {
-	CalcEvaluationContext,
-	computeEquation,
 	css,
 	Css,
-	type Equation,
-	isCssStylesheet,
-	printComputationResult,
-	printEquation,
-} from '@arbor-css/calc';
+	CssTemplate,
+	printCss,
+	resolveProperties,
+} from '@arbor-css/css-eval';
 import { Token } from '@arbor-css/tokens';
 import {
 	applyParameters,
@@ -36,9 +33,9 @@ export type CreateFunctionParameters<TParams extends FunctionParams> = {
 	description?: string;
 	parameters: TParams;
 	definition: (
-		css: Css,
+		css: CssTemplate,
 		...params: ParamsAsInterpolations<TParams>
-	) => Equation;
+	) => Css;
 };
 /**
  * Creates a CSS custom function definition with runtime compute capability.
@@ -78,19 +75,16 @@ export function createFunctionFactory({
 			nonce: name,
 		});
 		const paramsAsTokens = parameters.map((p) => paramAsToken(p, name));
-		const rawEquation = definition(
-			css,
-			...paramsAsInterpolations(parameters, name),
-		);
-		if (isCssStylesheet(rawEquation as unknown)) {
+		const rawCss = definition(css, ...paramsAsInterpolations(parameters, name));
+		if (rawCss.type === 'stylesheet') {
 			throw new TypeError(
 				`createFunction: the definition callback for '${cssName}' returned a stylesheet block, ` +
 					`but functions must return a single CSS value expression. ` +
 					`Use mixin (createMixin) instead for block-level definitions.`,
 			);
 		}
-		const equation = rawEquation as Equation;
-		const body = printEquation(equation);
+		const equation = rawCss as Css;
+		const body = printCss(equation);
 		const cssDefinition = `@function ${cssName}${paramsList} { result: ${body}; }`;
 
 		return {
@@ -101,22 +95,13 @@ export function createFunctionFactory({
 			parameterTokens: paramsAsTokens,
 			equation,
 			definition: cssDefinition,
-			compute(
-				params: ParamsAsCallInputs<TParams>,
-				ctx?: CalcEvaluationContext,
-			): string {
-				const parameterValues: Record<string, string | Equation> = {};
+			compute(params: ParamsAsCallInputs<TParams>) {
+				const parameterValues: Record<string, string | Css> = {};
 				applyParameters(parameters, params, name, (paramName, value) => {
 					parameterValues[paramName] = value;
 				});
-				const result = computeEquation(equation, {
-					...ctx,
-					propertyValues: {
-						...ctx?.propertyValues,
-						...parameterValues,
-					},
-				});
-				return printComputationResult(result);
+				const result = resolveProperties(equation, parameterValues);
+				return result;
 			},
 			signature: `${cssName}${paramsAsString(parameters, { keepEmpty: true })}`,
 		};
@@ -129,12 +114,9 @@ export type ArborFunction<TParams extends FunctionParams = FunctionParams> = {
 	description?: string;
 	parameters: TParams;
 	parameterTokens: Token[];
-	equation: Equation;
+	equation: Css;
 	definition: string;
-	compute: (
-		params: ParamsAsCallInputs<TParams>,
-		ctx?: CalcEvaluationContext,
-	) => string;
+	compute: (params: ParamsAsCallInputs<TParams>) => Css;
 	/**
 	 * A printed representation of the function call signature, for use in
 	 * documentation and error messages

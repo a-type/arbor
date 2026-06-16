@@ -14,9 +14,20 @@
 	"exports": {
 		".": {
 			"import": "./dist/index.js",
-			"node": "./dist/index.js",
 			"types": "./dist/index.d.ts",
 			"default": "./dist/index.js"
+		},
+		"./node": {
+			"import": "./dist/node.js",
+			"node": "./dist/node.js",
+			"types": "./dist/node.d.ts",
+			"default": "./dist/node.js"
+		},
+		"./browser": {
+			"import": "./dist/browser.js",
+			"browser": "./dist/browser.js",
+			"types": "./dist/browser.d.ts",
+			"default": "./dist/browser.js"
 		}
 	},
 	"sideEffects": false,
@@ -29,11 +40,13 @@
 	},
 	"devDependencies": {
 		"@types/node": "catalog:",
+		"lightningcss-wasm": "1.32.0",
 		"typescript": "catalog:",
 		"vitest": "catalog:"
 	},
 	"dependencies": {
 		"@arbor-css/tokens": "workspace:*",
-		"lightningcss": "^1.32.0"
+		"lightningcss": "^1.32.0",
+		"magic-string": "^0.30.21"
 	}
 }

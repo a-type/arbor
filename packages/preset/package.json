@@ -43,6 +43,6 @@
 		"@arbor-css/tokens": "workspace:*",
 		"@arbor-css/util": "workspace:*",
 		"@arbor-css/functions": "workspace:*",
-		"@arbor-css/calc": "workspace:*"
+		"@arbor-css/css-eval": "workspace:*"
 	}
 }

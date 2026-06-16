@@ -1,19 +1,19 @@
 import {
-	computeEquation,
 	css,
-	isCalcEquation,
-	printComputationResult,
-	type Equation,
-} from '@arbor-css/calc';
+	CssResolutionContext,
+	isCss,
+	resolveCss,
+	type Css,
+} from '@arbor-css/css-eval';
 import { ArborPreset, getInternals } from '@arbor-css/preset/config';
 import { isToken, tokenSchemaToList } from '@arbor-css/tokens';
 
-type PropertyValueMap = Record<string, string | Equation | undefined>;
+type PropertyValueMap = Record<string, string | Css>;
 
 export function resolveComputedTokenValue(
 	preset: ArborPreset<any, any>,
 	tokenName: string,
-	propertyValues: PropertyValueMap = {},
+	{ simplifier, propertyValues }: CssResolutionContext,
 ): string | undefined {
 	const resolvedValues = getResolvedTokenValues(preset);
 	const tokens = tokenSchemaToList(preset.$);
@@ -32,26 +32,27 @@ export function resolveComputedTokenValue(
 		...propertyValues,
 	};
 
-	const computed = computeEquation(
+	const computed = resolveCss(
 		css`
 			${tokenValue}
 		`,
 		{
 			propertyValues: contextValues,
 			skipBaking: false,
+			simplifier,
 		},
 	);
 
-	return printComputationResult(computed);
+	return computed;
 }
 
 function getResolvedTokenValues(
 	preset: ArborPreset<any, any>,
-): Record<string, string | Equation> {
+): Record<string, string | Css> {
 	const internals = getInternals(preset);
 	const colorScheme = internals.defaultScheme;
 
-	const values: Record<string, string | Equation> = {};
+	const values: Record<string, string | Css> = {};
 	applyKnownTokenValues(preset.$.mode, preset.baseMode, values);
 
 	applyKnownTokenValues(
@@ -69,7 +70,7 @@ function getResolvedTokenValues(
 function applyKnownTokenValues(
 	tokenNode: any,
 	valueNode: any,
-	result: Record<string, string | Equation>,
+	result: Record<string, string | Css>,
 ) {
 	if (!tokenNode || !valueNode || typeof tokenNode !== 'object') {
 		return;
@@ -97,7 +98,7 @@ function applyKnownTokenValues(
 	}
 }
 
-function normalizeResolvedValue(value: unknown): string | Equation | undefined {
+function normalizeResolvedValue(value: unknown): string | Css | undefined {
 	if (typeof value === 'string' || typeof value === 'number') {
 		return String(value);
 	}
@@ -106,7 +107,7 @@ function normalizeResolvedValue(value: unknown): string | Equation | undefined {
 		return value.var;
 	}
 
-	if (isCalcEquation(value)) {
+	if (isCss(value)) {
 		return value;
 	}
 

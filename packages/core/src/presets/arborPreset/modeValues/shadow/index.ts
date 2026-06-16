@@ -1,4 +1,4 @@
-import { css, Equation } from '@arbor-css/calc';
+import { css, Css } from '@arbor-css/css-eval';
 import { Token } from '@arbor-css/tokens';
 
 export const defaultShadowLevels = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
@@ -12,12 +12,12 @@ export interface ShadowConfig<
 }
 
 export interface CompiledShadowLevel {
-	$root: string | Equation;
-	x: string | Equation;
-	y: string | Equation;
-	blur: string | Equation;
-	spread: string | Equation;
-	color: string | Equation;
+	$root: string | Css;
+	x: string | Css;
+	y: string | Css;
+	blur: string | Css;
+	spread: string | Css;
+	color: string | Css;
 }
 
 export function isCompiledShadowLevel(
@@ -35,18 +35,19 @@ export type CompiledShadows<TShadowLevel extends string = DefaultShadowLevel> =
 		[K in TShadowLevel | 'none']: CompiledShadowLevel;
 	};
 
-const defaultShadowXEquation = (step: number) => css`0px`;
-const defaultShadowYEquation = (step: number) => css`1px * pow(2, ${step} - 1)`;
-const defaultShadowBlurEquation = (step: number, $: RequiredTokens) => css`
-	${[$.shadowBlur, '0.5']} * ${[
+const defaultShadowXCss = (step: number) => css`0px`;
+const defaultShadowYCss = (step: number) =>
+	css`calc(1px * pow(2, ${step} - 1))`;
+const defaultShadowBlurCss = (step: number, $: RequiredTokens) => css`
+	calc(${[$.shadowBlur, '0.5']} * ${[
 		$.baseSpacingSize,
 		'0.5rem',
-	]} * 0.25 * pow(2, ${step} - 1)
+	]} * 0.25 * pow(2, ${step} - 1))
 `;
-const defaultShadowSpreadEquation = (step: number, $: RequiredTokens) => css`
-	${[$.shadowSpread, '0.5']} * 1px
+const defaultShadowSpreadCss = (step: number, $: RequiredTokens) => css`
+	calc(${[$.shadowSpread, '0.5']} * 1px)
 `;
-const defaultShadowColorEquation = (step: number, $: RequiredTokens) => css`
+const defaultShadowColorCss = (step: number, $: RequiredTokens) => css`
 	${$.defaultShadowColor}
 `;
 
@@ -68,23 +69,15 @@ export function compileShadows<
 			Object.keys(config.levels)
 		:	(defaultShadowLevels as unknown as TShadowLevel[]);
 
-	const baseIndex =
-		// user supplied explicit default level
-		config.defaultLevel ? levelNames.indexOf(config.defaultLevel)
-			// user did not give us a default level, but did give us custom levels, so we'll pick the middle one as the default
-		: config.levels ? Math.floor(levelNames.length / 2)
-			// user did not give us a default level, and is using the default levels, so we'll use 'md' as the default.
-		: levelNames.indexOf('md' as TShadowLevel);
-
 	const levels = levelNames.reduce(
 		(acc, name, i) => {
 			const nameCast = name as TShadowLevel;
 			const levelConfig = config.levels?.[nameCast];
-			const x = defaultShadowXEquation(i);
-			const y = defaultShadowYEquation(i);
-			const blur = defaultShadowBlurEquation(i, tokens);
-			const spread = defaultShadowSpreadEquation(i, tokens);
-			const color = defaultShadowColorEquation(i, tokens);
+			const x = defaultShadowXCss(i);
+			const y = defaultShadowYCss(i);
+			const blur = defaultShadowBlurCss(i, tokens);
+			const spread = defaultShadowSpreadCss(i, tokens);
+			const color = defaultShadowColorCss(i, tokens);
 			const $root = css`
 				${x} ${y} ${blur} ${spread} ${color}
 			`;

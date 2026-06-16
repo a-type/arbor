@@ -1,3 +1,4 @@
+import { CssSimplifier } from '@arbor-css/css-eval';
 import { AnyArborPreset, getInternals } from '@arbor-css/preset/config';
 import { flattenTokenSchema } from '@arbor-css/tokens';
 import { modeToCss } from './modeToCss.js';
@@ -7,9 +8,11 @@ export function generateStylesheet(
 	{
 		layer: cascadeLayerName = 'arbor',
 		skipBaking,
+		simplifier,
 	}: {
 		layer?: string | false;
 		skipBaking?: boolean;
+		simplifier?: CssSimplifier;
 	} = {},
 ): string {
 	const { modes } = getInternals(config);
@@ -19,7 +22,7 @@ export function generateStylesheet(
 	${cascadeLayerName ? `@layer ${cascadeLayerName} {` : ''}
 ${[config.baseMode, ...Object.values(modes)]
 	.map((modeValue) => {
-		return modeToCss(modeValue, config, { skipBaking });
+		return modeToCss(modeValue, config, { simplifier, skipBaking });
 	})
 	.join('\n\n')}
 /* Function definitions */

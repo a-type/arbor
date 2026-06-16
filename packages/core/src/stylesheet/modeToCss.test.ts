@@ -1,7 +1,9 @@
-import { css } from '@arbor-css/calc';
+import { css, CssResolutionContext } from '@arbor-css/css-eval';
 import { definePreset } from '@arbor-css/preset';
 import { expect, it } from 'vitest';
 import { modeToCss } from './modeToCss.js';
+
+const ctx: CssResolutionContext = {};
 
 const preset = definePreset({
 	name: 'test-preset',
@@ -44,7 +46,7 @@ const underivedMode = preset.createMode('underived', {
 });
 
 it('prints a base mode with derived values', () => {
-	const css = modeToCss(preset.baseMode, preset);
+	const css = modeToCss(preset.baseMode, preset, ctx);
 	expect(css).toMatchInlineSnapshot(`
 		".\\@mode-base, :root, .\\@mode-base, :root {
 			--_-meta-modeName: base;
@@ -60,7 +62,7 @@ it('prints a base mode with derived values', () => {
 });
 
 it('prints a partial mode with derived dependencies it doesnt declare', () => {
-	const css = modeToCss(partialMode, preset);
+	const css = modeToCss(partialMode, preset, ctx);
 	expect(css).toMatchInlineSnapshot(`
 		".\\@mode-partial {
 			--_-meta-modeName: partial;
@@ -74,7 +76,7 @@ it('prints a partial mode with derived dependencies it doesnt declare', () => {
 });
 
 it('prints a partial mode which overrides derived dependencies from base and doesnt go upstream from there, but does go downstream to further derivations', () => {
-	const css = modeToCss(underivedMode, preset);
+	const css = modeToCss(underivedMode, preset, ctx);
 	expect(css).toMatchInlineSnapshot(`
 		".\\@mode-underived {
 			--_-meta-modeName: underived;
@@ -92,13 +94,13 @@ const rootBase = preset.createMode('rootBase', {
 });
 
 it('$root at nested level generates CSS var at group path (no -$root suffix)', () => {
-	const css = modeToCss(rootBase, preset);
+	const css = modeToCss(rootBase, preset, ctx);
 	expect(css).toContain('--m-ex: oklch(0.5 0.1 240)');
 	expect(css).not.toContain('--m-ex-$root');
 });
 
 it('$root and sibling keys coexist and both emit correctly', () => {
-	const css = modeToCss(rootBase, preset);
+	const css = modeToCss(rootBase, preset, ctx);
 	expect(css).toContain('--m-ex: oklch(0.5 0.1 240)');
 	expect(css).toContain('--m-ex-mid: oklch(0.6 0.1 240)');
 });
@@ -109,7 +111,7 @@ it('partial mode override of $root maps correctly', () => {
 			$root: 'oklch(0.7 0.2 30)',
 		},
 	});
-	const css = modeToCss(partial, preset);
+	const css = modeToCss(partial, preset, ctx);
 	expect(css).toContain('--m-ex: oklch(0.7 0.2 30)');
 	expect(css).not.toContain('--m-ex-mid');
 });
@@ -133,7 +135,7 @@ it('throws with full token chain for circular derived dependencies', () => {
 		}),
 	});
 
-	expect(() => modeToCss(circular.baseMode, circular)).toThrow(
+	expect(() => modeToCss(circular.baseMode, circular, ctx)).toThrow(
 		/Circular dependency detected/,
 	);
 });
@@ -164,7 +166,7 @@ it('throws for cycles during property value resolution', () => {
 		},
 	});
 
-	expect(() => modeToCss(partial, resolverCycle)).toThrow(
+	expect(() => modeToCss(partial, resolverCycle, ctx)).toThrow(
 		/Circular dependency detected/,
 	);
 });

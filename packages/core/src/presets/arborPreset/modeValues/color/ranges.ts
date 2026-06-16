@@ -1,6 +1,11 @@
-import { CalcEvaluationContext, css, Equation } from '@arbor-css/calc';
+import {
+	css,
+	Css,
+	CssInterpolation,
+	CssResolutionContext,
+} from '@arbor-css/css-eval';
 import { Token } from '@arbor-css/tokens';
-import { oklchBuilder, OklchColorEquation } from './color.js';
+import { oklchBuilder, OklchCssRepresentation } from './color.js';
 
 export const defaultRangeNames = [
 	'ink',
@@ -16,11 +21,11 @@ export interface ColorRangeConfig<
 	RangeNames extends string = DefaultRangeName,
 > {
 	/** 0-360ish, OKLCH "H" hue. Can also be a var() reference! */
-	hue: number | string | Equation | Token;
+	hue: CssInterpolation;
 	/**
 	 * 0-1, a local multiplier for chroma, stacks on global and computed value. Can also be a var() reference!
 	 */
-	saturation?: number | string | Equation | Token;
+	saturation?: CssInterpolation;
 	rangeNames?: readonly RangeNames[];
 	defaultLevel?: RangeNames;
 }
@@ -31,18 +36,14 @@ export interface ColorRangeCalculations {
 		step: number;
 		rangeSize: number;
 		midpoint: number;
-	}) => Equation;
+	}) => Css;
 	/** A computation for chroma at each step - resolve 0-1 */
 	chroma: (details: {
 		step: number;
 		rangeSize: number;
 		midpoint: number;
-	}) => Equation;
-	hue?: (details: {
-		step: number;
-		rangeSize: number;
-		midpoint: number;
-	}) => Equation;
+	}) => Css;
+	hue?: (details: { step: number; rangeSize: number; midpoint: number }) => Css;
 }
 
 export type InferRangeNames<Config> =
@@ -55,7 +56,7 @@ export type InferRangeNames<Config> =
 	:	never;
 
 export interface ColorRangeItem<TRangeNames extends string = string> {
-	equation: OklchColorEquation;
+	equation: OklchCssRepresentation;
 	name: TRangeNames;
 }
 
@@ -68,9 +69,9 @@ export type UncompiledColorRange<
 };
 export type CompiledColorRange<TRangeNames extends string = DefaultRangeName> =
 	{
-		[K in TRangeNames]: string | Equation;
+		[K in TRangeNames]: string | Css;
 	} & {
-		$root: string | Equation;
+		$root: string | Css;
 	};
 
 export function createColorRange<RangeNames extends string = DefaultRangeName>(
@@ -224,25 +225,25 @@ export function createNeutralDerivedRange(
 	tokens: { saturation: Token },
 	options?: {
 		/** Adjust saturation relative to source range. Stacks with saturation token. */
-		saturationFactor?: number | string | Equation | Token;
+		saturationFactor?: CssInterpolation;
 	},
 ): UncompiledColorRange<string> {
-	function lightness(source: OklchColorEquation) {
+	function lightness(source: OklchCssRepresentation) {
 		return css`calc(${source.l} - pow(${source.c}, 1.7))`;
 	}
-	function chroma(source: OklchColorEquation) {
+	function chroma(source: OklchCssRepresentation) {
 		const saturationFactor = options?.saturationFactor ?? 0.15;
 		return css`calc(${source.c} * ${tokens.saturation} * ${saturationFactor})`;
 	}
 
 	return Object.fromEntries(
 		Object.keys(sourceRange).map((sourceName) => {
-			const sourceEquation =
+			const sourceCss =
 				sourceRange[sourceName as keyof typeof sourceRange].equation;
 			const equation = oklchBuilder(() => ({
-				l: css`clamp(0, ${lightness(sourceEquation)}, 1)`,
-				c: css`clamp(0, ${chroma(sourceEquation)}, 0.4)`,
-				h: sourceEquation.h,
+				l: css`clamp(0, ${lightness(sourceCss)}, 1)`,
+				c: css`clamp(0, ${chroma(sourceCss)}, 0.4)`,
+				h: sourceCss.h,
 			}));
 			return [
 				sourceName,
@@ -257,7 +258,7 @@ export function createNeutralDerivedRange(
 
 export function compileRange<R extends string>(
 	range: UncompiledColorRange<R>,
-	context: CalcEvaluationContext,
+	context: CssResolutionContext,
 ): CompiledColorRange<R> {
 	return Object.fromEntries(
 		Object.keys(range).map((name) => [

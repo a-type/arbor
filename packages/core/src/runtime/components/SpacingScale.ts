@@ -1,7 +1,7 @@
 import { isToken } from '@arbor-css/tokens';
 import { css, html, LitElement } from 'lit-element';
 import { resolveComputedTokenValue } from '../../util/resolveComputedTokenValue.js';
-import { getPreset } from '../registration.js';
+import { getContext, getPreset } from '../registration.js';
 
 class SpacingScale extends LitElement {
 	static get styles() {
@@ -36,7 +36,7 @@ class SpacingScale extends LitElement {
 			.filter(isToken)
 			.map((token: any) => ({
 				name: token.name,
-				value: resolveComputedTokenValue(this.preset, token.name),
+				value: resolveComputedTokenValue(this.preset, token.name, getContext()),
 			}));
 
 		return html`

@@ -1,58 +1,39 @@
 import {
-	CalcEvaluationContext,
-	ComputationResult,
-	Equation,
-	computeEquation,
 	css,
-	printComputationResult,
-	printEquation,
-} from '@arbor-css/calc';
+	Css,
+	CssResolutionContext,
+	printCss,
+	resolveCss,
+} from '@arbor-css/css-eval';
 
-export interface OklchColorEquation {
-	l: Equation;
-	c: Equation;
-	h: Equation;
-	from?: Equation;
-	compiled: Equation;
+export interface OklchCssRepresentation {
+	l: Css;
+	c: Css;
+	h: Css;
+	from?: Css;
+	compiled: Css;
 
 	/**
 	 * Prints the CSS value of the color equation, including all
 	 * calculations and variable references - fully dynamic.
 	 */
-	printDynamic(context: CalcEvaluationContext): string;
+	printDynamic(context: CssResolutionContext): string;
 	/**
 	 * Uses the equation and provided context to compute a static
 	 * OKLCH color string with calculations and references resolved.
 	 */
-	printComputed(context: CalcEvaluationContext): string;
-	/**
-	 * Returns the raw computed L, C, H values as numbers with units.
-	 */
-	computeParts(ctx: CalcEvaluationContext): {
-		l: ComputationResult;
-		c: ComputationResult;
-		h: ComputationResult;
-	};
+	printComputed(context: CssResolutionContext): string;
 }
 
 export function oklchBuilder(
 	impl: () => {
-		from?: Equation;
-		l: Equation;
-		c: Equation;
-		h: Equation;
+		from?: Css;
+		l: Css;
+		c: Css;
+		h: Css;
 	},
-): OklchColorEquation {
+): OklchCssRepresentation {
 	const equations = impl();
-
-	function compute(context: CalcEvaluationContext) {
-		const l = computeEquation(equations.l, context);
-		const c = computeEquation(equations.c, context);
-		const h = computeEquation(equations.h, context);
-		const from =
-			equations.from ? computeEquation(equations.from, context) : undefined;
-		return { l, c, h, from };
-	}
 
 	const compiled = css`oklch(${
 		equations.from ? `from ${equations.from} ` : ''
@@ -64,11 +45,10 @@ export function oklchBuilder(
 			equations.from ? `from ${equations.from} ` : ''
 		}calc(${equations.l}) calc(${equations.c}) calc(${equations.h}))`,
 		printDynamic(): string {
-			return printEquation(compiled);
+			return printCss(compiled);
 		},
-		printComputed(context: CalcEvaluationContext): string {
-			return printComputationResult(computeEquation(compiled, context));
+		printComputed(context: CssResolutionContext): string {
+			return resolveCss(compiled, context);
 		},
-		computeParts: compute,
 	};
 }

@@ -16,7 +16,7 @@ export function isSingleValue(css: string): boolean {
 	return !withoutIf.includes(':') && !withoutIf.includes(';');
 }
 
-const dummyPreamble = '[data-arbor-result]{--_arbor_result:';
+const dummyPreamble = '[data-arbor-result]{font-size:';
 const dummyPostamble = '}';
 
 export function wrapWithDummyAssignment(css: string): string {
@@ -28,7 +28,7 @@ export function wrapWithDummyAssignment(css: string): string {
 export function unwrapDummyAssignment(css: string): string {
 	// Extract the original value from the dummy assignment.
 	const match = css.match(
-		/\[data-arbor-result\]\s*{\s*--_arbor_result\s*:\s*(.+?)\s*;?\s*}/,
+		/\[data-arbor-result\]\s*{\s*font-size\s*:\s*(.+?)\s*;?\s*}/,
 	);
 	if (!match) {
 		throw new Error('Invalid dummy assignment format');

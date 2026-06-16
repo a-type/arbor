@@ -15,7 +15,7 @@ it("generates a preset's CSS, including globals, primitives, modes, and function
 		},
 	});
 
-	const css = generateStylesheet(preset);
+	const css = generateStylesheet(preset, {});
 
 	expect(css).toContain('--m-global-roundness: 1');
 	expect(css).toContain('--m-primitive-color-brand-mid: ');

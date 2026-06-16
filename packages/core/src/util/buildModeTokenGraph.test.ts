@@ -1,4 +1,5 @@
-import { css } from '@arbor-css/calc';
+import { css } from '@arbor-css/css-eval';
+import { simplifier } from '@arbor-css/css-eval/node';
 import { definePreset } from '@arbor-css/preset';
 import { expect, it } from 'vitest';
 import { presetArbor } from '../presets/arborPreset/preset.js';
@@ -33,7 +34,9 @@ it('resolves token dependencies and sub-dependencies', () => {
 		unrelated: 'yellow',
 	});
 
-	const graphFromSetRoot = buildModeTokenGraph(setRootMode, preset);
+	const graphFromSetRoot = buildModeTokenGraph(setRootMode, preset, {
+		simplifier,
+	});
 
 	expect(graphFromSetRoot.roots).toEqual(['--m-root']);
 	expect(graphFromSetRoot.nodes['--m-root'].dependents).toEqual([
@@ -45,6 +48,7 @@ it('resolves token dependencies and sub-dependencies', () => {
 	expect(graphFromSetRoot.nodes['--m-unrelated']).toBeDefined();
 
 	const graphFromSetUnrelated = buildModeTokenGraph(setUnrelatedMode, preset, {
+		simplifier,
 		skipBaking: false,
 	});
 
@@ -70,9 +74,10 @@ it('resolves and computes complicated dependency chains', () => {
 
 	const graphWithDensity = buildModeTokenGraph(mode, preset, {
 		skipBaking: false,
+		simplifier,
 	});
 
 	expect(
 		graphWithDensity.nodes['--m-primitive-spacing-md'].computed,
-	).toMatchInlineSnapshot(`"0.5rem"`);
+	).toMatchInlineSnapshot(`".5rem"`);
 });

@@ -1,4 +1,4 @@
-import { css, Equation } from '@arbor-css/calc';
+import { css, CssInterpolation } from '@arbor-css/css-eval';
 import { Token } from '@arbor-css/tokens';
 import {
 	ColorRangeConfig,
@@ -37,7 +37,7 @@ export type CompiledColors<
 
 export type CompiledColorRangeConfig<TRangeStepNames extends string> =
 	ColorRangeConfig<TRangeStepNames> & {
-		neutralSaturation?: number | string | Equation | Token;
+		neutralSaturation?: CssInterpolation;
 	};
 
 export interface CompileColorsOptions<
@@ -115,7 +115,7 @@ function toLightDarkCompiled(
 	light: UncompiledColorRange<any>,
 	dark: UncompiledColorRange<any>,
 	$: { saturation: Token },
-	options: { neutralSaturation?: number | string | Equation | Token } = {},
+	options: { neutralSaturation?: CssInterpolation } = {},
 ): CompiledColorRangeWithNeutral<any> {
 	const result = {} as any;
 	for (const key in light) {

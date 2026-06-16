@@ -1,10 +1,10 @@
-import { css, Equation } from '@arbor-css/calc';
+import { css, Css, CssInterpolation } from '@arbor-css/css-eval';
 import { Token } from '@arbor-css/tokens';
 
 export interface TypographyLevel {
-	size: string | Equation;
-	lineHeight: number | string | Equation;
-	letterSpacing: string | Equation;
+	size: string | Css;
+	lineHeight: CssInterpolation;
+	letterSpacing: string | Css;
 }
 
 export interface RequiredTokens {
@@ -14,7 +14,12 @@ export interface RequiredTokens {
 }
 
 export function isTypographyLevel(value: any): value is TypographyLevel {
-	return value && 'size' in value && 'weight' in value && 'lineHeight' in value;
+	return (
+		value &&
+		'size' in value &&
+		'lineHeight' in value &&
+		'letterSpacing' in value
+	);
 }
 
 export type CompiledTypography<
@@ -32,7 +37,7 @@ export type CompiledTypography<
 		| 'bold'
 		| 'extraBold'
 		| 'black',
-		string | Equation
+		string | Css
 	>;
 };
 
@@ -54,37 +59,37 @@ export type TypographyConfig<TLevels extends string = DefaultTypographyLevel> =
 	{
 		levels?: Record<TLevels, Partial<TypographyLevel>>;
 		defaultLevel?: TLevels;
-		weightStep?: number | string | Equation;
-		lineHeightStep?: number | string | Equation;
-		minWeight?: number | string | Equation;
-		maxWeight?: number | string | Equation;
-		baseWeight?: number | string | Equation;
-		minLineHeight?: number | string | Equation;
-		maxLineHeight?: number | string | Equation;
-		baseLineHeight?: number | string | Equation;
-		minSize?: string | Equation;
-		maxSize?: string | Equation;
+		weightStep?: CssInterpolation;
+		lineHeightStep?: CssInterpolation;
+		minWeight?: CssInterpolation;
+		maxWeight?: CssInterpolation;
+		baseWeight?: CssInterpolation;
+		minLineHeight?: CssInterpolation;
+		maxLineHeight?: CssInterpolation;
+		baseLineHeight?: CssInterpolation;
+		minSize?: string | Css;
+		maxSize?: string | Css;
 		/**
 		 * Size is scaled exponentially; this is the "base" (the
 		 * number being scaled).
 		 */
-		sizeBase?: string | Equation;
+		sizeBase?: string | Css;
 		/**
 		 * Multiplied with the step index to produce an exponent
 		 * for scaling sizeBase. The result is multiplied with
 		 * the default font size.
 		 */
-		sizeExponentStep?: number | string | Equation;
-		letterSpacingStep?: number | string | Equation;
-		minLetterSpacing?: string | Equation;
-		maxLetterSpacing?: string | Equation;
-		baseLetterSpacing?: string | Equation;
+		sizeExponentStep?: CssInterpolation;
+		letterSpacingStep?: CssInterpolation;
+		minLetterSpacing?: string | Css;
+		maxLetterSpacing?: string | Css;
+		baseLetterSpacing?: string | Css;
 		/**
 		 * Apply an adjustment to font weight in dark mode to compensate for the irradiation illusion.
 		 * Defaults to 0. Adjusting weight can lead to irregular font size between light and dark mode;
 		 * prefer adjusting GRAD in variable fonts.
 		 */
-		darkModeWeightAdjustment?: number | string | Equation;
+		darkModeWeightAdjustment?: CssInterpolation;
 	};
 
 export function compileTypography<
@@ -134,7 +139,7 @@ export function compileTypography<
 				css`calc(clamp(${config.minWeight ?? 100}, ${config.baseWeight ?? 400} + ${config.weightStep ?? 100} * ${stepsFromNormal} - (${tokens.whenDark} * ${config.darkModeWeightAdjustment ?? 0}), ${config.maxWeight ?? 900}))`;
 			return acc;
 		},
-		{} as Record<keyof CompiledTypography['weight'], string | Equation>,
+		{} as Record<keyof CompiledTypography['weight'], string | Css>,
 	);
 
 	return {

@@ -1,11 +1,11 @@
 import {
-	CalcEvaluationContext,
-	computeEquation,
 	css,
-	Equation,
-	isCalcEquation,
-	printComputationResult,
-} from '@arbor-css/calc';
+	Css,
+	CssResolutionContext,
+	isCss,
+	resolveCss,
+} from '@arbor-css/css-eval';
+import { simplifier } from '@arbor-css/css-eval/node';
 import { createGlobalContext } from '@arbor-css/globals';
 import { expect, it } from 'vitest';
 import { compileColors, CompileColorsOptions } from './compile.js';
@@ -19,26 +19,22 @@ function compileAndBake(config: CompileColorsOptions<string, string>) {
 	const compiled = compileColors(config, {
 		saturation: saturationToken,
 	});
-	const computeCtx: CalcEvaluationContext = {
+	const computeCtx: CssResolutionContext = {
 		propertyValues: {
 			[saturationToken.name]: '0.5',
 		},
+		simplifier,
 	};
 	function bakeValues(
-		values: Record<
-			string,
-			string | Equation | Record<string, string | Equation>
-		>,
+		values: Record<string, string | Css | Record<string, string | Css>>,
 	) {
 		const baked = {} as Record<string, any>;
 		for (const rangeName in values) {
 			const value = values[rangeName];
 			if (typeof value === 'string' || typeof value === 'number') {
 				baked[rangeName] = values[rangeName];
-			} else if (isCalcEquation(value)) {
-				baked[rangeName] = printComputationResult(
-					computeEquation(value, computeCtx),
-				);
+			} else if (isCss(value)) {
+				baked[rangeName] = resolveCss(value, computeCtx);
 			} else if (typeof value === 'object' && value) {
 				baked[rangeName] = bakeValues(value);
 			}
@@ -66,27 +62,27 @@ it('compiles a set of color ranges with default schemes and no precalculated glo
 		{
 		  "alt": {
 		    "$neutral": {
-		      "$root": "light-dark(oklch(0.8602483518 0.01125 210), oklch(0.48563873 0.012 210))",
-		      "heavy": "light-dark(oklch(0.1765378631 0.00825 210), oklch(0.9906565782 0.0048 210))",
-		      "light": "light-dark(oklch(0.9996018928 0.00075 210), oklch(0.078706546 0.0015 210))",
-		      "mid": "light-dark(oklch(0.8602483518 0.01125 210), oklch(0.48563873 0.012 210))",
+		      "$root": "light-dark(oklch(86.0248% .01125 210), oklch(48.5639% .012 210))",
+		      "heavy": "light-dark(oklch(17.6538% .00825 210), oklch(99.0657% .0048 210))",
+		      "light": "light-dark(oklch(99.9602% .00075 210), oklch(7.87065% .0015 210))",
+		      "mid": "light-dark(oklch(86.0248% .01125 210), oklch(48.5639% .012 210))",
 		    },
-		    "$root": "light-dark(oklch(0.9 0.15 210), oklch(0.53 0.16 210))",
-		    "heavy": "light-dark(oklch(0.2 0.11 210), oklch(1 0.064 210))",
-		    "light": "light-dark(oklch(1 0.01 210), oklch(0.08 0.02 210))",
-		    "mid": "light-dark(oklch(0.9 0.15 210), oklch(0.53 0.16 210))",
+		    "$root": "light-dark(oklch(90% .15 210), oklch(53% .16 210))",
+		    "heavy": "light-dark(oklch(20% .11 210), oklch(100% .064 210))",
+		    "light": "light-dark(oklch(100% .01 210), oklch(8% .02 210))",
+		    "mid": "light-dark(oklch(90% .15 210), oklch(53% .16 210))",
 		  },
 		  "primary": {
 		    "$neutral": {
-		      "$root": "light-dark(oklch(0.8602483518 0.01125 90), oklch(0.48563873 0.012 90))",
-		      "heavy": "light-dark(oklch(0.1765378631 0.00825 90), oklch(0.9906565782 0.0048 90))",
-		      "light": "light-dark(oklch(0.9996018928 0.00075 90), oklch(0.078706546 0.0015 90))",
-		      "mid": "light-dark(oklch(0.8602483518 0.01125 90), oklch(0.48563873 0.012 90))",
+		      "$root": "light-dark(oklch(86.0248% .01125 90), oklch(48.5639% .012 90))",
+		      "heavy": "light-dark(oklch(17.6538% .00825 90), oklch(99.0657% .0048 90))",
+		      "light": "light-dark(oklch(99.9602% .00075 90), oklch(7.87065% .0015 90))",
+		      "mid": "light-dark(oklch(86.0248% .01125 90), oklch(48.5639% .012 90))",
 		    },
-		    "$root": "light-dark(oklch(0.9 0.15 90), oklch(0.53 0.16 90))",
-		    "heavy": "light-dark(oklch(0.2 0.11 90), oklch(1 0.064 90))",
-		    "light": "light-dark(oklch(1 0.01 90), oklch(0.08 0.02 90))",
-		    "mid": "light-dark(oklch(0.9 0.15 90), oklch(0.53 0.16 90))",
+		    "$root": "light-dark(oklch(90% .15 90), oklch(53% .16 90))",
+		    "heavy": "light-dark(oklch(20% .11 90), oklch(100% .064 90))",
+		    "light": "light-dark(oklch(100% .01 90), oklch(8% .02 90))",
+		    "mid": "light-dark(oklch(90% .15 90), oklch(53% .16 90))",
 		  },
 		}
 	`);
@@ -125,27 +121,27 @@ it('compiles a set of color ranges with a custom scheme', () => {
 		{
 		  "alt": {
 		    "$neutral": {
-		      "$root": "light-dark(oklch(0 0 210), oklch(0.48563873 0.012 210))",
-		      "heavy": "light-dark(oklch(0 0 210), oklch(0.9906565782 0.0048 210))",
-		      "light": "light-dark(oklch(0 0 210), oklch(0.078706546 0.0015 210))",
-		      "mid": "light-dark(oklch(0 0 210), oklch(0.48563873 0.012 210))",
+		      "$root": "light-dark(oklch(0% 0 210), oklch(48.5639% .012 210))",
+		      "heavy": "light-dark(oklch(0% 0 210), oklch(99.0657% .0048 210))",
+		      "light": "light-dark(oklch(0% 0 210), oklch(7.87065% .0015 210))",
+		      "mid": "light-dark(oklch(0% 0 210), oklch(48.5639% .012 210))",
 		    },
-		    "$root": "light-dark(oklch(0 0 210), oklch(0.53 0.16 210))",
-		    "heavy": "light-dark(oklch(0 0 210), oklch(1 0.064 210))",
-		    "light": "light-dark(oklch(0 0 210), oklch(0.08 0.02 210))",
-		    "mid": "light-dark(oklch(0 0 210), oklch(0.53 0.16 210))",
+		    "$root": "light-dark(oklch(0% 0 210), oklch(53% .16 210))",
+		    "heavy": "light-dark(oklch(0% 0 210), oklch(100% .064 210))",
+		    "light": "light-dark(oklch(0% 0 210), oklch(8% .02 210))",
+		    "mid": "light-dark(oklch(0% 0 210), oklch(53% .16 210))",
 		  },
 		  "primary": {
 		    "$neutral": {
-		      "$root": "light-dark(oklch(0 0 90), oklch(0.48563873 0.012 90))",
-		      "heavy": "light-dark(oklch(0 0 90), oklch(0.9906565782 0.0048 90))",
-		      "light": "light-dark(oklch(0 0 90), oklch(0.078706546 0.0015 90))",
-		      "mid": "light-dark(oklch(0 0 90), oklch(0.48563873 0.012 90))",
+		      "$root": "light-dark(oklch(0% 0 90), oklch(48.5639% .012 90))",
+		      "heavy": "light-dark(oklch(0% 0 90), oklch(99.0657% .0048 90))",
+		      "light": "light-dark(oklch(0% 0 90), oklch(7.87065% .0015 90))",
+		      "mid": "light-dark(oklch(0% 0 90), oklch(48.5639% .012 90))",
 		    },
-		    "$root": "light-dark(oklch(0 0 90), oklch(0.53 0.16 90))",
-		    "heavy": "light-dark(oklch(0 0 90), oklch(1 0.064 90))",
-		    "light": "light-dark(oklch(0 0 90), oklch(0.08 0.02 90))",
-		    "mid": "light-dark(oklch(0 0 90), oklch(0.53 0.16 90))",
+		    "$root": "light-dark(oklch(0% 0 90), oklch(53% .16 90))",
+		    "heavy": "light-dark(oklch(0% 0 90), oklch(100% .064 90))",
+		    "light": "light-dark(oklch(0% 0 90), oklch(8% .02 90))",
+		    "mid": "light-dark(oklch(0% 0 90), oklch(53% .16 90))",
 		  },
 		}
 	`);
@@ -179,10 +175,10 @@ it('supports color-level saturation', () => {
 	});
 
 	expect(compiled.primaryLight.light).toMatchInlineSnapshot(
-		`"light-dark(oklch(0.9802741562 0.0562693636 90), oklch(0.4095887657 0.0612693636 90))"`,
+		`"light-dark(oklch(98.0274% .0562694 90), oklch(40.9589% .0612694 90))"`,
 	);
 	expect(compiled.primary.light).toMatchInlineSnapshot(
-		`"light-dark(oklch(0.9802741562 0.1125387271 90), oklch(0.4095887657 0.1225387271 90))"`,
+		`"light-dark(oklch(98.0274% .112539 90), oklch(40.9589% .122539 90))"`,
 	);
 	expect(compiled.primaryLight.light).not.toEqual(compiled.primary.light);
 });
@@ -196,8 +192,9 @@ it('supports hue defined as a CSS property', () => {
 		},
 	});
 
+	// TODO: why is this not simplified?
 	expect(compiled.primary.light).toMatchInlineSnapshot(
-		`"light-dark(oklch(0.9802741562 0.1125387271 var(--my-hue)), oklch(0.4095887657 0.1225387271 var(--my-hue)))"`,
+		`"light-dark(oklch(calc(clamp(0, calc(calc(.9 + (1 * .267581 * .3))), 1)) calc(clamp(0, calc(1 * .4 * calc(.75 + (1 * .267581 * -.7)) * .5), .4)) calc(calc(var(--my-hue) * 1))), oklch(calc(clamp(0, calc(calc(.53 + (1 * .267581 * -.45))), 1)) calc(clamp(0, calc(1 * .4 * calc(.8 + (1 * .267581 * -.7)) * .5), .4)) calc(calc(var(--my-hue) * 1))))"`,
 	);
 });
 

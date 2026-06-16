@@ -106,14 +106,10 @@
 </style>
 
 <script>
-	import {
-		computeEquation,
-		css,
-		printComputationResult,
-	} from '@arbor-css/core';
+	import { css, resolveCss } from '@arbor-css/core';
 
 	const tokenElement = document.querySelector('span.token')!;
-	setInterval(() => {
+	setInterval(async () => {
 		const mainColor = getComputedStyle(tokenElement)
 			.getPropertyValue('--m-color-main')
 			.trim();
@@ -129,12 +125,10 @@
 
 		const toCompute = whenDark === 'dark' ? dark : light;
 		const asEquation = css(toCompute as any);
-		const simplified = printComputationResult(
-			computeEquation(asEquation, {
-				propertyValues: {},
-				skipBaking: false,
-			}),
-		);
+		const simplified = await resolveCss(asEquation, {
+			propertyValues: {},
+			skipBaking: false,
+		});
 		const tokenValueElement = document.querySelector('span.token-value');
 		if (tokenValueElement) {
 			tokenValueElement.textContent = simplified;

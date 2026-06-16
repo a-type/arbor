@@ -1,4 +1,4 @@
-import { css } from '@arbor-css/calc';
+import { css } from '@arbor-css/css-eval';
 import { ModeValues } from '@arbor-css/modes';
 import { ArborModeSchema } from '../modeSchema/modeSchema.js';
 import { Tokens } from './types.js';
@@ -28,7 +28,7 @@ export function createShadowLevelSemanticValues<TColorName extends string>(
 		color: css`oklch(from ${[
 			$.mode.shadow.color,
 			$.mode.primitive.shadow[size].color,
-		]} l c h / 15%)`,
+		]} l c h / 0.15)`,
 	} satisfies ModeValues<ArborModeSchema['shadow']['lg']>;
 }
 

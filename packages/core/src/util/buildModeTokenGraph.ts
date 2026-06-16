@@ -1,9 +1,9 @@
 import {
-	CalcEvaluationContext,
-	computeEquation,
-	isCalcEquation,
-	printComputationResult,
-} from '@arbor-css/calc';
+	CssResolutionContext,
+	CssSimplifier,
+	isCss,
+	resolveCss,
+} from '@arbor-css/css-eval';
 import { getModeInternals, ModeInstance, ModeValue } from '@arbor-css/modes';
 import { ArborPreset } from '@arbor-css/preset';
 import { isToken, SimpleTokenSchema, Token } from '@arbor-css/tokens';
@@ -36,7 +36,8 @@ export function buildModeTokenGraph<TModeShape extends SimpleTokenSchema>(
 	preset: ArborPreset<TModeShape>,
 	options: {
 		skipBaking?: boolean;
-	} = {},
+		simplifier?: CssSimplifier;
+	},
 ): ModeTokenGraph {
 	const modeInternals = getModeInternals(mode);
 	const flatTokens = toFlatKeys<Token>(preset.$.mode, isToken, {
@@ -59,6 +60,7 @@ export function buildModeTokenGraph<TModeShape extends SimpleTokenSchema>(
 	const resolvedValues = createResolvingPropertyValuesProxy(rawValues, {
 		allowMissing: true,
 		skipBaking: options.skipBaking,
+		simplifier: options.simplifier,
 	});
 	const explicitNames = new Set(Object.keys(explicitValues));
 
@@ -79,6 +81,7 @@ export function buildModeTokenGraph<TModeShape extends SimpleTokenSchema>(
 			computed: resolveGraphValue(raw, {
 				skipBaking: options.skipBaking ?? !explicit,
 				propertyValues: resolvedValues,
+				simplifier: options.simplifier,
 			}),
 			explicit,
 			dependencies: getGraphDependencies(raw),
@@ -168,7 +171,7 @@ export function walkModeTokenGraph(
 
 function resolveGraphValue(
 	rawValue: ModeValue,
-	context: CalcEvaluationContext,
+	context: CssResolutionContext,
 ): string {
 	if (typeof rawValue === 'string' || typeof rawValue === 'number') {
 		return rawValue.toString();
@@ -178,12 +181,12 @@ function resolveGraphValue(
 		return rawValue.var;
 	}
 
-	if (isCalcEquation(rawValue)) {
-		return printComputationResult(computeEquation(rawValue, context));
+	if (isCss(rawValue)) {
+		return resolveCss(rawValue, context);
 	}
 
 	throw new Error(
-		`Invalid mode token graph value: ${rawValue}. Must be a string, number, token reference, or calc equation.`,
+		`Invalid mode token graph value: ${JSON.stringify(rawValue)}. Must be a string, number, token reference, or calc equation.`,
 	);
 }
 
@@ -192,7 +195,7 @@ function getGraphDependencies(rawValue: ModeValue): string[] {
 		return [rawValue.name];
 	}
 
-	if (isCalcEquation(rawValue)) {
+	if (isCss(rawValue)) {
 		return rawValue.tokens.map((token) => token.name);
 	}
 
@@ -208,10 +211,12 @@ function createResolvingPropertyValuesProxy(
 	{
 		allowMissing = false,
 		skipBaking,
+		simplifier,
 	}: {
 		allowMissing?: boolean;
 		skipBaking?: boolean;
-	} = {},
+		simplifier?: CssSimplifier;
+	},
 ): Record<string, string> {
 	const cache: Record<string, string> = {};
 	const resolvingStack: string[] = [];
@@ -253,13 +258,12 @@ function createResolvingPropertyValuesProxy(
 						cache[prop] = value.var;
 					}
 					return cache[prop];
-				} else if (isCalcEquation(value)) {
-					cache[prop] = printComputationResult(
-						computeEquation(value, {
-							propertyValues: propertyValuesProxy,
-							skipBaking,
-						}),
-					);
+				} else if (isCss(value)) {
+					cache[prop] = resolveCss(value, {
+						propertyValues: propertyValuesProxy,
+						skipBaking,
+						simplifier,
+					});
 					return cache[prop];
 				} else if (value === undefined) {
 					if (!allowMissing) {

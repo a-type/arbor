@@ -1,4 +1,4 @@
-import { isCalcEquation, printEquation } from '@arbor-css/calc';
+import { isCss, printCss } from '@arbor-css/css-eval';
 import { ArborPreset, getInternals } from '@arbor-css/preset';
 import { isToken } from '@arbor-css/tokens';
 import { css, html, LitElement } from 'lit-element';
@@ -6,7 +6,7 @@ import {
 	buildModeTokenGraph,
 	ModeTokenGraph,
 } from '../../util/buildModeTokenGraph.js';
-import { getPreset } from '../registration.js';
+import { getContext, getPreset } from '../registration.js';
 
 const graphCache = new Map();
 function memoizedTokenGraph(
@@ -25,6 +25,7 @@ function memoizedTokenGraph(
 		throw new Error(`Mode "${modeName}" not found in preset.`);
 	}
 	const graph = buildModeTokenGraph(modeInstance, preset, {
+		...getContext(),
 		skipBaking: false,
 	});
 	graphCache.set(cacheKey, graph);
@@ -285,7 +286,7 @@ class ModeGraphToken extends LitElement {
 		}
 
 		const definitionRaw =
-			isCalcEquation(tokenNode.raw) ? printEquation(tokenNode.raw)
+			isCss(tokenNode.raw) ? printCss(tokenNode.raw)
 			: isToken(tokenNode.raw) ? tokenNode.raw.name
 			: tokenNode.raw.toString();
 

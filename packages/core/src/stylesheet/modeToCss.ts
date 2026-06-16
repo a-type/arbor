@@ -1,3 +1,4 @@
+import { CssResolutionContext } from '@arbor-css/css-eval';
 import { getModeInternals, ModeInstance } from '@arbor-css/modes';
 import { ArborPreset } from '@arbor-css/preset';
 import { SimpleTokenSchema } from '@arbor-css/tokens';
@@ -9,12 +10,10 @@ import {
 export function modeToCss<TModeShape extends SimpleTokenSchema>(
 	mode: ModeInstance<TModeShape>,
 	preset: ArborPreset<TModeShape>,
-	{ skipBaking }: { skipBaking?: boolean } = {},
+	ctx: CssResolutionContext,
 ): string {
 	const modeInternals = getModeInternals(mode);
-	const graph = buildModeTokenGraph(mode, preset, {
-		skipBaking,
-	});
+	const graph = buildModeTokenGraph(mode, preset, ctx);
 	const valuesCss = walkModeTokenGraph(graph).reduce(
 		(acc, node) => `${acc}${node.token.name}: ${node.computed};\n`,
 		'',

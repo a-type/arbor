@@ -1,7 +1,6 @@
-import { printEquation, printStylesheet } from '@arbor-css/calc';
 import { AnyArborPreset, generateStylesheet } from '@arbor-css/core';
+import { printCss } from '@arbor-css/css-eval';
 import {
-	type ArborMixinBodyEntry,
 	FunctionParam,
 	isFunction,
 	isFunctionParamWithMeta,
@@ -163,7 +162,7 @@ function computeFunctionCallValue({
 	}
 
 	try {
-		return fn.compute(paramValues, { propertyValues: {} });
+		return fn.compute(paramValues).text;
 	} catch (err) {
 		const message = err instanceof Error ? err.message : String(err);
 		console.error(
@@ -175,35 +174,6 @@ function computeFunctionCallValue({
 		);
 		return input;
 	}
-}
-
-function cloneScopedMixinEntry(
-	entry: ArborMixinBodyEntry,
-	mixinParamValues: Record<string, string>,
-): postcss.Node {
-	if ('prop' in entry) {
-		return postcss.decl({
-			prop: entry.prop,
-			value: printEquation(entry.value),
-		});
-	}
-
-	const parsed = postcss.parse(`${entry.scope} {}`);
-	const [scopedNode] = parsed.nodes;
-
-	if (
-		!scopedNode ||
-		(scopedNode.type !== 'atrule' && scopedNode.type !== 'rule')
-	) {
-		throw new Error(`Invalid mixin scope: ${entry.scope}`);
-	}
-	const scopedContainer = scopedNode.clone();
-
-	for (const child of entry.children) {
-		scopedContainer.append(cloneScopedMixinEntry(child, mixinParamValues));
-	}
-
-	return scopedContainer;
 }
 
 export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
@@ -294,7 +264,7 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 			root.walkComments((comment) => {
 				if (comment.text.trim() === 'inline-arbor-base') {
 					try {
-						const generatedCss = generateStylesheet(config.preset);
+						const generatedCss = generateStylesheet(config.preset, {});
 						const generatedRoot = postcss.parse(generatedCss, {
 							from: config.configPath,
 						});
@@ -423,9 +393,7 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 
 			try {
 				const applied = mixin.apply(mixinParamValues);
-				const printed = printStylesheet(applied, {
-					propertyValues: mixinParamValues,
-				});
+				const printed = printCss(applied);
 				const generatedRoot = postcss.parse(printed, {
 					from: config.configPath,
 				});

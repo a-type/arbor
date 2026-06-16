@@ -1,18 +1,14 @@
 import {
-	CalcInterpolation,
 	css,
 	Css,
-	type CssStylesheet,
-	type CssStylesheetNode,
-	type Equation,
-	isCalcEquation,
-	isCssStylesheet,
-	printEquation,
-} from '@arbor-css/calc';
+	CssInterpolation,
+	CssTemplate,
+	isCss,
+	printCss,
+} from '@arbor-css/css-eval';
 import {
 	convertSimpleTokenSchema,
 	CreateToken,
-	isToken,
 	SimpleTokensAsTokenDefinitions,
 	SimpleTokenSchema,
 	Token,
@@ -34,7 +30,7 @@ const MIXIN_BRAND = '@@MIXIN@@';
 
 export type ArborMixinDeclaration = {
 	prop: string;
-	value: Equation;
+	value: Css;
 };
 
 export type ArborMixinScope = {
@@ -45,7 +41,7 @@ export type ArborMixinScope = {
 export type ArborMixinBodyEntry = ArborMixinDeclaration | ArborMixinScope;
 export type ArborMixinBody = ArborMixinBodyEntry[];
 
-type MixinValue = CalcInterpolation | Equation;
+type MixinValue = CssInterpolation | Css;
 type MixinScopedBodyObject = Record<string, MixinValue>;
 type MixinBodyObject = Record<
 	string,
@@ -75,143 +71,26 @@ export function isMixinScope(
 	return 'scope' in entry;
 }
 
-function toEquation(value: MixinValue): Equation {
-	if (isCalcEquation(value)) {
+function toCss(value: MixinValue): Css {
+	if (isCss(value)) {
 		return value;
 	}
 
 	return css`
 		${value}
-	` as Equation;
-}
-
-/**
- * Converts a `CssStylesheet` (from a `css\`\`` template literal) into a
- * normalized `ArborMixinBody`. This allows mixin `definition` callbacks to
- * return either the legacy object/array form or a `css\`\`` template result.
- */
-function stylesheetToMixinBody(stylesheet: CssStylesheet): ArborMixinBody {
-	return stylesheetNodesToMixinBody(stylesheet.children);
-}
-
-function stylesheetNodesToMixinBody(
-	nodes: CssStylesheetNode[],
-): ArborMixinBody {
-	const result: ArborMixinBody = [];
-	for (const node of nodes) {
-		if (node.type === 'declaration') {
-			result.push({ prop: node.property, value: node.value });
-		} else if (node.type === 'block') {
-			result.push({
-				scope: node.scope,
-				children: stylesheetNodesToMixinBody(node.children),
-			});
-		} else if (node.type === 'fragment') {
-			result.push(...stylesheetNodesToMixinBody(node.children));
-		}
-	}
-	return result;
-}
-
-/**
- * Converts a normalized `ArborMixinBody` into a `CssStylesheet` fragment.
- * Used by `.apply()` to return a stylesheet that can be interpolated into
- * other `css\`\`` templates.
- */
-function mixinBodyToStylesheet(body: ArborMixinBody): CssStylesheet {
-	return {
-		type: 'stylesheet',
-		children: mixinBodyToStylesheetNodes(body),
-	};
-}
-
-function mixinBodyToStylesheetNodes(body: ArborMixinBody): CssStylesheetNode[] {
-	return body.map((entry): CssStylesheetNode => {
-		if (isMixinPropertyDeclaration(entry)) {
-			return {
-				type: 'declaration',
-				property: entry.prop,
-				value: entry.value,
-			};
-		}
-		return {
-			type: 'block',
-			scope: entry.scope,
-			children: mixinBodyToStylesheetNodes(entry.children),
-		};
-	});
-}
-
-export function normalizeMixinBody(
-	body: MixinBodyObject | MixinBodyList,
-): ArborMixinBody {
-	if (Array.isArray(body)) {
-		const collected: ArborMixinBody = [];
-		body.forEach((item) => {
-			if ('scope' in item) {
-				collected.push({
-					scope: item.scope,
-					children: normalizeMixinBody(item.children),
-				});
-			} else if ('prop' in item) {
-				collected.push({
-					prop: item.prop,
-					value: toEquation(item.value),
-				});
-			} else {
-				collected.push(...normalizeMixinBody(item));
-			}
-		});
-
-		return collected;
-	}
-
-	return Object.entries(body).map(([propOrScope, value]) => {
-		if (
-			typeof value === 'object' &&
-			value !== null &&
-			!isCalcEquation(value) &&
-			!isToken(value)
-		) {
-			return {
-				scope: propOrScope,
-				children: normalizeMixinBody(value as MixinBodyObject | MixinBodyList),
-			};
-		}
-
-		return {
-			prop: propOrScope,
-			value: toEquation(value as MixinValue),
-		};
-	});
-}
-
-function printBody(body: ArborMixinBody): string {
-	return body
-		.map((entry) => {
-			if (isMixinPropertyDeclaration(entry)) {
-				return `${entry.prop}: ${printEquation(entry.value)};`;
-			}
-
-			if (isMixinScope(entry)) {
-				return `${entry.scope} { ${printBody(entry.children)} }`;
-			}
-
-			return '';
-		})
-		.join(' ');
+	` as Css;
 }
 
 /**
  * The definition returned by a mixin's `definition` callback.
  * - Stylesheet form: `css\`color: red;\`` (multi-line template with declarations)
  *
- * Note: the `css\`\`` tagged template literal always returns `Equation` by type,
+ * Note: the `css\`\`` tagged template literal always returns `Css` by type,
  * but at runtime, a template containing property declarations (`;` at top level)
  * or scoped blocks (`{...}`) produces a `CssStylesheet`. The mixin factory
  * detects this at runtime using `isCssStylesheet()`.
  */
-export type ArborMixinDefinition = Equation;
+export type ArborMixinDefinition = Css;
 
 export interface CreateMixinParameters<
 	TParams extends FunctionParams,
@@ -225,7 +104,7 @@ export interface CreateMixinParameters<
 		  }) => string);
 	parameters?: TParams;
 	definition: (
-		css: Css,
+		css: CssTemplate,
 		inputs: {
 			parameters: ParamsAsInterpolations<TParams>;
 			tokens: SimpleTokensAsTokenDefinitions<TTokens>;
@@ -297,16 +176,14 @@ export function createMixinFactory({
 			tokens: contributeTokens,
 		};
 
-		const rawDefinition = definition(css as Css, tokensAndParams);
-		// css`` returns Equation by TS type but may actually produce a CssStylesheet
+		const rawDefinition = definition(css, tokensAndParams);
+		// css`` returns Css by TS type but may actually produce a CssStylesheet
 		// at runtime when the template contains property declarations or blocks.
-		if (!isCssStylesheet(rawDefinition)) {
+		if (rawDefinition.type !== 'stylesheet') {
 			throw new Error(
-				`Mixin definition must be a CSS declaration block or contain scoped blocks (received: ${printEquation(rawDefinition)}) If you intended to return a single equation, wrap it in a declaration, e.g. css\`--value: ${rawDefinition};\``,
+				`Mixin definition must be a CSS declaration block or contain scoped blocks (received: ${printCss(rawDefinition)}) If you intended to return a single equation, wrap it in a declaration, e.g. css\`--value: ${rawDefinition};\``,
 			);
 		}
-		const body = stylesheetToMixinBody(rawDefinition);
-		const cssBody = printBody(body);
 
 		const parameterTokens = parameters.map((p) => paramAsToken(p, name));
 
@@ -317,30 +194,26 @@ export function createMixinFactory({
 				typeof description === 'function' ?
 					description(tokensAndParams)
 				:	description,
-			body,
+			body: rawDefinition,
 			definition: `@mixin ${cssName}${paramsAsString(parameters, {
 				nonce: name,
-			})} { ${cssBody} }`,
+			})} { ${printCss(rawDefinition)} }`,
 			apply: (values) => {
-				// TODO: convert this to directly pass property assignments
-				// into a CssStylesheet via css`` templating, rather than
-				// constructing an intermediate array of declarations and
-				// passing it through mixinBodyToStylesheet.
-
 				// we "apply" a mixin within another mixin by assigning
 				// the provided parameters to properties matching their names,
 				// prepending that to this mixin's body statements, and
 				// returning it all as a CssStylesheet fragment.
 
-				const parameterDeclarations: ArborMixinDeclaration[] = [];
+				const parameterDeclarations: Css[] = [];
 				applyParameters(parameters, values, name, (name, value) => {
-					parameterDeclarations.push({
-						prop: name,
-						value,
-					});
+					parameterDeclarations.push(css`
+						${name}: ${value};
+					`);
 				});
 
-				return mixinBodyToStylesheet([...parameterDeclarations, ...body]);
+				return css`
+					${parameterDeclarations} ${rawDefinition}
+				`;
 			},
 			parameters,
 			parameterTokens,
@@ -359,7 +232,7 @@ export type ArborMixin<
 	[MIXIN_BRAND]: true;
 	name: string;
 	description?: string;
-	body: ArborMixinBody;
+	body: Css;
 	definition: string;
 	/**
 	 * Computes the mixin's body based on provided parameters and returns it
@@ -382,7 +255,7 @@ export type ArborMixin<
 	 *   `,
 	 * });
 	 */
-	apply: (params: ParamsAsCallInputs<TParams>) => CssStylesheet;
+	apply: (params: ParamsAsCallInputs<TParams>) => Css;
 	parameters: TParams;
 	parameterTokens: Token[];
 	contributeTokens: TTokens;

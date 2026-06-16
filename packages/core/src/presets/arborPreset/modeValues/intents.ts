@@ -1,4 +1,4 @@
-import { css } from '@arbor-css/calc';
+import { css } from '@arbor-css/css-eval';
 import { ModeValues } from '@arbor-css/modes';
 import { ArborModeSchema } from '../modeSchema/modeSchema.js';
 import { Tokens } from './types.js';

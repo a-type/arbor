@@ -1,4 +1,4 @@
-import { printEquation } from '@arbor-css/calc';
+import { css, printCss } from '@arbor-css/css-eval';
 import { describe, expect, it } from 'vitest';
 import { createFunctionFactory, isFunction } from './functions.js';
 
@@ -79,7 +79,9 @@ describe('createFunction', () => {
 				parameters: ['--base', '--factor'],
 				definition: ($, base, factor) => $`calc(${base} * ${factor})`,
 			});
-			expect(fn.compute({ '--base': 4, '--factor': 3 })).toBe('12');
+			expect(fn.compute({ '--base': 4, '--factor': 3 })).toEqual(
+				css`calc(4 * 3)`,
+			);
 		});
 
 		it('computes an add expression', () => {
@@ -87,7 +89,7 @@ describe('createFunction', () => {
 				parameters: ['--a', '--b'],
 				definition: ($, a, b) => $`calc(${a} + ${b})`,
 			});
-			expect(fn.compute({ '--a': 10, '--b': 5 })).toBe('15');
+			expect(fn.compute({ '--a': 10, '--b': 5 })).toEqual(css`calc(10 + 5)`);
 		});
 
 		it('computes with string values that cannot be resolved numerically', () => {
@@ -96,15 +98,15 @@ describe('createFunction', () => {
 				definition: ($, base, factor) => $`calc(${base} * ${factor})`,
 			});
 			const result = fn.compute({ '--base': '8px', '--factor': 2 });
-			expect(result).toBe('16px');
+			expect(result).toEqual(css`calc(8px * 2)`);
 		});
 
 		it('resolves a constant equation with no params', () => {
 			const fn = createFunction('answer', {
 				parameters: [],
-				definition: ($) => $`6 * 7`,
+				definition: ($) => $`calc(6 * 7)`,
 			});
-			expect(fn.compute({})).toBe('42');
+			expect(fn.compute({})).toEqual(css`calc(6 * 7)`);
 		});
 
 		it('does not require specifying params with defaults', () => {
@@ -116,8 +118,10 @@ describe('createFunction', () => {
 				definition: ($, required, optional) =>
 					$`calc(${required} + ${optional})`,
 			});
-			expect(fn.compute({ '--required': 5 })).toBe('15');
-			expect(fn.compute({ '--required': 5, '--optional': 20 })).toBe('25');
+			expect(fn.compute({ '--required': 5 })).toEqual(css`calc(5 + 10)`);
+			expect(fn.compute({ '--required': 5, '--optional': 20 })).toEqual(
+				css`calc(5 + 20)`,
+			);
 		});
 	});
 
@@ -127,9 +131,7 @@ describe('createFunction', () => {
 				parameters: ['--x'],
 				definition: ($, x) => $`calc(${x} * 2)`,
 			});
-			expect(printEquation(fn.equation)).toBe(
-				'calc(var(--_-param-test-x) * 2)',
-			);
+			expect(printCss(fn.equation)).toBe('calc(var(--_-param-test-x) * 2)');
 		});
 	});
 });

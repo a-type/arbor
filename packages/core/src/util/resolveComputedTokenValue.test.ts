@@ -1,4 +1,5 @@
-import { css } from '@arbor-css/calc';
+import { css, CssResolutionContext } from '@arbor-css/css-eval';
+import { simplifier } from '@arbor-css/css-eval/node';
 import { expect, it } from 'vitest';
 import { presetArbor } from '../presets/arborPreset/preset.js';
 import { resolveComputedTokenValue } from './resolveComputedTokenValue.js';
@@ -14,22 +15,28 @@ const preset = presetArbor({
 	},
 });
 
+const ctx: CssResolutionContext = {
+	simplifier,
+};
+
 it('resolves primitive token values', () => {
 	const value = resolveComputedTokenValue(
 		preset,
 		preset.$.mode.primitive.spacing.$root.name,
+		ctx,
 	);
 
-	expect(value).toMatchInlineSnapshot(`"0.5rem"`);
+	expect(value).toMatchInlineSnapshot(`".5rem"`);
 });
 
 it('resolves base mode values with baking', () => {
 	const value = resolveComputedTokenValue(
 		preset,
 		preset.$.mode.spacing.sm.name,
+		ctx,
 	);
 
-	expect(value).toMatchInlineSnapshot(`"0.25rem"`);
+	expect(value).toMatchInlineSnapshot(`".25rem"`);
 });
 
 it('applies user property values to evaluation context', () => {
@@ -37,11 +44,14 @@ it('applies user property values to evaluation context', () => {
 		preset,
 		preset.$.mode.spacing.sm.name,
 		{
-			[preset.$.mode.global.density.name]: '2',
+			...ctx,
+			propertyValues: {
+				[preset.$.mode.global.density.name]: '2',
+			},
 		},
 	);
 
-	expect(value).toMatchInlineSnapshot(`"0.125rem"`);
+	expect(value).toMatchInlineSnapshot(`".125rem"`);
 });
 
 it('resolves equation property values from user overrides', () => {
@@ -49,13 +59,18 @@ it('resolves equation property values from user overrides', () => {
 		preset,
 		preset.$.mode.spacing.sm.name,
 		{
-			[preset.$.mode.global.density.name]: css`calc(1 + 1)`,
+			...ctx,
+			propertyValues: {
+				[preset.$.mode.global.density.name]: css`calc(1 + 1)`,
+			},
 		},
 	);
 
-	expect(value).toMatchInlineSnapshot(`"0.125rem"`);
+	expect(value).toMatchInlineSnapshot(`".125rem"`);
 });
 
 it('returns undefined when token is unknown', () => {
-	expect(resolveComputedTokenValue(preset, '--not-a-token')).toBeUndefined();
+	expect(
+		resolveComputedTokenValue(preset, '--not-a-token', ctx),
+	).toBeUndefined();
 });
