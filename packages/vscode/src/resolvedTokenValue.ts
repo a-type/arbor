@@ -47,6 +47,7 @@ export async function resolveTokenValue(
 		resolveComputedTokenValue(state.preset, entry.name, {
 			simplifier: await simplifier,
 			envValues: getEnv(),
+			purpose: isToken(entry) ? entry.purpose : undefined,
 		}) ?? null
 	);
 }
@@ -63,6 +64,7 @@ export async function resolveColorTokenValue(
 		resolveComputedTokenValue(state.preset, entry.name, {
 			simplifier: await simplifier,
 			envValues: getEnv(),
+			purpose: 'color',
 		}) ?? null
 	);
 }

@@ -1,3 +1,5 @@
+import { TokenPurpose } from '@arbor-css/tokens';
+import { replaceTopLevelTerms } from '@arbor-css/util';
 import { Css } from './interpolation.js';
 import { unwrapDummyAssignment, wrapWithDummyAssignment } from './util.js';
 
@@ -6,48 +8,12 @@ import { unwrapDummyAssignment, wrapWithDummyAssignment } from './util.js';
  * Uses linear-time paren scanning instead of regex to avoid backtracking.
  */
 export function simplifyPreprocessCss(css: string): string {
-	let result = '';
-	let searchIndex = 0;
-	const calcKeyword = 'calc(';
-
-	while (searchIndex < css.length) {
-		const calcIndex = css.indexOf(calcKeyword, searchIndex);
-		if (calcIndex === -1) {
-			result += css.slice(searchIndex);
-			break;
+	return replaceTopLevelTerms(css, (term) => {
+		if (term.startsWith('calc(')) {
+			return 'calc(' + simplifyLikeUnitDivision(term.slice(5, -1)) + ')';
 		}
-
-		result += css.slice(searchIndex, calcIndex);
-		const openParenIndex = calcIndex + 4; // position of '(' in 'calc('
-		const closeParenIndex = findMatchingParen(css, openParenIndex);
-
-		if (closeParenIndex === -1) {
-			result += css.slice(calcIndex);
-			break;
-		}
-
-		const content = css.slice(openParenIndex + 1, closeParenIndex);
-		const simplified = simplifyLikeUnitDivision(content);
-		result += 'calc(' + simplified + ')';
-		searchIndex = closeParenIndex + 1;
-	}
-
-	return result;
-}
-
-function findMatchingParen(text: string, openParenIndex: number): number {
-	let depth = 0;
-	for (let i = openParenIndex; i < text.length; i++) {
-		if (text[i] === '(') {
-			depth++;
-		} else if (text[i] === ')') {
-			depth--;
-			if (depth === 0) {
-				return i;
-			}
-		}
-	}
-	return -1;
+		return term;
+	});
 }
 
 function simplifyLikeUnitDivision(content: string): string {
@@ -69,7 +35,12 @@ export interface CssSimplificationOptions {
 	 */
 	passes: number;
 }
-export type CssSimplifier = (css: Css) => string;
+export type CssSimplifier = (
+	css: Css,
+	options?: {
+		purpose?: TokenPurpose;
+	},
+) => string;
 export type CssTransformFunction = ({
 	filename,
 	code,
@@ -84,10 +55,10 @@ export function createSimplifier(config: {
 	 */
 	transform: CssTransformFunction;
 	options?: CssSimplificationOptions;
-}) {
+}): CssSimplifier {
 	const enc = new TextEncoder();
 	const dec = new TextDecoder();
-	return (css: Css) => {
+	return (css: Css, options) => {
 		let cssToTransform = css.text;
 
 		for (let i = 0; i < (config.options?.passes ?? 1); i++) {

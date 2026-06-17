@@ -46,6 +46,7 @@
 	},
 	"dependencies": {
 		"@arbor-css/tokens": "workspace:*",
+		"@arbor-css/util": "workspace:*",
 		"lightningcss": "^1.32.0"
 	}
 }
