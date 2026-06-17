@@ -124,7 +124,7 @@
 		}
 
 		const toCompute = whenDark === 'dark' ? dark : light;
-		const asEquation = css(toCompute as any);
+		const asEquation = css([toCompute] as any);
 		const simplified = await resolveCss(asEquation, {
 			propertyValues: {},
 			skipBaking: false,

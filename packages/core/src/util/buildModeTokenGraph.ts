@@ -1,4 +1,5 @@
 import {
+	CssEnvValues,
 	CssResolutionContext,
 	CssSimplifier,
 	isCss,
@@ -37,6 +38,7 @@ export function buildModeTokenGraph<TModeShape extends SimpleTokenSchema>(
 	options: {
 		skipBaking?: boolean;
 		simplifier?: CssSimplifier;
+		envValues?: CssEnvValues;
 	},
 ): ModeTokenGraph {
 	const modeInternals = getModeInternals(mode);
@@ -61,6 +63,7 @@ export function buildModeTokenGraph<TModeShape extends SimpleTokenSchema>(
 		allowMissing: true,
 		skipBaking: options.skipBaking,
 		simplifier: options.simplifier,
+		envValues: options.envValues,
 	});
 	const explicitNames = new Set(Object.keys(explicitValues));
 
@@ -82,6 +85,7 @@ export function buildModeTokenGraph<TModeShape extends SimpleTokenSchema>(
 				skipBaking: options.skipBaking ?? !explicit,
 				propertyValues: resolvedValues,
 				simplifier: options.simplifier,
+				envValues: options.envValues,
 			}),
 			explicit,
 			dependencies: getGraphDependencies(raw),
@@ -212,10 +216,12 @@ function createResolvingPropertyValuesProxy(
 		allowMissing = false,
 		skipBaking,
 		simplifier,
+		envValues,
 	}: {
 		allowMissing?: boolean;
 		skipBaking?: boolean;
 		simplifier?: CssSimplifier;
+		envValues?: CssEnvValues;
 	},
 ): Record<string, string> {
 	const cache: Record<string, string> = {};
@@ -263,6 +269,7 @@ function createResolvingPropertyValuesProxy(
 						propertyValues: propertyValuesProxy,
 						skipBaking,
 						simplifier,
+						envValues,
 					});
 					return cache[prop];
 				} else if (value === undefined) {
