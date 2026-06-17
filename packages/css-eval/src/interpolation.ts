@@ -76,6 +76,13 @@ export function css(
 		text += str;
 		if (i < values.length) {
 			const value = values[i];
+
+			if (typeof value === 'number' && isNaN(value)) {
+				throw new Error(
+					`Invalid CSS interpolation value: ${value} (preceded by ${text}...)`,
+				);
+			}
+
 			// lookahead past whitespace for next meaningful token char
 			const nextTokenMatch = /\S/.exec(strings[i + 1]);
 			const nextTokenChar = nextTokenMatch ? nextTokenMatch[0] : '';

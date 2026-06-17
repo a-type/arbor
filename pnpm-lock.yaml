@@ -313,6 +313,9 @@ importers:
       '@arbor-css/core':
         specifier: workspace:*
         version: link:../core
+      '@arbor-css/css-eval':
+        specifier: workspace:*
+        version: link:../css-eval
       '@arbor-css/util':
         specifier: workspace:*
         version: link:../util

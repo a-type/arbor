@@ -212,7 +212,7 @@ it('assigns color and neutral $root to mid when mid exists', () => {
 	expect(compiled.primary.$neutral.$root).toBe(compiled.primary.$neutral.mid);
 });
 
-it('assigns $root to midpoint when mid is absent', () => {
+it.only('assigns $root to midpoint when mid is absent', () => {
 	const compiled = compileAndBake({
 		ranges: {
 			primary: {

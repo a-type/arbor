@@ -40,6 +40,7 @@ function createTestState() {
 		preset,
 		tokenMap,
 		tokenPrefixes: ['--m-'],
+		dependencies: [],
 	};
 }
 
@@ -85,10 +86,10 @@ it('resolves Arbor color tokens through the shared helper', () => {
 	const spacingToken = state.preset.$.mode.primitive.spacing.$root;
 
 	expect(resolveTokenValue(state, colorToken)).toBe(
-		'light-dark(oklch(0.9 0.15 0), oklch(0.53 0.16 0))',
+		'light-dark(oklch(90% .15 0), oklch(53% .16 0))',
 	);
 	expect(resolveColorTokenValueByName(state, colorToken.name)).toBe(
-		'light-dark(oklch(0.9 0.15 0), oklch(0.53 0.16 0))',
+		'light-dark(oklch(90% .15 0), oklch(53% .16 0))',
 	);
 	expect(resolveColorTokenValueByName(state, spacingToken.name)).toBeNull();
 });

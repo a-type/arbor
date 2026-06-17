@@ -129,7 +129,11 @@ function lightnessEq(config: {
 		midpoint: number;
 	}) => {
 		const rangeDir = step < midpoint ? -1 : 1;
-		const rangeMax = step < midpoint ? midpoint : rangeSize - midpoint - 1;
+		// Math.max - avoid divide by 0
+		const rangeMax = Math.max(
+			1,
+			step < midpoint ? midpoint : rangeSize - midpoint - 1,
+		);
 		const rangeProgress =
 			(Math.abs(step - midpoint) / rangeMax) **
 			(config.midpointDifferentiation ?? 1.2);
@@ -153,7 +157,11 @@ function chromaEq(config: {
 		midpoint: number;
 	}) => {
 		const rangeDir = step < midpoint ? -1 : 1;
-		const rangeMax = step < midpoint ? midpoint : rangeSize - midpoint - 1;
+		// Math.max - avoid divide by 0
+		const rangeMax = Math.max(
+			1,
+			step < midpoint ? midpoint : rangeSize - midpoint - 1,
+		);
 		const rangeProgress =
 			(Math.abs(step - midpoint) / rangeMax) **
 			(config.midpointDifferentiation ?? 1.2);

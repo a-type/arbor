@@ -1,5 +1,6 @@
 import type { ArborFunction, Token } from '@arbor-css/core';
 import { isToken, resolveComputedTokenValue } from '@arbor-css/core';
+import { simplifier } from '@arbor-css/css-eval/node';
 import type { ConfigState } from './tokenProvider.js';
 
 export function resolveTokenValue(
@@ -10,7 +11,11 @@ export function resolveTokenValue(
 		return null;
 	}
 
-	return resolveComputedTokenValue(state.preset, entry.name) ?? null;
+	return (
+		resolveComputedTokenValue(state.preset, entry.name, {
+			simplifier,
+		}) ?? null
+	);
 }
 
 export function resolveColorTokenValue(
@@ -21,7 +26,11 @@ export function resolveColorTokenValue(
 		return null;
 	}
 
-	return resolveComputedTokenValue(state.preset, entry.name) ?? null;
+	return (
+		resolveComputedTokenValue(state.preset, entry.name, {
+			simplifier,
+		}) ?? null
+	);
 }
 
 export function resolveColorTokenValueByName(
