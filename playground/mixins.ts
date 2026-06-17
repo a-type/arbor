@@ -1,26 +1,21 @@
-import { CreateMixin } from '@arbor-css/core';
+import { CreateMixin, css } from '@arbor-css/core';
 
 export function makeMixins(create: CreateMixin) {
 	return {
 		foo: create('foo', {
-			definition: () => ({
-				color: 'red',
-			}),
+			definition: () => css`
+				color: red;
+			`,
 		}),
 		bar: create('bar', {
-			definition: () => ({
-				color: 'blue',
-			}),
+			definition: () => css`
+				color: blue;
+			`,
 		}),
-		// qux: create('qux', {
-		// 	definition: () => ({
-		// 		color: 'green',
-		// 	}),
-		// }),
 		baz: create('baz', {
-			definition: () => ({
-				color: 'yellow',
-			}),
+			definition: () => css`
+				color: yellow;
+			`,
 		}),
 	};
 }

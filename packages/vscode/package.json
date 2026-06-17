@@ -75,13 +75,15 @@
 	},
 	"dependencies": {
 		"@arbor-css/core": "workspace:*",
-		"@arbor-css/util": "workspace:*",
 		"@arbor-css/css-eval": "workspace:*",
+		"@arbor-css/util": "workspace:*",
 		"color-name": "^2.1.0",
 		"escalade": "^3.2.0",
-		"jiti": "^2.7.0"
+		"jiti": "^2.7.0",
+		"lightningcss-wasm": "1.32.0"
 	},
 	"devDependencies": {
+		"@types/color-name": "2.0.0",
 		"@types/node": "^25.8.0",
 		"@types/vscode": "^1.90.0",
 		"@vscode/vsce": "^3.9.1",

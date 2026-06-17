@@ -1,5 +1,4 @@
 import { isToken, Token } from '@arbor-css/tokens';
-import {} from 'lightningcss';
 import { isSingleValue } from './util.js';
 
 export interface Css {

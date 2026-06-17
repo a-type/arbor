@@ -80,18 +80,20 @@ it('parses oklch colors into rgba channels', () => {
 	});
 });
 
-it('resolves Arbor color tokens through the shared helper', () => {
+it('resolves Arbor color tokens through the shared helper', async () => {
 	const state = createTestState();
 	const colorToken = (state.preset.$.mode.color as any).main.$root;
 	const spacingToken = state.preset.$.mode.primitive.spacing.$root;
 
-	expect(resolveTokenValue(state, colorToken)).toBe(
+	expect(await resolveTokenValue(state, colorToken)).toBe(
 		'light-dark(oklch(90% .15 0), oklch(53% .16 0))',
 	);
-	expect(resolveColorTokenValueByName(state, colorToken.name)).toBe(
+	expect(await resolveColorTokenValueByName(state, colorToken.name)).toBe(
 		'light-dark(oklch(90% .15 0), oklch(53% .16 0))',
 	);
-	expect(resolveColorTokenValueByName(state, spacingToken.name)).toBeNull();
+	expect(
+		await resolveColorTokenValueByName(state, spacingToken.name),
+	).toBeNull();
 });
 
 it('ignores unsupported color syntaxes', () => {

@@ -24,33 +24,33 @@ export class ArborDocumentColorProvider
 			const line = document.lineAt(lineIndex).text;
 			for (const tokenRegex of tokenRegexes)
 				for (const match of line.matchAll(tokenRegex.anywhere())) {
-				if (match.index === undefined) {
-					continue;
-				}
+					if (match.index === undefined) {
+						continue;
+					}
 
-				const resolved = resolveColorTokenValueByName(state, match[1]);
-				if (!resolved) {
-					continue;
-				}
+					const resolved = await resolveColorTokenValueByName(state, match[1]);
+					if (!resolved) {
+						continue;
+					}
 
-				const rgba = parseCssColor(resolved);
-				if (!rgba) {
-					continue;
-				}
+					const rgba = parseCssColor(resolved);
+					if (!rgba) {
+						continue;
+					}
 
-				const range = new vscode.Range(
-					lineIndex,
-					match.index,
-					lineIndex,
-					match.index + match[0].length,
-				);
+					const range = new vscode.Range(
+						lineIndex,
+						match.index,
+						lineIndex,
+						match.index + match[0].length,
+					);
 
-				colors.push(
-					new vscode.ColorInformation(
-						range,
-						new vscode.Color(rgba.red, rgba.green, rgba.blue, rgba.alpha),
-					),
-				);
+					colors.push(
+						new vscode.ColorInformation(
+							range,
+							new vscode.Color(rgba.red, rgba.green, rgba.blue, rgba.alpha),
+						),
+					);
 				}
 		}
 

@@ -1,42 +1,49 @@
 import type { ArborFunction, Token } from '@arbor-css/core';
 import { isToken, resolveComputedTokenValue } from '@arbor-css/core';
-import { simplifier } from '@arbor-css/css-eval/node';
+import { createSimplifier } from '@arbor-css/css-eval';
+import init, { transform } from 'lightningcss-wasm';
 import type { ConfigState } from './tokenProvider.js';
 
-export function resolveTokenValue(
+const simplifier = init().then(() =>
+	createSimplifier({
+		transform: transform as any,
+	}),
+);
+
+export async function resolveTokenValue(
 	state: ConfigState,
 	entry: Token | ArborFunction,
-): string | null {
+): Promise<string | null> {
 	if (!isToken(entry)) {
 		return null;
 	}
 
 	return (
 		resolveComputedTokenValue(state.preset, entry.name, {
-			simplifier,
+			simplifier: await simplifier,
 		}) ?? null
 	);
 }
 
-export function resolveColorTokenValue(
+export async function resolveColorTokenValue(
 	state: ConfigState,
 	entry: Token | ArborFunction,
-): string | null {
+): Promise<string | null> {
 	if (!isToken(entry) || entry.purpose !== 'color') {
 		return null;
 	}
 
 	return (
 		resolveComputedTokenValue(state.preset, entry.name, {
-			simplifier,
+			simplifier: await simplifier,
 		}) ?? null
 	);
 }
 
-export function resolveColorTokenValueByName(
+export async function resolveColorTokenValueByName(
 	state: ConfigState,
 	tokenName: string,
-): string | null {
+): Promise<string | null> {
 	const entry = state.tokenMap.get(tokenName);
 	if (!entry) {
 		return null;
@@ -45,5 +52,5 @@ export function resolveColorTokenValueByName(
 		return null;
 	}
 
-	return resolveColorTokenValue(state, entry);
+	return await resolveColorTokenValue(state, entry);
 }

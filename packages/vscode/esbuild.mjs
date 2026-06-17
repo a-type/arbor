@@ -1,4 +1,16 @@
 import * as esbuild from 'esbuild';
+import { cp } from 'node:fs/promises';
+import * as path from 'node:path';
+
+// copy wasm file to dist
+await cp(
+	path.join(
+		import.meta.dirname,
+		'./node_modules/lightningcss-wasm/lightningcss_node.wasm',
+	),
+	path.join(import.meta.dirname, './dist/lightningcss_node.wasm'),
+	{ force: true },
+);
 
 const watch = process.argv.includes('--watch');
 
@@ -7,7 +19,7 @@ const options = {
 	entryPoints: ['src/extension.ts'],
 	bundle: true,
 	outfile: 'dist/extension.mjs',
-	external: ['vscode'],
+	external: ['vscode', 'lightningcss'],
 	platform: 'node',
 	format: 'esm',
 	banner: {

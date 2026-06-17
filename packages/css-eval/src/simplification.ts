@@ -1,5 +1,3 @@
-import type { transform as transformNode } from 'lightningcss';
-import MagicString from 'magic-string';
 import { Css } from './interpolation.js';
 import { unwrapDummyAssignment, wrapWithDummyAssignment } from './util.js';
 
@@ -10,17 +8,13 @@ const braceMatchingCalcContentExtractor =
  * Applies simplifications not covered by LightningCSS.
  */
 export function simplifyPreprocessCss(css: string) {
-	const magic = new MagicString(css);
-	magic.replaceAll(braceMatchingCalcContentExtractor, (match) => {
-		const content = new MagicString(match);
-		simplifyLikeUnitDivision(content);
-		return content.toString();
-	});
-	return magic.toString();
+	return css.replace(braceMatchingCalcContentExtractor, (match) =>
+		simplifyLikeUnitDivision(match),
+	);
 }
 
-function simplifyLikeUnitDivision(content: MagicString) {
-	content.replaceAll(
+function simplifyLikeUnitDivision(content: string): string {
+	return content.replace(
 		/([0-9]+)([a-z]+)\s*\/\s*([0-9]+)\2/g,
 		(_match, num1, _unit1, num2) => {
 			const simplifiedValue = parseFloat(num1) / parseFloat(num2);
@@ -30,7 +24,13 @@ function simplifyLikeUnitDivision(content: MagicString) {
 }
 
 export type CssSimplifier = (css: Css) => string;
-export type CssTransformFunction = typeof transformNode;
+export type CssTransformFunction = ({
+	filename,
+	code,
+}: {
+	filename: string;
+	code: Uint8Array;
+}) => { code: Uint8Array };
 
 export function createSimplifier(config: {
 	/**
