@@ -1,0 +1,113 @@
+---
+interface Props {
+	values: string[];
+	titles: string[];
+	label: string;
+	class?: string;
+}
+const { values, titles, label, class: className, ...props } = Astro.props;
+---
+
+<div class={`tabs ${className ?? ''}`} {...props}>
+	<div class="tab-list" role="tablist" aria-label={label}>
+		{
+			values.map((value, i) => {
+				return (
+					<button
+						class="tab"
+						role="tab"
+						aria-selected={i === 0 ? 'true' : 'false'}
+						tabindex={i === 0 ? '0' : '-1'}
+						data-value={value}
+						aria-controls={`tabpanel-${value}`}
+					>
+						{titles[i]}
+					</button>
+				);
+			})
+		}
+	</div>
+	<slot />
+</div>
+
+<style>
+	.tabs {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		box-sizing: border-box;
+	}
+
+	.tab-list {
+		display: flex;
+		gap: var(--m-spacing-lg);
+		border-bottom: 1px solid var(--m-color-neutral-heavy);
+		width: 100%;
+		box-sizing: border-box;
+		position: sticky;
+		top: 0;
+		z-index: 10;
+		@apply --mx-bg(inherit);
+	}
+
+	.tab {
+		padding: var(--m-spacing) 0;
+		border: none;
+		background: none;
+		@apply --mx-text-secondary;
+		cursor: pointer;
+
+		&[aria-selected='true'] {
+			color: var(--m-color-main-heavy);
+			border-bottom: 2px solid var(--m-color-main-heavy);
+			font-weight: var(--m-primitive-typography-weight-bold);
+		}
+	}
+</style>
+
+<script>
+	// ARIA keyboard behavior
+	const tabGroups = document.querySelectorAll('.tabs');
+	tabGroups.forEach((tabGroup) => {
+		const tabList = tabGroup.querySelector('.tab-list')!;
+		const tabs = tabList.querySelectorAll(
+			'.tab',
+		) as NodeListOf<HTMLButtonElement>;
+		const tabPanels = tabGroup.querySelectorAll(
+			'[role="tabpanel"]',
+		) as NodeListOf<HTMLElement>;
+
+		function selectTab(value: string) {
+			tabs.forEach((tab) => {
+				const selected = tab.dataset.value === value;
+				tab.setAttribute('aria-selected', selected ? 'true' : 'false');
+				tab.setAttribute('tabindex', selected ? '0' : '-1');
+			});
+			tabPanels.forEach((panel) => {
+				const selected = panel.dataset.value === value;
+				panel.hidden = !selected;
+			});
+		}
+
+		tabs.forEach((tab) => {
+			tab.addEventListener('keydown', (e) => {
+				const currentIndex = Array.from(tabs).indexOf(tab);
+				let newIndex = null;
+				if (e.key === 'ArrowRight') {
+					newIndex = (currentIndex + 1) % tabs.length;
+				} else if (e.key === 'ArrowLeft') {
+					newIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+				}
+				if (newIndex !== null) {
+					tabs[newIndex].focus();
+					selectTab(tabs[newIndex].dataset.value!);
+				}
+			});
+			tab.addEventListener('click', () => {
+				selectTab(tab.dataset.value!);
+			});
+		});
+
+		selectTab(tabs[0].dataset.value!);
+	});
+</script>

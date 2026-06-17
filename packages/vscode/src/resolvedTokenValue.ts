@@ -7,6 +7,9 @@ import type { ConfigState } from './tokenProvider.js';
 const simplifier = init().then(() =>
 	createSimplifier({
 		transform: transform as any,
+		options: {
+			passes: 2,
+		},
 	}),
 );
 

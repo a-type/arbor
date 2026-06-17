@@ -1,0 +1,24 @@
+---
+interface Props {
+	value: string;
+}
+const { value, ...props } = Astro.props;
+---
+
+<div
+	id={`tabpanel-${value}`}
+	role="tabpanel"
+	hidden
+	data-value={value}
+	{...props}
+>
+	<slot />
+</div>
+
+<style>
+	[role='tabpanel'] {
+		padding: var(--m-spacing-lg) 0;
+		width: 100%;
+		box-sizing: border-box;
+	}
+</style>

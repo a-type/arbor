@@ -72,7 +72,9 @@ export class ArborHoverProvider implements vscode.HoverProvider {
 							`\n\n${makeColorSwatch(resolvedColor)} \`${resolvedColor}\``,
 						);
 					} else {
-						md.appendMarkdown(`\n\n**Value:** \`${resolved ?? 'unresolved'}\``);
+						md.appendMarkdown(
+							`\n\n**Value (@mode-base):** \`${resolved ?? 'unresolved'}\``,
+						);
 					}
 				} else if (isFunction(entry)) {
 					md.appendMarkdown(`**Arbor function:** \`${entry.signature}\``);

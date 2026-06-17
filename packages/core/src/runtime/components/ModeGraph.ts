@@ -39,6 +39,16 @@ function memoizedTokenGraph(
 	return graph;
 }
 
+// sorts by nest depth (shallow first), then by name alphabetically
+function categoryDepthSort(tokenA: string, tokenB: string) {
+	const categoryA = tokenA.split('-').length;
+	const categoryB = tokenB.split('-').length;
+	if (categoryA === categoryB) {
+		return tokenA.localeCompare(tokenB);
+	}
+	return categoryA - categoryB;
+}
+
 class ModeGraph extends LitElement {
 	static get properties() {
 		return {
@@ -78,6 +88,7 @@ class ModeGraph extends LitElement {
 				display: flex;
 				flex-direction: column;
 				font-family: monospace;
+				gap: var(--modeGraph-tokens-gap, var(--m-spacing-sm, 4px));
 			}
 		`;
 	}
@@ -102,10 +113,11 @@ class ModeGraph extends LitElement {
 					</span>
 				</div>
 				<div class="tokens">
-					${graph.roots.map((tokenName) => {
+					${graph.roots.sort(categoryDepthSort).map((tokenName) => {
 						return html`<arbor-mode-graph-token
 							mode=${this.mode}
 							name=${tokenName}
+							expanded=${graph.roots.length <= 3}
 						></arbor-mode-graph-token>`;
 					})}
 				</div>
@@ -121,6 +133,7 @@ class ModeGraphToken extends LitElement {
 			name: { type: String },
 			dependency: { type: String, optional: true },
 			depth: { type: Number, optional: true },
+			expanded: { type: Boolean, optional: true },
 		};
 	}
 
@@ -146,9 +159,11 @@ class ModeGraphToken extends LitElement {
 			}
 
 			summary {
-				cursor: pointer;
 				display: flex;
 				flex-direction: column;
+				&[data-has-dependents='true'] {
+					cursor: pointer;
+				}
 			}
 			.summary-line {
 				display: flex;
@@ -282,6 +297,7 @@ class ModeGraphToken extends LitElement {
 	mode = '';
 	dependency = '@@none';
 	depth = 0;
+	expanded = false;
 	preset = getPreset();
 
 	// need to manually subscribe to trigger updates
@@ -321,21 +337,32 @@ class ModeGraphToken extends LitElement {
 			}
 		}
 
+		const baseComputed = changed ? baseGraph.nodes[this.name]?.computed : null;
+
 		return html`
-			<details>
-				<summary>
+			<details
+				?open=${this.expanded}
+				data-has-dependents=${tokenNode.dependents.length > 0}
+			>
+				<summary data-has-dependents=${tokenNode.dependents.length > 0}>
 					<div class="summary-line">
 						<span class="name">${this.name}</span>
 						<span class="value">
-							${changed ?
-								html`<span
-									class="base-computed"
-									title="${baseGraph.nodes[this.name]?.computed ?? 'n/a'}"
-									>${baseGraph.nodes[this.name]?.computed ?? 'n/a'}</span
+							${baseComputed ?
+								html`<span class="base-computed" title="${baseComputed}"
+									>${tokenNode.token.purpose === 'color' ?
+										html`<arbor-color-swatch
+											value="${baseComputed}"
+										></arbor-color-swatch>`
+									:	baseComputed}</span
 								>`
 							:	''}
 							<span class="computed" title="${tokenNode.computed}"
-								>${tokenNode.computed}</span
+								>${tokenNode.token.purpose === 'color' ?
+									html`<arbor-color-swatch
+										value="${tokenNode.computed}"
+									></arbor-color-swatch>`
+								:	tokenNode.computed}</span
 							>
 						</span>
 					</div>
@@ -361,7 +388,7 @@ class ModeGraphToken extends LitElement {
 					:	''}
 				</summary>
 				<ul class="dependents">
-					${tokenNode.dependents.map((dep) => {
+					${tokenNode.dependents.sort(categoryDepthSort).map((dep) => {
 						return html`<li class="dependent">
 							<arbor-mode-graph-token
 								mode=${this.mode}

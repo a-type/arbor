@@ -56,6 +56,18 @@ makeSeasonMode('spring');
 makeSeasonMode('summer');
 makeSeasonMode('autumn');
 
+basePreset.bundleMode('neutral', {
+	color: {
+		main: basePreset.$.mode.color.neutral,
+	},
+});
+
+basePreset.bundleMode('attention', {
+	color: {
+		main: basePreset.$.mode.primitive.color.attention,
+	},
+});
+
 basePreset.bundleMode('hero', {
 	global: {
 		density: 0.5,

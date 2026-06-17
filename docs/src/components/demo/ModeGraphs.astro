@@ -1,0 +1,28 @@
+---
+import TabItem from '../system/TabItem.astro';
+import Tabs from '../system/Tabs.astro';
+---
+
+<Tabs
+	label="Mode Graph Demos"
+	values={['dense', 'neutral', 'square']}
+	titles={['@mode-dense', '@mode-neutral', '@mode-square']}
+	class="tabs"
+>
+	<TabItem value="dense">
+		<arbor-mode-graph mode="dense"></arbor-mode-graph>
+	</TabItem>
+	<TabItem value="neutral">
+		<arbor-mode-graph mode="neutral"></arbor-mode-graph>
+	</TabItem>
+	<TabItem value="square">
+		<arbor-mode-graph mode="square"></arbor-mode-graph>
+	</TabItem>
+</Tabs>
+
+<style>
+	.tabs {
+		height: 400px;
+		overflow-y: auto;
+	}
+</style>

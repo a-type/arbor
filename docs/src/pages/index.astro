@@ -1,6 +1,7 @@
 ---
 import Copyable from '../components/Copyable.astro';
 import GlobalModes from '../components/demo/GlobalModes.astro';
+import ModeGraphs from '../components/demo/ModeGraphs.astro';
 import ModeMixer from '../components/demo/ModeMixer.astro';
 import TokenHelp from '../components/demo/TokenHelp.astro';
 import ArborImage from '../components/graphics/ArborImage.astro';
@@ -90,7 +91,7 @@ import Layout from '../layouts/Homepage.astro';
 					Take a look at how changing one global token affects everything
 					downstream:
 				</p>
-				<arbor-mode-graph mode="dense" class="@mode-dense"></arbor-mode-graph>
+				<ModeGraphs />
 				<p>
 					Because these "living" tokens can do the work of many static tokens,
 					your token set stays small and manageable.
