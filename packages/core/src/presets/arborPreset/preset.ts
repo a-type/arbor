@@ -80,7 +80,7 @@ export const presetArbor = <
 					saturation: 0.5,
 					shadowBlur: 0.5,
 					shadowSpread: 0,
-					baseFontSize: '16px',
+					baseFontSize: '1em',
 					baseSpacingSize: '8px',
 					defaultShadowColor: 'rgba(0 0 0 / 0.15)',
 
