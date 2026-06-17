@@ -225,6 +225,9 @@ class ModeGraphToken extends LitElement {
 			}
 			.base-computed {
 				opacity: 0.6;
+				display: inline-flex;
+				flex-direction: row;
+				align-items: center;
 				&::after {
 					content: '→';
 					margin-inline: 4px;
@@ -338,6 +341,10 @@ class ModeGraphToken extends LitElement {
 		}
 
 		const baseComputed = changed ? baseGraph.nodes[this.name]?.computed : null;
+		const isColor =
+			tokenNode.token.purpose === 'color' ||
+			tokenNode.token.purpose === 'background' ||
+			tokenNode.token.purpose === 'shadow-color';
 
 		return html`
 			<details
@@ -350,7 +357,7 @@ class ModeGraphToken extends LitElement {
 						<span class="value">
 							${baseComputed ?
 								html`<span class="base-computed" title="${baseComputed}"
-									>${tokenNode.token.purpose === 'color' ?
+									>${isColor ?
 										html`<arbor-color-swatch
 											value="${baseComputed}"
 										></arbor-color-swatch>`
@@ -358,7 +365,7 @@ class ModeGraphToken extends LitElement {
 								>`
 							:	''}
 							<span class="computed" title="${tokenNode.computed}"
-								>${tokenNode.token.purpose === 'color' ?
+								>${isColor ?
 									html`<arbor-color-swatch
 										value="${tokenNode.computed}"
 									></arbor-color-swatch>`

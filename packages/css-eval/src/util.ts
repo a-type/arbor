@@ -21,6 +21,7 @@ export function isSingleValue(css: string): boolean {
 
 const purposeToPropertyTarget: Record<TokenPurpose, string> = {
 	color: 'background',
+	background: 'background',
 	'border-radius': 'border-radius',
 	shadow: 'box-shadow',
 	'border-style': 'border-style',

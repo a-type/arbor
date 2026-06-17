@@ -58,7 +58,7 @@ class FunctionsList extends LitElement {
 				);
 				border: var(
 					--functionsList-item-border,
-					1px solid var(--m-border-color, #ccc)
+					var(--m-lineWidth, 1px) solid var(--m-border-color, #ccc)
 				);
 				border-radius: var(
 					--functionsList-item-border-radius,

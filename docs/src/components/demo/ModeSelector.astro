@@ -44,6 +44,8 @@ const modeNames = Object.keys(getInternals(preset).modes).filter(
 		private observer: MutationObserver | null = null;
 		private pauseSync = false;
 		private pauseListener = false;
+		static observedAttributes = ['data-target'];
+		private concernedModeNames = new Set<string>();
 
 		connectedCallback() {
 			this.target = this.getTarget();
@@ -58,6 +60,14 @@ const modeNames = Object.keys(getInternals(preset).modes).filter(
 				attributeFilter: ['class'],
 			});
 			this.syncFromTarget();
+
+			// Determine which mode classes to pay attention to based on the inputs in this component
+			const inputs = this.querySelectorAll(
+				'input[name="mode"]',
+			) as NodeListOf<HTMLInputElement>;
+			inputs.forEach((input) => {
+				this.concernedModeNames.add(input.value);
+			});
 		}
 
 		disconnectedCallback() {
@@ -86,7 +96,7 @@ const modeNames = Object.keys(getInternals(preset).modes).filter(
 			);
 
 			const existingModeClasses = [...this.target.classList.values()].filter(
-				(c) => c.startsWith('@mode-'),
+				(c) => c.startsWith('@mode-') && this.concernedModeNames.has(c),
 			);
 			this.pauseSync = true;
 			this.target.classList.remove(...existingModeClasses);
@@ -99,8 +109,8 @@ const modeNames = Object.keys(getInternals(preset).modes).filter(
 				return;
 			}
 
-			const modeClasses = [...this.target.classList.values()].filter((c) =>
-				c.startsWith('@mode-'),
+			const modeClasses = [...this.target.classList.values()].filter(
+				(c) => c.startsWith('@mode-') && this.concernedModeNames.has(c),
 			);
 
 			const inputs = this.querySelectorAll(

@@ -117,6 +117,7 @@ export type TokenCompositeType = keyof TokenCompositeTypeShapes;
 
 export type TokenPurpose =
 	| 'color'
+	| 'background'
 	| 'font-size'
 	| 'font-weight'
 	| 'font-family'

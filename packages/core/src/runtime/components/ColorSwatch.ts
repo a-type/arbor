@@ -9,6 +9,9 @@ class ColorSwatch extends LitElement {
 
 	static get styles() {
 		return css`
+			:host {
+				display: flex;
+			}
 			.root {
 				display: inline-block;
 				width: 16px;

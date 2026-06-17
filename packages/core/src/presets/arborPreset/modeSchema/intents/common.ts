@@ -6,7 +6,7 @@ export const visualIntents = createModeSchema({
 		description: 'Foreground color',
 	},
 	bg: {
-		purpose: 'other',
+		purpose: 'background',
 		description:
 			'Background - can be a color or a more complex value like a gradient or image',
 	},

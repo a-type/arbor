@@ -52,11 +52,19 @@ export async function resolveTokenValue(
 	);
 }
 
+function isColorToken(token: Token) {
+	return (
+		token.purpose === 'color' ||
+		token.purpose === 'background' ||
+		token.purpose === 'shadow-color'
+	);
+}
+
 export async function resolveColorTokenValue(
 	state: ConfigState,
 	entry: Token | ArborFunction,
 ): Promise<string | null> {
-	if (!isToken(entry) || entry.purpose !== 'color') {
+	if (!isToken(entry) || !isColorToken(entry)) {
 		return null;
 	}
 
@@ -77,7 +85,7 @@ export async function resolveColorTokenValueByName(
 	if (!entry) {
 		return null;
 	}
-	if (!isToken(entry) || entry.purpose !== 'color') {
+	if (!isToken(entry) || !isColorToken(entry)) {
 		return null;
 	}
 
