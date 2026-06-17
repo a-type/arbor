@@ -59,6 +59,26 @@
 					"type": "boolean",
 					"default": false,
 					"description": "Warn on arbitrary color and spacing values and recommend Arbor semantic tokens."
+				},
+				"arborCss.simplificationPasses": {
+					"type": "number",
+					"default": 1,
+					"description": "Number of passes to run the CSS simplifier when evaluating tokens. Increasing this may improve token value clarity depending on your token complexity, at the cost of performance."
+				},
+				"arborCss.simulatedWindowWidth": {
+					"type": "number",
+					"default": 1024,
+					"description": "The width (pixels) of the simulated window used for evaluating responsive lengths (vw, etc). Adjust this if you want to simulate a different device size for token evaluation."
+				},
+				"arborCss.simulatedWindowHeight": {
+					"type": "number",
+					"default": 768,
+					"description": "The height (pixels) of the simulated window used for evaluating responsive lengths (vh, etc). Adjust this if you want to simulate a different device size for token evaluation."
+				},
+				"arborCss.simulatedRootFontSize": {
+					"type": "number",
+					"default": 16,
+					"description": "The font size (pixels) of the simulated root element used for evaluating rem units. Adjust this if you want to simulate a different root font size for token evaluation."
 				}
 			}
 		}

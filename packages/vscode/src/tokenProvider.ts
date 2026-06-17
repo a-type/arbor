@@ -2,7 +2,9 @@ import {
 	AnyArborPreset,
 	ArborFunction,
 	ArborMixin,
+	css,
 	DEFAULT_MODE_TOKEN_PREFIX,
+	flattenAndApplyTokenValues,
 	flattenTokenSchema,
 	Token,
 } from '@arbor-css/core';
@@ -27,6 +29,7 @@ export interface ConfigState {
 	preset: AnyArborPreset;
 	tokenMap: TokenMap;
 	tokenPrefixes: string[];
+	tokenDefinitions: Record<string, string>;
 	/** All local files transitively imported by this config (incl. the config itself). */
 	dependencies: string[];
 }
@@ -222,12 +225,27 @@ export class TokenProvider {
 				tokenPrefixes.push(DEFAULT_MODE_TOKEN_PREFIX);
 			}
 
+			const tokenDefinitionsRaw = flattenAndApplyTokenValues(
+				preset.$,
+				{ mode: preset.baseMode, system: {}, mixins: {} },
+				{ allowMissing: true },
+			);
+			const tokenDefinitions = Object.fromEntries(
+				Object.entries(tokenDefinitionsRaw).map(([key, value]) => [
+					key,
+					css`
+						${value}
+					`.text,
+				]),
+			);
+
 			return {
 				configPath,
 				preset,
 				tokenMap,
 				tokenPrefixes,
 				dependencies,
+				tokenDefinitions,
 			};
 		} catch (err) {
 			this.outputChannel.appendLine(

@@ -1,3 +1,4 @@
+import { CssInterpolation } from '@arbor-css/css-eval';
 import { isToken, TokenSchema } from '@arbor-css/tokens';
 
 export function flattenAndApplyTokenValues(
@@ -5,7 +6,7 @@ export function flattenAndApplyTokenValues(
 	values: Record<string, any>,
 	{ prefix, allowMissing }: { prefix?: string; allowMissing?: boolean } = {},
 ) {
-	const result: Record<string, string> = {};
+	const result: Record<string, CssInterpolation> = {};
 	function walk(
 		tokenNode: Record<string, any>,
 		valueNode: Record<string, any>,

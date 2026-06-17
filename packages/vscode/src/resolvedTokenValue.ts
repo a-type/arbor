@@ -1,7 +1,8 @@
-import type { ArborFunction, Token } from '@arbor-css/core';
+import type { ArborFunction, CssEnvValues, Token } from '@arbor-css/core';
 import { isToken, resolveComputedTokenValue } from '@arbor-css/core';
 import { createSimplifier } from '@arbor-css/css-eval';
 import init, { transform } from 'lightningcss-wasm';
+import * as vscode from 'vscode';
 import type { ConfigState } from './tokenProvider.js';
 
 const simplifier = init().then(() =>
@@ -12,6 +13,27 @@ const simplifier = init().then(() =>
 		},
 	}),
 );
+
+function getEnv(): CssEnvValues {
+	const viewportWidth =
+		vscode.workspace
+			.getConfiguration('arborCss')
+			.get<number>('simulatedViewportWidth') || undefined;
+	const viewportHeight =
+		vscode.workspace
+			.getConfiguration('arborCss')
+			.get<number>('simulatedViewportHeight') || undefined;
+	const fontSize =
+		vscode.workspace
+			.getConfiguration('arborCss')
+			.get<number>('simulatedRootFontSize') || undefined;
+
+	return {
+		deviceHeightPx: viewportHeight,
+		deviceWidthPx: viewportWidth,
+		remPx: fontSize,
+	};
+}
 
 export async function resolveTokenValue(
 	state: ConfigState,
@@ -24,6 +46,7 @@ export async function resolveTokenValue(
 	return (
 		resolveComputedTokenValue(state.preset, entry.name, {
 			simplifier: await simplifier,
+			envValues: getEnv(),
 		}) ?? null
 	);
 }
@@ -39,6 +62,7 @@ export async function resolveColorTokenValue(
 	return (
 		resolveComputedTokenValue(state.preset, entry.name, {
 			simplifier: await simplifier,
+			envValues: getEnv(),
 		}) ?? null
 	);
 }

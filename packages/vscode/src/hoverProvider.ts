@@ -76,6 +76,9 @@ export class ArborHoverProvider implements vscode.HoverProvider {
 							`\n\n**Value (@mode-base):** \`${resolved ?? 'unresolved'}\``,
 						);
 					}
+					md.appendMarkdown(
+						`\n\n**Definition:** \`${state.tokenDefinitions[entry.name] ?? '*not known at build time*'}\``,
+					);
 				} else if (isFunction(entry)) {
 					md.appendMarkdown(`**Arbor function:** \`${entry.signature}\``);
 					md.appendMarkdown(`\n\n${entry.description ?? '(no description)'}`);
