@@ -48,6 +48,15 @@ export function getContext(): CssResolutionContext {
 	};
 }
 
+export function subscribeToEnvChanges(callback: () => void) {
+	window.addEventListener('resize', callback);
+	window.visualViewport?.addEventListener('resize', callback);
+	return () => {
+		window.removeEventListener('resize', callback);
+		window.visualViewport?.removeEventListener('resize', callback);
+	};
+}
+
 export function getStyleSheet(): CSSStyleSheet {
 	if (!styleSheet) {
 		throw new Error(

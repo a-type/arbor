@@ -6,9 +6,16 @@ import {
 	buildModeTokenGraph,
 	ModeTokenGraph,
 } from '../../util/buildModeTokenGraph.js';
-import { getContext, getPreset } from '../registration.js';
+import {
+	getContext,
+	getPreset,
+	subscribeToEnvChanges,
+} from '../registration.js';
 
 const graphCache = new Map();
+subscribeToEnvChanges(() => {
+	graphCache.clear();
+});
 function memoizedTokenGraph(
 	modeName: string,
 	preset: ArborPreset,
@@ -78,6 +85,11 @@ class ModeGraph extends LitElement {
 	mode = '';
 	preset = getPreset();
 
+	constructor() {
+		super();
+		subscribeToEnvChanges(() => this.render());
+	}
+
 	render() {
 		const graph = memoizedTokenGraph(this.mode, this.preset);
 
@@ -92,8 +104,8 @@ class ModeGraph extends LitElement {
 				<div class="tokens">
 					${graph.roots.map((tokenName) => {
 						return html`<arbor-mode-graph-token
-							.mode=${this.mode}
-							.name=${tokenName}
+							mode=${this.mode}
+							name=${tokenName}
 						></arbor-mode-graph-token>`;
 					})}
 				</div>
@@ -143,6 +155,9 @@ class ModeGraphToken extends LitElement {
 				flex-direction: row;
 				justify-content: space-between;
 				align-items: start;
+				white-space: nowrap;
+				gap: var(--modeGraph-token-summary-gap, var(--m-spacing-sm, 4px));
+				max-width: 100%;
 			}
 			.sub-line {
 				color: var(
@@ -153,6 +168,17 @@ class ModeGraphToken extends LitElement {
 					--modeGraph-token-sub-line-font-size,
 					var(--m-text-ambient-size, 12px)
 				);
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				min-width: 0;
+				max-width: 100%;
+
+				& > span {
+					white-space: nowrap;
+					overflow: hidden;
+					text-overflow: ellipsis;
+				}
 			}
 
 			.name {
@@ -167,6 +193,9 @@ class ModeGraphToken extends LitElement {
 				flex-direction: row;
 				align-items: center;
 				gap: var(--modeGraph-token-value-gap, var(--m-spacing-sm, 4px));
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
 			}
 
 			.computed,
@@ -175,6 +204,9 @@ class ModeGraphToken extends LitElement {
 					--modeGraph-token-computed-color,
 					var(--m-surface-ambient-fg, black)
 				);
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
 			}
 			.base-computed {
 				opacity: 0.6;
@@ -232,29 +264,7 @@ class ModeGraphToken extends LitElement {
 				display: flex;
 				flex-direction: column;
 			}
-			.dependent-summary {
-				display: flex;
-				flex-direction: row;
-				justify-content: space-between;
-				flex-wrap: wrap;
-			}
-			.dependent-definition {
-				width: 100%;
-				overflow-x: auto;
-				text-align: left;
-				color: var(
-					--modeGraph-token-dependent-definition-color,
-					var(--m-color-neutral-heavy, darkgray)
-				);
-				font-size: var(
-					--modeGraph-token-dependent-definition-font-size,
-					var(--m-text-ambient-size, 12px)
-				);
-				font-family: var(
-					--modeGraph-token-dependent-definition-font-family,
-					var(--m-primitive-typography-font-mono, monospace)
-				);
-			}
+
 			.dependent-reference {
 				color: var(
 					--modeGraph-token-dependent-reference-color,
@@ -273,6 +283,13 @@ class ModeGraphToken extends LitElement {
 	dependency = '@@none';
 	depth = 0;
 	preset = getPreset();
+
+	// need to manually subscribe to trigger updates
+	// when windows size changes vw units, etc
+	connectedCallback() {
+		super.connectedCallback();
+		subscribeToEnvChanges(() => this.requestUpdate());
+	}
 
 	render() {
 		const baseGraph = memoizedTokenGraph('base', this.preset);
@@ -311,16 +328,22 @@ class ModeGraphToken extends LitElement {
 						<span class="name">${this.name}</span>
 						<span class="value">
 							${changed ?
-								html`<span class="base-computed"
+								html`<span
+									class="base-computed"
+									title="${baseGraph.nodes[this.name]?.computed ?? 'n/a'}"
 									>${baseGraph.nodes[this.name]?.computed ?? 'n/a'}</span
 								>`
 							:	''}
-							<span class="computed">${tokenNode.computed}</span>
+							<span class="computed" title="${tokenNode.computed}"
+								>${tokenNode.computed}</span
+							>
 						</span>
 					</div>
 					${this.depth > 0 ?
 						html`<div class="summary-line sub-line">
-							<span class="definition"> ${definitionInterleaved} </span>
+							<span class="definition" title="${definitionRaw}">
+								${definitionInterleaved}
+							</span>
 						</div>`
 					:	''}
 					${tokenNode.dependents.length > 0 ?

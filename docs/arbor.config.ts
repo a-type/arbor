@@ -9,6 +9,7 @@ export const basePreset = presetArbor({
 		lineWidth: 1,
 		roundness: 0.5,
 		baseFontSize: 'calc(clamp(12px, 12px + 0.5vw, 18px))',
+		baseSpacingSize: 'calc(clamp(4px, 4px + 0.25vw, 10px))',
 	},
 	color: {
 		mainColor: 'summer',
