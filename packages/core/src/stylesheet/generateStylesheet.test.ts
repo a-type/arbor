@@ -10,8 +10,8 @@ it("generates a preset's CSS, including globals, primitives, modes, and function
 			},
 			mainColor: 'brand',
 		},
-		globals: {
-			roundness: 1,
+		shape: {
+			roundness: '1',
 		},
 	});
 

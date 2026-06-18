@@ -14,3 +14,6 @@ catalog:
   vite: ^8.0.13
   vitest: ^4.1.7
   '@types/node': ^25.9.1
+
+minimumReleaseAgeExclude:
+  - astro@6.4.8

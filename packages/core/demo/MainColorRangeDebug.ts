@@ -1,3 +1,4 @@
+import { loadSimplifier } from '@arbor-css/css-eval/browser';
 import { createColorDarkModeRange } from '../src/presets/arborPreset';
 import arbor from './arbor.js';
 
@@ -10,7 +11,7 @@ class MainColorRangeDebug extends HTMLElement {
 		super();
 	}
 
-	connectedCallback() {
+	async connectedCallback() {
 		const colorName = this.getAttribute('color') ?? 'primary';
 		const globals = globalPropsFlat.reduce(
 			(acc, prop) => {
@@ -27,6 +28,7 @@ class MainColorRangeDebug extends HTMLElement {
 			},
 			arbor.$.mode.global,
 		);
+		const simplifier = await loadSimplifier();
 		const content = `${(
 			['paper', 'wash', 'light', 'mid', 'heavy', 'ink'] as const
 		)
@@ -34,6 +36,8 @@ class MainColorRangeDebug extends HTMLElement {
 				const compiled = range[name].equation.printComputed({
 					propertyValues: globals,
 					skipBaking: false,
+					simplifier,
+					purpose: 'color',
 				});
 				const match = compiled.match(oklchMatcher) ?? [];
 				return `<div class="color-swatch" style="background: ${arbor.$.mode.primitive.color[colorName as 'primary'][name].var}; width: 100px; height: 100px;" title="${range[name].equation.printDynamic({ propertyValues: {} })}">

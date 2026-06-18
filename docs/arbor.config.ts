@@ -2,15 +2,6 @@ import { definePreset } from '@arbor-css/core';
 import { presetArbor } from '@arbor-css/core/preset-arbor';
 
 export const basePreset = presetArbor({
-	globals: {
-		saturation: 0.5,
-		shadowSpread: 1.5,
-		shadowBlur: 0,
-		lineWidth: 1,
-		roundness: 0.5,
-		baseFontSize: 'calc(clamp(12px, 12px + 0.5vw, 18px))',
-		baseSpacingSize: 'calc(clamp(4px, 4px + 0.25vw, 10px))',
-	},
 	color: {
 		mainColor: 'summer',
 		ranges: {
@@ -39,6 +30,18 @@ export const basePreset = presetArbor({
 		minSize: '0.9rem',
 		baseWeight: 400,
 		sizeExponentStep: 1.25,
+		defaultFontSize: 'calc(clamp(12px, 12px + 0.5vw, 18px))',
+	},
+	shadow: {
+		globalSpread: '1.5',
+		globalBlur: '0',
+	},
+	shape: {
+		lineWidth: '1',
+		roundness: '0.5',
+	},
+	spacing: {
+		baseSize: 'calc(clamp(4px, 4px + 0.25vw, 10px))',
 	},
 });
 

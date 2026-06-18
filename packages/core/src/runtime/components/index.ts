@@ -5,6 +5,7 @@ import registerMixinsList from './MixinsList.js';
 import registerModeGraph from './ModeGraph.js';
 import registerOutputs from './Outputs.js';
 import registerSpacingScale from './SpacingScale.js';
+import registerSystemDemo from './SystemDemo.js';
 
 export default function register() {
 	registerModeGraph();
@@ -14,5 +15,6 @@ export default function register() {
 	registerIntentDemos();
 	registerSpacingScale();
 	registerColorSwatch();
+	registerSystemDemo();
 	console.debug('Arbor Runtime components registered');
 }

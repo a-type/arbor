@@ -1,0 +1,115 @@
+---
+title: Arbor's built-in preset
+---
+import BaseModeGraph from '../../components/BaseModeGraph.astro';
+
+Arbor comes with a powerful preset which combines generated OKCLH color palettes, configurable typography and spacing scales, and a full-featured mode full of ready-to-use tokens.
+
+<BaseModeGraph />
+
+# Colors
+
+## Config
+
+```ts
+{
+	ranges: {
+		yourChoiceOfName: {
+			hue: 80,
+			saturation: 0.5
+		},
+	},
+	mainColor: 'yourChoiceOfName',
+	globalSaturation: '0.5',
+}
+```
+
+Arbor's preset takes the named color source hues you provide it and automatically generates corresponding palettes for both light and dark modes.
+
+Out of the box, Arbor has some opinions about what the shades of these ranges should be. Here's what it calls them:
+
+- `paper`: Nearly colorless, a neutral surface value
+- `wash`: Enough to notice against paper, but still very light
+- `light`: A clear hue which stands out, but doesn't demand attention.
+- `mid`: Now this is our color! Great for primary eye-catchers.
+- `heavy`: Has a good contrast with `paper`, a bit less attention-grabbing, moving toward 'borders and text' kind of space.
+- `ink`: Paper's complement, this is a high-contrast value meant for text and other neutral foreground material.
+
+This may not look like color palettes you've used before. Particularly the "heavy" nomenclature. Arbor uses these "brightness-neutral" terms because it maps these color values to both light and dark schemes using the same name. I chose names which I felt were more aligned to the user's perception of a value, not its proximity to white or black, so that "heavy" can mean a dark color in light scheme or a bright color in dark scheme without contradictions.
+
+## Using color tokens
+
+Your color ranges are automatically added to the primitive token namespace along with their neutral counterparts. For example, `--m-primitive-color-brand-light` or `--m-primitive-color-brand-$neutral-ink`. These, of course, are very long token names. You're not meant to use primitives very often.
+
+Your base mode will use the color range you selected as `mainColor` for `--m-color-main` and associated range values. Its neutral counterpart will be assigned to `--m-color-neutral`. These are your "miscellaneous use" color tokens. But that's _still_ not the first colors you should reach for!
+
+Your color will also be assigned to semantic tokens for particular "intents": `--m-action-...`, `--m-surface-...`, and `--m-control-...`. So, apply `--m-action-primary-bg` to your primary button's background, and so on. If you don't like the preset's default assignments, you can customize them with `baseMode`.
+
+# Spacing
+
+## Config
+
+```ts
+{
+	density: '1',
+	baseSize: '8px',
+	scaleBase: '2',
+	scaleExponent: '1',
+
+	levels: {
+		sm: '4px',
+		md: '8px',
+		// ...
+	},
+	defaultLevel: 'md',
+}
+```
+
+Arbor defaults to an 8 pixel spacing scale where each step is 2x the previous:
+
+```
+1px, 2px, 4px, 8px, 16px, 32px, 64px
+```
+
+However, this is customizable via `scaleBase` and `scaleExponent`. Or, if you don't want to bother with that, just provide each level's value directly via `levels`.
+
+`defaultLevel` determines which level name aligns with your `baseSize`, and accordingly, which value is assigned to the `--m-spacing` root token.
+
+## Using spacing tokens
+
+A _subset_ of your spacing scale will be assigned to `--m-spacing-...` tokens. The primitive range (which is also available under `--m-primitive-spacing-...`) is much larger; a bit too many choices for a single mode. These come from the middle of the range.
+
+For most cases, you should use a new mode with a modified `global.density` value to influence spacing size beyond that range. Meaning, if you need a much larger spacing value than is available in `--m-spacing` on the base mode, perhaps you want to apply `@mode-loose` with a density of `0.5`?
+
+However, if you really need to reach into the larger range for particular cases, `--m-primitives-spacing-...` has the whole thing.
+
+# Typography
+
+## Config
+
+```ts
+{
+	defaultFontSize: '1em',
+	defaultLevel: 'md',
+	weightStep: '100',
+	lineHeightStep: '0.25',
+	minWeight: '100',
+	maxWeight: '800',
+	baseWeight: '400',
+	minLineHeight: '0.8',
+	maxLineHeight: '1.75',
+	minSize: '0.7rem',
+	maxSize: '10rem',
+	sizeBase: '1.125',
+	sizeExponentStep: '1',
+	letterSpacingStep: '0.01',
+	minLetterSpacing: '0',
+	maxLetterSpacing: '0.2',
+	baseLetterSpacing: '0',
+	darkModeWeightAdjustment: 0.1
+}
+```
+
+Like spacing, typography values are generated as a scale for you, and you can tweak how that scale behaves. Only, there are a lot more tweaks available.
+
+Typography generates two scales: one for general font size metrics like font-size, line-height, and letter-spacing; another for font weights. The reasoning is, at the primitive level, size metrics still tend to be semantically related, but weight is often its own semantic meaning that isn't linked to size. These scales are then combined into the text intent tokens.

@@ -43,13 +43,82 @@ export interface ArborPresetConfig<
 	color: CompileColorsOptions<TRanges, TRangeStepNames> & {
 		mainColor: string;
 		defaultScheme?: 'light' | 'dark';
+		/**
+		 * This saturation tuning value affects every color used in
+		 * your mode. It multiplies with any per-color-range saturation
+		 * values you set up. Default is 0.5.
+		 *
+		 * Any valid CSS number value can be used here.
+		 */
+		globalSaturation?: string;
 	};
-	typography?: TypographyConfig;
-	spacing?: SpacingConfig;
-	shadow?: ShadowConfig;
+	typography?: TypographyConfig & {
+		/**
+		 * Specify a global font size. This is not recommended;
+		 * the default "1em" respects the end user's font size
+		 * preference. If customized, consider still using
+		 * em units.
+		 *
+		 * Any valid CSS font-size value can be used here.
+		 */
+		defaultFontSize?: string;
+	};
+	spacing?: SpacingConfig & {
+		/**
+		 * This density tuning value affects all spacing (and font size) tokens
+		 * used in your mode. It multiplies with any per-token density
+		 * adjustments to create the final spacing or size value.
+		 *
+		 * Larger density values create *more dense* UIs,
+		 * meaning smaller spacing and text. The default is 1.
+		 *
+		 * Any valid CSS number value can be used here.
+		 */
+		globalDensity?: string;
+		/**
+		 * This is the root size of your spacing scale, from which
+		 * other values are derived. Default is "8px"
+		 *
+		 * Any valid CSS length value can be used here.
+		 */
+		baseSize?: string;
+	};
+	shadow?: ShadowConfig & {
+		/**
+		 * Controls the spread amount of all shadows used in the mode.
+		 * A value from 0 to 1 is recommended.
+		 * Any valid CSS number value can be used here.
+		 */
+		globalSpread?: string;
+		/**
+		 * Controls the blur amount of all shadows used in the mode.
+		 * A value from 0 to 1 is recommended.
+		 * Any valid CSS number value can be used here.
+		 */
+		globalBlur?: string;
+		/**
+		 * When no shadow color is specified, this is the default.
+		 * Any valid CSS color value can be used here.
+		 */
+		defaultColor?: string;
+	};
+	shape?: {
+		/**
+		 * Influences the thickness of borders. Default is 1.
+		 * Any valid CSS number value can be used here.
+		 */
+		lineWidth?: string;
+		/**
+		 * Globally influences the corner radius values of
+		 * used in the mode. Roundness also has an influence
+		 * on the padding of intent tokens. Default is 0.5.
+		 * A value from 0 to 1 is recommended.
+		 * Any valid CSS number value can be used here.
+		 */
+		roundness?: string;
+	};
 	easing?: ModeValues<ArborModeSchema['easing']>;
 	duration?: ModeValues<ArborModeSchema['duration']>;
-	globals?: Partial<ModeValues<ArborModeSchema['global']>>;
 	/**
 	 * Turns off the automatic bundled @mode-light, @mode-dark, and @mode-inverted.
 	 */
@@ -74,17 +143,16 @@ export const presetArbor = <
 		baseMode: ($) => {
 			return {
 				global: {
-					density: 1,
-					lineWidth: 1,
-					roundness: 0.5,
-					saturation: 0.5,
-					shadowBlur: 0.5,
-					shadowSpread: 0,
-					baseFontSize: '1em',
-					baseSpacingSize: '8px',
-					defaultShadowColor: 'rgba(0 0 0 / 0.15)',
-
-					...config.globals,
+					density: config.spacing?.globalDensity ?? 1,
+					lineWidth: config.shape?.lineWidth ?? 1,
+					roundness: config.shape?.roundness ?? 0.5,
+					saturation: config.color?.globalSaturation ?? 0.5,
+					shadowBlur: config.shadow?.globalBlur ?? 0.5,
+					shadowSpread: config.shadow?.globalSpread ?? 0,
+					baseFontSize: config.typography?.defaultFontSize ?? '1em',
+					baseSpacingSize: config.spacing?.baseSize ?? '8px',
+					defaultShadowColor:
+						config.shadow?.defaultColor ?? 'rgba(0 0 0 / 0.15)',
 				},
 
 				/** PRIMITIVES */

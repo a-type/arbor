@@ -115,9 +115,9 @@ class ModeGraph extends LitElement {
 				<div class="tokens">
 					${graph.roots.sort(categoryDepthSort).map((tokenName) => {
 						return html`<arbor-mode-graph-token
-							mode=${this.mode}
-							name=${tokenName}
-							expanded=${graph.roots.length <= 3}
+							.mode=${this.mode}
+							.name=${tokenName}
+							.expanded=${graph.roots.length <= 3}
 						></arbor-mode-graph-token>`;
 					})}
 				</div>
@@ -211,6 +211,7 @@ class ModeGraphToken extends LitElement {
 				white-space: nowrap;
 				overflow: hidden;
 				text-overflow: ellipsis;
+				max-width: 50%;
 			}
 
 			.computed,
@@ -348,7 +349,7 @@ class ModeGraphToken extends LitElement {
 
 		return html`
 			<details
-				?open=${this.expanded}
+				.?open=${this.expanded}
 				data-has-dependents=${tokenNode.dependents.length > 0}
 			>
 				<summary data-has-dependents=${tokenNode.dependents.length > 0}>
@@ -359,7 +360,7 @@ class ModeGraphToken extends LitElement {
 								html`<span class="base-computed" title="${baseComputed}"
 									>${isColor ?
 										html`<arbor-color-swatch
-											value="${baseComputed}"
+											.value="${baseComputed}"
 										></arbor-color-swatch>`
 									:	baseComputed}</span
 								>`
@@ -367,7 +368,7 @@ class ModeGraphToken extends LitElement {
 							<span class="computed" title="${tokenNode.computed}"
 								>${isColor ?
 									html`<arbor-color-swatch
-										value="${tokenNode.computed}"
+										.value="${tokenNode.computed}"
 									></arbor-color-swatch>`
 								:	tokenNode.computed}</span
 							>
@@ -398,10 +399,10 @@ class ModeGraphToken extends LitElement {
 					${tokenNode.dependents.sort(categoryDepthSort).map((dep) => {
 						return html`<li class="dependent">
 							<arbor-mode-graph-token
-								mode=${this.mode}
-								name=${dep}
-								dependency=${this.name}
-								depth=${this.depth + 1}
+								.mode=${this.mode}
+								.name=${dep}
+								.dependency=${this.name}
+								.depth=${this.depth + 1}
 							></arbor-mode-graph-token>
 						</li> `;
 					})}

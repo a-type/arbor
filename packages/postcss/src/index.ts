@@ -262,7 +262,11 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 			}
 
 			root.walkComments((comment) => {
-				if (comment.text.trim() === 'inline-arbor-base') {
+				if (
+					comment.text.trim() === 'inline-arbor-base' ||
+					comment.text.trim() === "@import('arbor:css')" ||
+					comment.text.trim() === '@import("arbor:css")'
+				) {
 					try {
 						const generatedCss = generateStylesheet(config.preset, {});
 						const generatedRoot = postcss.parse(generatedCss, {

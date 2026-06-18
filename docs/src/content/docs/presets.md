@@ -1,8 +1,6 @@
 ---
-layout: '../../layouts/Doc.astro'
+title: Presets
 ---
-
-# Presets
 
 Arbor uses composable presets to define your design system tokens, modes, functions, and mixins.
 

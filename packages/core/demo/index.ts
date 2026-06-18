@@ -13,10 +13,5 @@ const debugGreen = document.createElement('main-color-range-debug');
 debugGreen.setAttribute('color', 'green');
 document.body.appendChild(debugGreen);
 
-const demo = document.createElement('arbor-outputs');
+const demo = document.createElement('arbor-system-demo');
 document.body.appendChild(demo);
-
-document.body.appendChild(document.createElement('arbor-spacing-scale'));
-
-const intents = document.createElement('arbor-intent-demos');
-document.body.appendChild(intents);

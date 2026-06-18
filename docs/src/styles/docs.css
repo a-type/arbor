@@ -1,0 +1,16 @@
+/* @import('arbor:css') */
+
+:root {
+	--sl-color-accent-low: var(--m-color-main);
+	--sl-color-accent: var(--m-color-main-heavy);
+	--sl-color-accent-high: var(--m-color-main-ink);
+	--sl-color-black: var(--m-color-main-paper);
+	--sl-color-gray-7: var(--m-color-neutral-wash);
+	--sl-color-gray-6: var(--m-color-neutral-light);
+	--sl-color-gray-5: var(--m-color-neutral);
+	--sl-color-gray-4: var(--m-color-neutral);
+	--sl-color-gray-3: var(--m-color-neutral-heavy);
+	--sl-color-gray-2: var(--m-color-neutral-ink);
+	--sl-color-gray-1: var(--m-color-neutral-ink);
+	--sl-color-white: var(--m-color-main-ink);
+}
