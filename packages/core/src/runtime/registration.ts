@@ -5,7 +5,7 @@ import {
 } from '@arbor-css/css-eval';
 import { loadSimplifier } from '@arbor-css/css-eval/browser';
 import { ArborPreset } from '@arbor-css/preset/config';
-import { generateStylesheet } from '../stylesheet/generateStylesheet.js';
+import { generateStylesheet } from '../rendering/generateStylesheet.js';
 import register from './components/index.js';
 
 let preset: ArborPreset<any, any> | undefined = undefined;

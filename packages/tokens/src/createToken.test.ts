@@ -6,7 +6,7 @@ const createToken = createTokenFactory({ tokenPrefix: '--x-' });
 it('stores token descriptions and preserves them on derived tokens', () => {
 	const token = createToken('action-primary-bg', {
 		description: 'Background color for the primary action treatment.',
-		type: 'color',
+		type: '<color>',
 	});
 
 	expect(token.description).toBe(

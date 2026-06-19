@@ -105,6 +105,9 @@ importers:
       '@arbor-css/util':
         specifier: workspace:*
         version: link:../util
+      design-tokens-format-module:
+        specifier: ^0.11.2
+        version: 0.11.2
       jiti:
         specifier: ^2.6.1
         version: 2.6.1
@@ -2266,6 +2269,9 @@ packages:
   dequal@2.0.3:
     resolution: {integrity: sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==}
     engines: {node: '>=6'}
+
+  design-tokens-format-module@0.11.2:
+    resolution: {integrity: sha512-5AAGiHtYrNQrt9QOd58A8GP7/ch5cS8pTeni34pCupJEFYHmffZi0xnPvm8lVhR31zRbC6jcIUVWMlvxDxaOBw==}
 
   destr@2.0.5:
     resolution: {integrity: sha512-ugFTXCtDZunbzasqBxrK93Ik/DRYsO6S/fedkWEMKqt04xZ4csmnmwGDBAb07QWNaGMAmnTIemsYZCksjATwsA==}
@@ -6232,6 +6238,8 @@ snapshots:
   delayed-stream@1.0.0: {}
 
   dequal@2.0.3: {}
+
+  design-tokens-format-module@0.11.2: {}
 
   destr@2.0.5: {}
 

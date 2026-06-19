@@ -1,4 +1,10 @@
-import { flattenTokenSchema } from '@arbor-css/tokens';
+import {
+	flattenTokenSchema,
+	isColorToken,
+	isDurationToken,
+	isScalarToken,
+	isSizeToken,
+} from '@arbor-css/tokens';
 import { css, html, LitElement } from 'lit-element';
 import { resolveComputedTokenValue } from '../../util/resolveComputedTokenValue.js';
 import { getContext, getPreset } from '../registration.js';
@@ -145,30 +151,17 @@ class LiveEditor extends LitElement {
 					.filter((token) => token.name.includes(this.filter))
 					.map((token) => {
 						let editor;
-						if (token.type === 'color' || token.purpose === 'background') {
+						if (isColorToken(token)) {
 							editor = html`<arbor-color-token-editor
 								target=${this.target}
 								token=${token.name}
 							></arbor-color-token-editor>`;
-						} else if (
-							token.type === 'length' ||
-							token.type === 'length-percentage' ||
-							token.purpose === 'spacing' ||
-							token.purpose === 'size' ||
-							token.purpose === 'border-radius' ||
-							token.purpose === 'border-width' ||
-							token.purpose === 'shadow-blur' ||
-							token.purpose === 'shadow-spread' ||
-							token.purpose === 'shadow-x' ||
-							token.purpose === 'shadow-y' ||
-							token.purpose === 'font-size' ||
-							token.purpose === 'line-height'
-						) {
+						} else if (isSizeToken(token) || isDurationToken(token)) {
 							editor = html`<arbor-size-token-editor
 								target=${this.target}
 								token=${token.name}
 							></arbor-size-token-editor>`;
-						} else if (token.type === 'number' || token.purpose === 'scalar') {
+						} else if (isScalarToken(token)) {
 							editor = html`<arbor-scalar-token-editor
 								target=${this.target}
 								token=${token.name}

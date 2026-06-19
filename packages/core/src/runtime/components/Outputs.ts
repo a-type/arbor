@@ -1,7 +1,7 @@
 import { isToken } from '@arbor-css/tokens';
 import { convertStructure } from '@arbor-css/util';
 import { html, LitElement } from 'lit-element';
-import { generateStylesheet } from '../../stylesheet/generateStylesheet.js';
+import { generateStylesheet } from '../../rendering/generateStylesheet.js';
 import { getContext, getPreset } from '../registration.js';
 
 export class ArborOutputs extends LitElement {

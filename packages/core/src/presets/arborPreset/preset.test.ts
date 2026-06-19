@@ -1,6 +1,6 @@
 import { definePreset, getInternals } from '@arbor-css/preset';
 import { expect, it } from 'vitest';
-import { modeToCss } from '../../stylesheet/modeToCss.js';
+import { modeToCss } from '../../rendering/modeToCss.js';
 import { presetArbor } from './preset.js';
 
 it('is extensible', () => {

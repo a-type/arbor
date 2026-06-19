@@ -3,7 +3,7 @@ export const DEFAULT_MIXIN_TOKEN_PREFIX = '--mx-';
 
 export interface TokenOptions {
 	/** Inferred from purpose if not provided, defaults to "*" */
-	type?: PropertyType;
+	type?: PropertyTypeName | PropertyTypeName[] | (string & {}) | '*';
 	purpose?: TokenPurpose;
 	group?: string;
 	description?: string;
@@ -22,6 +22,10 @@ export interface TokenOptions {
 	 * mixin it relates to.
 	 */
 	contributedBy?: string;
+	/**
+	 * Whether the token is deprecated. If a string is provided, it will be treated as a deprecation message to show to users when they use the token.
+	 */
+	deprecated?: boolean | string;
 }
 
 /**
@@ -34,23 +38,22 @@ export interface TokenOptions {
  * "computed" will not generate a property definition and is assumed
  * to be a complex CSS property value like calc() or other things.
  */
-export type PropertyType =
-	| 'angle'
-	| 'color'
-	| 'custom-ident'
-	| 'image'
-	| 'integer'
-	| 'length'
-	| 'length-percentage'
-	| 'number'
-	| 'percentage'
-	| 'resolution'
-	| 'string'
-	| 'time'
-	| 'transform-function'
-	| 'transform-list'
-	| 'url'
-	| '*';
+export type PropertyTypeName =
+	| '<angle>'
+	| '<color>'
+	| '<custom-ident>'
+	| '<image>'
+	| '<integer>'
+	| '<length>'
+	| '<length-percentage>'
+	| '<number>'
+	| '<percentage>'
+	| '<resolution>'
+	| '<string>'
+	| '<time>'
+	| '<transform-function>'
+	| '<transform-list>'
+	| '<url>';
 
 /**
  * Roughly mapped / inspired by designtokens.org.
@@ -140,22 +143,41 @@ export type TokenPurpose =
 	| 'scalar'
 	| 'other';
 
-export function getTypeFromPurpose(purpose: TokenPurpose): PropertyType {
+export function getTypeFromPurpose(purpose: TokenPurpose): string {
 	switch (purpose) {
 		case 'color':
-			return 'color';
+		case 'shadow-color':
+			return '<color>';
+		case 'background':
+			return '<color> | <image>';
 		case 'font-size':
-			return 'length';
-		case 'font-weight':
-			return 'number';
-		case 'line-height':
-			return 'length-percentage';
-		case 'font-family':
-			return 'string';
+		case 'letter-spacing':
+		case 'border-width':
+		case 'border-radius':
+		case 'size':
+		case 'shadow-blur':
+		case 'shadow-spread':
+		case 'shadow-x':
+		case 'shadow-y':
 		case 'spacing':
-			return 'length';
+			return '<length>';
+		case 'font-weight':
+		case 'scalar':
+			return '<number>';
+		case 'line-height':
+			return '<length-percentage>';
+		case 'font-family':
+			return '<string>';
 		case 'shadow':
-			return 'string';
+			return '<string>';
+		case 'duration':
+			return '<time>';
+		case 'easing-function':
+			return '<string>';
+		case 'border-style':
+			return 'solid | dashed | dotted | double | groove | ridge | inset | outset | none | hidden';
+		case 'other':
+		case 'border':
 		default:
 			return '*';
 	}
@@ -182,24 +204,32 @@ export function createTokenFactory({ tokenPrefix }: { tokenPrefix: string }) {
 			inherits = true,
 			forceDefinition,
 			purpose = 'other',
-			type = getTypeFromPurpose(purpose),
+			type,
 			group,
 			description,
 			tag,
 			contributedBy,
+			deprecated,
 		}: TokenOptions = {},
 	) {
+		const normalizedType =
+			type ?
+				typeof type === 'string' ?
+					type
+				:	type.join(' | ')
+			:	getTypeFromPurpose(purpose);
 		const taggedName = tag ? `${tag}-${name}` : name;
 		const resolvedName = `${tokenPrefix}${normalizeName(taggedName)}`;
 		return {
 			[TOKEN_BRAND]: true as const,
 			name: resolvedName,
-			type,
+			type: normalizedType,
 			tag,
 			purpose,
 			group,
 			description,
 			contributedBy,
+			deprecated,
 			fallback,
 			var: `var(${resolvedName}${fallback ? `, ${fallback}` : ''})`,
 			varFallback: (fallbackOverride?: string | number) =>
@@ -208,7 +238,7 @@ export function createTokenFactory({ tokenPrefix }: { tokenPrefix: string }) {
 				`${resolvedName}: ${value ?? fallback};`,
 			get definition() {
 				if (inherits === false || forceDefinition) {
-					return `@property ${resolvedName} { syntax: '${type === '*' ? '*' : `<${type}>`}'; inherits: ${inherits}; initial-value: ${fallback ?? 'initial'}; }`;
+					return `@property ${resolvedName} { syntax: '${normalizedType === '*' ? '*' : normalizedType}'; inherits: ${inherits}; initial-value: ${fallback ?? 'initial'}; }`;
 				}
 				return '';
 			},

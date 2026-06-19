@@ -13,7 +13,7 @@ type PropertyValueMap = Record<string, string | Css>;
 export function resolveComputedTokenValue(
 	preset: ArborPreset<any, any>,
 	tokenName: string,
-	{ simplifier, propertyValues }: CssResolutionContext,
+	context: CssResolutionContext,
 ): string | undefined {
 	const resolvedValues = getResolvedTokenValues(preset);
 	const tokens = tokenSchemaToList(preset.$);
@@ -29,7 +29,7 @@ export function resolveComputedTokenValue(
 
 	const contextValues: PropertyValueMap = {
 		...resolvedValues,
-		...propertyValues,
+		...context.propertyValues,
 	};
 
 	const computed = resolveCss(
@@ -37,9 +37,9 @@ export function resolveComputedTokenValue(
 			${tokenValue}
 		`,
 		{
+			...context,
 			propertyValues: contextValues,
 			skipBaking: false,
-			simplifier,
 		},
 	);
 

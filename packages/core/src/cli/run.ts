@@ -7,7 +7,8 @@ import { glob } from 'node:fs/promises';
 import path from 'node:path';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { generateStylesheet } from '../stylesheet/generateStylesheet.js';
+import { generateDesignTokens } from '../rendering/generateDesignTokens.js';
+import { generateStylesheet } from '../rendering/generateStylesheet.js';
 import { resolveComputedTokenValue } from '../util/resolveComputedTokenValue.js';
 import {
 	findTokenRecord,
@@ -368,6 +369,44 @@ yargs(hideBin(process.argv))
 				}
 
 				console.log(`Validation passed for ${files.length} file(s).`);
+			} catch (error) {
+				console.error(error instanceof Error ? error.message : String(error));
+				process.exit(1);
+			}
+		},
+	)
+	.command(
+		'generate-tokens',
+		'Generate a JSON file containing all tokens and their resolved values',
+		(y) =>
+			y
+				.option('config', {
+					alias: 'c',
+					type: 'string',
+					description: 'Path to the configuration file',
+				})
+				.option('output', {
+					alias: 'o',
+					type: 'string',
+					description: 'Path to the output JSON file',
+				}),
+		async (argv) => {
+			try {
+				const resolvedConfigPath = path.join(
+					process.cwd(),
+					argv.config || 'arbor.config.ts',
+				);
+				const arbor = await loadArborConfig(resolvedConfigPath);
+				const tokens = generateDesignTokens(arbor, {
+					simplifier,
+				});
+				const outputContent = JSON.stringify(tokens, null, 2);
+				if (argv.output) {
+					await fs.promises.writeFile(argv.output, outputContent, 'utf-8');
+					console.log(`Design tokens written to ${argv.output}`);
+				} else {
+					console.log(outputContent);
+				}
 			} catch (error) {
 				console.error(error instanceof Error ? error.message : String(error));
 				process.exit(1);

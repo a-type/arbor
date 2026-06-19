@@ -15,7 +15,7 @@ export * from '@arbor-css/preset/config';
 export * from '@arbor-css/tokens';
 export * from './getStructuredTokensMap.js';
 export { resolveCss } from './publicResolve.js';
-export { generateStylesheet } from './stylesheet/generateStylesheet.js';
+export { generateStylesheet } from './rendering/generateStylesheet.js';
 export {
 	buildModeTokenGraph,
 	walkModeTokenGraph,
