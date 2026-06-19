@@ -215,7 +215,7 @@ export function createColorDarkModeRange(
 	});
 	const chroma = chromaEq({
 		baseline: 0.8,
-		rangeUp: -0.7,
+		rangeUp: -0.6,
 		rangeDown: 0.48,
 	});
 	return createColorRange(
