@@ -1,6 +1,7 @@
 import registerColorSwatch from './ColorSwatch.js';
 import registerFunctionsList from './FunctionsList.js';
 import registerIntentDemos from './IntentDemos.js';
+import registerLiveEditor from './LiveEditor.js';
 import registerMixinsList from './MixinsList.js';
 import registerModeGraph from './ModeGraph.js';
 import registerOutputs from './Outputs.js';
@@ -16,5 +17,6 @@ export default function register() {
 	registerSpacingScale();
 	registerColorSwatch();
 	registerSystemDemo();
+	registerLiveEditor();
 	console.debug('Arbor Runtime components registered');
 }

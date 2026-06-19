@@ -70,7 +70,7 @@ export async function connect(arbor: ArborPreset<any, any>) {
 	preset = arbor;
 	simplifier = await loadSimplifier({ passes: 2 });
 	// by turning off layers, we make the generated CSS take precedence over any existing pregenerated stylesheet.
-	const styles = generateStylesheet(preset, { layer: false });
+	const styles = generateStylesheet(preset, { layer: false, skipBaking: true });
 	styleSheet = new CSSStyleSheet();
 	styleSheet.replaceSync(styles);
 	document.adoptedStyleSheets = [...document.adoptedStyleSheets, styleSheet];

@@ -1,11 +1,7 @@
 body {
 	background: var(--m-color-main-paper);
 	color: var(--m-color-main-ink);
-
-	@apply --mx-foo;
-	@apply --mx-bar;
-	@apply --mx-baz;
-	/* @apply --mx-qux; */
+	font-family: system-ui;
 }
 
 .surface {
@@ -48,7 +44,7 @@ button {
 	cursor: pointer;
 
 	/* use applied fg color for the border, too */
-	@apply --mx-border(var(--mx-fg-ref));
+	@apply --mx-borderColor(var(--mx-fg-ref));
 
 	/* apply ring+shadow base props, then set shadow to a default value */
 	@apply --mx-shadow(var(--m-shadow-sm));
@@ -71,7 +67,7 @@ button {
 	&[data-emphasis='ambient'] {
 		@apply --mx-bg(var(--m-action-ambient-bg));
 		@apply --mx-fg(var(--m-action-ambient-fg));
-		@apply --mx-border(transparent);
+		@apply --mx-borderColor(transparent);
 		--mx-shadow-value: 0 0 0 0 transparent;
 
 		&:hover,
@@ -102,19 +98,16 @@ button {
 input {
 	padding: var(--m-control-padding);
 	border-radius: var(--m-control-radius);
-	border: 1px solid var(--mx-border-ref);
 	font-size: var(--m-text-secondary-size);
 	font-weight: var(--m-text-secondary-weight);
 	line-height: 1;
-	@apply --mx-bg(var(--m-control-bg));
-	@apply --mx-fg(var(--m-control-fg));
-	@apply --mx-border(var(--m-control-border));
+	@apply --mx-control;
 
 	@apply --mx-shadow(var(--m-shadow-sm));
 
 	&:hover {
 		@apply --mx-bg-heavier(1);
-		@apply --mx-border-heavier(2);
+		@apply --mx-borderColor-heavier(2);
 		--mx-ring-value: --fn-ring(var(--m-color-main-heavy), 2px);
 	}
 	&:focus {
