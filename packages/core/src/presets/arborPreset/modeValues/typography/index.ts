@@ -1,16 +1,11 @@
 import { css, Css, CssInterpolation } from '@arbor-css/css-eval';
 import { Token } from '@arbor-css/tokens';
+import { ArborModeGlobalTokens } from '../../modeSchema/global.js';
 
 export interface TypographyLevel {
 	size: string | Css;
 	lineHeight: CssInterpolation;
 	letterSpacing: string | Css;
-}
-
-export interface RequiredTokens {
-	density: Token;
-	// used to adjust for the irradiation illusion
-	whenDark: Token;
 }
 
 export function isTypographyLevel(value: any): value is TypographyLevel {
@@ -59,44 +54,14 @@ export type TypographyConfig<TLevels extends string = DefaultTypographyLevel> =
 	{
 		levels?: Record<TLevels, Partial<TypographyLevel>>;
 		defaultLevel?: TLevels;
-		weightStep?: CssInterpolation;
-		lineHeightStep?: CssInterpolation;
-		minWeight?: CssInterpolation;
-		maxWeight?: CssInterpolation;
-		baseWeight?: CssInterpolation;
-		minLineHeight?: CssInterpolation;
-		maxLineHeight?: CssInterpolation;
-		baseLineHeight?: CssInterpolation;
-		minSize?: string | Css;
-		maxSize?: string | Css;
-		/**
-		 * Size is scaled exponentially; this is the "base" (the
-		 * number being scaled).
-		 */
-		sizeBase?: string | Css;
-		/**
-		 * Multiplied with the step index to produce an exponent
-		 * for scaling sizeBase. The result is multiplied with
-		 * the default font size.
-		 */
-		sizeExponentStep?: CssInterpolation;
-		letterSpacingStep?: CssInterpolation;
-		minLetterSpacing?: string | Css;
-		maxLetterSpacing?: string | Css;
-		baseLetterSpacing?: string | Css;
-		/**
-		 * Apply an adjustment to font weight in dark mode to compensate for the irradiation illusion.
-		 * Defaults to 0. Adjusting weight can lead to irregular font size between light and dark mode;
-		 * prefer adjusting GRAD in variable fonts.
-		 */
-		darkModeWeightAdjustment?: CssInterpolation;
 	};
 
 export function compileTypography<
 	TLevels extends string = DefaultTypographyLevel,
 >(
 	config: TypographyConfig<TLevels>,
-	tokens: RequiredTokens,
+	tokens: ArborModeGlobalTokens,
+	systemTokens: { whenDark: Token },
 ): CompiledTypography<TLevels> {
 	const levelNames =
 		config.levels ?
@@ -115,9 +80,9 @@ export function compileTypography<
 			const nameCast = name as TLevels;
 			const levelConfig = config.levels?.[nameCast] ?? {};
 			acc[nameCast] = {
-				size: css`calc(clamp(${config.minSize ?? '0.75rem'}, 1rem * pow(${config.sizeBase ?? 1.125}, (${i - baseIndex} * ${config.sizeExponentStep ?? 1})) / ${[tokens.density, 1]}, ${config.maxSize ?? '3rem'}))`,
-				lineHeight: css`calc(clamp(${config.minLineHeight ?? 0.75}, (${config.baseLineHeight ?? 1.5} - ${config.lineHeightStep ?? 0.5} * ${i - baseIndex}), ${config.maxLineHeight ?? 2}))`,
-				letterSpacing: css`calc(clamp(${config.minLetterSpacing ?? 0}, (${config.baseLetterSpacing ?? 0} + ${config.letterSpacingStep ?? 0} * ${i - baseIndex}), ${config.maxLetterSpacing ?? 0}))`,
+				size: css`calc(clamp(${tokens.typography.minFontSize ?? '0.75rem'}, 1rem * pow(${tokens.typography.fontSizeScaleBase ?? 1.125}, (${i - baseIndex} * ${tokens.typography.fontSizeScaleExponentStep ?? 1})) / ${[tokens.spacing.density, 1]}, ${tokens.typography.maxFontSize ?? '3rem'}))`,
+				lineHeight: css`calc(clamp(${tokens.typography.minLineHeight ?? 0.75}, (${tokens.typography.baseLineHeight ?? 1.5} - ${tokens.typography.lineHeightStep ?? 0.5} * ${i - baseIndex}), ${tokens.typography.maxLineHeight ?? 2}))`,
+				letterSpacing: css`calc(clamp(${tokens.typography.minLetterSpacing ?? 0}, (${tokens.typography.baseLetterSpacing ?? 0} + ${tokens.typography.letterSpacingStep ?? 0} * ${i - baseIndex}), ${tokens.typography.maxLetterSpacing ?? 0}))`,
 				...levelConfig,
 			};
 			return acc;
@@ -136,7 +101,7 @@ export function compileTypography<
 		(acc, weightName, i) => {
 			const stepsFromNormal = i - 2; // normal is the 3rd item in the list (index 2)
 			acc[weightName as keyof CompiledTypography['weight']] =
-				css`calc(clamp(${config.minWeight ?? 100}, ${config.baseWeight ?? 400} + ${config.weightStep ?? 100} * ${stepsFromNormal} - (${tokens.whenDark} * ${config.darkModeWeightAdjustment ?? 0}), ${config.maxWeight ?? 900}))`;
+				css`calc(clamp(${tokens.typography.minWeight ?? 100}, ${tokens.typography.baseWeight ?? 400} + ${tokens.typography.weightStep ?? 100} * ${stepsFromNormal} - (${systemTokens.whenDark} * ${tokens.typography.darkModeWeightAdjustment ?? 0}), ${tokens.typography.maxWeight ?? 900}))`;
 			return acc;
 		},
 		{} as Record<keyof CompiledTypography['weight'], string | Css>,

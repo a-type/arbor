@@ -11,8 +11,8 @@ export function createActionIntentValues<TColorNames extends string>(
 			$root: css`
 				${$.mode.action.padding.block} ${$.mode.action.padding.inline}
 			`,
-			block: css`calc(${$.mode.primitive.spacing.md} / ${$.mode.global.density})`,
-			inline: css`calc((${$.mode.primitive.spacing.lg} + ${$.mode.global.roundness} * ${$.mode.primitive.spacing.sm}) / ${$.mode.global.density})`,
+			block: css`calc(${$.mode.primitive.spacing.md} / ${$.mode.global.spacing.density})`,
+			inline: css`calc((${$.mode.primitive.spacing.lg} + ${$.mode.global.shape.roundness} * ${$.mode.primitive.spacing.sm}) / ${$.mode.global.spacing.density})`,
 		},
 		roundness: 1,
 		radius: css`calc(${$.mode.radius.md} * ${$.mode.action.roundness})`,
@@ -80,8 +80,8 @@ export function createSurfaceIntentValues<TColorNames extends string>(
 			$root: css`
 				${$.mode.surface.padding.block} ${$.mode.surface.padding.inline}
 			`,
-			block: css`calc(${$.mode.spacing.lg} * max(1, ${$.mode.surface.roundness} * ${$.mode.global.roundness}))`,
-			inline: css`calc(${$.mode.spacing.lg} * max(1, ${$.mode.surface.roundness} * ${$.mode.global.roundness}))`,
+			block: css`calc(${$.mode.spacing.lg} * max(1, ${$.mode.surface.roundness} * ${$.mode.global.shape.roundness}))`,
+			inline: css`calc(${$.mode.spacing.lg} * max(1, ${$.mode.surface.roundness} * ${$.mode.global.shape.roundness}))`,
 		},
 		roundness: 1,
 		radius: css`calc(${$.mode.radius.md} * ${$.mode.surface.roundness})`,
@@ -153,8 +153,8 @@ export function createControlIntentValues<TColorNames extends string>(
 			$root: css`
 				${$.mode.control.padding.block} ${$.mode.control.padding.inline}
 			`,
-			block: css`calc(${$.mode.primitive.spacing.md} / ${$.mode.global.density})`,
-			inline: css`calc((${$.mode.primitive.spacing.md} + ${$.mode.global.roundness} * ${$.mode.primitive.spacing.sm}) / ${$.mode.global.density})`,
+			block: css`calc(${$.mode.primitive.spacing.md} / ${$.mode.global.spacing.density})`,
+			inline: css`calc((${$.mode.primitive.spacing.md} + ${$.mode.global.shape.roundness} * ${$.mode.primitive.spacing.sm}) / ${$.mode.global.spacing.density})`,
 		},
 		roundness: 1,
 		radius: css`calc(${$.mode.radius.md} * ${$.mode.control.roundness})`,

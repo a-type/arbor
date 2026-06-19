@@ -26,10 +26,10 @@ export const basePreset = presetArbor({
 		},
 	},
 	typography: {
-		maxSize: '10rem',
-		minSize: '0.9rem',
+		maxFontSize: '10rem',
+		minFontSize: '0.9rem',
 		baseWeight: 400,
-		sizeExponentStep: 1.25,
+		fontSizeScaleExponentStep: 1.25,
 		defaultFontSize: 'calc(clamp(12px, 12px + 0.5vw, 18px))',
 	},
 	shadow: {
@@ -73,7 +73,9 @@ basePreset.bundleMode('attention', {
 
 basePreset.bundleMode('hero', {
 	global: {
-		density: 0.5,
+		spacing: {
+			density: 0.5,
+		},
 	},
 	text: {
 		primary: {
@@ -93,37 +95,49 @@ basePreset.bundleMode('hero', {
 
 basePreset.bundleMode('normal', {
 	global: {
-		density: 1,
+		spacing: {
+			density: 1,
+		},
 	},
 });
 
 basePreset.bundleMode('dense', {
 	global: {
-		density: 1.5,
+		spacing: {
+			density: 1.5,
+		},
 	},
 });
 
 basePreset.bundleMode('denser', {
 	global: {
-		density: 2,
+		spacing: {
+			density: 2,
+		},
 	},
 });
 
 basePreset.bundleMode('round', {
 	global: {
-		roundness: 1,
+		shape: {
+			roundness: 2,
+		},
 	},
 });
 
 basePreset.bundleMode('square', {
 	global: {
-		roundness: 0,
+		shape: {
+			roundness: 0,
+		},
 	},
 });
 
 basePreset.bundleMode('thick', {
 	global: {
-		lineWidth: 2,
+		shape: {
+			lineWidth: 2,
+		},
 	},
 });
 

@@ -69,7 +69,7 @@ it('resolves and computes complicated dependency chains', () => {
 	});
 
 	const mode = preset.createMode('test', {
-		global: { density: 2 },
+		global: { spacing: { density: 2 } },
 	});
 
 	const graphWithDensity = buildModeTokenGraph(mode, preset, {
@@ -79,5 +79,5 @@ it('resolves and computes complicated dependency chains', () => {
 
 	expect(
 		graphWithDensity.nodes['--m-primitive-spacing-md'].computed,
-	).toMatchInlineSnapshot(`".5rem"`);
+	).toMatchInlineSnapshot(`"8px"`);
 });

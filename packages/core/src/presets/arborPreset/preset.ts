@@ -1,4 +1,4 @@
-import { css } from '@arbor-css/css-eval';
+import { css, CssInterpolation } from '@arbor-css/css-eval';
 import { ArborPrefixConfig } from '@arbor-css/globals';
 import { ModeValues } from '@arbor-css/modes';
 import { definePreset } from '@arbor-css/preset';
@@ -50,7 +50,7 @@ export interface ArborPresetConfig<
 		 *
 		 * Any valid CSS number value can be used here.
 		 */
-		globalSaturation?: string;
+		globalSaturation?: CssInterpolation;
 	};
 	typography?: TypographyConfig & {
 		/**
@@ -61,7 +61,24 @@ export interface ArborPresetConfig<
 		 *
 		 * Any valid CSS font-size value can be used here.
 		 */
-		defaultFontSize?: string;
+		defaultFontSize?: CssInterpolation;
+		fontSizeScaleBase?: CssInterpolation;
+		fontSizeScaleExponentStep?: CssInterpolation;
+		baseLetterSpacing?: CssInterpolation;
+		baseLineHeight?: CssInterpolation;
+		weightStep?: CssInterpolation;
+		baseWeight?: CssInterpolation;
+		darkModeWeightAdjustment?: CssInterpolation;
+		letterSpacingStep?: CssInterpolation;
+		minLetterSpacing?: CssInterpolation;
+		maxLetterSpacing?: CssInterpolation;
+		lineHeightStep?: CssInterpolation;
+		maxFontSize?: CssInterpolation;
+		maxLineHeight?: CssInterpolation;
+		maxWeight?: CssInterpolation;
+		minFontSize?: CssInterpolation;
+		minLineHeight?: CssInterpolation;
+		minWeight?: CssInterpolation;
 	};
 	spacing?: SpacingConfig & {
 		/**
@@ -74,14 +91,16 @@ export interface ArborPresetConfig<
 		 *
 		 * Any valid CSS number value can be used here.
 		 */
-		globalDensity?: string;
+		globalDensity?: CssInterpolation;
 		/**
 		 * This is the root size of your spacing scale, from which
 		 * other values are derived. Default is "8px"
 		 *
 		 * Any valid CSS length value can be used here.
 		 */
-		baseSize?: string;
+		baseSize?: CssInterpolation;
+		scaleBase?: CssInterpolation;
+		scaleExponentStep?: CssInterpolation;
 	};
 	shadow?: ShadowConfig & {
 		/**
@@ -89,25 +108,25 @@ export interface ArborPresetConfig<
 		 * A value from 0 to 1 is recommended.
 		 * Any valid CSS number value can be used here.
 		 */
-		globalSpread?: string;
+		globalSpread?: CssInterpolation;
 		/**
 		 * Controls the blur amount of all shadows used in the mode.
 		 * A value from 0 to 1 is recommended.
 		 * Any valid CSS number value can be used here.
 		 */
-		globalBlur?: string;
+		globalBlur?: CssInterpolation;
 		/**
 		 * When no shadow color is specified, this is the default.
 		 * Any valid CSS color value can be used here.
 		 */
-		defaultColor?: string;
+		defaultColor?: CssInterpolation;
 	};
 	shape?: {
 		/**
 		 * Influences the thickness of borders. Default is 1.
 		 * Any valid CSS number value can be used here.
 		 */
-		lineWidth?: string;
+		lineWidth?: CssInterpolation;
 		/**
 		 * Globally influences the corner radius values of
 		 * used in the mode. Roundness also has an influence
@@ -115,7 +134,7 @@ export interface ArborPresetConfig<
 		 * A value from 0 to 1 is recommended.
 		 * Any valid CSS number value can be used here.
 		 */
-		roundness?: string;
+		roundness?: CssInterpolation;
 	};
 	easing?: ModeValues<ArborModeSchema['easing']>;
 	duration?: ModeValues<ArborModeSchema['duration']>;
@@ -143,16 +162,49 @@ export const presetArbor = <
 		baseMode: ($) => {
 			return {
 				global: {
-					density: config.spacing?.globalDensity ?? 1,
-					lineWidth: config.shape?.lineWidth ?? 1,
-					roundness: config.shape?.roundness ?? 0.5,
-					saturation: config.color?.globalSaturation ?? 0.5,
-					shadowBlur: config.shadow?.globalBlur ?? 0.5,
-					shadowSpread: config.shadow?.globalSpread ?? 0,
-					baseFontSize: config.typography?.defaultFontSize ?? '1em',
-					baseSpacingSize: config.spacing?.baseSize ?? '8px',
-					defaultShadowColor:
-						config.shadow?.defaultColor ?? 'rgba(0 0 0 / 0.15)',
+					color: {
+						saturation: config.color?.globalSaturation ?? 0.5,
+					},
+					shadow: {
+						blur: config.shadow?.globalBlur ?? 0.5,
+						spread: config.shadow?.globalSpread ?? 0,
+						color: config.shadow?.defaultColor ?? 'rgba(0 0 0 / 0.15)',
+					},
+					shape: {
+						lineWidth: config.shape?.lineWidth ?? 1,
+						roundness: config.shape?.roundness ?? 0.5,
+					},
+					spacing: {
+						density: config.spacing?.globalDensity ?? 1,
+						baseSize: config.spacing?.baseSize ?? '8px',
+						scaleBase: config.spacing?.scaleBase ?? 2,
+						scaleExponentStep: config.spacing?.scaleExponentStep ?? 1,
+					},
+					typography: {
+						baseFontSize: config.typography?.defaultFontSize ?? '1em',
+						fontSizeBase: config.typography?.fontSizeScaleBase ?? 1.125,
+						fontSizeExponentStep:
+							config.typography?.fontSizeScaleExponentStep ?? 1,
+						baseLetterSpacing: config.typography?.baseLetterSpacing ?? 0,
+						baseLineHeight: config.typography?.baseLineHeight ?? 1.5,
+						weightStep: config.typography?.weightStep ?? 100,
+						baseWeight: config.typography?.baseWeight ?? 400,
+						darkModeWeightAdjustment:
+							config.typography?.darkModeWeightAdjustment ?? 0,
+						fontSizeScaleBase: config.typography?.fontSizeScaleBase ?? 1.125,
+						fontSizeScaleExponentStep:
+							config.typography?.fontSizeScaleExponentStep ?? 1,
+						letterSpacingStep: config.typography?.letterSpacingStep ?? 0,
+						minLetterSpacing: config.typography?.minLetterSpacing ?? 0,
+						maxLetterSpacing: config.typography?.maxLetterSpacing ?? 0,
+						lineHeightStep: config.typography?.lineHeightStep ?? 0.5,
+						maxFontSize: config.typography?.maxFontSize ?? '10rem',
+						maxLineHeight: config.typography?.maxLineHeight ?? 2,
+						maxWeight: config.typography?.maxWeight ?? 900,
+						minFontSize: config.typography?.minFontSize ?? '0.75rem',
+						minLineHeight: config.typography?.minLineHeight ?? 0.75,
+						minWeight: config.typography?.minWeight ?? 100,
+					},
 				},
 
 				/** PRIMITIVES */
@@ -167,7 +219,11 @@ export const presetArbor = <
 						$.mode.global,
 					) as any,
 					spacing: compileSpacing(config.spacing || {}, $.mode.global),
-					typography: compileTypography(config.typography || {}, $.mode.global),
+					typography: compileTypography(
+						config.typography || {},
+						$.mode.global,
+						$.mode.global,
+					),
 					shadow: compileShadows(config.shadow || {}, $.mode.global),
 
 					easing:
@@ -209,7 +265,7 @@ export const presetArbor = <
 		},
 		baseModeOptions: ($) => ({
 			extraCss: `
-			font-size: ${$.mode.global.baseFontSize.var};
+			font-size: ${$.mode.global.typography.baseFontSize.var};
 			`,
 		}),
 		config: config.prefixes,
@@ -221,7 +277,7 @@ export const presetArbor = <
 				property: 'border-color',
 				extra: () => css`
 					border-style: solid;
-					border-width: calc(1px * ${$.mode.global.lineWidth});
+					border-width: calc(1px * ${$.mode.global.shape.lineWidth});
 				`,
 			});
 

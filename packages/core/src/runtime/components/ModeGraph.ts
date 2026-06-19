@@ -278,7 +278,7 @@ class ModeGraphToken extends LitElement {
 				);
 				font-size: var(
 					--modeGraph-token-dependent-font-size,
-					var(--m-primitive-typography-size, 14px)
+					var(--m-text-secondary-size, 14px)
 				);
 				display: flex;
 				flex-direction: column;

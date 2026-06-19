@@ -1,5 +1,5 @@
 import { css, Css } from '@arbor-css/css-eval';
-import { Token } from '@arbor-css/tokens';
+import { ArborModeGlobalTokens } from '../../modeSchema/global.js';
 
 export const defaultShadowLevels = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
 export type DefaultShadowLevel = (typeof defaultShadowLevels)[number];
@@ -38,31 +38,24 @@ export type CompiledShadows<TShadowLevel extends string = DefaultShadowLevel> =
 const defaultShadowXCss = (step: number) => css`0px`;
 const defaultShadowYCss = (step: number) =>
 	css`calc(1px * pow(2, ${step} - 1))`;
-const defaultShadowBlurCss = (step: number, $: RequiredTokens) => css`
-	calc(${[$.shadowBlur, '0.5']} * ${[
-		$.baseSpacingSize,
+const defaultShadowBlurCss = (step: number, $: ArborModeGlobalTokens) => css`
+	calc(${[$.shadow.blur, '0.5']} * ${[
+		$.spacing.baseSize,
 		'0.5rem',
 	]} * 0.25 * pow(2, ${step} - 1))
 `;
-const defaultShadowSpreadCss = (step: number, $: RequiredTokens) => css`
-	calc(${[$.shadowSpread, '0.5']} * 1px)
+const defaultShadowSpreadCss = (step: number, $: ArborModeGlobalTokens) => css`
+	calc(${[$.shadow.spread, '0.5']} * 1px)
 `;
-const defaultShadowColorCss = (step: number, $: RequiredTokens) => css`
-	${$.defaultShadowColor}
+const defaultShadowColorCss = (step: number, $: ArborModeGlobalTokens) => css`
+	${$.shadow.color}
 `;
-
-type RequiredTokens = {
-	shadowBlur: Token;
-	shadowSpread: Token;
-	baseSpacingSize: Token;
-	defaultShadowColor: Token;
-};
 
 export function compileShadows<
 	TShadowLevel extends string = DefaultShadowLevel,
 >(
 	config: ShadowConfig<TShadowLevel>,
-	tokens: RequiredTokens,
+	tokens: ArborModeGlobalTokens,
 ): CompiledShadows<TShadowLevel> {
 	const levelNames =
 		config.levels ?

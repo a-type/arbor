@@ -49,7 +49,7 @@ export function darkenColorAlteration(
 	// In light mode: darken by moving toward black (reducing l)
 	// In dark mode: darken by moving away from page neutral (lighter, so increase l)
 	const compensateForDarkModeBlack = 0.3; // pulling this out as a named var so I remember how to tune this later.
-	const l = css`calc(l + ${step} * ${ALTERATION_MAGNITUDE} * (${[tokens.whenLight, 1]} * -${distanceFromBlack} * 0.08 + ${[tokens.whenDark, 1]} * ${distanceFromWhite} * ${compensateForDarkModeBlack}))`;
+	const l = css`calc(l + ${step} * ${ALTERATION_MAGNITUDE} * (${[tokens.whenLight, 1]} * -1 * ${distanceFromBlack} * 0.08 + ${[tokens.whenDark, 1]} * ${distanceFromWhite} * ${compensateForDarkModeBlack}))`;
 	return css`oklch(from ${sourceColor} ${l} calc(c * ${lightDarkAlteration(tokens, { light: 0.01, dark: -0.07, step })}) h)`;
 }
 

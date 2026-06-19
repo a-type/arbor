@@ -45,5 +45,7 @@ it('applies descriptions to all built-in system and global tokens', () => {
 				typeof token.description === 'string' && token.description.length > 0,
 		),
 	).toBe(true);
-	expect(preset.$.mode.global.baseFontSize.description).toBeDefined();
+	expect(
+		preset.$.mode.global.typography.baseFontSize.description,
+	).toBeDefined();
 });

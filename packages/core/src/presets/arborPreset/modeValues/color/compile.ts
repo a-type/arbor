@@ -1,5 +1,6 @@
 import { css, CssInterpolation } from '@arbor-css/css-eval';
 import { Token } from '@arbor-css/tokens';
+import { ArborModeGlobalTokens } from '../../modeSchema/global.js';
 import {
 	ColorRangeConfig,
 	CompiledColorRange,
@@ -55,10 +56,6 @@ export interface CompileColorsOptions<
 	invertLightDark?: boolean;
 }
 
-type RequiredTokens = {
-	saturation: Token;
-};
-
 /**
  * Given an input set of color range configurations (hue, saturation)
  * and, optionally, specific calculations to handle light/dark schemes,
@@ -74,7 +71,7 @@ export function compileColors<
 		schemes: userSchemes,
 		invertLightDark = false,
 	}: CompileColorsOptions<TRangeNames, TRangeStepNames>,
-	$: RequiredTokens,
+	$: ArborModeGlobalTokens,
 ): CompiledColors<TRangeNames, TRangeStepNames> {
 	const schemes = {
 		light:
@@ -93,13 +90,13 @@ export function compileColors<
 
 	const colors = Object.keys(ranges).reduce((colorsAcc, rangeName) => {
 		const rangeConfig = ranges[rangeName as TRangeNames];
-		const uncompiledLight = schemes.light.getColorRange(rangeConfig, $);
-		const uncompiledDark = schemes.dark.getColorRange(rangeConfig, $);
+		const uncompiledLight = schemes.light.getColorRange(rangeConfig, $.color);
+		const uncompiledDark = schemes.dark.getColorRange(rangeConfig, $.color);
 
 		const combined = toLightDarkCompiled(
 			invertLightDark ? uncompiledDark : uncompiledLight,
 			invertLightDark ? uncompiledLight : uncompiledDark,
-			$,
+			$.color,
 			{ neutralSaturation: rangeConfig.neutralSaturation },
 		);
 
@@ -159,7 +156,7 @@ export function compileSingleColor(
 	 * }
 	 */
 	range: CompiledColorRangeConfig<string>,
-	tokens: RequiredTokens,
+	tokens: ArborModeGlobalTokens,
 ) {
 	return compileColors(
 		{

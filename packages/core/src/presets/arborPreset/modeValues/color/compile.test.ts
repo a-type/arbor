@@ -17,8 +17,8 @@ const ctx = createGlobalContext();
 function compileAndBake(config: CompileColorsOptions<string, string>) {
 	const saturationToken = ctx.createModeToken('saturation');
 	const compiled = compileColors(config, {
-		saturation: saturationToken,
-	});
+		color: { saturation: saturationToken },
+	} as any);
 	const computeCtx: CssResolutionContext = {
 		propertyValues: {
 			[saturationToken.name]: '0.5',

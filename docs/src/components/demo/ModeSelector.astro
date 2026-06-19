@@ -13,19 +13,17 @@ const modeNames = Object.keys(getInternals(preset).modes).filter(
 );
 ---
 
-<mode-selector
-	class="mode-selector @mode-dense"
-	data-target={targetSelector}
-	{...props}
->
-	{
-		modeNames.map((name) => (
-			<SelectChip
-				value={`@mode-${name}`}
-				name="mode"
-			>{`@mode-${name}`}</SelectChip>
-		))
-	}
+<mode-selector data-target={targetSelector} {...props}>
+	<div class="mode-selector @mode-dense">
+		{
+			modeNames.map((name) => (
+				<SelectChip
+					value={`@mode-${name}`}
+					name="mode"
+				>{`@mode-${name}`}</SelectChip>
+			))
+		}
+	</div>
 </mode-selector>
 
 <style>
@@ -59,7 +57,6 @@ const modeNames = Object.keys(getInternals(preset).modes).filter(
 				attributes: true,
 				attributeFilter: ['class'],
 			});
-			this.syncFromTarget();
 
 			// Determine which mode classes to pay attention to based on the inputs in this component
 			const inputs = this.querySelectorAll(
@@ -68,6 +65,8 @@ const modeNames = Object.keys(getInternals(preset).modes).filter(
 			inputs.forEach((input) => {
 				this.concernedModeNames.add(input.value);
 			});
+
+			this.syncFromTarget();
 		}
 
 		disconnectedCallback() {

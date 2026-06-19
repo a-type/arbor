@@ -52,6 +52,11 @@ export function createModeInstance<T extends SimpleTokenSchema>(
 }
 
 export function getModeInternals(mode: ModeInstance<any>): ModeInternals {
+	if (!(INTERNALS in mode)) {
+		throw new Error(
+			'Mode instance is missing internals. Is this a mode created with preset.createMode or preset.bundleMode?',
+		);
+	}
 	return (mode as any)[INTERNALS];
 }
 

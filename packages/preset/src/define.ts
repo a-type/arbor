@@ -188,7 +188,7 @@ function emptyPreset(): ArborPreset {
 		functions: {} as any,
 		mixins: {} as any,
 		modeSchema: {} as any,
-		baseMode: {} as any,
+		baseMode: createModeInstance('base', {}),
 		$: {
 			mode: {},
 			mixins: {},
@@ -249,11 +249,7 @@ export function definePreset<
 					acc.modeSchema || {},
 					presetWithConfig.modeSchema,
 				),
-				baseMode: deepMerge(
-					{},
-					acc.baseMode || {},
-					presetWithConfig.baseMode || {},
-				),
+				baseMode: mergeModes(acc.baseMode, presetWithConfig.baseMode),
 				functions: {
 					...acc.functions,
 					...presetWithConfig.functions,
@@ -331,18 +327,15 @@ export function definePreset<
 			presetOptions.modeSchema,
 		);
 
-		const baseMode = createModeInstance(
+		const localBaseMode = createModeInstance(
 			'base',
-			deepMerge(
-				{},
-				composedPresets.baseMode as any,
-				presetOptions.baseMode($tokens as any, context) as any,
-			) as any,
+			presetOptions.baseMode($tokens as any, context) as any,
 			{
 				extraSelectors: [':root'],
 				...presetOptions.baseModeOptions?.($tokens as any, context),
 			},
 		);
+		const baseMode = mergeModes(composedPresets.baseMode, localBaseMode);
 
 		return {
 			...composedPresets,

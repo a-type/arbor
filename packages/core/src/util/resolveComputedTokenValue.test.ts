@@ -26,7 +26,7 @@ it('resolves primitive token values', () => {
 		ctx,
 	);
 
-	expect(value).toMatchInlineSnapshot(`".5rem"`);
+	expect(value).toMatchInlineSnapshot(`"8px"`);
 });
 
 it('resolves base mode values with baking', () => {
@@ -36,7 +36,7 @@ it('resolves base mode values with baking', () => {
 		ctx,
 	);
 
-	expect(value).toMatchInlineSnapshot(`".25rem"`);
+	expect(value).toMatchInlineSnapshot(`"4px"`);
 });
 
 it('applies user property values to evaluation context', () => {
@@ -46,12 +46,12 @@ it('applies user property values to evaluation context', () => {
 		{
 			...ctx,
 			propertyValues: {
-				[preset.$.mode.global.density.name]: '2',
+				[preset.$.mode.global.spacing.density.name]: '2',
 			},
 		},
 	);
 
-	expect(value).toMatchInlineSnapshot(`".125rem"`);
+	expect(value).toMatchInlineSnapshot(`"2px"`);
 });
 
 it('resolves equation property values from user overrides', () => {
@@ -61,12 +61,12 @@ it('resolves equation property values from user overrides', () => {
 		{
 			...ctx,
 			propertyValues: {
-				[preset.$.mode.global.density.name]: css`calc(1 + 1)`,
+				[preset.$.mode.global.spacing.density.name]: css`calc(1 + 1)`,
 			},
 		},
 	);
 
-	expect(value).toMatchInlineSnapshot(`".125rem"`);
+	expect(value).toMatchInlineSnapshot(`"2px"`);
 });
 
 it('returns undefined when token is unknown', () => {

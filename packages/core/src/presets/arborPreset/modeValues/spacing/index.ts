@@ -1,5 +1,5 @@
-import { css, Css, CssInterpolation } from '@arbor-css/css-eval';
-import { Token } from '@arbor-css/tokens';
+import { css, Css } from '@arbor-css/css-eval';
+import { ArborModeGlobalTokens } from '../../modeSchema/global.js';
 
 export const defaultSpacingLevels = [
 	'2xs',
@@ -18,18 +18,6 @@ export interface SpacingConfig<
 > {
 	levels?: Record<TSpacingLevel, string | number>;
 	defaultLevel?: TSpacingLevel;
-	/**
-	 * The "base" number of the scale equation - a linear scalar
-	 * multiplier. Set this to scale by some linear factor if
-	 * scaleExponent is "1"
-	 */
-	scaleBase?: CssInterpolation;
-	/**
-	 * The exponent of the scale equation - the rate of exponential growth.
-	 * `scaleBase` is raised to this exponent before being multiplied by the base spacing size.
-	 * Set this to "1" to scale linearly by the `scaleBase` factor, or set it to a value greater than "1" to have exponential growth.
-	 */
-	scaleExponent?: CssInterpolation;
 }
 
 export type CompiledSpacing<
@@ -40,11 +28,6 @@ export type CompiledSpacing<
 	$root: string | Css;
 };
 
-type RequiredTokens = {
-	baseSpacingSize: Token;
-	baseFontSize: Token;
-};
-
 /**
  * Given configuration for spacing sizes and the default
  * level name, produces a range of spacing sizes.
@@ -53,7 +36,7 @@ export function compileSpacing<
 	TSpacingLevel extends string = DefaultSpacingLevel,
 >(
 	config: SpacingConfig<TSpacingLevel>,
-	$: RequiredTokens,
+	$: ArborModeGlobalTokens,
 ): CompiledSpacing<TSpacingLevel> {
 	const levelNames =
 		config.levels ?
@@ -75,7 +58,7 @@ export function compileSpacing<
 			const step = i - baseIndex;
 			acc[nameCast] =
 				levelConfig ??
-				css`calc(${$.baseSpacingSize} * pow(${config.scaleBase ?? 2}, ${config.scaleExponent ?? 1} * ${step}))`;
+				css`calc(${$.spacing.baseSize} * pow(${[$.spacing.scaleBase, 2]}, ${[$.spacing.scaleExponentStep, 1]} * ${step}))`;
 			return acc;
 		},
 		{} as Record<TSpacingLevel, string | Css>,
