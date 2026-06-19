@@ -15,7 +15,7 @@ export function createActionIntentValues<TColorNames extends string>(
 			inline: css`calc((${$.mode.primitive.spacing.lg} + ${$.mode.global.shape.roundness} * ${$.mode.primitive.spacing.sm}) / ${$.mode.global.spacing.density})`,
 		},
 		roundness: 1,
-		radius: css`calc(${$.mode.radius.md} * ${$.mode.action.roundness})`,
+		radius: css`calc(${$.mode.radius.md} * ${$.mode.action.roundness} * ${$.mode.global.shape.roundness})`,
 		primary: {
 			bg: css`
 				${$.mode.color.main.mid}
@@ -84,7 +84,7 @@ export function createSurfaceIntentValues<TColorNames extends string>(
 			inline: css`calc(${$.mode.spacing.lg} * max(1, ${$.mode.surface.roundness} * ${$.mode.global.shape.roundness}))`,
 		},
 		roundness: 1,
-		radius: css`calc(${$.mode.radius.md} * ${$.mode.surface.roundness})`,
+		radius: css`calc(${$.mode.radius.md} * ${$.mode.surface.roundness} * ${$.mode.global.shape.roundness})`,
 		primary: {
 			bg: css`
 				${$.mode.color.main.light}
@@ -157,7 +157,7 @@ export function createControlIntentValues<TColorNames extends string>(
 			inline: css`calc((${$.mode.primitive.spacing.md} + ${$.mode.global.shape.roundness} * ${$.mode.primitive.spacing.sm}) / ${$.mode.global.spacing.density})`,
 		},
 		roundness: 1,
-		radius: css`calc(${$.mode.radius.md} * ${$.mode.control.roundness})`,
+		radius: css`calc(${$.mode.radius.md} * ${$.mode.control.roundness} * ${$.mode.global.shape.roundness})`,
 		bg: css`
 			${$.mode.color.neutral.paper}
 		`,

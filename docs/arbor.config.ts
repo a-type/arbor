@@ -6,11 +6,12 @@ export const basePreset = presetArbor({
 		mainColor: 'summer',
 		ranges: {
 			winter: {
-				hue: 200,
+				hue: 250,
 				saturation: 0.3,
 			},
 			spring: {
-				hue: 140,
+				hue: 340,
+				saturation: 0.4,
 			},
 			summer: {
 				hue: 158,
@@ -39,7 +40,7 @@ export const basePreset = presetArbor({
 	},
 	shape: {
 		lineWidth: '1',
-		roundness: '0.5',
+		roundness: '0.75',
 	},
 	spacing: {
 		baseSize: 'calc(clamp(4px, 4px + 0.25vw, 10px))',
@@ -122,7 +123,7 @@ basePreset.bundleMode('denser', {
 basePreset.bundleMode('round', {
 	global: {
 		shape: {
-			roundness: 2,
+			roundness: 1,
 		},
 	},
 });

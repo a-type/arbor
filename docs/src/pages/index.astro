@@ -340,10 +340,13 @@ import Layout from '../layouts/Homepage.astro';
 
 		a {
 			@apply --mx-fg(inherit);
-			font-weight: bold;
+			font-weight: var(--m-primitive-typography-weight-semiBold);
 			font-family: var(--m-text-secondary-font);
 			text-decoration: none;
-			line-height: 1;
+
+			p & {
+				text-decoration: underline;
+			}
 		}
 
 		h1,
