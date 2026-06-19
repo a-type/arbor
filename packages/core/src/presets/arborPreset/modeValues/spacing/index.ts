@@ -18,6 +18,7 @@ export interface SpacingConfig<
 > {
 	levels?: Record<TSpacingLevel, string | number>;
 	defaultLevel?: TSpacingLevel;
+	roundToPixel?: boolean;
 }
 
 export type CompiledSpacing<
@@ -58,7 +59,7 @@ export function compileSpacing<
 			const step = i - baseIndex;
 			acc[nameCast] =
 				levelConfig ??
-				css`calc(${$.spacing.baseSize} * pow(${[$.spacing.scaleBase, 2]}, ${[$.spacing.scaleExponentStep, 1]} * ${step}))`;
+				css`calc(${config.roundToPixel ? 'round(' : ''}${$.spacing.baseSize} * pow(${[$.spacing.scaleBase, 2]}, ${[$.spacing.scaleExponentStep, 1]} * ${step})${config.roundToPixel ? ', 1px)' : ''})`;
 			return acc;
 		},
 		{} as Record<TSpacingLevel, string | Css>,

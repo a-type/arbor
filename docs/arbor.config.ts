@@ -30,7 +30,8 @@ export const basePreset = presetArbor({
 		minFontSize: '0.9rem',
 		baseWeight: 400,
 		fontSizeScaleExponentStep: 1.25,
-		defaultFontSize: 'calc(clamp(12px, 12px + 0.5vw, 18px))',
+		defaultFontSize: 'calc(round(clamp(12px, 12px + 0.5vw, 18px), 1px))',
+		roundToPixel: true,
 	},
 	shadow: {
 		globalSpread: '1.5',
@@ -42,6 +43,7 @@ export const basePreset = presetArbor({
 	},
 	spacing: {
 		baseSize: 'calc(clamp(4px, 4px + 0.25vw, 10px))',
+		roundToPixel: true,
 	},
 });
 

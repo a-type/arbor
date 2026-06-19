@@ -34,14 +34,15 @@ export function createShadowLevelSemanticValues<TColorName extends string>(
 
 export function createSpacingSemanticValues<TColorName extends string>(
 	$: Tokens<TColorName>,
+	config: { roundToPixel?: boolean },
 ) {
 	return {
 		$root: $.mode.spacing.md,
-		xs: css`calc(${$.mode.primitive.spacing.xs} / ${$.mode.global.spacing.density})`,
-		sm: css`calc(${$.mode.primitive.spacing.sm} / ${$.mode.global.spacing.density})`,
-		md: css`calc(${$.mode.primitive.spacing.md} / ${$.mode.global.spacing.density})`,
-		lg: css`calc(${$.mode.primitive.spacing.lg} / ${$.mode.global.spacing.density})`,
-		xl: css`calc(${$.mode.primitive.spacing.xl} / ${$.mode.global.spacing.density})`,
+		xs: css`calc(${config.roundToPixel ? 'round(' : ''}${$.mode.primitive.spacing.xs} / ${$.mode.global.spacing.density}${config.roundToPixel ? ', 1px)' : ''})`,
+		sm: css`calc(${config.roundToPixel ? 'round(' : ''}${$.mode.primitive.spacing.sm} / ${$.mode.global.spacing.density}${config.roundToPixel ? ', 1px)' : ''})`,
+		md: css`calc(${config.roundToPixel ? 'round(' : ''}${$.mode.primitive.spacing.md} / ${$.mode.global.spacing.density}${config.roundToPixel ? ', 1px)' : ''})`,
+		lg: css`calc(${config.roundToPixel ? 'round(' : ''}${$.mode.primitive.spacing.lg} / ${$.mode.global.spacing.density}${config.roundToPixel ? ', 1px)' : ''})`,
+		xl: css`calc(${config.roundToPixel ? 'round(' : ''}${$.mode.primitive.spacing.xl} / ${$.mode.global.spacing.density}${config.roundToPixel ? ', 1px)' : ''})`,
 	} satisfies ModeValues<ArborModeSchema['spacing']>;
 }
 

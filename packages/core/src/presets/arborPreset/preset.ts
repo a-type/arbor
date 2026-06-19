@@ -130,8 +130,9 @@ export interface ArborPresetConfig<
 		/**
 		 * Globally influences the corner radius values of
 		 * used in the mode. Roundness also has an influence
-		 * on the padding of intent tokens. Default is 0.5.
-		 * A value from 0 to 1 is recommended.
+		 * on the padding of intent tokens. Default is 1.
+		 * A value from 0 to 2 is recommended, but this is all
+		 * relative and the default is somewhat arbitrary to begin with.
 		 * Any valid CSS number value can be used here.
 		 */
 		roundness?: CssInterpolation;
@@ -172,7 +173,7 @@ export const presetArbor = <
 					},
 					shape: {
 						lineWidth: config.shape?.lineWidth ?? 1,
-						roundness: config.shape?.roundness ?? 0.5,
+						roundness: config.shape?.roundness ?? 1,
 					},
 					spacing: {
 						density: config.spacing?.globalDensity ?? 1,
@@ -249,7 +250,9 @@ export const presetArbor = <
 					$,
 					config.color.mainColor as any,
 				) as any,
-				spacing: createSpacingSemanticValues($),
+				spacing: createSpacingSemanticValues($, {
+					roundToPixel: config.spacing?.roundToPixel ?? false,
+				}),
 				shadow: createShadowSemanticValues($),
 				radius: createRadiusSemanticValues($),
 				lineWidth: createLineWidthSemanticValues($),
@@ -273,7 +276,7 @@ export const presetArbor = <
 			// overwrite the basic preset's border mixin to apply the user's
 			// configured border width
 			const newBorderMixins = createColorMixins(create, $.mode.global, {
-				name: 'border',
+				name: 'borderColor',
 				property: 'border-color',
 				extra: () => css`
 					border-style: solid;
@@ -283,7 +286,8 @@ export const presetArbor = <
 
 			// intent mixins
 			const actionPrimary = create('action-primary', {
-				description: 'Applies all primary action intent styles.',
+				description:
+					'Applies all primary action intent styles: fg, bg, border, radius, and padding.',
 				definition: (css) => css`
 					${presetBasic.mixins.bg.apply({
 						'--color': $.mode.action.primary.bg,
@@ -301,7 +305,8 @@ export const presetArbor = <
 				`,
 			});
 			const actionSecondary = create('action-secondary', {
-				description: 'Applies all secondary action intent styles.',
+				description:
+					'Applies all secondary action intent styles: fg, bg, border, radius, and padding.',
 				definition: (css) => css`
 					${presetBasic.mixins.bg.apply({
 						'--color': $.mode.action.secondary.bg,
@@ -319,7 +324,8 @@ export const presetArbor = <
 				`,
 			});
 			const actionAmbient = create('action-ambient', {
-				description: 'Applies all ambient action intent styles.',
+				description:
+					'Applies all ambient action intent styles: fg, bg, border, radius, and padding.',
 				definition: (css) => css`
 					${presetBasic.mixins.bg.apply({
 						'--color': $.mode.action.ambient.bg,
@@ -337,7 +343,8 @@ export const presetArbor = <
 				`,
 			});
 			const surfacePrimary = create('surface-primary', {
-				description: 'Applies all primary surface intent styles.',
+				description:
+					'Applies all primary surface intent styles: fg, bg, border, radius, and padding.',
 				definition: (css) => css`
 					${presetBasic.mixins.bg.apply({
 						'--color': $.mode.surface.primary.bg,
@@ -353,7 +360,8 @@ export const presetArbor = <
 				`,
 			});
 			const surfaceSecondary = create('surface-secondary', {
-				description: 'Applies all secondary surface intent styles.',
+				description:
+					'Applies all secondary surface intent styles: fg, bg, border, radius, and padding.',
 				definition: (css) => css`
 					${presetBasic.mixins.bg.apply({
 						'--color': $.mode.surface.secondary.bg,
@@ -371,7 +379,8 @@ export const presetArbor = <
 				`,
 			});
 			const surfaceAmbient = create('surface-ambient', {
-				description: 'Applies all ambient surface intent styles.',
+				description:
+					'Applies all ambient surface intent styles: fg, bg, border, radius, and padding.',
 				definition: (css) => css`
 					${presetBasic.mixins.bg.apply({
 						'--color': $.mode.surface.ambient.bg,
@@ -389,7 +398,8 @@ export const presetArbor = <
 				`,
 			});
 			const control = create('control', {
-				description: 'Applies all control intent styles.',
+				description:
+					'Applies all control intent styles: fg, bg, border, radius, and padding.',
 				definition: (css) => css`
 					${presetBasic.mixins.bg.apply({
 						'--color': $.mode.control.bg,
@@ -407,7 +417,8 @@ export const presetArbor = <
 				`,
 			});
 			const textPrimary = create('text-primary', {
-				description: 'Applies all primary text intent styles.',
+				description:
+					'Applies all primary text intent styles: size, weight, font, line-height, and letter-spacing.',
 				definition: (css) => css`
 					font-size: ${$.mode.text.primary.size};
 					font-weight: ${$.mode.text.primary.weight};
@@ -417,7 +428,8 @@ export const presetArbor = <
 				`,
 			});
 			const textSecondary = create('text-secondary', {
-				description: 'Applies all secondary text intent styles.',
+				description:
+					'Applies all secondary text intent styles: size, weight, font, line-height, and letter-spacing.',
 				definition: (css) => css`
 					font-size: ${$.mode.text.secondary.size};
 					font-weight: ${$.mode.text.secondary.weight};
@@ -427,7 +439,8 @@ export const presetArbor = <
 				`,
 			});
 			const textAmbient = create('text-ambient', {
-				description: 'Applies all ambient text intent styles.',
+				description:
+					'Applies all ambient text intent styles: size, weight, font, line-height, and letter-spacing.',
 				definition: (css) => css`
 					font-size: ${$.mode.text.ambient.size};
 					font-weight: ${$.mode.text.ambient.weight};
@@ -438,12 +451,12 @@ export const presetArbor = <
 			});
 
 			return {
-				border: newBorderMixins.ref,
-				borderLighter: newBorderMixins.lighter,
-				borderHeavier: newBorderMixins.heavier,
-				borderDesaturated: newBorderMixins.desaturated,
-				borderSaturated: newBorderMixins.saturated,
-				borderFaded: newBorderMixins.faded,
+				borderColor: newBorderMixins.ref,
+				borderColorLighter: newBorderMixins.lighter,
+				borderColorHeavier: newBorderMixins.heavier,
+				borderColorDesaturated: newBorderMixins.desaturated,
+				borderColorSaturated: newBorderMixins.saturated,
+				borderColorFaded: newBorderMixins.faded,
 
 				actionPrimary,
 				actionSecondary,

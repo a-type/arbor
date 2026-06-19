@@ -54,6 +54,7 @@ export type TypographyConfig<TLevels extends string = DefaultTypographyLevel> =
 	{
 		levels?: Record<TLevels, Partial<TypographyLevel>>;
 		defaultLevel?: TLevels;
+		roundToPixel?: boolean;
 	};
 
 export function compileTypography<
@@ -80,7 +81,7 @@ export function compileTypography<
 			const nameCast = name as TLevels;
 			const levelConfig = config.levels?.[nameCast] ?? {};
 			acc[nameCast] = {
-				size: css`calc(clamp(${tokens.typography.minFontSize ?? '0.75rem'}, 1rem * pow(${tokens.typography.fontSizeScaleBase ?? 1.125}, (${i - baseIndex} * ${tokens.typography.fontSizeScaleExponentStep ?? 1})) / ${[tokens.spacing.density, 1]}, ${tokens.typography.maxFontSize ?? '3rem'}))`,
+				size: css`calc(${config.roundToPixel ? 'round(' : ''}clamp(${tokens.typography.minFontSize ?? '0.75rem'}, 1rem * pow(${tokens.typography.fontSizeScaleBase ?? 1.125}, (${i - baseIndex} * ${tokens.typography.fontSizeScaleExponentStep ?? 1})) / ${[tokens.spacing.density, 1]}, ${tokens.typography.maxFontSize ?? '3rem'})${config.roundToPixel ? ', 1px)' : ''})`,
 				lineHeight: css`calc(clamp(${tokens.typography.minLineHeight ?? 0.75}, (${tokens.typography.baseLineHeight ?? 1.5} - ${tokens.typography.lineHeightStep ?? 0.5} * ${i - baseIndex}), ${tokens.typography.maxLineHeight ?? 2}))`,
 				letterSpacing: css`calc(clamp(${tokens.typography.minLetterSpacing ?? 0}, (${tokens.typography.baseLetterSpacing ?? 0} + ${tokens.typography.letterSpacingStep ?? 0} * ${i - baseIndex}), ${tokens.typography.maxLetterSpacing ?? 0}))`,
 				...levelConfig,
