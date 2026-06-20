@@ -103,6 +103,11 @@ export function findArbitraryValueWarnings(
 	tokenPrefixes: readonly string[],
 ): ArbitraryValueWarning[] {
 	const warnings: ArbitraryValueWarning[] = [];
+	if (line.trimStart().startsWith('@media')) {
+		// skip media query conditions, which may contain arbitrary values but cannot
+		// actually reference properties
+		return warnings;
+	}
 
 	for (const match of line.matchAll(declarationRegex)) {
 		if (match.index === undefined) continue;
@@ -114,31 +119,33 @@ export function findArbitraryValueWarnings(
 		if (allowedExactValues.has(value.toLowerCase())) continue;
 		if (includesTokenReference(value, tokenPrefixes)) continue;
 
-		if (
-			colorProperties.has(property) &&
-			hasColorLiteral(value)
-		) {
-			warnings.push(createWarning(match.index, match[0], value, {
-				message: 'Prefer an Arbor semantic token over an arbitrary color value.',
-			}));
+		if (colorProperties.has(property) && hasColorLiteral(value)) {
+			warnings.push(
+				createWarning(match.index, match[0], value, {
+					message:
+						'Prefer an Arbor semantic token over an arbitrary color value.',
+				}),
+			);
 			continue;
 		}
 
-		if (
-			spacingAndSizeProperties.has(property) &&
-			hasLengthLiteral(value)
-		) {
-			warnings.push(createWarning(match.index, match[0], value, {
-				message:
-					'Prefer an Arbor semantic token over an arbitrary spacing or sizing value.',
-			}));
+		if (spacingAndSizeProperties.has(property) && hasLengthLiteral(value)) {
+			warnings.push(
+				createWarning(match.index, match[0], value, {
+					message:
+						'Prefer an Arbor semantic token over an arbitrary spacing or sizing value.',
+				}),
+			);
 		}
 	}
 
 	return warnings;
 }
 
-function includesTokenReference(value: string, tokenPrefixes: readonly string[]): boolean {
+function includesTokenReference(
+	value: string,
+	tokenPrefixes: readonly string[],
+): boolean {
 	return tokenPrefixes.some((prefix) => value.includes(prefix));
 }
 

@@ -8,7 +8,9 @@ it('warns on arbitrary spacing values without token usage', () => {
 });
 
 it('warns on arbitrary color values without token usage', () => {
-	const warnings = findArbitraryValueWarnings('background-color: #ff0000;', ['--m-']);
+	const warnings = findArbitraryValueWarnings('background-color: #ff0000;', [
+		'--m-',
+	]);
 	expect(warnings).toHaveLength(1);
 	expect(warnings[0]?.message).toContain('color value');
 });
@@ -22,8 +24,17 @@ it('does not warn when arbor token references are present', () => {
 });
 
 it('does not warn for allowed keyword values', () => {
-	const warnings = findArbitraryValueWarnings('margin: 0; color: transparent;', [
-		'--m-',
-	]);
+	const warnings = findArbitraryValueWarnings(
+		'margin: 0; color: transparent;',
+		['--m-'],
+	);
+	expect(warnings).toHaveLength(0);
+});
+
+it('does not warn for media queries', () => {
+	const warnings = findArbitraryValueWarnings(
+		'@media (min-width: 600px) { ... }',
+		['--m-'],
+	);
 	expect(warnings).toHaveLength(0);
 });
