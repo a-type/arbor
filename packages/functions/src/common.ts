@@ -2,14 +2,14 @@ import { css, Css, CssInterpolation } from '@arbor-css/css-eval';
 import {
 	createTokenFactory,
 	isToken,
-	PropertyType,
+	PropertyTypeName,
 	Token,
 } from '@arbor-css/tokens';
 
 export type CssProperty = `--${string}`;
 export type FunctionParamWithMeta = {
 	name: CssProperty;
-	type?: PropertyType;
+	type?: PropertyTypeName | '*';
 	fallback?: string;
 	description?: string;
 };
