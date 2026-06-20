@@ -146,6 +146,15 @@ export const presetBasic = definePreset({
 			definition: (css, againstColor) => css`contrast-color(${againstColor})`,
 		});
 
+		const literal = create('literal', {
+			description:
+				"Returns the literal value of the parameter (no-op). Wrapped values will be ignored by Arbor's validation of non-token reference values.",
+			parameters: ['--value'] as const,
+			definition: (css, value) => css`
+				${value}
+			`,
+		});
+
 		return {
 			colorLighter,
 			colorHeavier,
@@ -154,6 +163,7 @@ export const presetBasic = definePreset({
 			colorFaded,
 			ring,
 			colorContrast,
+			literal,
 		};
 	},
 });
