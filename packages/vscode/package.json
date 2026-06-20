@@ -25,6 +25,7 @@
 		"onLanguage:vue",
 		"onLanguage:html"
 	],
+	"icon": "./icon.png",
 	"contributes": {
 		"commands": [
 			{
