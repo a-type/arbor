@@ -7,8 +7,7 @@ export type DefaultShadowLevel = (typeof defaultShadowLevels)[number];
 export interface ShadowConfig<
 	TShadowLevel extends string = DefaultShadowLevel,
 > {
-	levels?: Record<TShadowLevel | 'none', CompiledShadowLevel>;
-	defaultLevel?: TShadowLevel;
+	levels?: Record<TShadowLevel | 'none', Omit<CompiledShadowLevel, '$root'>>;
 }
 
 export interface CompiledShadowLevel {
@@ -66,11 +65,11 @@ export function compileShadows<
 		(acc, name, i) => {
 			const nameCast = name as TShadowLevel;
 			const levelConfig = config.levels?.[nameCast];
-			const x = defaultShadowXCss(i);
-			const y = defaultShadowYCss(i);
-			const blur = defaultShadowBlurCss(i, tokens);
-			const spread = defaultShadowSpreadCss(i, tokens);
-			const color = defaultShadowColorCss(i, tokens);
+			const x = levelConfig?.x ?? defaultShadowXCss(i);
+			const y = levelConfig?.y ?? defaultShadowYCss(i);
+			const blur = levelConfig?.blur ?? defaultShadowBlurCss(i, tokens);
+			const spread = levelConfig?.spread ?? defaultShadowSpreadCss(i, tokens);
+			const color = levelConfig?.color ?? defaultShadowColorCss(i, tokens);
 			const $root = css`
 				${x} ${y} ${blur} ${spread} ${color}
 			`;
@@ -88,14 +87,20 @@ export function compileShadows<
 		{} as Record<TShadowLevel, CompiledShadowLevel>,
 	) as CompiledShadows<TShadowLevel>;
 
-	levels['none'] = config.levels?.['none'] ?? {
+	levels['none'] = {
 		$root: '0 0 0 0 transparent',
 		x: '0',
 		y: '0',
 		blur: '0',
 		spread: '0',
 		color: 'transparent',
+		...config.levels?.['none'],
 	};
+	levels['none'].$root = css`
+		${levels['none'].x} ${levels['none'].y} ${levels['none'].blur} ${levels[
+			'none'
+		].spread} ${levels['none'].color}
+	`;
 
 	return levels;
 }

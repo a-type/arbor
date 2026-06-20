@@ -48,7 +48,11 @@ preset.bundleMode('danger', {
 });
 
 preset.bundleMode('dense', {
-	density: 1.5,
+	globals: {
+		spacing: {
+			density: 1.5,
+		},
+	},
 });
 ```
 
@@ -58,7 +62,7 @@ Or, you can just copy one of those.
 
 ## Let's see it!
 
-Wow, ok, we finally have an Arbor style system ready with our first mode.
+We have an Arbor style system ready with our first mode.
 
 If you're using a bundler like Vite, the fastest way to get a look at your style system is to import Arbor's runtime and drop its `<arbor-system-demo>` custom element in your HTML.
 
@@ -73,7 +77,7 @@ const demo = document.createElement('arbor-system-demo');
 document.body.appendChild(demo);
 ```
 
-If it worked, you'll see
+If it worked, you'll see some visual demos of token usage for intents like _surface_, _action_, _control_, and _text_. You'll also see a list of all tokens in your mode with value previews.
 
 ## Building for production
 

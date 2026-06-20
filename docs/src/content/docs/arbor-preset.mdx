@@ -113,3 +113,25 @@ However, if you really need to reach into the larger range for particular cases,
 Like spacing, typography values are generated as a scale for you, and you can tweak how that scale behaves. Only, there are a lot more tweaks available.
 
 Typography generates two scales: one for general font size metrics like font-size, line-height, and letter-spacing; another for font weights. The reasoning is, at the primitive level, size metrics still tend to be semantically related, but weight is often its own semantic meaning that isn't linked to size. These scales are then combined into the text intent tokens.
+
+# Shadows
+
+## Config
+
+```ts
+{
+	globalSpread: '0.25',
+	globalBlur: '0.5',
+	defaultColor: 'rgba(0, 0, 20 / 10%)',
+	levels: {
+		sm: {
+			x: '0px',
+			y: '1px',
+			blur: '2px',
+			spread: '0px',
+			color: 'rgba(0, 0, 0 / 5%)'
+		},
+		// ...
+	},
+}
+```
