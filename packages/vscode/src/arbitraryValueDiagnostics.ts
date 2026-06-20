@@ -26,11 +26,7 @@ const spacingAndSizeProperties = new Set([
 	'bottom',
 	'left',
 	'width',
-	'min-width',
-	'max-width',
 	'height',
-	'min-height',
-	'max-height',
 	'font-size',
 	'line-height',
 	'letter-spacing',
@@ -68,8 +64,10 @@ const colorProperties = new Set([
 	'text-shadow',
 ]);
 
+// we don't care about every kind of unit - units relative to device size,
+// container size, etc are pretty often valid even in token-based systems
 const cssLengthOrPercentRegex =
-	/\b-?(?:\d+\.\d+|\d*\.\d+|\d+)(?:px|rem|em|ex|ch|vh|vw|vmin|vmax|svh|lvh|dvh|svw|lvw|dvw|cqw|cqh|cqmin|cqmax|%|cm|mm|in|pt|pc)\b/i;
+	/\b-?(?:\d+\.\d+|\d*\.\d+|\d+)(?:px|rem|em|ex|cm|mm|in|pt|pc)\b/i;
 
 const cssColorRegex =
 	/#(?:[\da-f]{3}|[\da-f]{4}|[\da-f]{6}|[\da-f]{8})\b|\b(?:rgb|rgba|hsl|hsla|hwb|lab|lch|oklab|oklch|color)\s*\(/i;

@@ -38,3 +38,18 @@ it('does not warn for media queries', () => {
 	);
 	expect(warnings).toHaveLength(0);
 });
+
+it('does not warn for viewport units', () => {
+	const warnings = findArbitraryValueWarnings('width: 100vw; height: 100vh;', [
+		'--m-',
+	]);
+	expect(warnings).toHaveLength(0);
+});
+
+it('does not warn for min or max size properties', () => {
+	const warnings = findArbitraryValueWarnings(
+		'min-width: 500px; max-width: 1200px; min-height: 300px; max-height: 800px;',
+		['--m-'],
+	);
+	expect(warnings).toHaveLength(0);
+});
