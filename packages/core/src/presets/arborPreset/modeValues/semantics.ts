@@ -111,7 +111,7 @@ export function createEasingSemanticValues<TColorName extends string>(
 ) {
 	function easingForLevel(level: number) {
 		const bounciness = css`calc(${$.mode.global.easing.bounciness} * 0.5 * pow(2, ${level}))`;
-		return css`cubic-bezier(0.4 - ${bounciness}, 0, 0.2 + ${bounciness}, 1)`;
+		return css`cubic-bezier(calc(0.4 - ${bounciness}), 0, calc(0.2 + ${bounciness}), 1)`;
 	}
 	return {
 		$root: $.mode.easing.medium,
