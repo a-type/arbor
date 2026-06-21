@@ -23,6 +23,7 @@ export type SimpleTokenDefinition =
 			purpose: TokenPurpose;
 			description?: string;
 			inherits?: boolean;
+			initial?: string | number;
 	  }
 	| Token;
 
@@ -88,6 +89,12 @@ function getSimpleTokenInherits(
 	return typeof value === 'string' ? undefined : value.inherits;
 }
 
+function getSimpleTokenInitial(
+	value: SimpleTokenDefinition,
+): string | number | undefined {
+	return typeof value === 'string' ? undefined : value.initial;
+}
+
 function convertSimpleToken(
 	name: string,
 	prop: SimpleTokenDefinition,
@@ -103,6 +110,7 @@ function convertSimpleToken(
 		description: getSimpleTokenDescription(prop),
 		group,
 		inherits: getSimpleTokenInherits(prop),
+		initial: getSimpleTokenInitial(prop),
 		...applyMeta,
 	});
 }
