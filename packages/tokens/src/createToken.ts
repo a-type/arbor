@@ -11,7 +11,7 @@ export interface TokenOptions {
 	purpose?: TokenPurpose;
 	group?: string;
 	description?: string;
-	fallback?: string | number;
+	initial?: string | number;
 	tag?: string;
 	inherits?: boolean;
 	/**
@@ -204,7 +204,7 @@ export function createTokenFactory({ tokenPrefix }: { tokenPrefix: string }) {
 	return function createToken(
 		name: string,
 		{
-			fallback,
+			initial: userInitial,
 			inherits = true,
 			forceDefinition,
 			purpose = 'other',
@@ -217,6 +217,7 @@ export function createTokenFactory({ tokenPrefix }: { tokenPrefix: string }) {
 		}: TokenOptions = {},
 	) {
 		const normalizedType = type ?? getTypeFromPurpose(purpose);
+		const initial = userInitial ?? initialValueForType(normalizedType);
 		const taggedName = tag ? `${tag}-${name}` : name;
 		const resolvedName = `${tokenPrefix}${normalizeName(taggedName)}`;
 		return {
@@ -229,23 +230,23 @@ export function createTokenFactory({ tokenPrefix }: { tokenPrefix: string }) {
 			description,
 			contributedBy,
 			deprecated,
-			fallback,
+			initial,
 			inherits,
-			var: `var(${resolvedName}${fallback ? `, ${fallback}` : ''})`,
-			varFallback: (fallbackOverride?: string | number) =>
-				`var(${resolvedName}, ${fallbackOverride ?? fallback ?? 'initial'})`,
+			var: `var(${resolvedName})`,
+			varFallback: (fallback: string | number) =>
+				`var(${resolvedName}, ${fallback ?? 'initial'})`,
 			assign: (value?: string | number) =>
-				`${resolvedName}: ${value ?? fallback};`,
+				`${resolvedName}: ${value ?? initial};`,
 			get definition() {
 				if (inherits === false || forceDefinition) {
-					return `@property ${resolvedName} { syntax: '${normalizedType === '*' ? '*' : normalizedType}'; inherits: ${inherits}; ${normalizedType !== '*' ? `initial-value: ${fallback ?? 'initial'};` : ''} }`;
+					return `@property ${resolvedName} { syntax: '${normalizedType === '*' ? '*' : normalizedType}'; inherits: ${inherits}; ${normalizedType !== '*' ? `initial-value: ${initial};` : ''} }`;
 				}
 				return '';
 			},
 			suffixed: (suffix: string) =>
 				createToken(`${name}-${suffix}`, {
 					type,
-					fallback,
+					initial,
 					inherits,
 					description,
 					tag,
@@ -253,7 +254,7 @@ export function createTokenFactory({ tokenPrefix }: { tokenPrefix: string }) {
 			prefixed: (prefix: string) =>
 				createToken(`${prefix}-${name}`, {
 					type,
-					fallback,
+					initial,
 					inherits,
 					description,
 					tag,
@@ -321,4 +322,14 @@ export function tokenSchemaToList(schema: TokenSchema): Token[] {
 	}
 	walk(schema);
 	return result;
+}
+
+function initialValueForType(type: CssPropertySyntax): string | number {
+	if (type === '*' || type === '<string>') {
+		return '';
+	}
+	if (type === '<number>') {
+		return 0;
+	}
+	return 'initial';
 }
