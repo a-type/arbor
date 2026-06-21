@@ -200,7 +200,7 @@ export function formatTokenInfo(record: TokenRecord): string {
 		`purpose: ${printable(token.purpose)}`,
 		`group: ${printable(token.group) || '(none)'}`,
 		`description: ${printable(token.description) || '(none)'}`,
-		`fallback: ${printable(token.fallback) || '(none)'}`,
+		`initial: ${printable(token.initial) || '(none)'}`,
 		`tag: ${printable(token.tag) || '(none)'}`,
 		`contributedBy: ${printable(token.contributedBy) || '(none)'}`,
 		`var: ${token.var}`,
