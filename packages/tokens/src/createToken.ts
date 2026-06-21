@@ -238,7 +238,7 @@ export function createTokenFactory({ tokenPrefix }: { tokenPrefix: string }) {
 				`${resolvedName}: ${value ?? fallback};`,
 			get definition() {
 				if (inherits === false || forceDefinition) {
-					return `@property ${resolvedName} { syntax: '${normalizedType === '*' ? '*' : normalizedType}'; inherits: ${inherits}; initial-value: ${fallback ?? 'initial'}; }`;
+					return `@property ${resolvedName} { syntax: '${normalizedType === '*' ? '*' : normalizedType}'; inherits: ${inherits}; ${normalizedType !== '*' ? `initial-value: ${fallback ?? 'initial'};` : ''} }`;
 				}
 				return '';
 			},
