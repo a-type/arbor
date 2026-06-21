@@ -6,7 +6,7 @@ import {
 	resolveColorTokenValueByName,
 	resolveTokenValue,
 } from './resolvedTokenValue.js';
-import type { TokenMap } from './tokenProvider.js';
+import type { ConfigState, TokenMap } from './tokenProvider.js';
 
 function expectColor(
 	value: ReturnType<typeof parseCssColor>,
@@ -41,7 +41,8 @@ function createTestState() {
 		tokenMap,
 		tokenPrefixes: ['--m-'],
 		dependencies: [],
-	};
+		tokenDefinitions: {},
+	} satisfies ConfigState;
 }
 
 it('parses hex, rgb, and hsl colors into normalized rgba channels', () => {
@@ -83,7 +84,7 @@ it('parses oklch colors into rgba channels', () => {
 it('resolves Arbor color tokens through the shared helper', async () => {
 	const state = createTestState();
 	const colorToken = (state.preset.$.mode.color as any).main.$root;
-	const spacingToken = state.preset.$.mode.primitive.spacing.$root;
+	const spacingToken = state.preset.$.mode.spacing.$root;
 
 	expect(await resolveTokenValue(state, colorToken)).toBe(
 		'light-dark(oklch(90% .15 0), oklch(53% .16 0))',

@@ -54,7 +54,7 @@ See: [packages/core](packages/core)
 
 #### Modes
 
-Modes are configurable applications of primitive tokens (filtered through Schemes, if they are colors) designed for semantic clarity and direct use by developers in their UI. A mode maps generic primitive values to clear, purposeful names. Each Arbor system has a Mode Schema, which defines all possible semantic values and their purposes. For example, a Mode might feature "action.primary.bg" which determines the background color of a primary button, toggle switch, or checked checkbox.
+Modes are configurable applications of token rules designed for semantic clarity and direct use by developers in their UI. A mode maps computed token values to clear, purposeful names. Each Arbor system has a Mode Schema, which defines all possible semantic values and their purposes. For example, a Mode might feature "action.primary.bg" which determines the background color of a primary button, toggle switch, or checked checkbox.
 
 We always begin with a "base mode" which implements the entire schema. This serves as the baseline for everything in the UI. Then, other "partial modes" are applied to individual sections which modify the semantic tokens for particular purposes.
 

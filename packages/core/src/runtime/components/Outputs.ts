@@ -9,20 +9,6 @@ export class ArborOutputs extends LitElement {
 	render() {
 		return html`
 			<details>
-				<summary>Primitive Tokens</summary>
-				<pre>
-${JSON.stringify(
-						convertStructure(
-							this.preset.$.mode.primitive,
-							isToken,
-							(token) => token.name,
-						),
-						null,
-						2,
-					)}</pre
-				>
-			</details>
-			<details>
 				<summary>Mode Tokens</summary>
 				<pre>
 ${JSON.stringify(

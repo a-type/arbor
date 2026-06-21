@@ -66,11 +66,11 @@ class FunctionsList extends LitElement {
 				);
 				font-size: var(
 					--functionsList-item-size,
-					var(--m-primitive-typography-size, 1rem)
+					var(--m-typography-size, 1rem)
 				);
 				font-weight: var(
 					--functionsList-item-weight,
-					var(--m-primitive-typography-weight, normal)
+					var(--m-typography-weight, normal)
 				);
 				background-color: var(
 					--functionsList-item-bg,
@@ -84,11 +84,11 @@ class FunctionsList extends LitElement {
 				.name {
 					font-weight: var(
 						--functionsList-item-name-weight,
-						var(--m-primitive-typography-weight-bold, bold)
+						var(--m-typography-weight-bold, bold)
 					);
 					font-family: var(
 						--functionsList-item-name-font,
-						var(--m-primitive-typography-font, sans-serif)
+						var(--m-typography-font, sans-serif)
 					);
 				}
 				.description {

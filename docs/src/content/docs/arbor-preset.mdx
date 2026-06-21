@@ -39,7 +39,7 @@ This may not look like color palettes you've used before. Particularly the "heav
 
 ## Using color tokens
 
-Your color ranges are automatically added to the primitive token namespace along with their neutral counterparts. For example, `--m-primitive-color-brand-light` or `--m-primitive-color-brand-$neutral-ink`. These, of course, are very long token names. You're not meant to use primitives very often.
+Your color ranges are automatically added to the `color-palette` token namespace along with their neutral counterparts. For example, `--m-color-palette-brand-light` or `--m-color-palette-brand-$neutral-ink`. These, of course, are very long token names. You're not meant to use primitives very often.
 
 Your base mode will use the color range you selected as `mainColor` for `--m-color-main` and associated range values. Its neutral counterpart will be assigned to `--m-color-neutral`. These are your "miscellaneous use" color tokens. But that's _still_ not the first colors you should reach for!
 
@@ -77,7 +77,7 @@ However, this is customizable via `scaleBase` and `scaleExponent`. Or, if you do
 
 ## Using spacing tokens
 
-A _subset_ of your spacing scale will be assigned to `--m-spacing-...` tokens. The primitive range (which is also available under `--m-primitive-spacing-...`) is much larger; a bit too many choices for a single mode. These come from the middle of the range.
+A _subset_ of your spacing scale will be assigned to `--m-spacing-...` tokens.
 
 For most cases, you should use a new mode with a modified `global.density` value to influence spacing size beyond that range. Meaning, if you need a much larger spacing value than is available in `--m-spacing` on the base mode, perhaps you want to apply `@mode-loose` with a density of `0.5`?
 
@@ -111,8 +111,6 @@ However, if you really need to reach into the larger range for particular cases,
 ```
 
 Like spacing, typography values are generated as a scale for you, and you can tweak how that scale behaves. Only, there are a lot more tweaks available.
-
-Typography generates two scales: one for general font size metrics like font-size, line-height, and letter-spacing; another for font weights. The reasoning is, at the primitive level, size metrics still tend to be semantically related, but weight is often its own semantic meaning that isn't linked to size. These scales are then combined into the text intent tokens.
 
 # Shadows
 

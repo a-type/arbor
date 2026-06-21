@@ -19,16 +19,6 @@ const ctx: CssResolutionContext = {
 	simplifier,
 };
 
-it('resolves primitive token values', () => {
-	const value = resolveComputedTokenValue(
-		preset,
-		preset.$.mode.primitive.spacing.$root.name,
-		ctx,
-	);
-
-	expect(value).toMatchInlineSnapshot(`"8px"`);
-});
-
 it('resolves base mode values with baking', () => {
 	const value = resolveComputedTokenValue(
 		preset,

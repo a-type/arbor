@@ -4,7 +4,7 @@ title: Presets
 
 Arbor uses composable presets to define your design system tokens, modes, functions, and mixins.
 
-We ship two presets you can utilize to get going quickly: the "core" preset which includes primitive tokens but no modes, and an "Arbor" preset which adds our recommended mode schema and default base mode.
+We ship two presets you can utilize to get going quickly: the "core" preset which includes color scheme concepts and basic functions but no modes, and an "Arbor" preset which adds our recommended mode schema and default base mode.
 
 ```ts
 import { presetArbor } from '@arbor-css/core/preset-arbor';
@@ -94,10 +94,6 @@ To make your own preset, you'll need to define some tokens and rules. You can st
 ### Name
 
 Give your preset a meaningful name. Not really used anywhere, just good housekeeping.
-
-### Primitives
-
-Arbor has a certain expected "theme" structure for primitive tokens, but within that structure you're free to define which token groups you want to use.
 
 ### Mode Schema
 

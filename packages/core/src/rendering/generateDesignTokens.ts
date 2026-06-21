@@ -58,7 +58,7 @@ function toExtensions(token: Token, value: string, more?: Record<string, any>) {
 		group: token.group,
 		tag: token.tag,
 		contributedBy: token.contributedBy,
-		type: token.type,
+		syntax: token.syntax,
 		value,
 	};
 

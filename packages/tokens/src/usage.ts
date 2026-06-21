@@ -2,7 +2,7 @@ import { Token } from './createToken.js';
 
 export function isColorToken(token: Token) {
 	return (
-		token.type.includes('<color>') ||
+		token.syntax.includes('<color>') ||
 		['color', 'background', 'border-color', 'shadow-color'].includes(
 			token.purpose,
 		)
@@ -11,8 +11,8 @@ export function isColorToken(token: Token) {
 
 export function isSizeToken(token: Token) {
 	return (
-		token.type.includes('<length>') ||
-		token.type.includes('<length-percentage>') ||
+		token.syntax.includes('<length>') ||
+		token.syntax.includes('<length-percentage>') ||
 		[
 			'font-size',
 			'line-height',
@@ -31,15 +31,17 @@ export function isSizeToken(token: Token) {
 
 export function isScalarToken(token: Token) {
 	return (
-		token.type.includes('<number>') ||
+		token.syntax.includes('<number>') ||
 		['font-weight', 'scalar'].includes(token.purpose)
 	);
 }
 
 export function isEasingFunctionToken(token: Token) {
-	return token.type.includes('<string>') && token.purpose === 'easing-function';
+	return (
+		token.syntax.includes('<string>') && token.purpose === 'easing-function'
+	);
 }
 
 export function isDurationToken(token: Token) {
-	return token.type.includes('<time>') && token.purpose === 'duration';
+	return token.syntax.includes('<time>') && token.purpose === 'duration';
 }

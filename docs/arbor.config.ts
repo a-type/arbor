@@ -51,8 +51,8 @@ export const basePreset = presetArbor({
 function makeSeasonMode(season: 'winter' | 'spring' | 'summer' | 'autumn') {
 	basePreset.bundleMode(season, {
 		color: {
-			main: basePreset.$.mode.primitive.color[season],
-			neutral: basePreset.$.mode.primitive.color[season].$neutral,
+			main: basePreset.$.mode.color.palette[season],
+			neutral: basePreset.$.mode.color.palette[season].$neutral,
 		},
 	});
 }
@@ -70,7 +70,7 @@ basePreset.bundleMode('neutral', {
 
 basePreset.bundleMode('attention', {
 	color: {
-		main: basePreset.$.mode.primitive.color.attention,
+		main: basePreset.$.mode.color.palette.attention,
 	},
 });
 
@@ -79,18 +79,19 @@ basePreset.bundleMode('hero', {
 		spacing: {
 			density: 0.5,
 		},
+		typography: {
+			size: 3,
+			fontSizeScaleBase: 1.5,
+		},
 	},
 	text: {
 		primary: {
-			...basePreset.$.mode.primitive.typography['6xl'],
 			font: '"Cormorant", serif',
 		},
 		secondary: {
-			...basePreset.$.mode.primitive.typography['2xl'],
 			font: '"Cormorant", serif',
 		},
 		ambient: {
-			...basePreset.$.mode.primitive.typography.md,
 			font: '"Cormorant", serif',
 		},
 	},
@@ -99,7 +100,12 @@ basePreset.bundleMode('hero', {
 basePreset.bundleMode('normal', {
 	global: {
 		spacing: {
-			density: 1,
+			density: basePreset.baseMode.global?.spacing?.density,
+		},
+		typography: {
+			size: basePreset.baseMode.global?.typography?.size,
+			fontSizeScaleBase:
+				basePreset.baseMode.global?.typography?.fontSizeScaleBase,
 		},
 	},
 });
@@ -109,6 +115,9 @@ basePreset.bundleMode('dense', {
 		spacing: {
 			density: 1.5,
 		},
+		typography: {
+			size: 0.75,
+		},
 	},
 });
 
@@ -117,13 +126,17 @@ basePreset.bundleMode('denser', {
 		spacing: {
 			density: 2,
 		},
+		typography: {
+			size: 0.5,
+			minFontSize: '0.75rem',
+		},
 	},
 });
 
 basePreset.bundleMode('round', {
 	global: {
 		shape: {
-			roundness: 1,
+			roundness: 1.5,
 		},
 	},
 });
@@ -140,6 +153,9 @@ basePreset.bundleMode('thick', {
 	global: {
 		shape: {
 			lineWidth: 2,
+		},
+		typography: {
+			boldness: 0.85,
 		},
 	},
 });

@@ -1,9 +1,13 @@
 export const DEFAULT_TOKEN_PREFIX = '--x-';
 export const DEFAULT_MIXIN_TOKEN_PREFIX = '--mx-';
 
+export type CssPropertySyntax = PropertyTypeName | '*' | (string & {});
+
 export interface TokenOptions {
+	/** @deprecated Use `syntax` instead */
+	type?: CssPropertySyntax;
 	/** Inferred from purpose if not provided, defaults to "*" */
-	type?: PropertyTypeName | PropertyTypeName[] | (string & {}) | '*';
+	syntax?: CssPropertySyntax;
 	purpose?: TokenPurpose;
 	group?: string;
 	description?: string;
@@ -212,18 +216,13 @@ export function createTokenFactory({ tokenPrefix }: { tokenPrefix: string }) {
 			deprecated,
 		}: TokenOptions = {},
 	) {
-		const normalizedType =
-			type ?
-				typeof type === 'string' ?
-					type
-				:	type.join(' | ')
-			:	getTypeFromPurpose(purpose);
+		const normalizedType = type ?? getTypeFromPurpose(purpose);
 		const taggedName = tag ? `${tag}-${name}` : name;
 		const resolvedName = `${tokenPrefix}${normalizeName(taggedName)}`;
 		return {
 			[TOKEN_BRAND]: true as const,
 			name: resolvedName,
-			type: normalizedType,
+			syntax: normalizedType,
 			tag,
 			purpose,
 			group,

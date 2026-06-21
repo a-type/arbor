@@ -62,6 +62,11 @@ export const global = createModeSchema({
 			description:
 				'Defines the root font size used to derive typography tokens.',
 		},
+		size: {
+			purpose: 'scalar',
+			description:
+				'A global parameter to influence the overall font size of all typography tokens.',
+		},
 		weightStep: {
 			purpose: 'scalar',
 			description:
@@ -138,6 +143,38 @@ export const global = createModeSchema({
 			purpose: 'scalar',
 			description:
 				'An adjustment applied to font weight when in dark mode to compensate for the irradiation illusion. This is typically a negative value to reduce font weight in dark mode, but it can be positive if your theme has very light text and you want to increase weight in dark mode.',
+		},
+		boldness: {
+			purpose: 'scalar',
+			description:
+				'An overall scaling factor for how heavy font weight tokens are.',
+		},
+	},
+	easing: {
+		bounciness: {
+			purpose: 'scalar',
+			description:
+				'Controls the bounciness of easing functions. Higher values result in more overshoot and bounce.',
+		},
+	},
+	duration: {
+		slowness: {
+			purpose: 'scalar',
+			description:
+				'Controls the overall slowness of durations. Higher values result in longer durations.',
+		},
+		base: {
+			purpose: 'duration',
+			description:
+				'The base duration used to derive all other durations. This can be thought of as the "medium" duration, and other durations are calculated as multiples or fractions of this base.',
+		},
+		min: {
+			purpose: 'duration',
+			description: 'The minimum duration to use in the duration scale.',
+		},
+		max: {
+			purpose: 'duration',
+			description: 'The maximum duration to use in the duration scale.',
 		},
 	},
 });

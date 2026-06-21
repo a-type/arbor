@@ -34,7 +34,7 @@ Arbor will generate light and dark color ranges for you from this hue, and it wi
 
 Now that we have our preset set up, it's time to get to the good part: modes.
 
-Modes are the expressive layer of Arbor systems. They're how you map primitive tokens to most parts of your UI.
+Modes are the expressive layer of Arbor systems. They're how you map rules to most parts of your UI.
 
 Modes are personal. You'll probably want to come up with your own schema. But we can begin with Arbor's built-in preset.
 

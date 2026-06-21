@@ -1,15 +1,10 @@
 import { css, CssInterpolation } from '@arbor-css/css-eval';
 import { ArborPrefixConfig } from '@arbor-css/globals';
-import { ModeValues } from '@arbor-css/modes';
 import { definePreset } from '@arbor-css/preset';
 import { createColorMixins } from '../basicPreset/mixins.js';
 import { presetBasic } from '../basicPreset/preset.js';
+import { createArborModeSchema } from './modeSchema/modeSchema.js';
 import {
-	ArborModeSchema,
-	createArborModeSchema,
-} from './modeSchema/modeSchema.js';
-import {
-	compileColors,
 	CompileColorsOptions,
 	DefaultRangeName,
 } from './modeValues/color/index.js';
@@ -27,13 +22,11 @@ import {
 	createRadiusSemanticValues,
 	createShadowSemanticValues,
 	createSpacingSemanticValues,
+	createTypographySemanticValues,
 } from './modeValues/semantics.js';
-import { compileShadows, ShadowConfig } from './modeValues/shadow/index.js';
-import { compileSpacing, SpacingConfig } from './modeValues/spacing/index.js';
-import {
-	compileTypography,
-	TypographyConfig,
-} from './modeValues/typography/index.js';
+import { ShadowConfig } from './modeValues/shadow/index.js';
+import { SpacingConfig } from './modeValues/spacing/index.js';
+import { TypographyConfig } from './modeValues/typography/index.js';
 
 export interface ArborPresetConfig<
 	TRanges extends string,
@@ -53,6 +46,12 @@ export interface ArborPresetConfig<
 		globalSaturation?: CssInterpolation;
 	};
 	typography?: TypographyConfig & {
+		/**
+		 * A global tuning value that influences the overall size of all typography tokens.
+		 * The default is 1, and values from 0.5 to 2 are recommended.
+		 * Any valid CSS number value can be used here.
+		 */
+		size?: CssInterpolation;
 		/**
 		 * Specify a global font size. This is not recommended;
 		 * the default "1em" respects the end user's font size
@@ -79,6 +78,11 @@ export interface ArborPresetConfig<
 		minFontSize?: CssInterpolation;
 		minLineHeight?: CssInterpolation;
 		minWeight?: CssInterpolation;
+		/**
+		 * An overall scaling factor for how heavy font weight tokens are. Default is 0.5.
+		 * Any valid CSS number value can be used here.
+		 */
+		boldness?: CssInterpolation;
 	};
 	spacing?: SpacingConfig & {
 		/**
@@ -137,8 +141,25 @@ export interface ArborPresetConfig<
 		 */
 		roundness?: CssInterpolation;
 	};
-	easing?: ModeValues<ArborModeSchema['easing']>;
-	duration?: ModeValues<ArborModeSchema['duration']>;
+	easing?: {
+		/**
+		 * A global tuning value that influences the overall "bounciness" of all easing tokens.
+		 * Higher values create bouncier easings. The default is 1, and values from 0.5 to 2 are recommended.
+		 * Any valid CSS number value can be used here.
+		 */
+		bounciness?: CssInterpolation;
+	};
+	duration?: {
+		/**
+		 * A global tuning value that influences the overall "slowness" of all duration tokens.
+		 * Higher values create slower durations. The default is 1, and values from 0.5 to 2 are recommended.
+		 * Any valid CSS number value can be used here.
+		 */
+		slowness?: CssInterpolation;
+		base?: CssInterpolation;
+		min?: CssInterpolation;
+		max?: CssInterpolation;
+	};
 	/**
 	 * Turns off the automatic bundled @mode-light, @mode-dark, and @mode-inverted.
 	 */
@@ -146,7 +167,7 @@ export interface ArborPresetConfig<
 }
 
 /**
- * Adds opinionated primitive tokens and a full-featured mode
+ * Adds opinionated tokens and a full-featured mode
  * schema on top of the basic preset's utility mixins and functions.
  */
 export const presetArbor = <
@@ -182,8 +203,8 @@ export const presetArbor = <
 						scaleExponentStep: config.spacing?.scaleExponentStep ?? 1,
 					},
 					typography: {
+						size: config.typography?.size ?? 1,
 						baseFontSize: config.typography?.defaultFontSize ?? '1em',
-						fontSizeBase: config.typography?.fontSizeScaleBase ?? 1.125,
 						fontSizeExponentStep:
 							config.typography?.fontSizeScaleExponentStep ?? 1,
 						baseLetterSpacing: config.typography?.baseLetterSpacing ?? 0,
@@ -192,67 +213,38 @@ export const presetArbor = <
 						baseWeight: config.typography?.baseWeight ?? 400,
 						darkModeWeightAdjustment:
 							config.typography?.darkModeWeightAdjustment ?? 0,
-						fontSizeScaleBase: config.typography?.fontSizeScaleBase ?? 1.125,
+						fontSizeScaleBase: config.typography?.fontSizeScaleBase ?? 1.25,
 						fontSizeScaleExponentStep:
 							config.typography?.fontSizeScaleExponentStep ?? 1,
 						letterSpacingStep: config.typography?.letterSpacingStep ?? 0,
 						minLetterSpacing: config.typography?.minLetterSpacing ?? 0,
 						maxLetterSpacing: config.typography?.maxLetterSpacing ?? 0,
-						lineHeightStep: config.typography?.lineHeightStep ?? 0.5,
-						maxFontSize: config.typography?.maxFontSize ?? '10rem',
-						maxLineHeight: config.typography?.maxLineHeight ?? 2,
+						maxFontSize: config.typography?.maxFontSize ?? '8rem',
+						minLineHeight: config.typography?.minLineHeight ?? 0.85,
+						maxLineHeight: config.typography?.maxLineHeight ?? 1.8,
+						lineHeightStep: config.typography?.lineHeightStep ?? 0.75,
 						maxWeight: config.typography?.maxWeight ?? 900,
 						minFontSize: config.typography?.minFontSize ?? '0.75rem',
-						minLineHeight: config.typography?.minLineHeight ?? 0.75,
 						minWeight: config.typography?.minWeight ?? 100,
+						boldness: config.typography?.boldness ?? 0.5,
+					},
+					easing: {
+						bounciness: config.easing?.bounciness ?? 1,
+					},
+					duration: {
+						slowness: config.duration?.slowness ?? 1,
+						base: config.duration?.base ?? '200ms',
+						min: config.duration?.min ?? '100ms',
+						max: config.duration?.max ?? '500ms',
 					},
 				},
 
-				/** PRIMITIVES */
-				primitive: {
-					// NOTE: had to bypass typings for color tokens... the user-controlled
-					// color names seem to really mess with this.
-					color: compileColors(
-						{
-							ranges: config.color.ranges,
-							schemes: config.color.schemes,
-						},
-						$.mode.global,
-					) as any,
-					spacing: compileSpacing(config.spacing || {}, $.mode.global),
-					typography: compileTypography(
-						config.typography || {},
-						$.mode.global,
-						$.mode.global,
-					),
-					shadow: compileShadows(config.shadow || {}, $.mode.global),
-
-					easing:
-						config.easing ||
-						({
-							$root: $.mode.easing.medium,
-							tight: `cubic-bezier(0.4, 0, 0.2, 1)`,
-							medium: `cubic-bezier(0.4, 0, 0.2, 1)`,
-							loose: `cubic-bezier(0.4, 0, 0.2, 1)`,
-						} as const),
-					duration:
-						config.duration ||
-						({
-							$root: $.mode.duration.medium,
-							short: `100ms`,
-							medium: `250ms`,
-							long: `500ms`,
-						} as const),
-				},
-
 				/** SEMANTICS */
-				color: createColorSemanticValues(
-					$,
-					config.color.mainColor as any,
-				) as any,
+				color: createColorSemanticValues($, config.color) as any,
 				spacing: createSpacingSemanticValues($, {
 					roundToPixel: config.spacing?.roundToPixel ?? false,
 				}),
+				typography: createTypographySemanticValues($),
 				shadow: createShadowSemanticValues($),
 				radius: createRadiusSemanticValues($),
 				lineWidth: createLineWidthSemanticValues($),

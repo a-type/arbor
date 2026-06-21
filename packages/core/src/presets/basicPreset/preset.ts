@@ -47,7 +47,7 @@ export type BasicPresetModeSchema = typeof modeSchema;
 
 /**
  * This basic preset includes utility mixins and functions,
- * but no primitive tokens or mode schema.
+ * but no mode schema.
  */
 export const presetBasic = definePreset({
 	name: 'arbor-base',
@@ -155,6 +155,42 @@ export const presetBasic = definePreset({
 			`,
 		});
 
+		const between = create('between', {
+			description:
+				'Returns a value that is between two values based on a progress parameter. Progress should be between 0 and 1.',
+			parameters: [
+				{
+					name: '--from',
+					syntax: '<length> | <length-percentage>',
+				},
+				{
+					name: '--to',
+					syntax: '<length> | <length-percentage>',
+				},
+				{ name: '--progress', fallback: '0.5' },
+			] as const,
+			definition: (css, from, to, progress) =>
+				css`calc(${from} + (${to} - ${from}) * ${progress})`,
+		});
+
+		const colorBetween = create('color-between', {
+			description:
+				'Returns a color that is between two colors based on a progress parameter. Progress should be between 0 and 1.',
+			parameters: [
+				{
+					name: '--from',
+					syntax: '<color>',
+				},
+				{
+					name: '--to',
+					syntax: '<color>',
+				},
+				{ name: '--progress', fallback: '0.5' },
+			] as const,
+			definition: (css, from, to, progress) =>
+				css`color-mix(in oklch, ${from} ${css`calc(${progress} * 100%)`}, ${to} ${css`calc((1 - ${progress}) * 100%)`})`,
+		});
+
 		return {
 			colorLighter,
 			colorHeavier,
@@ -164,6 +200,8 @@ export const presetBasic = definePreset({
 			ring,
 			colorContrast,
 			literal,
+			between,
+			colorBetween,
 		};
 	},
 });

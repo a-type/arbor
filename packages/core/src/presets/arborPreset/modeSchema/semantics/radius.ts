@@ -9,5 +9,4 @@ export const radiusSemantics = createModeSchema({
 	sm: 'border-radius',
 	md: 'border-radius',
 	lg: 'border-radius',
-	xl: 'border-radius',
 });

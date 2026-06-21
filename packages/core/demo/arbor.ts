@@ -14,51 +14,55 @@ export const arbor = presetArbor({
 			},
 		},
 		mainColor: 'primary',
+		globalSaturation: 0.5,
 	},
 	typography: {
 		weightStep: -100,
 		maxWeight: 600,
-		maxSize: '12rem',
-		minSize: '0.5rem',
-		sizeExponentStep: 2,
+		defaultFontSize: '16px',
+		maxFontSize: '12rem',
+		minFontSize: '0.5rem',
+		fontSizeScaleExponentStep: 2,
 	},
-	globals: {
-		saturation: 0.5,
-		baseFontSize: '16px',
+	shape: {
 		roundness: 0.5,
-		baseSpacingSize: '8px',
+	},
+	spacing: {
+		baseSize: '8px',
 	},
 });
 
 arbor.bundleMode('alt', {
 	color: {
-		main: arbor.$.mode.primitive.color.alt,
-		neutral: arbor.$.mode.primitive.color.alt.$neutral,
+		main: arbor.$.mode.color.palette.alt,
+		neutral: arbor.$.mode.color.palette.alt.$neutral,
 	},
 	control: {
-		border: arbor.$.mode.primitive.color.alt.heavy.var,
-		bg: arbor.$.mode.primitive.color.alt.wash.var,
+		border: arbor.$.mode.color.palette.alt.heavy.var,
+		bg: arbor.$.mode.color.palette.alt.wash.var,
 	},
 });
 
 arbor.bundleMode('greenButtons', {
 	action: {
 		primary: {
-			bg: arbor.$.mode.primitive.color.green.mid.var,
-			fg: arbor.$.mode.primitive.color.green.ink.var,
-			border: arbor.$.mode.primitive.color.green.heavy.var,
+			bg: arbor.$.mode.color.palette.green.mid.var,
+			fg: arbor.$.mode.color.palette.green.ink.var,
+			border: arbor.$.mode.color.palette.green.heavy.var,
 		},
 		secondary: {
-			bg: arbor.$.mode.primitive.color.green.light.var,
-			fg: arbor.$.mode.primitive.color.green.heavy.var,
-			border: arbor.$.mode.primitive.color.green.heavy.var,
+			bg: arbor.$.mode.color.palette.green.light.var,
+			fg: arbor.$.mode.color.palette.green.heavy.var,
+			border: arbor.$.mode.color.palette.green.heavy.var,
 		},
 	},
 });
 
 arbor.bundleMode('dense', {
 	global: {
-		density: 2,
+		spacing: {
+			density: 2,
+		},
 	},
 });
 

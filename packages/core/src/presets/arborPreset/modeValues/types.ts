@@ -10,5 +10,3 @@ export type Tokens<TColorName extends string> = PresetTokens<
 export type Values<TColorName extends string> = ModeValues<
 	ArborModeSchema<TColorName> & BasicPresetModeSchema
 >;
-
-type Test = Values<'default'>['primitive']['color']['default'];

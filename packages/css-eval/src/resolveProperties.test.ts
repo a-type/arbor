@@ -137,15 +137,15 @@ it('handles var(..., calc(...)) wrapped in other params', () => {
 });
 
 it('handles multiple complex token resolutions', () => {
-	const primitiveSpacingSm = createToken('m-primitive-spacing-sm');
+	const spacingSm = createToken('m-spacing-sm');
 	const globalDensity = createToken('m-global-density');
 	const baseSpacingSize = createToken('m-global-baseSpacingSize');
 	const baseFontSize = createToken('m-global-baseFontSize');
 
 	expect(
-		resolveProperties(css`calc(${primitiveSpacingSm} / ${globalDensity})`, {
+		resolveProperties(css`calc(${spacingSm} / ${globalDensity})`, {
 			[globalDensity.name]: css`calc(1 + 1)`,
-			[primitiveSpacingSm.name]: css`calc((${baseSpacingSize} / ${baseFontSize}) * 1rem * pow(2, 1 * -1))`,
+			[spacingSm.name]: css`calc((${baseSpacingSize} / ${baseFontSize}) * 1rem * pow(2, 1 * -1))`,
 			[baseSpacingSize.name]: '8px',
 			[baseFontSize.name]: '16px',
 		}),

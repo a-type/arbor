@@ -128,11 +128,11 @@ function printable(value: unknown): string {
 
 function formatParam(param: FunctionParam): string {
 	if (isToken(param)) {
-		const type = printable(param.type);
-		return type ? `${param.name}<${type}>` : param.name;
+		const type = printable(param.syntax);
+		return type ? `${param.name} ${type}` : param.name;
 	}
 	if (isFunctionParamWithMeta(param)) {
-		const typeSuffix = param.type ? `<${param.type}>` : '';
+		const typeSuffix = param.syntax ? ` ${param.syntax}` : '';
 		const fallbackSuffix = param.fallback ? `=${param.fallback}` : '';
 		return `${param.name}${typeSuffix}${fallbackSuffix}`;
 	}
@@ -147,13 +147,13 @@ function formatParams(params: readonly FunctionParam[]): string {
 }
 
 export function formatTokenList(records: TokenRecord[]): string {
-	const header = 'name\tlevel\ttype\tpurpose\tgroup\tdescription';
+	const header = 'name\tlevel\tsyntax\tpurpose\tgroup\tdescription';
 	const rows = records.map((record) => {
 		const { token } = record;
 		return [
 			token.name,
 			record.level,
-			printable(token.type),
+			printable(token.syntax),
 			printable(token.purpose),
 			printable(token.group),
 			printable(token.description),
@@ -196,7 +196,7 @@ export function formatTokenInfo(record: TokenRecord): string {
 	const lines = [
 		`name: ${token.name}`,
 		`level: ${record.level}`,
-		`type: ${printable(token.type)}`,
+		`syntax: ${printable(token.syntax)}`,
 		`purpose: ${printable(token.purpose)}`,
 		`group: ${printable(token.group) || '(none)'}`,
 		`description: ${printable(token.description) || '(none)'}`,

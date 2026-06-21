@@ -60,8 +60,8 @@ it('is extensible', () => {
 		}),
 	});
 
-	expect(preset.$.mode.primitive.color.red.mid.name).toEqual(
-		base.$.mode.primitive.color.red.mid.name,
+	expect(preset.$.mode.color.palette.red.mid.name).toEqual(
+		base.$.mode.color.palette.red.mid.name,
 	);
 	expect(preset.baseMode.test).toBe('red');
 	expect(preset.baseMode.action?.roundness).toBe(0.5);

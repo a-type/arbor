@@ -91,25 +91,7 @@ export function compileTypography<
 		{} as Record<TLevels, TypographyLevel>,
 	) as CompiledTypography<TLevels>;
 
-	const weights = [
-		'thin',
-		'light',
-		'normal',
-		'semiBold',
-		'bold',
-		'black',
-	].reduce(
-		(acc, weightName, i) => {
-			const stepsFromNormal = i - 2; // normal is the 3rd item in the list (index 2)
-			acc[weightName as keyof CompiledTypography['weight']] =
-				css`calc(clamp(${tokens.typography.minWeight ?? 100}, ${tokens.typography.baseWeight ?? 400} + ${tokens.typography.weightStep ?? 100} * ${stepsFromNormal} - (${systemTokens.whenDark} * ${tokens.typography.darkModeWeightAdjustment ?? 0}), ${tokens.typography.maxWeight ?? 900}))`;
-			return acc;
-		},
-		{} as Record<keyof CompiledTypography['weight'], string | Css>,
-	);
-
 	return {
 		...levels,
-		weight: weights,
 	};
 }

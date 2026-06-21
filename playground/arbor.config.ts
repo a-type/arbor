@@ -40,8 +40,8 @@ const preset = definePreset({
 			hue: 0,
 			saturation: 0.5,
 		},
-		primitive: {
-			color: {
+		color: {
+			palette: {
 				user: compileSingleColor(
 					{
 						hue: $.mode.user.hue,
@@ -57,7 +57,7 @@ const preset = definePreset({
 
 preset.bundleMode('success', {
 	color: {
-		main: preset.$.mode.primitive.color.success,
+		main: preset.$.mode.color.palette.success,
 	},
 });
 
@@ -73,7 +73,7 @@ preset.bundleMode('user', {
 		saturation: 'var(--user-saturation, 0.5)',
 	},
 	color: {
-		main: preset.$.mode.primitive.color.user,
+		main: preset.$.mode.color.palette.user,
 	},
 });
 

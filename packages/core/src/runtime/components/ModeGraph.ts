@@ -79,7 +79,7 @@ class ModeGraph extends LitElement {
 			.mode-name {
 				font-weight: var(
 					--modeGraph-mode-name-font-weight,
-					var(--m-primitive-typography-weight-bold, bold)
+					var(--m-typography-weight-bold, bold)
 				);
 				font-family: monospace;
 			}
@@ -199,7 +199,7 @@ class ModeGraphToken extends LitElement {
 			.name {
 				font-weight: var(
 					--modeGraph-token-name-font-weight,
-					var(--m-primitive-typography-weight-bold, bold)
+					var(--m-typography-weight-bold, bold)
 				);
 			}
 
@@ -237,7 +237,7 @@ class ModeGraphToken extends LitElement {
 			.computed {
 				font-weight: var(
 					--modeGraph-token-computed-font-weight,
-					var(--m-primitive-typography-weight-bold, bold)
+					var(--m-typography-weight-bold, bold)
 				);
 			}
 
@@ -291,7 +291,7 @@ class ModeGraphToken extends LitElement {
 				);
 				font-weight: var(
 					--modeGraph-token-dependent-reference-font-weight,
-					var(--m-primitive-typography-weight-bold, bold)
+					var(--m-typography-weight-bold, bold)
 				);
 			}
 		`;

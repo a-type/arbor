@@ -1,15 +1,17 @@
 import { css, Css, CssInterpolation } from '@arbor-css/css-eval';
 import {
 	createTokenFactory,
+	CssPropertySyntax,
 	isToken,
-	PropertyTypeName,
 	Token,
 } from '@arbor-css/tokens';
 
 export type CssProperty = `--${string}`;
 export type FunctionParamWithMeta = {
 	name: CssProperty;
-	type?: PropertyTypeName | '*';
+	/** @deprecated Use `syntax` instead */
+	type?: CssPropertySyntax;
+	syntax?: CssPropertySyntax;
 	fallback?: string;
 	description?: string;
 };
@@ -64,13 +66,13 @@ export function paramsAsString<TParams extends FunctionParams>(
 		.map((p) => {
 			const name = nonce ? paramAsToken(p, nonce).name : getParamName(p);
 			if (isFunctionParamWithMeta(p)) {
-				const type = p.type ?? '*';
-				const typeAnnotation = type === '*' ? '' : ` <${type}>`;
+				const type = p.syntax ?? p.type ?? '*';
+				const typeAnnotation = type === '*' ? '' : ` ${type}`;
 				return `${name}${typeAnnotation}`;
 			}
 			if (isToken(p)) {
-				const type = p.type ?? '*';
-				const typeAnnotation = type === '*' ? '' : ` <${type}>`;
+				const type = p.syntax ?? '*';
+				const typeAnnotation = type === '*' ? '' : ` ${type}`;
 				return `${name}${typeAnnotation}` as CssInterpolation;
 			}
 			return name;
@@ -98,7 +100,7 @@ export function paramAsToken(param: FunctionParam, nonce: string): Token {
 	}
 	if (isFunctionParamWithMeta(param)) {
 		return createParamToken(param.name.replace('--', ''), {
-			type: param.type,
+			syntax: param.syntax ?? param.type,
 			description: param.description,
 		});
 	}

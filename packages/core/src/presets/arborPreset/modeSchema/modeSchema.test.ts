@@ -6,6 +6,6 @@ it('adds input colors to schema color typings and shape', () => {
 		colorNames: ['red', 'blue', 'green'],
 	});
 
-	expect(schema.primitive.color.red.mid.purpose).toBe('color');
-	expect(schema.primitive.color.red.$neutral.mid.purpose).toBe('color');
+	expect(schema.color.palette.red.mid.purpose).toBe('color');
+	expect(schema.color.palette.red.$neutral.mid.purpose).toBe('color');
 });

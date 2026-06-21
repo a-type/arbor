@@ -11,8 +11,8 @@ export function createActionIntentValues<TColorNames extends string>(
 			$root: css`
 				${$.mode.action.padding.block} ${$.mode.action.padding.inline}
 			`,
-			block: css`calc(${$.mode.primitive.spacing.md} / ${$.mode.global.spacing.density})`,
-			inline: css`calc((${$.mode.primitive.spacing.lg} + ${$.mode.global.shape.roundness} * ${$.mode.primitive.spacing.sm}) / ${$.mode.global.spacing.density})`,
+			block: css`calc(${$.mode.spacing.md} / ${$.mode.global.spacing.density})`,
+			inline: css`calc((${$.mode.spacing.lg} + ${$.mode.global.shape.roundness} * ${$.mode.spacing.sm}) / ${$.mode.global.spacing.density})`,
 		},
 		roundness: 1,
 		radius: css`calc(${$.mode.radius.md} * ${$.mode.action.roundness} * ${$.mode.global.shape.roundness})`,
@@ -153,8 +153,8 @@ export function createControlIntentValues<TColorNames extends string>(
 			$root: css`
 				${$.mode.control.padding.block} ${$.mode.control.padding.inline}
 			`,
-			block: css`calc(${$.mode.primitive.spacing.md} / ${$.mode.global.spacing.density})`,
-			inline: css`calc((${$.mode.primitive.spacing.md} + ${$.mode.global.shape.roundness} * ${$.mode.primitive.spacing.sm}) / ${$.mode.global.spacing.density})`,
+			block: css`calc(${$.mode.spacing.md} / ${$.mode.global.spacing.density})`,
+			inline: css`calc((${$.mode.spacing.md} + ${$.mode.global.shape.roundness} * ${$.mode.spacing.sm}) / ${$.mode.global.spacing.density})`,
 		},
 		roundness: 1,
 		radius: css`calc(${$.mode.radius.md} * ${$.mode.control.roundness} * ${$.mode.global.shape.roundness})`,
@@ -183,18 +183,24 @@ export function createTextIntentValues<TColorNames extends string>(
 ) {
 	return {
 		primary: {
-			...$.mode.primitive.typography['xl'],
-			weight: $.mode.primitive.typography.weight.bold,
+			size: $.mode.typography.size.lg,
+			lineHeight: $.mode.typography.lineHeight.tight,
+			letterSpacing: $.mode.typography.letterSpacing.normal,
+			weight: $.mode.typography.weight.bold,
 			font: 'inherit',
 		},
 		secondary: {
-			...$.mode.primitive.typography.md,
-			weight: $.mode.primitive.typography.weight.normal,
+			size: $.mode.typography.size.md,
+			lineHeight: $.mode.typography.lineHeight.normal,
+			letterSpacing: $.mode.typography.letterSpacing.normal,
+			weight: $.mode.typography.weight.normal,
 			font: 'inherit',
 		},
 		ambient: {
-			...$.mode.primitive.typography.sm,
-			weight: $.mode.primitive.typography.weight.normal,
+			size: $.mode.typography.size.sm,
+			lineHeight: $.mode.typography.lineHeight.loose,
+			letterSpacing: $.mode.typography.letterSpacing.normal,
+			weight: $.mode.typography.weight.normal,
 			font: 'inherit',
 		},
 	} satisfies ModeValues<ArborModeSchema['text']>;
