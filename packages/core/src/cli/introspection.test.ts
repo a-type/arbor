@@ -91,7 +91,7 @@ it('lists token records and formats AI-friendly token table output', () => {
 	).toBe(true);
 
 	const output = formatTokenList(records);
-	expect(output).toContain('name\tlevel\ttype\tpurpose\tgroup\tdescription');
+	expect(output).toContain('name\tlevel\tsyntax\tpurpose\tgroup\tdescription');
 	expect(output).toContain(modeSpacingTokenName);
 	expect(output).toContain('Default medium spacing for layout rhythm.');
 });

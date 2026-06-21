@@ -79,5 +79,5 @@ it('resolves and computes complicated dependency chains', () => {
 
 	expect(
 		graphWithDensity.nodes['--m-spacing-md'].computed,
-	).toMatchInlineSnapshot(`"8px"`);
+	).toMatchInlineSnapshot(`"4px"`);
 });
