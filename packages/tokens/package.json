@@ -1,6 +1,6 @@
 {
 	"name": "@arbor-css/tokens",
-	"version": "0.0.119",
+	"version": "0.0.120",
 	"type": "module",
 	"publishConfig": {
 		"access": "public"
