@@ -1,6 +1,6 @@
 {
 	"name": "@arbor-css/functions",
-	"version": "0.0.125",
+	"version": "0.0.126",
 	"type": "module",
 	"publishConfig": {
 		"access": "public"
