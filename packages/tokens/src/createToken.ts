@@ -173,7 +173,7 @@ export function getTypeFromPurpose(purpose: TokenPurpose): string {
 		case 'font-family':
 			return '<string>';
 		case 'shadow':
-			return '<string>';
+			return '*';
 		case 'duration':
 			return '<time>';
 		case 'easing-function':
@@ -217,7 +217,7 @@ export function createTokenFactory({ tokenPrefix }: { tokenPrefix: string }) {
 		}: TokenOptions = {},
 	) {
 		const normalizedType = type ?? getTypeFromPurpose(purpose);
-		const initial = userInitial ?? initialValueForType(normalizedType);
+		const initial = userInitial ?? initialValueForType(normalizedType, purpose);
 		const taggedName = tag ? `${tag}-${name}` : name;
 		const resolvedName = `${tokenPrefix}${normalizeName(taggedName)}`;
 		return {
@@ -324,12 +324,21 @@ export function tokenSchemaToList(schema: TokenSchema): Token[] {
 	return result;
 }
 
-function initialValueForType(type: CssPropertySyntax): string | number {
+function initialValueForType(
+	type: CssPropertySyntax,
+	purpose: TokenPurpose,
+): string | number {
 	if (type === '*' || type === '<string>') {
 		return '';
 	}
 	if (type === '<number>') {
 		return 0;
+	}
+	if (purpose === 'shadow') {
+		return '0 0 0 0 transparent';
+	}
+	if (purpose === 'border') {
+		return 'none';
 	}
 	return 'initial';
 }
