@@ -17,6 +17,12 @@ export function generateStylesheet(
 ): string {
 	const { modes } = getInternals(config);
 	const allProps = flattenTokenSchema(config.$);
+	// this is needed while mixins are preprocessed out as their parameter values are captured
+	// as CSS properties during transpilation. these need inherit=false, which the logic to
+	// create them already embeds...
+	allProps.push(
+		...Object.values(config.mixins).flatMap((mixin) => mixin.parameterTokens),
+	);
 
 	return `/* Auto-generated CSS - do not edit directly */
 	${cascadeLayerName ? `@layer ${cascadeLayerName} {` : ''}
