@@ -40,6 +40,7 @@ export function createColorMixins(
 			applied: {
 				purpose: 'color',
 				description: `The resolved source color for ${property}.`,
+				inherits: false,
 			},
 			ref: {
 				purpose: 'color',
@@ -157,11 +158,13 @@ export function createPresetMixins(
 		purpose: 'shadow',
 		description:
 			'The main stacked shadow layer used by the shadow mixin. Assign this property to apply a shadow.',
+		inherits: false,
 	});
 	const ringValueToken = context.createMixinToken('ring-value', {
 		purpose: 'shadow',
 		description:
 			'A "ring" shadow, often used as a focus indicator. Assign this property to apply a ring. See the "ring" function.',
+		inherits: false,
 	});
 
 	const shadow = createMixinValue('shadow', {

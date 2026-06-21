@@ -230,6 +230,7 @@ export function createTokenFactory({ tokenPrefix }: { tokenPrefix: string }) {
 			contributedBy,
 			deprecated,
 			fallback,
+			inherits,
 			var: `var(${resolvedName}${fallback ? `, ${fallback}` : ''})`,
 			varFallback: (fallbackOverride?: string | number) =>
 				`var(${resolvedName}, ${fallbackOverride ?? fallback ?? 'initial'})`,

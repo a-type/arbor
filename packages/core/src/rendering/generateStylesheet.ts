@@ -16,7 +16,7 @@ export function generateStylesheet(
 	} = {},
 ): string {
 	const { modes } = getInternals(config);
-	const allModeProps = flattenTokenSchema(config.$.mode);
+	const allProps = flattenTokenSchema(config.$);
 
 	return `/* Auto-generated CSS - do not edit directly */
 	${cascadeLayerName ? `@layer ${cascadeLayerName} {` : ''}
@@ -25,17 +25,12 @@ ${[config.baseMode, ...Object.values(modes)]
 		return modeToCss(modeValue, config, { simplifier, skipBaking });
 	})
 	.join('\n\n')}
-/* Function definitions */
-${Object.values(config.functions)
-	.map((fn) => fn.definition)
-	.filter(Boolean)
-	.join('\n\n')}
-/* Mode property definitions, if relevant */
-${allModeProps
-	.map((PROP) => PROP.definition)
-	.filter(Boolean)
-	.join('\n\n')}
-${cascadeLayerName ? `}` : ''}
+	${cascadeLayerName ? `}` : ''}
+	/* Mode property definitions, if relevant */
+	${allProps
+		.map((PROP) => PROP.definition)
+		.filter(Boolean)
+		.join('\n\n')}
 `
 		.trim()
 		.replace(/\n+$/, '\n');
