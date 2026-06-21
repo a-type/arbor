@@ -102,6 +102,7 @@ export function paramAsToken(param: FunctionParam, nonce: string): Token {
 		return createParamToken(param.name.replace('--', ''), {
 			syntax: param.syntax ?? param.type,
 			description: param.description,
+			inherits: false,
 		});
 	}
 	return createParamToken(param.replace('--', ''), {});
