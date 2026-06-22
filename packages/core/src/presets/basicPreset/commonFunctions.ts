@@ -58,7 +58,7 @@ export function saturateColorAlteration(
 	sourceColor: CssInterpolation,
 	step: CssInterpolation,
 ) {
-	return css`oklch(from ${sourceColor} l calc(c * ${lightDarkAlteration(tokens, { light: 0.05, dark: 0.05, step })}) h)`;
+	return css`oklch(from ${sourceColor} l calc(c * ${lightDarkAlteration(tokens, { light: 0.5, dark: 0.5, step })}) h)`;
 }
 
 export function desaturateColorAlteration(
@@ -66,7 +66,7 @@ export function desaturateColorAlteration(
 	sourceColor: CssInterpolation,
 	step: CssInterpolation,
 ) {
-	return css`oklch(from ${sourceColor} l calc(c * ${lightDarkAlteration(tokens, { light: -0.05, dark: -0.05, step })}) h)`;
+	return css`oklch(from ${sourceColor} l calc(c * ${lightDarkAlteration(tokens, { light: -0.5, dark: -0.5, step })}) h)`;
 }
 
 export function fadeColorAlteration(

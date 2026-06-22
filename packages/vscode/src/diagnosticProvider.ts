@@ -1,4 +1,4 @@
-import { isFunction, isMixin } from '@arbor-css/core';
+import { getInternals, isFunction, isMixin } from '@arbor-css/core';
 import * as vscode from 'vscode';
 import { findArbitraryValueWarnings } from './arbitraryValueDiagnostics.js';
 import { createTokenRegexes } from './regex.js';
@@ -65,7 +65,7 @@ function advanceCommentState(line: string, inBlockComment: boolean): boolean {
 }
 
 // Pure CSS-family languages handled directly.
-const supportedLanguages = [
+const styleDiagnosticLanguages = [
 	'css',
 	'scss',
 	'less',
@@ -74,6 +74,18 @@ const supportedLanguages = [
 	'svelte',
 	'vue',
 	'html',
+];
+// Languages to validate @mode-xxx class names
+const classDiagnosticLanguages = [
+	'html',
+	'astro',
+	'svelte',
+	'vue',
+	'javascript',
+	'typescript',
+	'javascriptreact',
+	'typescriptreact',
+	'php',
 ];
 
 /**
@@ -122,12 +134,27 @@ export class ArborDiagnosticProvider {
 	}
 
 	private async validate(document: vscode.TextDocument): Promise<void> {
-		if (!supportedLanguages.includes(document.languageId)) return;
+		const diagnosticsForDoc: vscode.Diagnostic[] = [];
+		if (styleDiagnosticLanguages.includes(document.languageId)) {
+			diagnosticsForDoc.push(...(await this.validateStyles(document)));
+		}
+		if (classDiagnosticLanguages.includes(document.languageId)) {
+			diagnosticsForDoc.push(...(await this.validateClasses(document)));
+		}
 
+		if (!diagnosticsForDoc.length) {
+			this.diagnostics.delete(document.uri);
+		} else {
+			this.diagnostics.set(document.uri, diagnosticsForDoc);
+		}
+	}
+
+	private async validateStyles(
+		document: vscode.TextDocument,
+	): Promise<vscode.Diagnostic[]> {
 		const state = await this.tokenProvider.getStateForDocument(document);
 		if (!state) {
-			this.diagnostics.delete(document.uri);
-			return;
+			return [];
 		}
 
 		const tokenRegexes = createTokenRegexes(state.tokenPrefixes);
@@ -225,6 +252,42 @@ export class ArborDiagnosticProvider {
 			inBlockComment = advanceCommentState(line, inBlockComment);
 		}
 
-		this.diagnostics.set(document.uri, fileDiagnostics);
+		return fileDiagnostics;
+	}
+
+	private async validateClasses(
+		document: vscode.TextDocument,
+	): Promise<vscode.Diagnostic[]> {
+		const state = await this.tokenProvider.getStateForDocument(document);
+		if (!state) {
+			return [];
+		}
+
+		// validate every "@mode-___" string matches a mode defined in the preset
+		const modes = ['base', ...Object.keys(getInternals(state.preset).modes)];
+		const modeRegex = /@mode-([a-zA-Z0-9_-]+)/g;
+		const fileDiagnostics: vscode.Diagnostic[] = [];
+		for (let lineIndex = 0; lineIndex < document.lineCount; lineIndex++) {
+			const line = document.lineAt(lineIndex).text;
+			for (const match of line.matchAll(modeRegex)) {
+				if (match.index === undefined) continue;
+				const modeName = match[1];
+				if (!modes.includes(modeName)) {
+					const start = new vscode.Position(lineIndex, match.index);
+					const end = new vscode.Position(
+						lineIndex,
+						match.index + match[0].length,
+					);
+					const diagnostic = new vscode.Diagnostic(
+						new vscode.Range(start, end),
+						`Unknown Arbor mode: ${modeName}`,
+						vscode.DiagnosticSeverity.Error,
+					);
+					diagnostic.source = 'arbor-css';
+					fileDiagnostics.push(diagnostic);
+				}
+			}
+		}
+		return fileDiagnostics;
 	}
 }
