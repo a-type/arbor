@@ -10,7 +10,7 @@ it('defines a simple preset', () => {
 		},
 		modeSchema: createModeSchema({
 			color: 'color',
-			spacing: {
+			space: {
 				$root: 'size',
 				sm: 'size',
 				lg: 'size',
@@ -18,7 +18,7 @@ it('defines a simple preset', () => {
 		}),
 		baseMode: () => ({
 			color: 'red',
-			spacing: {
+			space: {
 				$root: '16px',
 				sm: '8px',
 				lg: '32px',
