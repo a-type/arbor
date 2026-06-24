@@ -15,7 +15,7 @@ it('is extensible', () => {
 			fadeInUp: (css, $) => css`
 				from {
 					opacity: 0;
-					transform: translateY(${$.mode.spacing.sm});
+					transform: translateY(${$.mode.space.sm});
 				}
 				to {
 					opacity: 1;

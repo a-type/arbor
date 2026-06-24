@@ -9,7 +9,7 @@ class SpacingScale extends LitElement {
 			:host {
 				display: flex;
 				flex-direction: column;
-				gap: var(--m-spacing-lg);
+				gap: var(--m-space-lg);
 				box-sizing: border-box;
 				width: 100%;
 			}
@@ -32,7 +32,7 @@ class SpacingScale extends LitElement {
 	preset = getPreset();
 
 	render() {
-		const steps = Object.values(this.preset.$.mode.spacing)
+		const steps = Object.values(this.preset.$.mode.space)
 			.filter(isToken)
 			.map((token: any) => ({
 				name: token.name,

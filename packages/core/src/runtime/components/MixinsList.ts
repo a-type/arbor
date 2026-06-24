@@ -16,19 +16,19 @@ class MixinsList extends LitElement {
 			h2 {
 				font-size: var(
 					--functionsList-title-size,
-					var(--m-text-primary-size, 1.5rem)
+					var(--m-prose-primary-size, 1.5rem)
 				);
 				font-weight: var(
 					--functionsList-title-weight,
-					var(--m-text-primary-weight, bold)
+					var(--m-prose-primary-weight, bold)
 				);
 				font-family: var(
 					--functionsList-title-font,
-					var(--m-text-primary-font, sans-serif)
+					var(--m-prose-primary-font, sans-serif)
 				);
 				margin-bottom: var(
 					--functionsList-title-margin-bottom,
-					var(--m-spacing-md, 8px)
+					var(--m-space-md, 8px)
 				);
 			}
 
@@ -36,7 +36,7 @@ class MixinsList extends LitElement {
 				display: flex;
 				flex-direction: column;
 				align-items: stretch;
-				gap: var(--functionsList-item-gap, var(--m-spacing-sm, 4px));
+				gap: var(--functionsList-item-gap, var(--m-space-sm, 4px));
 				list-style: none;
 				margin: 0;
 				padding: 0;
@@ -64,13 +64,10 @@ class MixinsList extends LitElement {
 					--functionsList-item-border-radius,
 					var(--m-surface-radius, 4px)
 				);
-				font-size: var(
-					--functionsList-item-size,
-					var(--m-typography-size, 1rem)
-				);
+				font-size: var(--functionsList-item-size, var(--m-text-size, 1rem));
 				font-weight: var(
 					--functionsList-item-weight,
-					var(--m-typography-weight, normal)
+					var(--m-text-weight, normal)
 				);
 				background-color: var(
 					--functionsList-item-bg,
@@ -84,17 +81,17 @@ class MixinsList extends LitElement {
 				.name {
 					font-weight: var(
 						--functionsList-item-name-weight,
-						var(--m-typography-weight-bold, bold)
+						var(--m-text-weight-bold, bold)
 					);
 					font-family: var(
 						--functionsList-item-name-font,
-						var(--m-typography-font, sans-serif)
+						var(--m-text-font, sans-serif)
 					);
 				}
 				.description {
 					font-size: var(
 						--functionsList-item-description-size,
-						var(--m-text-secondary-size, 0.875rem)
+						var(--m-prose-secondary-size, 0.875rem)
 					);
 					color: var(
 						--functionsList-item-description-color,

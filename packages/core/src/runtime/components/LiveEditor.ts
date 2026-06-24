@@ -26,8 +26,8 @@ class LiveEditor extends LitElement {
 			.pane {
 				display: flex;
 				flex-direction: column;
-				gap: var(--m-spacing-sm);
-				padding: var(--m-spacing-sm);
+				gap: var(--m-space-sm);
+				padding: var(--m-space-sm);
 				background: var(--m-surface-ambient-bg);
 				border-radius: var(--m-surface-radius);
 				box-shadow: var(--m-shadow-lg);
@@ -49,7 +49,7 @@ class LiveEditor extends LitElement {
 				border: none;
 				cursor: pointer;
 				transition: all var(--m-duration) var(--m-easing);
-				padding: var(--m-spacing-xs);
+				padding: var(--m-space-xs);
 				border-radius: var(--m-action-radius);
 				min-width: 32px;
 				min-height: 32px;
@@ -69,8 +69,8 @@ class LiveEditor extends LitElement {
 			.list {
 				display: flex;
 				flex-direction: column;
-				gap: var(--m-spacing-xs);
-				padding: var(--m-spacing-sm);
+				gap: var(--m-space-xs);
+				padding: var(--m-space-sm);
 				max-height: 300px;
 				min-height: 0;
 				overflow: auto;
@@ -81,11 +81,11 @@ class LiveEditor extends LitElement {
 				display: flex;
 				flex-direction: column;
 				align-items: start;
-				gap: var(--m-spacing-xs);
+				gap: var(--m-space-xs);
 			}
 
 			.token-name {
-				font-size: var(--m-text-ambient-size);
+				font-size: var(--m-prose-ambient-size);
 			}
 
 			.sr-only {
@@ -239,7 +239,7 @@ class SizeTokenEditor extends BaseTokenEditor {
 			:host {
 				display: inline-flex;
 				align-items: center;
-				gap: var(--m-spacing-xs);
+				gap: var(--m-space-xs);
 				width: 100%;
 			}
 		`;

@@ -27,7 +27,7 @@ it('defines a simple preset', () => {
 	});
 
 	expect(preset.$.mode.color.name).toBe('--m-color');
-	expect(preset.$.mode.spacing.$root.name).toBe('--m-spacing');
+	expect(preset.$.mode.space.$root.name).toBe('--m-space');
 });
 
 it('allows defining functions or mixins using available tokens', () => {

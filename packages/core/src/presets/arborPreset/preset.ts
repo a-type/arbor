@@ -14,8 +14,8 @@ import {
 import {
 	createActionIntentValues,
 	createControlIntentValues,
+	createProseIntentValues,
 	createSurfaceIntentValues,
-	createTextIntentValues,
 } from './modeValues/intents.js';
 import {
 	createColorSemanticValues,
@@ -87,7 +87,7 @@ export interface ArborPresetConfig<
 		 */
 		boldness?: CssInterpolation;
 	};
-	spacing?: SpacingConfig & {
+	space?: SpacingConfig & {
 		/**
 		 * This density tuning value affects all spacing (and font size) tokens
 		 * used in your mode. It multiplies with any per-token density
@@ -184,7 +184,6 @@ export const presetArbor = <
 >(
 	config: ArborPresetConfig<TRanges, TKeyframeNames>,
 ) => {
-	const keyframeNames = Object.keys(config.keyframes ?? {}) as TKeyframeNames[];
 	const preset = definePreset({
 		name: 'arbor',
 		modeSchema: createArborModeSchema<TRanges>({
@@ -205,11 +204,11 @@ export const presetArbor = <
 						lineWidth: config.shape?.lineWidth ?? 1,
 						roundness: config.shape?.roundness ?? 1,
 					},
-					spacing: {
-						density: config.spacing?.globalDensity ?? 1,
-						baseSize: config.spacing?.baseSize ?? '8px',
-						scaleBase: config.spacing?.scaleBase ?? 2,
-						scaleExponentStep: config.spacing?.scaleExponentStep ?? 1,
+					space: {
+						density: config.space?.globalDensity ?? 1,
+						baseSize: config.space?.baseSize ?? '8px',
+						scaleBase: config.space?.scaleBase ?? 2,
+						scaleExponentStep: config.space?.scaleExponentStep ?? 1,
 					},
 					typography: {
 						size: config.typography?.size ?? 1,
@@ -250,10 +249,10 @@ export const presetArbor = <
 
 				/** SEMANTICS */
 				color: createColorSemanticValues($, config.color) as any,
-				spacing: createSpacingSemanticValues($, {
-					roundToPixel: config.spacing?.roundToPixel ?? false,
+				space: createSpacingSemanticValues($, {
+					roundToPixel: config.space?.roundToPixel ?? false,
 				}),
-				typography: createTypographySemanticValues($),
+				text: createTypographySemanticValues($),
 				shadow: createShadowSemanticValues($),
 				radius: createRadiusSemanticValues($),
 				lineWidth: createLineWidthSemanticValues($),
@@ -264,7 +263,7 @@ export const presetArbor = <
 				action: createActionIntentValues($),
 				control: createControlIntentValues($),
 				surface: createSurfaceIntentValues($),
-				text: createTextIntentValues($),
+				prose: createProseIntentValues($),
 			};
 		},
 		baseModeOptions: ($) => ({
@@ -303,6 +302,11 @@ export const presetArbor = <
 					border-radius: ${$.mode.action.radius};
 					border-width: ${$.mode.action.primary.borderWidth};
 					border-style: ${$.mode.action.primary.borderStyle};
+					font-family: ${$.mode.action.text.font};
+					font-size: ${$.mode.action.text.size};
+					font-weight: ${$.mode.action.text.weight};
+					line-height: ${$.mode.action.text.lineHeight};
+					letter-spacing: ${$.mode.action.text.letterSpacing};
 				`,
 			});
 			const actionSecondary = create('action-secondary', {
@@ -322,6 +326,11 @@ export const presetArbor = <
 					border-radius: ${$.mode.action.radius};
 					border-width: ${$.mode.action.secondary.borderWidth};
 					border-style: ${$.mode.action.secondary.borderStyle};
+					font-family: ${$.mode.action.text.font};
+					font-size: ${$.mode.action.text.size};
+					font-weight: ${$.mode.action.text.weight};
+					line-height: ${$.mode.action.text.lineHeight};
+					letter-spacing: ${$.mode.action.text.letterSpacing};
 				`,
 			});
 			const actionAmbient = create('action-ambient', {
@@ -341,6 +350,11 @@ export const presetArbor = <
 					border-radius: ${$.mode.action.radius};
 					border-width: ${$.mode.action.ambient.borderWidth};
 					border-style: ${$.mode.action.ambient.borderStyle};
+					font-family: ${$.mode.action.text.font};
+					font-size: ${$.mode.action.text.size};
+					font-weight: ${$.mode.action.text.weight};
+					line-height: ${$.mode.action.text.lineHeight};
+					letter-spacing: ${$.mode.action.text.letterSpacing};
 				`,
 			});
 			const surfacePrimary = create('surface-primary', {
@@ -358,6 +372,11 @@ export const presetArbor = <
 					})}
 					padding: ${$.mode.surface.padding.$root};
 					border-radius: ${$.mode.surface.radius};
+					font-family: ${$.mode.surface.text.font};
+					font-size: ${$.mode.surface.text.size};
+					font-weight: ${$.mode.surface.text.weight};
+					line-height: ${$.mode.surface.text.lineHeight};
+					letter-spacing: ${$.mode.surface.text.letterSpacing};
 				`,
 			});
 			const surfaceSecondary = create('surface-secondary', {
@@ -377,6 +396,11 @@ export const presetArbor = <
 					border-radius: ${$.mode.surface.radius};
 					border-width: ${$.mode.surface.secondary.borderWidth};
 					border-style: ${$.mode.surface.secondary.borderStyle};
+					font-family: ${$.mode.surface.text.font};
+					font-size: ${$.mode.surface.text.size};
+					font-weight: ${$.mode.surface.text.weight};
+					line-height: ${$.mode.surface.text.lineHeight};
+					letter-spacing: ${$.mode.surface.text.letterSpacing};
 				`,
 			});
 			const surfaceAmbient = create('surface-ambient', {
@@ -396,6 +420,11 @@ export const presetArbor = <
 					border-radius: ${$.mode.surface.radius};
 					border-width: ${$.mode.surface.ambient.borderWidth};
 					border-style: ${$.mode.surface.ambient.borderStyle};
+					font-family: ${$.mode.surface.text.font};
+					font-size: ${$.mode.surface.text.size};
+					font-weight: ${$.mode.surface.text.weight};
+					line-height: ${$.mode.surface.text.lineHeight};
+					letter-spacing: ${$.mode.surface.text.letterSpacing};
 				`,
 			});
 			const control = create('control', {
@@ -415,39 +444,44 @@ export const presetArbor = <
 					border-radius: ${$.mode.control.radius};
 					border-width: ${$.mode.control.borderWidth};
 					border-style: ${$.mode.control.borderStyle};
+					font-family: ${$.mode.control.text.font};
+					font-size: ${$.mode.control.text.size};
+					font-weight: ${$.mode.control.text.weight};
+					line-height: ${$.mode.control.text.lineHeight};
+					letter-spacing: ${$.mode.control.text.letterSpacing};
 				`,
 			});
-			const textPrimary = create('text-primary', {
+			const prosePrimary = create('prose-primary', {
 				description:
-					'Applies all primary text intent styles: size, weight, font, line-height, and letter-spacing.',
+					'Applies all primary prose intent styles: size, weight, font, line-height, and letter-spacing.',
 				definition: (css) => css`
-					font-size: ${$.mode.text.primary.size};
-					font-weight: ${$.mode.text.primary.weight};
-					font-family: ${$.mode.text.primary.font};
-					line-height: ${$.mode.text.primary.lineHeight};
-					letter-spacing: ${$.mode.text.primary.letterSpacing};
+					font-size: ${$.mode.prose.primary.size};
+					font-weight: ${$.mode.prose.primary.weight};
+					font-family: ${$.mode.prose.primary.font};
+					line-height: ${$.mode.prose.primary.lineHeight};
+					letter-spacing: ${$.mode.prose.primary.letterSpacing};
 				`,
 			});
-			const textSecondary = create('text-secondary', {
+			const proseSecondary = create('prose-secondary', {
 				description:
-					'Applies all secondary text intent styles: size, weight, font, line-height, and letter-spacing.',
+					'Applies all secondary prose intent styles: size, weight, font, line-height, and letter-spacing.',
 				definition: (css) => css`
-					font-size: ${$.mode.text.secondary.size};
-					font-weight: ${$.mode.text.secondary.weight};
-					font-family: ${$.mode.text.secondary.font};
-					line-height: ${$.mode.text.secondary.lineHeight};
-					letter-spacing: ${$.mode.text.secondary.letterSpacing};
+					font-size: ${$.mode.prose.secondary.size};
+					font-weight: ${$.mode.prose.secondary.weight};
+					font-family: ${$.mode.prose.secondary.font};
+					line-height: ${$.mode.prose.secondary.lineHeight};
+					letter-spacing: ${$.mode.prose.secondary.letterSpacing};
 				`,
 			});
-			const textAmbient = create('text-ambient', {
+			const proseAmbient = create('prose-ambient', {
 				description:
-					'Applies all ambient text intent styles: size, weight, font, line-height, and letter-spacing.',
+					'Applies all ambient prose intent styles: size, weight, font, line-height, and letter-spacing.',
 				definition: (css) => css`
-					font-size: ${$.mode.text.ambient.size};
-					font-weight: ${$.mode.text.ambient.weight};
-					font-family: ${$.mode.text.ambient.font};
-					line-height: ${$.mode.text.ambient.lineHeight};
-					letter-spacing: ${$.mode.text.ambient.letterSpacing};
+					font-size: ${$.mode.prose.ambient.size};
+					font-weight: ${$.mode.prose.ambient.weight};
+					font-family: ${$.mode.prose.ambient.font};
+					line-height: ${$.mode.prose.ambient.lineHeight};
+					letter-spacing: ${$.mode.prose.ambient.letterSpacing};
 				`,
 			});
 
@@ -487,9 +521,9 @@ export const presetArbor = <
 				surfaceSecondary,
 				surfaceAmbient,
 				control,
-				textPrimary,
-				textSecondary,
-				textAmbient,
+				prosePrimary,
+				proseSecondary,
+				proseAmbient,
 
 				animation,
 			};

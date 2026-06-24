@@ -22,9 +22,9 @@ body {
 }
 
 body {
-	font-size: var(--m-text-secondary-size);
-	font-weight: var(--m-text-secondary-weight);
-	line-height: var(--m-text-secondary-lineHeight);
+	font-size: var(--m-prose-secondary-size);
+	font-weight: var(--m-prose-secondary-weight);
+	line-height: var(--m-prose-secondary-lineHeight);
 }
 
 * {

@@ -17,7 +17,7 @@ it('warns on arbitrary color values without token usage', () => {
 
 it('does not warn when arbor token references are present', () => {
 	const warnings = findArbitraryValueWarnings(
-		'padding: var(--m-spacing-small); color: var(--m-color-main-ink);',
+		'padding: var(--m-space-small); color: var(--m-color-main-ink);',
 		['--m-'],
 	);
 	expect(warnings).toHaveLength(0);

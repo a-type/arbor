@@ -10,7 +10,7 @@ export function createShadowLevelSemanticValues<TColorName extends string>(
 ) {
 	const x = css`0px`;
 	const y = css`calc(1px * pow(2, ${level} - 1))`;
-	const blur = css`calc(${$.mode.global.shadow.blur} * ${$.mode.global.spacing.baseSize} * 0.25 * pow(2, ${level} - 1))`;
+	const blur = css`calc(${$.mode.global.shadow.blur} * ${$.mode.global.space.baseSize} * 0.25 * pow(2, ${level} - 1))`;
 	const spread = css`calc(${$.mode.global.shadow.spread} * 1px * pow(2, ${level} - 1))`;
 	const color = css`oklch(from ${$.mode.shadow.color} l c h / 0.15)`;
 	return {
@@ -30,16 +30,16 @@ export function createSpacingSemanticValues<TColorName extends string>(
 	config: { roundToPixel?: boolean },
 ) {
 	function spacingForLevel(level: number) {
-		return css`calc(${config.roundToPixel ? 'round(' : ''}${$.mode.global.spacing.baseSize} * pow(${$.mode.global.spacing.scaleBase}, ${level} * ${$.mode.global.spacing.scaleExponentStep}) / ${$.mode.global.spacing.density}${config.roundToPixel ? ', 1px)' : ''})`;
+		return css`calc(${config.roundToPixel ? 'round(' : ''}${$.mode.global.space.baseSize} * pow(${$.mode.global.space.scaleBase}, ${level} * ${$.mode.global.space.scaleExponentStep}) / ${$.mode.global.space.density}${config.roundToPixel ? ', 1px)' : ''})`;
 	}
 	return {
-		$root: $.mode.spacing.md,
+		$root: $.mode.space.md,
 		xs: spacingForLevel(-2),
 		sm: spacingForLevel(-1),
 		md: spacingForLevel(0),
 		lg: spacingForLevel(1),
 		xl: spacingForLevel(2),
-	} satisfies ModeValues<ArborModeSchema['spacing']>;
+	} satisfies ModeValues<ArborModeSchema['space']>;
 }
 
 export function createShadowSemanticValues<TColorName extends string>(
@@ -88,10 +88,10 @@ export function createRadiusSemanticValues<TColorName extends string>(
 ) {
 	return {
 		$root: $.mode.radius.md,
-		xs: css`calc(${$.mode.global.shape.roundness} * ${$.mode.spacing.sm} / ${$.mode.global.spacing.density})`,
-		sm: css`calc(${$.mode.global.shape.roundness} * ${$.mode.spacing.md} / ${$.mode.global.spacing.density})`,
-		md: css`calc(${$.mode.global.shape.roundness} * ${$.mode.spacing.lg} / ${$.mode.global.spacing.density})`,
-		lg: css`calc(${$.mode.global.shape.roundness} * ${$.mode.spacing.xl} / ${$.mode.global.spacing.density})`,
+		xs: css`calc(${$.mode.global.shape.roundness} * ${$.mode.space.xs})`,
+		sm: css`calc(${$.mode.global.shape.roundness} * ${$.mode.space.sm})`,
+		md: css`calc(${$.mode.global.shape.roundness} * ${$.mode.space.md})`,
+		lg: css`calc(${$.mode.global.shape.roundness} * ${$.mode.space.lg})`,
 	} satisfies ModeValues<ArborModeSchema['radius']>;
 }
 
@@ -145,7 +145,7 @@ export function createDurationSemanticValues<TColorName extends string>(
 	$: Tokens<TColorName>,
 ) {
 	function durationForLevel(level: number) {
-		return css`calc(${$.mode.global.duration.base} * pow(2, ${level} * ${$.mode.global.duration.slowness}))`;
+		return css`calc(${$.mode.global.duration.base} * pow(2, ${level}) * ${$.mode.global.duration.slowness})`;
 	}
 	return {
 		$root: $.mode.duration.medium,
@@ -163,7 +163,7 @@ function createTypographyWeightSemanticValues<TColorName extends string>(
 	const generalAdjustment = css`calc(${$.mode.global.typography.boldness} * ${weightRange} - (${weightRange} / 2) + ${darkModeAdjustment})`;
 
 	return {
-		$root: $.mode.typography.weight.normal,
+		$root: $.mode.text.weight.normal,
 		thin: css`calc(clamp(${$.mode.global.typography.minWeight}, ${$.mode.global.typography.baseWeight} - (${$.mode.global.typography.weightStep}) + ${generalAdjustment}, ${$.mode.global.typography.maxWeight}))`,
 		normal: css`calc(clamp(${$.mode.global.typography.minWeight}, ${$.mode.global.typography.baseWeight} + ${generalAdjustment}, ${$.mode.global.typography.maxWeight}))`,
 		bold: css`calc(clamp(${$.mode.global.typography.minWeight}, ${$.mode.global.typography.baseWeight} + (${$.mode.global.typography.weightStep}) + ${generalAdjustment}, ${$.mode.global.typography.maxWeight}))`,
@@ -178,11 +178,11 @@ function createTypographySizeSemanticValues<TColorName extends string>(
 		return css`calc(${config.roundToPixel ? 'round(' : ''}clamp(${$.mode.global.typography.minFontSize}, 1rem * ${$.mode.global.typography.size} * pow(${$.mode.global.typography.fontSizeScaleBase}, ${level} * ${$.mode.global.typography.fontSizeScaleExponentStep}), ${$.mode.global.typography.maxFontSize})${config.roundToPixel ? ', 1px)' : ''})`;
 	}
 	return {
-		$root: $.mode.typography.size.md,
+		$root: $.mode.text.size.md,
 		sm: sizeForLevel(-1),
 		md: sizeForLevel(0),
 		lg: sizeForLevel(1),
-	} satisfies ModeValues<ArborModeSchema['typography']['size']>;
+	} satisfies ModeValues<ArborModeSchema['text']['size']>;
 }
 
 function createTypographyLineHeightSemanticValues<TColorName extends string>(
@@ -193,11 +193,11 @@ function createTypographyLineHeightSemanticValues<TColorName extends string>(
 		return css`calc(${config.roundToPixel ? 'round(' : ''}clamp(${$.mode.global.typography.minLineHeight}, ${$.mode.global.typography.baseLineHeight} + ((${level} + (1 - ${$.mode.global.typography.size}) / 2) * ${$.mode.global.typography.lineHeightStep}), ${$.mode.global.typography.maxLineHeight})${config.roundToPixel ? ', 1px)' : ''})`;
 	}
 	return {
-		$root: $.mode.typography.lineHeight.normal,
+		$root: $.mode.text.lineHeight.normal,
 		tight: lineHeightForLevel(-1),
 		normal: lineHeightForLevel(0),
 		loose: lineHeightForLevel(1),
-	} satisfies ModeValues<ArborModeSchema['typography']['lineHeight']>;
+	} satisfies ModeValues<ArborModeSchema['text']['lineHeight']>;
 }
 
 function createTypographyLetterSpacingSemanticValues<TColorName extends string>(
@@ -208,11 +208,11 @@ function createTypographyLetterSpacingSemanticValues<TColorName extends string>(
 		return css`calc(${config.roundToPixel ? 'round(' : ''}clamp(${$.mode.global.typography.minLetterSpacing}, ${$.mode.global.typography.baseLetterSpacing} + (${level} * ${$.mode.global.typography.letterSpacingStep}), ${$.mode.global.typography.maxLetterSpacing})${config.roundToPixel ? ', 1px)' : ''})`;
 	}
 	return {
-		$root: $.mode.typography.letterSpacing.normal,
+		$root: $.mode.text.letterSpacing.normal,
 		tight: letterSpacingForLevel(-1),
 		normal: letterSpacingForLevel(0),
 		loose: letterSpacingForLevel(1),
-	} satisfies ModeValues<ArborModeSchema['typography']['letterSpacing']>;
+	} satisfies ModeValues<ArborModeSchema['text']['letterSpacing']>;
 }
 
 export function createTypographySemanticValues<TColorName extends string>(
@@ -226,5 +226,5 @@ export function createTypographySemanticValues<TColorName extends string>(
 		letterSpacing: createTypographyLetterSpacingSemanticValues($, {
 			roundToPixel,
 		}),
-	} satisfies ModeValues<ArborModeSchema['typography']>;
+	} satisfies ModeValues<ArborModeSchema['text']>;
 }

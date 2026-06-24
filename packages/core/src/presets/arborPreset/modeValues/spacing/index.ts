@@ -59,7 +59,7 @@ export function compileSpacing<
 			const step = i - baseIndex;
 			acc[nameCast] =
 				levelConfig ??
-				css`calc(${config.roundToPixel ? 'round(' : ''}${$.spacing.baseSize} * pow(${[$.spacing.scaleBase, 2]}, ${[$.spacing.scaleExponentStep, 1]} * ${step})${config.roundToPixel ? ', 1px)' : ''})`;
+				css`calc(${config.roundToPixel ? 'round(' : ''}${$.space.baseSize} * pow(${[$.space.scaleBase, 2]}, ${[$.space.scaleExponentStep, 1]} * ${step})${config.roundToPixel ? ', 1px)' : ''})`;
 			return acc;
 		},
 		{} as Record<TSpacingLevel, string | Css>,

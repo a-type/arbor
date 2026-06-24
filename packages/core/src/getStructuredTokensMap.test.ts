@@ -21,7 +21,7 @@ it('generates a map of mode and system tokens with correct paths', () => {
 	expect(map.has('spacing.md')).toBe(true);
 	expect(map.get('color.main')).toBe(preset.$.mode.color.main.$root);
 	expect(map.has('spacing.md')).toBe(true);
-	expect(map.get('spacing.md')).toBe(preset.$.mode.spacing.md);
+	expect(map.get('spacing.md')).toBe(preset.$.mode.space.md);
 });
 
 it('applies descriptions to all built-in system and global tokens', () => {

@@ -1,5 +1,5 @@
 import { createModeSchema } from '@arbor-css/modes';
-import { boxIntents, visualIntents } from './common.js';
+import { boxIntents, textAndFontIntents, visualIntents } from './common.js';
 
 export const controlIntents = createModeSchema({
 	padding: boxIntents,
@@ -14,4 +14,5 @@ export const controlIntents = createModeSchema({
 			'This token captures the border-radius of controls, taking into account the overall roundness',
 	},
 	...visualIntents,
+	text: textAndFontIntents,
 });

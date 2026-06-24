@@ -11,7 +11,7 @@ body {
 	flex-direction: row;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: var(--m-spacing-sm);
+	gap: var(--m-space-sm);
 	/* Ambient = default */
 	@apply --mx-bg(var(--m-surface-ambient-bg));
 	@apply --mx-fg(var(--m-surface-ambient-fg));
@@ -29,15 +29,7 @@ body {
 .button,
 button {
 	/* basic shape */
-	padding: var(--m-action-padding);
-	border-radius: var(--m-action-radius);
-	border-width: var(--m-lineWidth-md);
-	border-style: solid;
-
-	/* typography */
-	font-size: var(--m-text-secondary-size);
-	font-weight: var(--m-text-secondary-weight);
-	line-height: 1;
+	@apply --mx-action-secondary;
 
 	/* interaction */
 	transition: all var(--m-duration) var(--m-easing);
@@ -50,8 +42,7 @@ button {
 	@apply --mx-shadow(var(--m-shadow-sm));
 
 	&[data-emphasis='primary'] {
-		@apply --mx-bg(var(--m-action-primary-bg));
-		@apply --mx-fg(var(--m-action-primary-fg));
+		@apply --mx-action-primary;
 		&:hover {
 			@apply --mx-bg-lighter(2);
 		}
@@ -61,13 +52,10 @@ button {
 	}
 	&,
 	&[data-emphasis='secondary'] {
-		@apply --mx-bg(var(--m-action-secondary-bg));
-		@apply --mx-fg(var(--m-action-secondary-fg));
+		@apply --mx-action-secondary;
 	}
 	&[data-emphasis='ambient'] {
-		@apply --mx-bg(var(--m-action-ambient-bg));
-		@apply --mx-fg(var(--m-action-ambient-fg));
-		@apply --mx-borderColor(transparent);
+		@apply --mx-action-ambient;
 		--mx-shadow-value: 0 0 0 0 transparent;
 
 		&:hover,
@@ -96,13 +84,7 @@ button {
 
 .input,
 input {
-	padding: var(--m-control-padding);
-	border-radius: var(--m-control-radius);
-	font-size: var(--m-text-secondary-size);
-	font-weight: var(--m-text-secondary-weight);
-	line-height: 1;
 	@apply --mx-control;
-
 	@apply --mx-shadow(var(--m-shadow-sm));
 
 	&:hover {
@@ -120,24 +102,15 @@ input {
 
 .title,
 h1 {
-	font-size: var(--m-text-primary-size);
-	font-weight: var(--m-text-primary-weight);
-	line-height: var(--m-text-primary-lineHeight);
-	font-family: var(--m-text-primary-font);
+	@apply --mx-prose-primary;
 }
 
 .p,
 p {
-	font-size: var(--m-text-secondary-size);
-	font-weight: var(--m-text-secondary-weight);
-	line-height: var(--m-text-secondary-lineHeight);
-	font-family: var(--m-text-secondary-font);
+	@apply --mx-prose-secondary;
 }
 
 .caption,
 small {
-	font-size: var(--m-text-ambient-size);
-	font-weight: var(--m-text-ambient-weight);
-	line-height: var(--m-text-ambient-lineHeight);
-	font-family: var(--m-text-ambient-font);
+	@apply --mx-prose-ambient;
 }

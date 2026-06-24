@@ -73,13 +73,13 @@ Arbor defaults to an 8 pixel spacing scale where each step is 2x the previous:
 
 However, this is customizable via `scaleBase` and `scaleExponent`. Or, if you don't want to bother with that, just provide each level's value directly via `levels`.
 
-`defaultLevel` determines which level name aligns with your `baseSize`, and accordingly, which value is assigned to the `--m-spacing` root token.
+`defaultLevel` determines which level name aligns with your `baseSize`, and accordingly, which value is assigned to the `--m-space` root token.
 
 ## Using spacing tokens
 
-A _subset_ of your spacing scale will be assigned to `--m-spacing-...` tokens.
+A _subset_ of your spacing scale will be assigned to `--m-space-...` tokens.
 
-For most cases, you should use a new mode with a modified `global.density` value to influence spacing size beyond that range. Meaning, if you need a much larger spacing value than is available in `--m-spacing` on the base mode, perhaps you want to apply `@mode-loose` with a density of `0.5`?
+For most cases, you should use a new mode with a modified `global.density` value to influence spacing size beyond that range. Meaning, if you need a much larger spacing value than is available in `--m-space` on the base mode, perhaps you want to apply `@mode-loose` with a density of `0.5`?
 
 However, if you really need to reach into the larger range for particular cases, `--m-primitives-spacing-...` has the whole thing.
 

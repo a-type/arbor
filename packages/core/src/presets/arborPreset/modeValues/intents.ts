@@ -11,11 +11,26 @@ export function createActionIntentValues<TColorNames extends string>(
 			$root: css`
 				${$.mode.action.padding.block} ${$.mode.action.padding.inline}
 			`,
-			block: css`calc(${$.mode.spacing.md} / ${$.mode.global.spacing.density})`,
-			inline: css`calc((${$.mode.spacing.lg} + ${$.mode.global.shape.roundness} * ${$.mode.spacing.sm}) / ${$.mode.global.spacing.density})`,
+			block: css`
+				${$.mode.space.md}
+			`,
+			inline: css`calc(${$.mode.space.lg} + ${$.mode.global.shape.roundness} * ${$.mode.space.sm})`,
 		},
 		roundness: 1,
 		radius: css`calc(${$.mode.radius.md} * ${$.mode.action.roundness} * ${$.mode.global.shape.roundness})`,
+		text: {
+			font: 'inherit',
+			letterSpacing: css`
+				${$.mode.prose.secondary.letterSpacing}
+			`,
+			lineHeight: css`1`,
+			size: css`
+				${$.mode.prose.secondary.size}
+			`,
+			weight: css`
+				${$.mode.text.weight.bold}
+			`,
+		},
 		primary: {
 			bg: css`
 				${$.mode.color.main.mid}
@@ -80,11 +95,26 @@ export function createSurfaceIntentValues<TColorNames extends string>(
 			$root: css`
 				${$.mode.surface.padding.block} ${$.mode.surface.padding.inline}
 			`,
-			block: css`calc(${$.mode.spacing.lg} * max(1, ${$.mode.surface.roundness} * ${$.mode.global.shape.roundness}))`,
-			inline: css`calc(${$.mode.spacing.lg} * max(1, ${$.mode.surface.roundness} * ${$.mode.global.shape.roundness}))`,
+			block: css`calc(${$.mode.space.lg} * max(1, ${$.mode.surface.roundness} * ${$.mode.global.shape.roundness}))`,
+			inline: css`calc(${$.mode.space.lg} * max(1, ${$.mode.surface.roundness} * ${$.mode.global.shape.roundness}))`,
 		},
 		roundness: 1,
 		radius: css`calc(${$.mode.radius.md} * ${$.mode.surface.roundness} * ${$.mode.global.shape.roundness})`,
+		text: {
+			font: 'inherit',
+			letterSpacing: css`
+				${$.mode.prose.secondary.letterSpacing}
+			`,
+			lineHeight: css`
+				${$.mode.prose.secondary.lineHeight}
+			`,
+			size: css`
+				${$.mode.prose.secondary.size}
+			`,
+			weight: css`
+				${$.mode.prose.secondary.weight}
+			`,
+		},
 		primary: {
 			bg: css`
 				${$.mode.color.main.light}
@@ -153,8 +183,10 @@ export function createControlIntentValues<TColorNames extends string>(
 			$root: css`
 				${$.mode.control.padding.block} ${$.mode.control.padding.inline}
 			`,
-			block: css`calc(${$.mode.spacing.md} / ${$.mode.global.spacing.density})`,
-			inline: css`calc((${$.mode.spacing.md} + ${$.mode.global.shape.roundness} * ${$.mode.spacing.sm}) / ${$.mode.global.spacing.density})`,
+			block: css`
+				${$.mode.space.md}
+			`,
+			inline: css`calc(${$.mode.space.md} + ${$.mode.global.shape.roundness} * ${$.mode.space.sm})`,
 		},
 		roundness: 1,
 		radius: css`calc(${$.mode.radius.md} * ${$.mode.control.roundness} * ${$.mode.global.shape.roundness})`,
@@ -175,33 +207,48 @@ export function createControlIntentValues<TColorNames extends string>(
 			${$.mode.control.borderWidth} ${$.mode.control.borderStyle} ${$.mode
 				.control.borderColor}
 		`,
+		text: {
+			font: 'inherit',
+			letterSpacing: css`
+				${$.mode.text.letterSpacing.normal}
+			`,
+			lineHeight: css`
+			1
+		`,
+			size: css`
+				${$.mode.prose.secondary.size}
+			`,
+			weight: css`
+				${$.mode.text.weight.normal}
+			`,
+		},
 	} satisfies ModeValues<ArborModeSchema['control']>;
 }
 
-export function createTextIntentValues<TColorNames extends string>(
+export function createProseIntentValues<TColorNames extends string>(
 	$: Tokens<TColorNames>,
 ) {
 	return {
 		primary: {
-			size: $.mode.typography.size.lg,
-			lineHeight: $.mode.typography.lineHeight.tight,
-			letterSpacing: $.mode.typography.letterSpacing.normal,
-			weight: $.mode.typography.weight.bold,
+			size: $.mode.text.size.lg,
+			lineHeight: $.mode.text.lineHeight.tight,
+			letterSpacing: $.mode.text.letterSpacing.normal,
+			weight: $.mode.text.weight.bold,
 			font: 'inherit',
 		},
 		secondary: {
-			size: $.mode.typography.size.md,
-			lineHeight: $.mode.typography.lineHeight.normal,
-			letterSpacing: $.mode.typography.letterSpacing.normal,
-			weight: $.mode.typography.weight.normal,
+			size: $.mode.text.size.md,
+			lineHeight: $.mode.text.lineHeight.normal,
+			letterSpacing: $.mode.text.letterSpacing.normal,
+			weight: $.mode.text.weight.normal,
 			font: 'inherit',
 		},
 		ambient: {
-			size: $.mode.typography.size.sm,
-			lineHeight: $.mode.typography.lineHeight.loose,
-			letterSpacing: $.mode.typography.letterSpacing.normal,
-			weight: $.mode.typography.weight.normal,
+			size: $.mode.text.size.sm,
+			lineHeight: $.mode.text.lineHeight.loose,
+			letterSpacing: $.mode.text.letterSpacing.normal,
+			weight: $.mode.text.weight.normal,
 			font: 'inherit',
 		},
-	} satisfies ModeValues<ArborModeSchema['text']>;
+	} satisfies ModeValues<ArborModeSchema['prose']>;
 }

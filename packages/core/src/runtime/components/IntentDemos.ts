@@ -6,10 +6,10 @@ class IntentDemos extends LitElement {
 			:host {
 				display: flex;
 				flex-direction: column;
-				gap: var(--m-spacing-lg);
+				gap: var(--m-space-lg);
 				box-sizing: border-box;
 				width: 100%;
-				padding: var(--m-spacing-lg);
+				padding: var(--m-space-lg);
 			}
 
 			.surface {
@@ -61,23 +61,23 @@ class IntentDemos extends LitElement {
 			}
 
 			.text {
-				font-size: var(--m-text-primary-size);
-				font-weight: var(--m-text-primary-weight);
-				font-family: var(--m-text-primary-font);
-				letter-spacing: var(--m-text-primary-letter-spacing);
+				font-size: var(--m-prose-primary-size);
+				font-weight: var(--m-prose-primary-weight);
+				font-family: var(--m-prose-primary-font);
+				letter-spacing: var(--m-prose-primary-letter-spacing);
 
 				&[data-emphasis='secondary'] {
-					font-size: var(--m-text-secondary-size);
-					font-weight: var(--m-text-secondary-weight);
-					font-family: var(--m-text-secondary-font);
-					letter-spacing: var(--m-text-secondary-letter-spacing);
+					font-size: var(--m-prose-secondary-size);
+					font-weight: var(--m-prose-secondary-weight);
+					font-family: var(--m-prose-secondary-font);
+					letter-spacing: var(--m-prose-secondary-letter-spacing);
 				}
 
 				&[data-emphasis='ambient'] {
-					font-size: var(--m-text-ambient-size);
-					font-weight: var(--m-text-ambient-weight);
-					font-family: var(--m-text-ambient-font);
-					letter-spacing: var(--m-text-ambient-letter-spacing);
+					font-size: var(--m-prose-ambient-size);
+					font-weight: var(--m-prose-ambient-weight);
+					font-family: var(--m-prose-ambient-font);
+					letter-spacing: var(--m-prose-ambient-letter-spacing);
 				}
 			}
 
@@ -85,7 +85,7 @@ class IntentDemos extends LitElement {
 				background: var(--m-color-neutral);
 				color: var(--m-color-neutral-ink);
 				border: 1px dashed var(--m-color-neutral-heavy);
-				padding: var(--m-spacing-sm);
+				padding: var(--m-space-sm);
 				opacity: 0.5;
 			}
 		`;

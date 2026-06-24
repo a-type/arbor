@@ -84,7 +84,7 @@ it('parses oklch colors into rgba channels', () => {
 it('resolves Arbor color tokens through the shared helper', async () => {
 	const state = createTestState();
 	const colorToken = (state.preset.$.mode.color as any).main.$root;
-	const spacingToken = state.preset.$.mode.spacing.$root;
+	const spacingToken = state.preset.$.mode.space.$root;
 
 	expect(await resolveTokenValue(state, colorToken)).toBe(
 		'light-dark(oklch(90% .15 0), oklch(55% .16 0))',

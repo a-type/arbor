@@ -1,6 +1,6 @@
 import { createModeSchema } from '@arbor-css/modes';
 
-export const typographySemantics = createModeSchema({
+export const textSemantics = createModeSchema({
 	weight: {
 		$root: {
 			purpose: 'font-weight',

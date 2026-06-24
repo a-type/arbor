@@ -22,7 +22,7 @@ const ctx: CssResolutionContext = {
 it('resolves base mode values with baking', () => {
 	const value = resolveComputedTokenValue(
 		preset,
-		preset.$.mode.spacing.sm.name,
+		preset.$.mode.space.sm.name,
 		ctx,
 	);
 
@@ -30,31 +30,23 @@ it('resolves base mode values with baking', () => {
 });
 
 it('applies user property values to evaluation context', () => {
-	const value = resolveComputedTokenValue(
-		preset,
-		preset.$.mode.spacing.sm.name,
-		{
-			...ctx,
-			propertyValues: {
-				[preset.$.mode.global.spacing.density.name]: '2',
-			},
+	const value = resolveComputedTokenValue(preset, preset.$.mode.space.sm.name, {
+		...ctx,
+		propertyValues: {
+			[preset.$.mode.global.space.density.name]: '2',
 		},
-	);
+	});
 
 	expect(value).toMatchInlineSnapshot(`"2px"`);
 });
 
 it('resolves equation property values from user overrides', () => {
-	const value = resolveComputedTokenValue(
-		preset,
-		preset.$.mode.spacing.sm.name,
-		{
-			...ctx,
-			propertyValues: {
-				[preset.$.mode.global.spacing.density.name]: css`calc(1 + 1)`,
-			},
+	const value = resolveComputedTokenValue(preset, preset.$.mode.space.sm.name, {
+		...ctx,
+		propertyValues: {
+			[preset.$.mode.global.space.density.name]: css`calc(1 + 1)`,
 		},
-	);
+	});
 
 	expect(value).toMatchInlineSnapshot(`"2px"`);
 });

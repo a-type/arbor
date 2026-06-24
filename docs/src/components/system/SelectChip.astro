@@ -17,9 +17,7 @@ const { value, name, ...props } = Astro.props;
 	.select-chip {
 		@apply --mx-shadow;
 		@apply --mx-action-ambient;
-		@apply --mx-text-secondary;
-		line-height: 1;
-		font-weight: var(--m-typography-weight-bold);
+		transition: all var(--m-duration-short) var(--m-easing);
 
 		cursor: pointer;
 		display: block;

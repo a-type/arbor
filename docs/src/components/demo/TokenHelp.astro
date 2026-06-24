@@ -39,10 +39,10 @@
 <style>
 	.root {
 		font-family: monospace;
-		font-size: var(--m-text-ambient-size);
+		font-size: var(--m-prose-ambient-size);
 		line-height: 1.5;
 		position: relative;
-		padding: var(--m-spacing-lg);
+		padding: var(--m-space-lg);
 		@apply --mx-bg(inherit);
 		@apply --mx-fg(var(--m-surface-ambient-fg));
 		border-radius: var(--m-surface-radius);
@@ -50,22 +50,22 @@
 		display: flex;
 		flex-direction: row;
 		justify-content: center;
-		gap: var(--m-spacing-lg);
+		gap: var(--m-space-lg);
 	}
 	.code {
 		display: flex;
 		flex-direction: column;
-		gap: var(--m-spacing);
+		gap: var(--m-space);
 	}
 	.color-preview {
 		width: 100%;
 		height: 80px;
 		@apply --mx-bg(var(--m-color-main));
 		border-top-left-radius: calc(
-			var(--m-surface-radius) - var(--m-spacing-lg) / 2
+			var(--m-surface-radius) - var(--m-space-lg) / 2
 		);
 		border-top-right-radius: calc(
-			var(--m-surface-radius) - var(--m-spacing-lg) / 2
+			var(--m-surface-radius) - var(--m-space-lg) / 2
 		);
 	}
 	.color-note {
@@ -76,11 +76,11 @@
 		top: 2px;
 		@apply --mx-bg(var(--m-color-main));
 		@apply --mx-borderColor(var(--m-color-neutral-ink));
-		margin-inline: var(--m-spacing-xs);
+		margin-inline: var(--m-space-xs);
 	}
 	.token {
 		@apply --mx-fg(var(--m-color-main-ink));
-		font-weight: var(--m-typography-weight-bold);
+		font-weight: var(--m-text-weight-bold);
 	}
 	.token-invalid {
 		text-decoration: underline;
@@ -91,13 +91,13 @@
 		@apply --mx-surface-ambient;
 		@apply --mx-shadow(var(--m-shadow-md));
 		border-radius: var(--m-surface-radius);
-		padding: var(--m-spacing-md);
-		font-size: var(--m-text-ambient-size);
+		padding: var(--m-space-md);
+		font-size: var(--m-prose-ambient-size);
 		font-family: monospace;
 		line-height: 1;
 		pointer-events: none;
 		z-index: 9999;
-		gap: var(--m-spacing-sm);
+		gap: var(--m-space-sm);
 		display: flex;
 		flex-direction: column;
 	}

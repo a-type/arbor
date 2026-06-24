@@ -65,11 +65,13 @@ const popoverId = anchorName.slice(2); // strip leading --
 		position-area: bottom center;
 		inset: auto;
 		margin: 0;
-		margin-top: var(--m-spacing-sm);
+		margin-top: var(--m-space-sm);
 
 		@apply --mx-surface-ambient;
-		@apply --mx-text-secondary;
+		@apply --mx-prose-secondary;
 		@apply --mx-shadow(var(--m-shadow-md));
+		font-family: system-ui, sans-serif;
+		font-weight: var(--m-text-weight-bold);
 
 		border: var(--m-surface-ambient-border);
 		border-radius: var(--m-surface-radius);

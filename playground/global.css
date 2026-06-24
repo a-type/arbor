@@ -1,8 +1,8 @@
 /* inline-arbor-base */
 
 :root {
-	font-size: var(--m-text-secondary-size);
-	font-family: var(--m-text-secondary-font);
-	line-height: var(--m-text-secondary-lineHeight);
-	font-weight: var(--m-text-secondary-weight);
+	font-size: var(--m-prose-secondary-size);
+	font-family: var(--m-prose-secondary-font);
+	line-height: var(--m-prose-secondary-lineHeight);
+	font-weight: var(--m-prose-secondary-weight);
 }

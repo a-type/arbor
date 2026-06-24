@@ -5,12 +5,14 @@ export function getSeason() {
 		autumn: new Date(new Date().getFullYear(), 8, 22).getTime(),
 		winter: new Date(new Date().getFullYear(), 11, 21).getTime(),
 	};
-	let seasonIndex = 0;
-	while (Date.now() >= Object.values(seasonStarts)[seasonIndex]) {
-		seasonIndex++;
-		if (seasonIndex >= Object.values(seasonStarts).length) {
-			seasonIndex = 0;
-		}
+	const now = Date.now();
+	if (now >= seasonStarts.spring && now < seasonStarts.summer) {
+		return 'spring';
+	} else if (now >= seasonStarts.summer && now < seasonStarts.autumn) {
+		return 'summer';
+	} else if (now >= seasonStarts.autumn && now < seasonStarts.winter) {
+		return 'autumn';
+	} else {
+		return 'winter';
 	}
-	return Object.keys(seasonStarts)[seasonIndex];
 }

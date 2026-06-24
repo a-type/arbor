@@ -1,5 +1,5 @@
 import { createModeSchema } from '@arbor-css/modes';
-import { boxIntents, visualIntents } from './common.js';
+import { boxIntents, textAndFontIntents, visualIntents } from './common.js';
 
 export const actionIntents = createModeSchema({
 	padding: boxIntents,
@@ -13,6 +13,7 @@ export const actionIntents = createModeSchema({
 		description:
 			'This token captures the border-radius of actions, taking into account the overall roundness',
 	},
+	text: textAndFontIntents,
 	primary: visualIntents,
 	secondary: visualIntents,
 	ambient: visualIntents,

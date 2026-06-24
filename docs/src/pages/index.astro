@@ -160,8 +160,8 @@ import Layout from '../layouts/Homepage.astro';
 			flex-direction: column;
 			max-width: min(800px, 95vw);
 			margin: 0 auto;
-			padding: var(--m-spacing-md);
-			gap: var(--m-spacing-xl);
+			padding: var(--m-space-md);
+			gap: var(--m-space-xl);
 			box-sizing: border-box;
 
 			@media (min-width: 600px) {
@@ -178,15 +178,15 @@ import Layout from '../layouts/Homepage.astro';
 			display: flex;
 			flex-direction: row;
 			align-items: center;
-			gap: var(--m-spacing);
+			gap: var(--m-space);
 		}
 
 		.nav-title {
 			@apply --mx-fg(inherit);
-			font-size: var(--m-text-primary-size);
-			font-weight: var(--m-typography-weight-bold);
-			font-family: var(--m-text-primary-font);
-			line-height: var(--m-text-primary-lineHeight);
+			font-size: var(--m-prose-primary-size);
+			font-weight: var(--m-text-weight-bold);
+			font-family: var(--m-prose-primary-font);
+			line-height: var(--m-prose-primary-lineHeight);
 			margin: 0;
 		}
 
@@ -194,20 +194,20 @@ import Layout from '../layouts/Homepage.astro';
 			display: flex;
 			flex-direction: column;
 			align-items: start;
-			gap: var(--m-spacing-lg);
+			gap: var(--m-space-lg);
 			flex: 1;
 
 			@media (min-width: 600px) {
 				flex-direction: row;
 				align-items: center;
-				gap: var(--m-spacing);
+				gap: var(--m-space);
 			}
 		}
 
 		.nav-links {
 			display: flex;
 			flex-direction: column;
-			gap: var(--m-spacing-lg);
+			gap: var(--m-space-lg);
 			list-style: none;
 			padding: 0;
 			margin: 0;
@@ -221,8 +221,8 @@ import Layout from '../layouts/Homepage.astro';
 			width: 100%;
 			display: flex;
 			flex-direction: row;
-			gap: var(--m-spacing);
-			padding: var(--m-spacing);
+			gap: var(--m-space);
+			padding: var(--m-space);
 			align-items: center;
 			justify-content: between;
 			position: sticky;
@@ -295,7 +295,7 @@ import Layout from '../layouts/Homepage.astro';
 		main {
 			display: flex;
 			flex-direction: column;
-			gap: var(--m-spacing-xl);
+			gap: var(--m-space-xl);
 		}
 
 		section {
@@ -304,12 +304,12 @@ import Layout from '../layouts/Homepage.astro';
 			align-items: start;
 			justify-content: start;
 			text-align: left;
-			gap: var(--m-spacing);
+			gap: var(--m-space);
 			box-sizing: border-box;
 		}
 
 		.logo-section {
-			gap: var(--m-spacing);
+			gap: var(--m-space);
 			box-sizing: border-box;
 			display: flex;
 			flex-direction: column;
@@ -334,24 +334,24 @@ import Layout from '../layouts/Homepage.astro';
 
 		.tagline {
 			@apply --mx-fg(inherit);
-			font-size: var(--m-text-primary-size);
-			font-weight: var(--m-typography-weight-thin);
-			font-family: var(--m-text-primary-font);
-			line-height: var(--m-text-primary-lineHeight);
+			font-size: var(--m-prose-primary-size);
+			font-weight: var(--m-text-weight-thin);
+			font-family: var(--m-prose-primary-font);
+			line-height: var(--m-prose-primary-lineHeight);
 		}
 
 		.description {
 			@apply --mx-fg(inherit);
-			font-size: var(--m-text-ambient-size);
-			font-weight: var(--m-typography-weight-bold);
-			font-family: var(--m-text-ambient-font);
-			line-height: var(--m-text-ambient-lineHeight);
+			font-size: var(--m-prose-ambient-size);
+			font-weight: var(--m-text-weight-bold);
+			font-family: var(--m-prose-ambient-font);
+			line-height: var(--m-prose-ambient-lineHeight);
 		}
 
 		a {
 			@apply --mx-fg(inherit);
-			font-weight: var(--m-typography-weight-bold);
-			font-family: var(--m-text-secondary-font);
+			font-weight: var(--m-text-weight-bold);
+			font-family: var(--m-prose-secondary-font);
 			text-decoration: none;
 
 			p & {
@@ -365,21 +365,21 @@ import Layout from '../layouts/Homepage.astro';
 			margin: 0;
 		}
 		h2 {
-			@apply --mx-text-primary;
-			font-weight: var(--m-typography-weight-bold);
+			@apply --mx-prose-primary;
+			font-weight: var(--m-text-weight-bold);
 		}
 		section h2 {
-			margin-bottom: var(--m-spacing);
+			margin-bottom: var(--m-space);
 		}
 		p {
 			margin-top: 0;
-			margin-bottom: var(--m-spacing-lg);
+			margin-bottom: var(--m-space-lg);
 		}
 
 		.cta {
 			grid-area: cta;
 			display: flex;
-			gap: var(--m-spacing);
+			gap: var(--m-space);
 			flex-wrap: wrap;
 		}
 
@@ -400,15 +400,15 @@ import Layout from '../layouts/Homepage.astro';
 			display: flex;
 			flex-direction: column-reverse;
 			align-items: start;
-			padding: var(--m-spacing-lg);
-			gap: var(--m-spacing-lg);
+			padding: var(--m-space-lg);
+			gap: var(--m-space-lg);
 			width: 100%;
 
 			@media (min-width: 600px) {
 				flex-direction: row;
 				align-items: center;
 				justify-content: space-between;
-				font-size: var(--m-text-secondary-size);
+				font-size: var(--m-prose-secondary-size);
 
 				.footer-info {
 					text-align: end;

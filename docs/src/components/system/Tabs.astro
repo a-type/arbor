@@ -40,7 +40,7 @@ const { values, titles, label, class: className, ...props } = Astro.props;
 
 	.tab-list {
 		display: flex;
-		gap: var(--m-spacing-lg);
+		gap: var(--m-space-lg);
 		border-bottom: var(--m-lineWidth) solid var(--m-color-neutral-heavy);
 		width: 100%;
 		box-sizing: border-box;
@@ -51,16 +51,16 @@ const { values, titles, label, class: className, ...props } = Astro.props;
 	}
 
 	.tab {
-		padding: var(--m-spacing) 0;
+		padding: var(--m-space) 0;
 		border: none;
 		background: none;
-		@apply --mx-text-secondary;
+		@apply --mx-prose-secondary;
 		cursor: pointer;
 
 		&[aria-selected='true'] {
 			color: var(--m-color-main-heavy);
 			border-bottom: 2px solid var(--m-color-main-heavy);
-			font-weight: var(--m-typography-weight-bold);
+			font-weight: var(--m-text-weight-bold);
 		}
 	}
 </style>

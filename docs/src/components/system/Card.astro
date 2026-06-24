@@ -27,7 +27,7 @@ const {
 		@apply --mx-surface-secondary;
 		display: flex;
 		flex-direction: column;
-		gap: var(--m-spacing);
+		gap: var(--m-space);
 		align-items: start;
 		transition-property: all;
 		transition-duration: var(--m-duration);
@@ -36,13 +36,13 @@ const {
 
 	h2 {
 		margin: 0;
-		@apply --mx-text-primary;
-		font-weight: var(--m-typography-weight-bold);
+		@apply --mx-prose-primary;
+		font-weight: var(--m-text-weight-bold);
 	}
 	p {
 		margin: 0;
-		@apply --mx-text-secondary;
-		font-weight: var(--m-typography-weight-normal);
+		@apply --mx-prose-secondary;
+		font-weight: var(--m-text-weight-normal);
 		@apply --mx-fg(var(--m-surface-ambient-fg));
 	}
 </style>

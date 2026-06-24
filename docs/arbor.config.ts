@@ -42,7 +42,7 @@ export const basePreset = presetArbor({
 		lineWidth: '1',
 		roundness: '0.75',
 	},
-	spacing: {
+	space: {
 		baseSize: 'calc(clamp(4px, 4px + 0.25vw, 10px))',
 		roundToPixel: true,
 	},
@@ -50,7 +50,7 @@ export const basePreset = presetArbor({
 		fadeInUp: (css, $) => css`
 			from {
 				opacity: 0;
-				transform: translateY(${$.mode.spacing.sm});
+				transform: translateY(${$.mode.space.sm});
 			}
 			to {
 				opacity: 1;
@@ -88,7 +88,7 @@ basePreset.bundleMode('attention', {
 
 basePreset.bundleMode('hero', {
 	global: {
-		spacing: {
+		space: {
 			density: 0.5,
 		},
 		typography: {
@@ -96,7 +96,7 @@ basePreset.bundleMode('hero', {
 			fontSizeScaleBase: 1.5,
 		},
 	},
-	text: {
+	prose: {
 		primary: {
 			font: '"Cormorant", serif',
 		},
@@ -107,12 +107,17 @@ basePreset.bundleMode('hero', {
 			font: '"Cormorant", serif',
 		},
 	},
+	action: {
+		text: {
+			font: 'system-ui, sans-serif',
+		},
+	},
 });
 
 basePreset.bundleMode('normal', {
 	global: {
-		spacing: {
-			density: basePreset.baseMode.global?.spacing?.density,
+		space: {
+			density: basePreset.baseMode.global?.space?.density,
 		},
 		typography: {
 			size: basePreset.baseMode.global?.typography?.size,
@@ -124,7 +129,7 @@ basePreset.bundleMode('normal', {
 
 basePreset.bundleMode('dense', {
 	global: {
-		spacing: {
+		space: {
 			density: 1.5,
 		},
 		typography: {
@@ -135,7 +140,7 @@ basePreset.bundleMode('dense', {
 
 basePreset.bundleMode('denser', {
 	global: {
-		spacing: {
+		space: {
 			density: 2,
 		},
 		typography: {

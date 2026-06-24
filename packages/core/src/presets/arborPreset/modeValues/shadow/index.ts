@@ -39,7 +39,7 @@ const defaultShadowYCss = (step: number) =>
 	css`calc(1px * pow(2, ${step} - 1))`;
 const defaultShadowBlurCss = (step: number, $: ArborModeGlobalTokens) => css`
 	calc(${[$.shadow.blur, '0.5']} * ${[
-		$.spacing.baseSize,
+		$.space.baseSize,
 		'0.5rem',
 	]} * 0.25 * pow(2, ${step} - 1))
 `;

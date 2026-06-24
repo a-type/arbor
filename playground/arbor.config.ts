@@ -23,9 +23,6 @@ const preset = definePreset({
 				},
 				mainColor: 'brand',
 			},
-			typography: {
-				defaultFontSize: 'calc(12px + 0.5vw)',
-			},
 		}),
 	],
 

@@ -8,7 +8,7 @@ export const global = createModeSchema({
 			description: 'Applies global saturation adjustments to all colors',
 		},
 	},
-	spacing: {
+	space: {
 		density: {
 			purpose: 'scalar',
 			description:

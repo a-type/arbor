@@ -17,7 +17,7 @@ function createTestPreset() {
 	return definePreset({
 		name: 'test-preset',
 		modeSchema: {
-			spacing: {
+			space: {
 				md: {
 					purpose: 'spacing',
 					description: 'Default medium spacing for layout rhythm.',
@@ -33,7 +33,7 @@ function createTestPreset() {
 			},
 		},
 		baseMode: () => ({
-			spacing: {
+			space: {
 				md: '16px',
 			},
 			color: {
@@ -77,7 +77,7 @@ it('parses token level filters and supports aliases', () => {
 
 it('lists token records and formats AI-friendly token table output', () => {
 	const preset = createTestPreset();
-	const modeSpacingTokenName = preset.$.mode.spacing.md.name;
+	const modeSpacingTokenName = preset.$.mode.space.md.name;
 	const modeMainColorTokenName = preset.$.mode.color.main.$root.name;
 	const records = listTokenRecords(preset, {
 		levels: ['mode'],
@@ -98,7 +98,7 @@ it('lists token records and formats AI-friendly token table output', () => {
 
 it('finds tokens by CSS variable name and returns name suggestions', () => {
 	const preset = createTestPreset();
-	const modeSpacingTokenName = preset.$.mode.spacing.md.name;
+	const modeSpacingTokenName = preset.$.mode.space.md.name;
 	const records = listTokenRecords(preset);
 	const modeSpacingRecord = records.find(
 		(record) => record.token.name === modeSpacingTokenName,

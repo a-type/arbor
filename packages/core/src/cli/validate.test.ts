@@ -9,12 +9,12 @@ import {
 function createTestPreset() {
 	const preset = definePreset({
 		modeSchema: {
-			spacing: {
+			space: {
 				md: 'spacing',
 			},
 		},
 		baseMode: () => ({
-			spacing: {
+			space: {
 				md: '16px',
 			},
 		}),
@@ -73,7 +73,7 @@ it('reports unknown declarations, functions, and mixins for configured prefixes'
 
 it('suggests similar Arbor tokens for unknown declarations', () => {
 	const preset = createTestPreset();
-	const knownTokenName = preset.$.mode.spacing.md.name;
+	const knownTokenName = preset.$.mode.space.md.name;
 	const misspelledTokenName = knownTokenName.replace(/md$/, 'mdd');
 	const issues = validateCssContent({
 		content: ['.card {', `  ${misspelledTokenName}: 1rem;`, '}'].join('\n'),
@@ -110,7 +110,7 @@ it('reports misuse when functions or mixins are used as declarations', () => {
 
 it('accepts existing declarations, function calls, and mixin apply usage', () => {
 	const preset = createTestPreset();
-	const knownTokenName = preset.$.mode.spacing.md.name;
+	const knownTokenName = preset.$.mode.space.md.name;
 	const issues = validateCssContent({
 		content: [
 			'.card {',
