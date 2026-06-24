@@ -107,6 +107,13 @@ export interface ArborPreset<
 		options?: ModeInstanceOptions,
 	): TMode;
 
+	/**
+	 * Any additional global CSS to apply outside of
+	 * the base mode. For example, things which cannot
+	 * be declared inside selectors like @keyframes.
+	 */
+	globalCss: string;
+
 	meta: {
 		name: string;
 	};
@@ -180,6 +187,15 @@ export interface DefinePresetConfig<
 		  ) => TFunctions)
 		| undefined;
 	extends?: TExtends;
+	globalCss?: (
+		$: PresetTokens<
+			ExtendedConfigModeSchema<NoInferT<TExtends>> & NoInferT<TModeSchema>,
+			MergeAndReplaceExtensions<
+				ExtendedConfigMixins<NoInferT<TExtends>>,
+				NoInferT<TMixins>
+			>
+		>,
+	) => string;
 	config?: GlobalContextConfig;
 }
 
@@ -189,6 +205,7 @@ function emptyPreset(): ArborPreset {
 		mixins: {} as any,
 		modeSchema: {} as any,
 		baseMode: createModeInstance('base', {}),
+		globalCss: '',
 		$: {
 			mode: {},
 			mixins: {},
@@ -262,6 +279,7 @@ export function definePreset<
 					// no-op
 					return acc as any;
 				},
+				globalCss: `${acc.globalCss}\n${presetWithConfig.globalCss}`,
 			} as any;
 		}, emptyPreset());
 		const composedPresetBundledModes = extended.reduce<
@@ -352,6 +370,7 @@ export function definePreset<
 			functions: allFunctions,
 			mixins: allMixins,
 			modeSchema,
+			globalCss: `${composedPresets.globalCss}\n${presetOptions.globalCss?.($tokens as any) ?? ''}`,
 
 			withConfig,
 

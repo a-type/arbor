@@ -67,12 +67,12 @@ export function paramsAsString<TParams extends FunctionParams>(
 			const name = nonce ? paramAsToken(p, nonce).name : getParamName(p);
 			if (isFunctionParamWithMeta(p)) {
 				const type = p.syntax ?? p.type ?? '*';
-				const typeAnnotation = type === '*' ? '' : ` ${type}`;
+				const typeAnnotation = type === '*' ? '' : ` type(${type})`;
 				return `${name}${typeAnnotation}`;
 			}
 			if (isToken(p)) {
 				const type = p.syntax ?? '*';
-				const typeAnnotation = type === '*' ? '' : ` ${type}`;
+				const typeAnnotation = type === '*' ? '' : ` type(${type})`;
 				return `${name}${typeAnnotation}` as CssInterpolation;
 			}
 			return name;

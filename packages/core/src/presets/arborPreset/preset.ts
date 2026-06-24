@@ -1,9 +1,12 @@
-import { css, CssInterpolation } from '@arbor-css/css-eval';
+import { Css, css, CssInterpolation, CssTemplate } from '@arbor-css/css-eval';
 import { ArborPrefixConfig } from '@arbor-css/globals';
-import { definePreset } from '@arbor-css/preset';
+import { definePreset, PresetTokens } from '@arbor-css/preset';
 import { createColorMixins } from '../basicPreset/mixins.js';
 import { presetBasic } from '../basicPreset/preset.js';
-import { createArborModeSchema } from './modeSchema/modeSchema.js';
+import {
+	ArborModeSchema,
+	createArborModeSchema,
+} from './modeSchema/modeSchema.js';
 import {
 	CompileColorsOptions,
 	DefaultRangeName,
@@ -30,10 +33,10 @@ import { TypographyConfig } from './modeValues/typography/index.js';
 
 export interface ArborPresetConfig<
 	TRanges extends string,
-	TRangeStepNames extends string = DefaultRangeName,
+	TKeyframeName extends string = string,
 > {
 	prefixes?: ArborPrefixConfig;
-	color: CompileColorsOptions<TRanges, TRangeStepNames> & {
+	color: CompileColorsOptions<TRanges> & {
 		mainColor: string;
 		defaultScheme?: 'light' | 'dark';
 		/**
@@ -160,6 +163,10 @@ export interface ArborPresetConfig<
 		min?: CssInterpolation;
 		max?: CssInterpolation;
 	};
+	keyframes?: Record<
+		TKeyframeName,
+		(css: CssTemplate, tokens: PresetTokens<ArborModeSchema, {}>) => Css
+	>;
 	/**
 	 * Turns off the automatic bundled @mode-light, @mode-dark, and @mode-inverted.
 	 */
@@ -173,9 +180,11 @@ export interface ArborPresetConfig<
 export const presetArbor = <
 	TRanges extends string,
 	TRangeStepNames extends string = DefaultRangeName,
+	TKeyframeNames extends string = string,
 >(
-	config: ArborPresetConfig<TRanges>,
+	config: ArborPresetConfig<TRanges, TKeyframeNames>,
 ) => {
+	const keyframeNames = Object.keys(config.keyframes ?? {}) as TKeyframeNames[];
 	const preset = definePreset({
 		name: 'arbor',
 		modeSchema: createArborModeSchema<TRanges>({
@@ -442,6 +451,27 @@ export const presetArbor = <
 				`,
 			});
 
+			const animation = create('animation', {
+				description:
+					'Applies a keyframe animation by name, with default easing and duration applied. Override defaults with regular CSS properties.',
+				parameters: [
+					{
+						name: '--name',
+						syntax:
+							Object.keys(config.keyframes ?? {}).join(' | ') || '<string>',
+					},
+				],
+				definition: (css, { parameters }) => css`
+					animation-name: ${parameters[0]};
+					animation-duration: ${$.mode.duration.$root};
+					animation-timing-function: ${$.mode.easing.$root};
+
+					@media (prefers-reduced-motion: reduce) {
+						animation: none;
+					}
+				`,
+			});
+
 			return {
 				borderColor: newBorderMixins.ref,
 				borderColorLighter: newBorderMixins.lighter,
@@ -460,8 +490,23 @@ export const presetArbor = <
 				textPrimary,
 				textSecondary,
 				textAmbient,
+
+				animation,
 			};
 		},
+		globalCss: ($) => `
+			${
+				config.keyframes ?
+					Object.entries(config.keyframes).map(
+						([name, def]) => `
+				@keyframes ${name} {
+				  ${(def as any)(css, $).text}
+				}
+			`,
+					)
+				:	''
+			}
+			`,
 		extends: [presetBasic],
 	});
 

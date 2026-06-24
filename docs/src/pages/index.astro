@@ -36,7 +36,7 @@ import Layout from '../layouts/Homepage.astro';
 						<div id="mark-bg"></div>
 					</h1>
 				</div>
-				<div style="grid-area: logo;" class="logo-section">
+				<div style="grid-area: logo;" class="logo-section @mode-slow">
 					<ArborImage class="arbor-image" />
 				</div>
 				<div style="grid-area: description;">
@@ -287,8 +287,8 @@ import Layout from '../layouts/Homepage.astro';
 			width: anchor-size(width);
 			height: calc(anchor-size(height) / 2);
 			@apply --mx-bg(var(--m-color-main-wash));
-			border-radius: var(--m-action-radius);
-			opacity: 0.5;
+			border-radius: var(--m-surface-radius);
+			opacity: 1;
 			z-index: 0;
 		}
 
@@ -316,6 +316,12 @@ import Layout from '../layouts/Homepage.astro';
 			min-height: 0;
 			align-items: start;
 			justify-content: center;
+
+			opacity: 0;
+			@apply --mx-animation(fadeInUp);
+			animation-duration: var(--m-duration-long);
+			animation-timing-function: var(--m-easing-out-loose);
+			animation-fill-mode: forwards;
 
 			@media (min-width: 800px) {
 				align-items: center;

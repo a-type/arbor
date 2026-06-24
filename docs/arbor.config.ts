@@ -46,6 +46,18 @@ export const basePreset = presetArbor({
 		baseSize: 'calc(clamp(4px, 4px + 0.25vw, 10px))',
 		roundToPixel: true,
 	},
+	keyframes: {
+		fadeInUp: (css, $) => css`
+			from {
+				opacity: 0;
+				transform: translateY(${$.mode.spacing.sm});
+			}
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		`,
+	},
 });
 
 function makeSeasonMode(season: 'winter' | 'spring' | 'summer' | 'autumn') {
@@ -156,6 +168,23 @@ basePreset.bundleMode('thick', {
 		},
 		typography: {
 			boldness: 0.85,
+		},
+	},
+});
+
+basePreset.bundleMode('slow', {
+	global: {
+		duration: {
+			slowness: 3,
+		},
+	},
+});
+
+basePreset.bundleMode('no-animation', {
+	global: {
+		duration: {
+			base: 0,
+			max: 0,
 		},
 	},
 });

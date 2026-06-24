@@ -42,6 +42,7 @@ const purposeToPropertyTarget: Record<TokenPurpose, string> = {
 	scalar: 'line-height',
 	size: 'width',
 	spacing: 'width',
+	'keyframe-name': 'animation-name',
 	other: 'background', // picked as a versatile simplifier property
 };
 

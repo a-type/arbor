@@ -1,6 +1,6 @@
 import { createModeSchema } from '@arbor-css/modes';
 
-export const easingSemantics = createModeSchema({
+export const easingSemanticsNamespace = createModeSchema({
 	$root: {
 		purpose: 'easing-function',
 		description: 'A convenient reference for the "medium" easing',
@@ -18,4 +18,10 @@ export const easingSemantics = createModeSchema({
 		description:
 			'A long, relaxed easing, good for slow interactions and animations',
 	},
+});
+
+export const easingSemantics = createModeSchema({
+	...easingSemanticsNamespace,
+	in: easingSemanticsNamespace,
+	out: easingSemanticsNamespace,
 });

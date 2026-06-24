@@ -132,6 +132,7 @@ it('composes presets', () => {
 		modeSchema: {
 			color: 'color',
 		},
+		globalCss: () => `/* base preset global css */`,
 		baseMode: () => ({
 			color: 'red',
 			// TODO: prevent arbitrary keys.
@@ -206,6 +207,8 @@ it('composes presets', () => {
 	const internals = getInternals(extendedPreset);
 	expect(internals.modes.blue).toBeDefined();
 	expect(internals.modes.green).toBeDefined();
+
+	expect(extendedPreset.globalCss).toContain('base preset global css');
 
 	// typing checks
 	extendedPreset.modeSchema;

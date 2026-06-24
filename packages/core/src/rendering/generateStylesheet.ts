@@ -26,6 +26,9 @@ export function generateStylesheet(
 
 	return `/* Auto-generated CSS - do not edit directly */
 	${cascadeLayerName ? `@layer ${cascadeLayerName} {` : ''}
+/* Global CSS */
+${config.globalCss}
+
 ${[config.baseMode, ...Object.values(modes)]
 	.map((modeValue) => {
 		return modeToCss(modeValue, config, { simplifier, skipBaking });

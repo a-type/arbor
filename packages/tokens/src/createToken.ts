@@ -145,6 +145,7 @@ export type TokenPurpose =
 	| 'easing-function'
 	| 'duration'
 	| 'scalar'
+	| 'keyframe-name'
 	| 'other';
 
 export function getTypeFromPurpose(purpose: TokenPurpose): string {
@@ -177,6 +178,7 @@ export function getTypeFromPurpose(purpose: TokenPurpose): string {
 		case 'duration':
 			return '<time>';
 		case 'easing-function':
+		case 'keyframe-name':
 			return '<string>';
 		case 'border-style':
 			return 'solid | dashed | dotted | double | groove | ridge | inset | outset | none | hidden';

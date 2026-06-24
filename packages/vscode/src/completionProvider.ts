@@ -51,7 +51,7 @@ export class ArborCompletionProvider implements vscode.CompletionItemProvider {
 						`\`${value.name}\``,
 						value.description ? `${value.description}` : null,
 						`**Purpose:** ${value.purpose}`,
-						'**Type:** `' + value.type + '`',
+						'**Syntax:** `' + value.syntax + '`',
 					]
 						.filter(Boolean)
 						.join('\n\n'),
@@ -92,7 +92,7 @@ export class ArborCompletionProvider implements vscode.CompletionItemProvider {
 						'**Parameters:**',
 						...value.parameters
 							.map(paramToCompletionInline)
-							.map((p) => `- \`${p}\``),
+							.map((p: string) => `- \`${p}\``),
 						'**Contributed tokens:**',
 						...Object.values(value.contributeTokens).map(
 							(t) => `- \`${t.name}\`: ${t.purpose}`,
@@ -106,7 +106,7 @@ export class ArborCompletionProvider implements vscode.CompletionItemProvider {
 						value.parameters.length > 0 ?
 							`(${value.parameters
 								.map(paramToCompletionInline)
-								.map((p, i) => `\${${i + 1}:${p}}`)
+								.map((p: string, i: number) => `\${${i + 1}:${p}}`)
 								.join(', ')})`
 						:	''
 					}`,

@@ -11,6 +11,18 @@ it('is extensible', () => {
 			},
 			mainColor: 'red',
 		},
+		keyframes: {
+			fadeInUp: (css, $) => css`
+				from {
+					opacity: 0;
+					transform: translateY(${$.mode.spacing.sm});
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			`,
+		},
 	});
 
 	// typecheck arbor preset
@@ -75,6 +87,8 @@ it('is extensible', () => {
 	expect(hoverBodyText).toMatchInlineSnapshot(
 		`"&:hover { --_-param-bg-lighter-step: 1;--_-param-bg-lighter-source: var(--mx-bg-applied); --mx-bg-ref: oklch(from var(--_-param-bg-lighter-source, var(--mx-bg-applied)) calc(l + var(--_-param-bg-lighter-step) * 0.5 * (var(--m-global-whenLight, 1) * calc(pow(1 - l, 0.5)) * 2 + var(--m-global-whenDark, 1) * -0.08)) calc(c * calc(1 + var(--_-param-bg-lighter-step) * 0.5 * (var(--m-global-whenLight, 1) * -0.08) + (var(--m-global-whenDark, 1) * -0.02))) h); --mx-ring-value: 0 0 0 0px var(--m-global-trueLightColor), 0 0 0 calc(2px + 0px) var(--m-color-main-heavy); cursor: pointer; }"`,
 	);
+
+	expect(preset.globalCss).toContain('@keyframes fadeInUp');
 
 	// check typing of extended mixins
 	// @ts-expect-error

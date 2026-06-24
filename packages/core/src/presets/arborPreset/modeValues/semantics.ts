@@ -113,11 +113,31 @@ export function createEasingSemanticValues<TColorName extends string>(
 		const bounciness = css`calc(${$.mode.global.easing.bounciness} * 0.5 * pow(2, ${level}))`;
 		return css`cubic-bezier(calc(max(0, ${bounciness})), 0, calc(${bounciness} / 2), 1)`;
 	}
+	function easingInForLevel(level: number) {
+		const bounciness = css`calc(${$.mode.global.easing.bounciness} * 0.5 * pow(2, ${level}))`;
+		return css`cubic-bezier(calc(max(0, ${bounciness})), 0, calc(${bounciness}), 1)`;
+	}
+	function easingOutForLevel(level: number) {
+		const bounciness = css`calc(${$.mode.global.easing.bounciness} * 0.5 * pow(2, ${level}))`;
+		return css`cubic-bezier(0, 0, calc(${bounciness} / 2), 1)`;
+	}
 	return {
 		$root: $.mode.easing.medium,
 		tight: easingForLevel(-1),
 		medium: easingForLevel(0),
 		loose: easingForLevel(1),
+		in: {
+			$root: $.mode.easing.in.medium,
+			tight: easingInForLevel(-1),
+			medium: easingInForLevel(0),
+			loose: easingInForLevel(1),
+		},
+		out: {
+			$root: $.mode.easing.out.medium,
+			tight: easingOutForLevel(-1),
+			medium: easingOutForLevel(0),
+			loose: easingOutForLevel(1),
+		},
 	} satisfies ModeValues<ArborModeSchema['easing']>;
 }
 
