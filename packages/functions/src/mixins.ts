@@ -17,6 +17,8 @@ import {
 import {
 	applyParameters,
 	FunctionParams,
+	getParamName,
+	isFunctionParamWithMeta,
 	paramAsToken,
 	ParamsAsCallInputs,
 	paramsAsInterpolations,
@@ -215,6 +217,25 @@ export function createMixinFactory({
 					${parameterDeclarations} ${rawDefinition}
 				`;
 			},
+			constructParamInputs(paramValues: CssInterpolation[]) {
+				const inputs: Record<string, CssInterpolation> = {};
+				for (let i = 0; i < parameters.length; i++) {
+					const param = parameters[i];
+					const value = paramValues[i];
+					if (value === undefined) {
+						if (isFunctionParamWithMeta(param) && param.fallback) {
+							inputs[param.name] = param.fallback;
+						} else {
+							throw new Error(
+								`Missing required parameter '${getParamName(param)}' for function '${cssName}'`,
+							);
+						}
+					} else {
+						inputs[getParamName(param)] = value;
+					}
+				}
+				return inputs as ParamsAsCallInputs<TParams>;
+			},
 			parameters,
 			parameterTokens,
 			contributeTokens,
@@ -256,6 +277,9 @@ export type ArborMixin<
 	 * });
 	 */
 	apply: (params: ParamsAsCallInputs<TParams>) => Css;
+	constructParamInputs: (
+		paramValues: CssInterpolation[],
+	) => ParamsAsCallInputs<TParams>;
 	parameters: TParams;
 	parameterTokens: Token[];
 	contributeTokens: TTokens;

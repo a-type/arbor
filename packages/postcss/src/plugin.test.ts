@@ -116,6 +116,37 @@ it('warns when @apply references an unknown mixin', async () => {
 	expect(result.css).toContain('@apply --mx-unknown');
 });
 
+it('warns when mixin parameters are incorrect', async () => {
+	const createToken = createTokenFactory({ tokenPrefix: '--mx-' });
+	const createMixin = createMixinFactory({ namePrefix: '--mx-', createToken });
+
+	const fg = createMixin('fg', {
+		parameters: ['--color'] as const,
+		definition: (css, { parameters: [color] }) => css`
+			color: ${color};
+		`,
+	});
+
+	mockLoadConfig.mockResolvedValue(
+		makeConfigResult({ functions: {}, mixins: { fg }, $: undefined }),
+	);
+
+	const plugin = ArborPlugin({ cwd: '/fake' });
+	const result = await postcss([plugin]).process(`.btn { @apply --mx-fg; }`, {
+		from: undefined,
+	});
+
+	const warnings = result.messages
+		.filter((m) => m.type === 'warning')
+		.map((m) => (m as any).text as string);
+
+	expect(warnings.some((w) => w.includes('Missing required parameter'))).toBe(
+		true,
+	);
+	// The unresolved @apply should remain in the output
+	expect(result.css).toContain('@apply --mx-fg');
+});
+
 it('does not touch @apply rules without the Arbor mixin prefix', async () => {
 	mockLoadConfig.mockResolvedValue(
 		makeConfigResult({
@@ -182,9 +213,20 @@ it('inlines function calls in declaration values', async () => {
 	expect(result.css).toContain('font-size: 4');
 });
 
-it('does not implicitly rewrite color declarations into ref system vars', async () => {
+it('warns when a function call references an unknown function', async () => {
 	mockLoadConfig.mockResolvedValue(
 		makeConfigResult({
+			context: {
+				tokenPrefixes: {
+					modeTokenPrefix: '--m-',
+					primitiveTokenPrefix: '--p-',
+					metaTokenPrefix: '--_-',
+					refTokenPrefix: '--ref-',
+					functionNamePrefix: '--fn-',
+					mixinNamePrefix: '--mx-',
+					mixinTokenPrefix: '--mx-',
+				},
+			},
 			functions: {},
 			mixins: {},
 			$: undefined,
@@ -193,13 +235,146 @@ it('does not implicitly rewrite color declarations into ref system vars', async 
 
 	const plugin = ArborPlugin({ cwd: '/fake' });
 	const result = await postcss([plugin]).process(
-		`.btn { color: red; background: blue; }`,
+		`.btn { font-size: --fn-unknown(4); }`,
 		{ from: undefined },
 	);
 
-	expect(result.css).toContain('color: red');
-	expect(result.css).toContain('background: blue');
-	expect(result.css).not.toContain('--ref-');
+	const warnings = result.messages
+		.filter((m) => m.type === 'warning')
+		.map((m) => (m as any).text as string);
+
+	expect(warnings.some((w) => w.includes('--fn-unknown'))).toBe(true);
+	// The unresolved function call should remain in the output
+	expect(result.css).toContain('--fn-unknown(4)');
+});
+
+it('warns when a function call has incorrect parameters', async () => {
+	const createFunction = createFunctionFactory({ namePrefix: '--fn-' });
+	const double = createFunction('double', {
+		description: 'Doubles a number',
+		parameters: ['--value'],
+		definition: ($, value) => $`${value}`,
+	});
+
+	mockLoadConfig.mockResolvedValue(
+		makeConfigResult({
+			context: {
+				tokenPrefixes: {
+					modeTokenPrefix: '--m-',
+					primitiveTokenPrefix: '--p-',
+					metaTokenPrefix: '--_-',
+					refTokenPrefix: '--ref-',
+					functionNamePrefix: '--fn-',
+					mixinNamePrefix: '--mx-',
+					mixinTokenPrefix: '--mx-',
+				},
+			},
+			functions: { double },
+			mixins: {},
+			$: undefined,
+		}),
+	);
+
+	const plugin = ArborPlugin({ cwd: '/fake' });
+	const result = await postcss([plugin]).process(
+		`.btn { font-size: --fn-double(); }`,
+		{ from: undefined },
+	);
+
+	const warnings = result.messages
+		.filter((m) => m.type === 'warning')
+		.map((m) => (m as any).text as string);
+
+	expect(warnings.some((w) => w.includes('Missing required parameter'))).toBe(
+		true,
+	);
+	// The unresolved function call should remain in the output
+	expect(result.css).toContain('--fn-double()');
+});
+
+it('inlines function calls passed as parameters to other functions', async () => {
+	const createFunction = createFunctionFactory({ namePrefix: '--fn-' });
+	const double = createFunction('double', {
+		description: 'Doubles a number',
+		parameters: ['--value'],
+		definition: ($, value) => $`${value}`,
+	});
+
+	const triple = createFunction('triple', {
+		description: 'Triples a number',
+		parameters: ['--value'],
+		definition: ($, value) => $`${value}`,
+	});
+
+	mockLoadConfig.mockResolvedValue(
+		makeConfigResult({
+			context: {
+				tokenPrefixes: {
+					modeTokenPrefix: '--m-',
+					primitiveTokenPrefix: '--p-',
+					metaTokenPrefix: '--_-',
+					refTokenPrefix: '--ref-',
+					functionNamePrefix: '--fn-',
+					mixinNamePrefix: '--mx-',
+					mixinTokenPrefix: '--mx-',
+				},
+			},
+			functions: { double, triple },
+			mixins: {},
+			$: undefined,
+		}),
+	);
+
+	const plugin = ArborPlugin({ cwd: '/fake' });
+	const result = await postcss([plugin]).process(
+		`.btn { font-size: --fn-double(--fn-triple(2)); }`,
+		{ from: undefined },
+	);
+
+	expect(result.css).toContain('font-size: 2');
+});
+
+it('handles complex multi-line function params', async () => {
+	const createFunction = createFunctionFactory({ namePrefix: '--fn-' });
+	const darken = createFunction('darken', {
+		description: 'Doubles a number',
+		parameters: ['--color', '--amount'],
+		definition: ($, color, amount) => $`${color} ${amount}`,
+	});
+
+	mockLoadConfig.mockResolvedValue(
+		makeConfigResult({
+			context: {
+				tokenPrefixes: {
+					modeTokenPrefix: '--m-',
+					primitiveTokenPrefix: '--p-',
+					metaTokenPrefix: '--_-',
+					refTokenPrefix: '--ref-',
+					functionNamePrefix: '--fn-',
+					mixinNamePrefix: '--mx-',
+					mixinTokenPrefix: '--mx-',
+				},
+			},
+			functions: { darken },
+			mixins: {},
+			$: undefined,
+		}),
+	);
+
+	const plugin = ArborPlugin({ cwd: '/fake' });
+	const result = await postcss([plugin]).process(
+		`.btn {
+			background: --fn-darken(
+				color-mix(var(--a), var(--b) 10%),
+				2
+			);
+		}`,
+		{ from: undefined },
+	);
+
+	expect(result.css).toContain(
+		'background: color-mix(var(--a), var(--b) 10%) 2',
+	);
 });
 
 it('inlines @apply mixin arguments into parameterized mixin declarations', async () => {
@@ -284,7 +459,9 @@ it('warns when @apply omits a required mixin argument', async () => {
 		.filter((m) => m.type === 'warning')
 		.map((m) => (m as any).text as string);
 
-	expect(warnings.some((w) => w.includes('Missing argument'))).toBe(true);
+	expect(warnings.some((w) => w.includes('Missing required parameter'))).toBe(
+		true,
+	);
 	expect(result.css).toContain('@apply --mx-fg');
 });
 

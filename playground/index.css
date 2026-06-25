@@ -61,6 +61,10 @@ button {
 		&:hover,
 		&:focus {
 			--mx-bg-applied: inherit;
+			--mx-bg-ref: --fn-color-heavier(
+				color-mix(var(--mx-bg-applied), var(--m-color-main-light) 10%),
+				1
+			);
 		}
 	}
 

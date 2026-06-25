@@ -1,6 +1,7 @@
 import {
 	css,
 	Css,
+	CssInterpolation,
 	CssTemplate,
 	printCss,
 	resolveProperties,
@@ -9,6 +10,8 @@ import { Token } from '@arbor-css/tokens';
 import {
 	applyParameters,
 	FunctionParams,
+	getParamName,
+	isFunctionParamWithMeta,
 	paramAsToken,
 	ParamsAsCallInputs,
 	ParamsAsInterpolations,
@@ -103,6 +106,25 @@ export function createFunctionFactory({
 				const result = resolveProperties(equation, parameterValues);
 				return result;
 			},
+			constructParamInputs(paramValues: CssInterpolation[]) {
+				const inputs: Record<string, CssInterpolation> = {};
+				for (let i = 0; i < parameters.length; i++) {
+					const param = parameters[i];
+					const value = paramValues[i];
+					if (value === undefined) {
+						if (isFunctionParamWithMeta(param) && param.fallback) {
+							inputs[param.name] = param.fallback;
+						} else {
+							throw new Error(
+								`Missing required parameter '${getParamName(param)}' for function '${cssName}'`,
+							);
+						}
+					} else {
+						inputs[getParamName(param)] = value;
+					}
+				}
+				return inputs as ParamsAsCallInputs<TParams>;
+			},
 			signature: `${cssName}${paramsAsString(parameters, { keepEmpty: true })}`,
 		};
 	} satisfies CreateFunction;
@@ -117,6 +139,9 @@ export type ArborFunction<TParams extends FunctionParams = FunctionParams> = {
 	equation: Css;
 	definition: string;
 	compute: (params: ParamsAsCallInputs<TParams>) => Css;
+	constructParamInputs: (
+		paramValues: CssInterpolation[],
+	) => ParamsAsCallInputs<TParams>;
 	/**
 	 * A printed representation of the function call signature, for use in
 	 * documentation and error messages

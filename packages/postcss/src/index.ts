@@ -1,11 +1,7 @@
 import { AnyArborPreset, generateStylesheet } from '@arbor-css/core';
 import { printCss } from '@arbor-css/css-eval';
-import {
-	FunctionParam,
-	isFunction,
-	isFunctionParamWithMeta,
-	isMixin,
-} from '@arbor-css/functions';
+import { isFunction, isMixin } from '@arbor-css/functions';
+import { replaceCssFunctionCall } from '@arbor-css/util';
 import { stat } from 'node:fs/promises';
 import postcss, { Plugin } from 'postcss';
 import { loadConfig } from './loadConfig.js';
@@ -36,144 +32,6 @@ interface CachedConfig {
 	preset: AnyArborPreset;
 	/** Stat fingerprints for every file in the dependency graph. */
 	depStats: Map<string, DepStat>;
-}
-
-function parsePrefixedCall(input: string, namePrefix: string) {
-	const source = input.trim();
-	if (!source.startsWith(namePrefix)) return null;
-
-	let nameEnd = namePrefix.length;
-	while (nameEnd < source.length && /[\w-]/.test(source[nameEnd])) {
-		nameEnd += 1;
-	}
-	if (nameEnd === namePrefix.length) return null;
-
-	const name = source.slice(0, nameEnd);
-	if (nameEnd === source.length) {
-		return { name, args: [] as string[] };
-	}
-	if (source[nameEnd] !== '(' || source[source.length - 1] !== ')') {
-		return null;
-	}
-
-	let depth = 0;
-	for (let i = nameEnd; i < source.length; i += 1) {
-		const char = source[i];
-		if (char === '(') depth += 1;
-		if (char === ')') depth -= 1;
-		if (depth === 0 && i < source.length - 1) {
-			return null;
-		}
-		if (depth < 0) return null;
-	}
-	if (depth !== 0) return null;
-
-	return { name, args: splitCallArguments(source.slice(nameEnd + 1, -1)) };
-}
-
-function splitCallArguments(input: string) {
-	const args: string[] = [];
-	let depth = 0;
-	let current = '';
-
-	for (const char of input) {
-		if (char === '(') {
-			depth += 1;
-			current += char;
-			continue;
-		}
-		if (char === ')') {
-			depth -= 1;
-			current += char;
-			continue;
-		}
-		if (char === ',' && depth === 0) {
-			args.push(current.trim());
-			current = '';
-			continue;
-		}
-		current += char;
-	}
-
-	args.push(current.trim());
-
-	return args;
-}
-
-function computeFunctionCallValue({
-	input,
-	config,
-	node,
-	helper,
-}: {
-	input: string;
-	config: CachedConfig;
-	node: postcss.Node;
-	helper: { result: postcss.Result };
-}) {
-	const functionNamePrefix =
-		config.preset.context.tokenPrefixes.functionNamePrefix;
-	const parsedCall = parsePrefixedCall(input, functionNamePrefix);
-	if (!parsedCall) return input;
-
-	const fn = Object.values(config.preset.functions ?? {}).find(
-		(f) => isFunction(f) && f.name === parsedCall.name,
-	);
-	if (!fn) {
-		helper.result.warn(`[arbor-css] Unknown function: ${parsedCall.name}`, {
-			plugin: PLUGIN_NAME,
-			node,
-		});
-		return input;
-	}
-
-	const paramValues: Record<string, string> = {};
-	let invalid = false;
-	fn.parameters.forEach((param: FunctionParam, i: number) => {
-		const paramName = isFunctionParamWithMeta(param) ? param.name : param;
-		const fallback =
-			isFunctionParamWithMeta(param) ? param.fallback?.toString() : undefined;
-		const required = fallback === undefined;
-		const providedValue = parsedCall.args[i];
-		const value =
-			providedValue === undefined || providedValue === '' ?
-				fallback
-			:	providedValue;
-
-		if (value === undefined && required) {
-			invalid = true;
-			helper.result.warn(
-				`[arbor-css] Missing argument for parameter "${paramName}" in function call: ${input}`,
-				{
-					plugin: PLUGIN_NAME,
-					node,
-				},
-			);
-			return;
-		}
-
-		if (value !== undefined) {
-			paramValues[paramName] = value;
-		}
-	});
-
-	if (invalid) {
-		return input;
-	}
-
-	try {
-		return fn.compute(paramValues).text;
-	} catch (err) {
-		const message = err instanceof Error ? err.message : String(err);
-		console.error(
-			`[arbor-css] Error computing function "${parsedCall.name}": ${message}`,
-		);
-		helper.result.warn(
-			`[arbor-css] Error computing function "${parsedCall.name}" — value left unchanged. ${message}`,
-			{ plugin: PLUGIN_NAME, node },
-		);
-		return input;
-	}
 }
 
 export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
@@ -296,20 +154,49 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 			const functionNamePrefix =
 				config.preset.context.tokenPrefixes.functionNamePrefix;
 			// Inline custom function calls: --fn-name(arg1, arg2, ...)
-			if (decl.value.includes(functionNamePrefix)) {
-				const fnCallRegex = new RegExp(
-					`(${escapeRegExp(functionNamePrefix)}[\\w-]+)\\(((?:[^()]|\\([^()]*\\))*)\\)`,
-					'g',
-				);
+			while (decl.value.includes(functionNamePrefix)) {
 				const original = decl.value;
-				decl.value = decl.value.replace(fnCallRegex, (match) =>
-					computeFunctionCallValue({
-						input: match,
-						config,
-						node: decl,
-						helper,
-					}),
+				let failed = false;
+				decl.value = replaceCssFunctionCall(
+					decl.value,
+					functionNamePrefix,
+					(name, args) => {
+						const fn = Object.values(config.preset.functions ?? {}).find(
+							(f) => isFunction(f) && f.name === name,
+						);
+
+						if (!fn) {
+							helper.result.warn(`[arbor-css] Unknown function: ${name}`, {
+								plugin: PLUGIN_NAME,
+								node: decl,
+							});
+							failed = true;
+							return `${name}(${args.join(', ')})`;
+						}
+
+						try {
+							const inputs = fn.constructParamInputs(args);
+							return fn.compute(inputs).text;
+						} catch (err) {
+							const message = err instanceof Error ? err.message : String(err);
+							console.error(
+								`[arbor-css] Error computing function "${name}": ${message}`,
+							);
+							helper.result.warn(
+								`[arbor-css] Error computing function "${name}" — value left unchanged. ${message}`,
+								{ plugin: PLUGIN_NAME, node: decl },
+							);
+							failed = true;
+							return `${name}(${args.join(', ')})`;
+						}
+					},
 				);
+
+				if (failed) {
+					// FIXME: obviously break is a sign of bad control flow here...
+					// this is too close to infinite loop land
+					break;
+				}
 
 				// add comment noting the original css
 				decl.before(
@@ -329,64 +216,40 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 				config.preset.context.tokenPrefixes.mixinNamePrefix;
 			if (!mixinApplyCall.startsWith(mixinNamePrefix)) return;
 
-			const parsedMixinCall = parsePrefixedCall(
+			const replaced = replaceCssFunctionCall(
 				mixinApplyCall,
 				mixinNamePrefix,
-			);
-			if (!parsedMixinCall) return;
-			const mixinName = parsedMixinCall.name;
-			const mixinArgs = parsedMixinCall.args;
+				(name, args) => {
+					const mixin = Object.values(config.preset.mixins ?? {}).find(
+						(m) => isMixin(m) && m.name === name,
+					);
 
-			const mixin = Object.values(config.preset.mixins ?? {}).find(
-				(m) => isMixin(m) && m.name === mixinName,
-			);
-
-			if (!mixin) {
-				helper.result.warn(`[arbor-css] Unknown mixin: ${mixinName}`, {
-					plugin: PLUGIN_NAME,
-					node: atRule,
-				});
-				return;
-			}
-
-			const mixinParamValues: Record<string, string> = {};
-			let invalidMixinCall = false;
-			mixin.parameters.forEach((param: FunctionParam, i: number) => {
-				const paramName = isFunctionParamWithMeta(param) ? param.name : param;
-				const fallback =
-					isFunctionParamWithMeta(param) ?
-						param.fallback?.toString()
-					:	undefined;
-				const required = fallback === undefined;
-				const providedValue = mixinArgs[i];
-				const value =
-					providedValue === undefined || providedValue === '' ?
-						fallback
-					:	providedValue;
-
-				if (value === undefined && required) {
-					invalidMixinCall = true;
-					helper.result.warn(
-						`[arbor-css] Missing argument for parameter "${paramName}" in mixin apply: @apply ${mixinApplyCall}`,
-						{
+					if (!mixin) {
+						helper.result.warn(`[arbor-css] Unknown mixin: ${name}`, {
 							plugin: PLUGIN_NAME,
 							node: atRule,
-						},
-					);
-					return;
-				}
-				if (value !== undefined) {
-					mixinParamValues[paramName] = computeFunctionCallValue({
-						input: value,
-						config,
-						node: atRule,
-						helper,
-					});
-				}
-			});
-			if (invalidMixinCall) {
-				return;
-			}
+						});
+						return `${name}(${args.join(', ')})`;
+					}
+
+					try {
+						const inputs = mixin.constructParamInputs(args);
+						const applied = mixin.apply(inputs);
+						const printed = printCss(applied);
+						return printed;
+					} catch (err) {
+						const message = err instanceof Error ? err.message : String(err);
+						console.error(
+							`[arbor-css] Error applying mixin "${name}": ${message}`,
+						);
+						helper.result.warn(
+							`[arbor-css] Error applying mixin "${name}" — @apply left in place. ${message}`,
+							{ plugin: PLUGIN_NAME, node: atRule },
+						);
+						return `${name}(${args.join(', ')})`;
+					}
+				},
+			);
 
 			// add comment telling the user which mixin this was from
 			atRule.before(
@@ -396,9 +259,7 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 			);
 
 			try {
-				const applied = mixin.apply(mixinParamValues);
-				const printed = printCss(applied);
-				const generatedRoot = postcss.parse(printed, {
+				const generatedRoot = postcss.parse(replaced, {
 					from: config.configPath,
 				});
 				atRule.replaceWith(
@@ -408,10 +269,10 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 			} catch (err) {
 				const message = err instanceof Error ? err.message : String(err);
 				console.error(
-					`[arbor-css] Error applying mixin "${mixinName}": ${message}`,
+					`[arbor-css] Error applying mixin "${mixinApplyCall}": ${message}`,
 				);
 				helper.result.warn(
-					`[arbor-css] Error applying mixin "${mixinName}" — @apply left in place. ${message}`,
+					`[arbor-css] Error applying mixin "${mixinApplyCall}" — @apply left in place. ${message}`,
 					{ plugin: PLUGIN_NAME, node: atRule },
 				);
 				// Remove the begin comment we already inserted and bail out,
@@ -421,10 +282,6 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 			}
 		},
 	};
-}
-
-function escapeRegExp(s: string) {
-	return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 ArborPlugin.postcss = true;
