@@ -27,8 +27,12 @@ export const arbor = presetArbor({
 	shape: {
 		roundness: 0.5,
 	},
-	spacing: {
+	space: {
 		baseSize: '8px',
+	},
+	shadow: {
+		globalBlur: 0,
+		globalSpread: 1,
 	},
 });
 

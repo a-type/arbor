@@ -19,6 +19,7 @@ class SystemDemo extends LitElement {
 				<arbor-intent-demos></arbor-intent-demos>
 				<hr />
 				<arbor-spacing-scale></arbor-spacing-scale>
+				<arbor-shadow-scale></arbor-shadow-scale>
 				<hr />
 				<arbor-mixins-list></arbor-mixins-list>
 				<arbor-functions-list></arbor-functions-list>

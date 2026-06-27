@@ -9,7 +9,7 @@ export function createShadowLevelSemanticValues<TColorName extends string>(
 	level: number,
 ) {
 	const x = css`0px`;
-	const y = css`calc(1px * pow(2, ${level} - 1))`;
+	const y = css`calc(1px * pow(3, ${level}))`;
 	const blur = css`calc(${$.mode.global.shadow.blur} * ${$.mode.global.space.baseSize} * 0.25 * pow(2, ${level} - 1))`;
 	const spread = css`calc(${$.mode.global.shadow.spread} * 1px * pow(2, ${level} - 1))`;
 	const color = css`oklch(from ${$.mode.shadow.color} l c h / 0.15)`;
