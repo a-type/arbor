@@ -118,3 +118,13 @@ p {
 small {
 	@apply --mx-prose-ambient;
 }
+
+.bg-main {
+	@apply --mx-bg(var(--m-color-main-ink));
+}
+.bg-lighter-1 {
+	@apply --mx-bg-lighter(1);
+}
+.bg-heavier-1 {
+	@apply --mx-bg-heavier(1);
+}

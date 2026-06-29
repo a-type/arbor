@@ -18,6 +18,13 @@
 			"detail": "astro dev"
 		},
 		{
+			"type": "npm",
+			"script": "dev",
+			"path": "",
+			"problemMatcher": [],
+			"label": "npm: dev - root"
+		},
+		{
 			"label": "Watch: Arbor CSS Extension",
 			"type": "shell",
 			"command": "node esbuild.mjs --watch",

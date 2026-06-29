@@ -29,6 +29,7 @@ export function lightDarkAlteration(
 // undershooting at extremes while maintaining stronger adjustment near black/white.
 const distanceFromWhite = css`calc(pow(1 - l, 0.5))`;
 const distanceFromBlack = css`calc(pow(l, 0.5))`;
+const compensateForDarkModeBlack = 0.3; // pulling this out as a named var so I remember how to tune this later.
 
 export function lightenColorAlteration(
 	tokens: RequiredTokens,
@@ -37,7 +38,7 @@ export function lightenColorAlteration(
 ) {
 	// In light mode: lighten by moving away from black (closer to white)
 	// In dark mode: lighten by moving toward page neutral (darker, so reduce l)
-	const l = css`calc(l + ${step} * ${ALTERATION_MAGNITUDE} * (${[tokens.whenLight, 1]} * ${distanceFromWhite} * 2 + ${[tokens.whenDark, 1]} * -0.08))`;
+	const l = css`calc(l + ${step} * ${ALTERATION_MAGNITUDE} * (${[tokens.whenLight, 1]} * ${distanceFromWhite} * ${compensateForDarkModeBlack} + ${[tokens.whenDark, 1]} * -0.08))`;
 	return css`oklch(from ${sourceColor} ${l} calc(c * ${lightDarkAlteration(tokens, { light: -0.08, dark: -0.02, step })}) h)`;
 }
 
@@ -48,7 +49,6 @@ export function darkenColorAlteration(
 ) {
 	// In light mode: darken by moving toward black (reducing l)
 	// In dark mode: darken by moving away from page neutral (lighter, so increase l)
-	const compensateForDarkModeBlack = 0.3; // pulling this out as a named var so I remember how to tune this later.
 	const l = css`calc(l + ${step} * ${ALTERATION_MAGNITUDE} * (${[tokens.whenLight, 1]} * -1 * ${distanceFromBlack} * 0.08 + ${[tokens.whenDark, 1]} * ${distanceFromWhite} * ${compensateForDarkModeBlack}))`;
 	return css`oklch(from ${sourceColor} ${l} calc(c * ${lightDarkAlteration(tokens, { light: 0.01, dark: -0.07, step })}) h)`;
 }
