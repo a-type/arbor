@@ -1,6 +1,6 @@
 {
 	"name": "@arbor-css/preset",
-	"version": "0.0.133",
+	"version": "0.0.134",
 	"type": "module",
 	"publishConfig": {
 		"access": "public"
