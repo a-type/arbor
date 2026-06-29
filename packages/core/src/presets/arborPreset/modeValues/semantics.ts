@@ -110,33 +110,52 @@ export function createEasingSemanticValues<TColorName extends string>(
 	$: Tokens<TColorName>,
 ) {
 	function easingForLevel(level: number) {
-		const bounciness = css`calc(${$.mode.global.easing.bounciness} * 0.5 * pow(2, ${level}))`;
-		return css`cubic-bezier(calc(max(0, ${bounciness})), 0, calc(${bounciness} / 2), 1)`;
+		// x-axis positions control the tight/loose shape (JS constants, not CSS variables)
+		const x1 = 0.55 + level * 0.15; // 0.40 / 0.55 / 0.70
+		const x2 = Math.max(0.04, 0.1 - level * 0.05); // 0.15 / 0.10 / 0.05
+		// Spring is zero at the default bounciness of 0.5, grows above it.
+		// Scale factors are 2x vs the target spring at b=1 so the threshold shift preserves that feel.
+		const springScale = (0.2 + level * 0.1) * 2; // 0.20 / 0.40 / 0.60
+		const b = $.mode.global.easing.bounciness;
+		const spring = css`max(0, ${b} - 0.5) * ${springScale}`;
+		const y1 = css`calc(0 - ${spring})`;
+		const y2 = css`calc(1 + ${spring} * 2)`;
+		return css`cubic-bezier(${x1}, ${y1}, ${x2}, ${y2})`;
 	}
 	function easingInForLevel(level: number) {
-		const bounciness = css`calc(${$.mode.global.easing.bounciness} * 0.5 * pow(2, ${level}))`;
-		return css`cubic-bezier(calc(max(0, ${bounciness})), 0, calc(${bounciness}), 1)`;
+		// x1 controls depth of the ease-in; larger = slower start
+		const x1 = 0.4 + level * 0.2; // 0.20 / 0.40 / 0.60
+		// Spring creates a slight anticipation (backward pull) at the start
+		const springScale = (0.15 + level * 0.05) * 2; // 0.20 / 0.30 / 0.40
+		const b = $.mode.global.easing.bounciness;
+		const anticipation = css`calc(0 - max(0, ${b} - 0.5) * ${springScale})`;
+		return css`cubic-bezier(${x1}, ${anticipation}, 1, 1)`;
 	}
 	function easingOutForLevel(level: number) {
-		const bounciness = css`calc(${$.mode.global.easing.bounciness} * 0.5 * pow(2, ${level}))`;
-		return css`cubic-bezier(0, 0, calc(${bounciness} / 2), 1)`;
+		const x1 = 0.2 + level * 0.1; // 0.10 / 0.20 / 0.30
+		const x2 = 0.55 + level * 0.1; // 0.45 / 0.55 / 0.65
+		// Scale factors are 2x so that at b=1 the spring matches the original intent.
+		const springScale = 0.55 * Math.pow(2, level) * 2; // 0.55 / 1.10 / 2.20
+		const b = $.mode.global.easing.bounciness;
+		const overshoot = css`calc(1 + max(0, ${b} - 0.5) * ${springScale})`;
+		return css`cubic-bezier(${x1}, ${overshoot}, ${x2}, 1)`;
 	}
 	return {
 		$root: $.mode.easing.medium,
-		tight: easingForLevel(-1),
+		tight: easingForLevel(1),
 		medium: easingForLevel(0),
-		loose: easingForLevel(1),
+		loose: easingForLevel(-1),
 		in: {
 			$root: $.mode.easing.in.medium,
-			tight: easingInForLevel(-1),
+			tight: easingInForLevel(1),
 			medium: easingInForLevel(0),
-			loose: easingInForLevel(1),
+			loose: easingInForLevel(-1),
 		},
 		out: {
 			$root: $.mode.easing.out.medium,
-			tight: easingOutForLevel(-1),
+			tight: easingOutForLevel(1),
 			medium: easingOutForLevel(0),
-			loose: easingOutForLevel(1),
+			loose: easingOutForLevel(-1),
 		},
 	} satisfies ModeValues<ArborModeSchema['easing']>;
 }

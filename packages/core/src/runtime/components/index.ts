@@ -1,4 +1,5 @@
 import registerColorSwatch from './ColorSwatch.js';
+import registerEasingScale from './EasingScale.js';
 import registerFunctionsList from './FunctionsList.js';
 import registerIntentDemos from './IntentDemos.js';
 import registerLiveEditor from './LiveEditor.js';
@@ -17,6 +18,7 @@ export default function register() {
 	registerIntentDemos();
 	registerSpacingScale();
 	registerShadowScale();
+	registerEasingScale();
 	registerColorSwatch();
 	registerSystemDemo();
 	registerLiveEditor();

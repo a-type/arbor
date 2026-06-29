@@ -146,8 +146,9 @@ export interface ArborPresetConfig<
 	};
 	easing?: {
 		/**
-		 * A global tuning value that influences the overall "bounciness" of all easing tokens.
-		 * Higher values create bouncier easings. The default is 1, and values from 0.5 to 2 are recommended.
+		 * A global tuning value that influences the overall "bounciness" of all easing tokens, which
+		 * generally affects over/undershooting of targets.
+		 * Higher values create bouncier easings. The default is 0.5, and values from 0 to 1 are recommended.
 		 * Any valid CSS number value can be used here.
 		 */
 		bounciness?: CssInterpolation;
@@ -237,7 +238,7 @@ export const presetArbor = <
 						boldness: config.typography?.boldness ?? 0.5,
 					},
 					easing: {
-						bounciness: config.easing?.bounciness ?? 1,
+						bounciness: config.easing?.bounciness ?? 0.5,
 					},
 					duration: {
 						slowness: config.duration?.slowness ?? 1,

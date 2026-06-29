@@ -20,6 +20,7 @@ class SystemDemo extends LitElement {
 				<hr />
 				<arbor-spacing-scale></arbor-spacing-scale>
 				<arbor-shadow-scale></arbor-shadow-scale>
+				<arbor-easing-scale></arbor-easing-scale>
 				<hr />
 				<arbor-mixins-list></arbor-mixins-list>
 				<arbor-functions-list></arbor-functions-list>
