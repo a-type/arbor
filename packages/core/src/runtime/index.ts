@@ -1,1 +1,9 @@
-export { connect } from './registration.js';
+export {
+	connect,
+	getContext,
+	getEnvValues,
+	getPreset,
+	getStyleSheet,
+	ready,
+	subscribeToEnvChanges,
+} from './registration.js';

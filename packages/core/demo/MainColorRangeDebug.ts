@@ -1,63 +1,169 @@
-import { loadSimplifier } from '@arbor-css/css-eval/browser';
-import { createColorDarkModeRange } from '../src/presets/arborPreset';
-import arbor from './arbor.js';
+import { css, html, LitElement } from 'lit-element';
+import {
+	createColorDarkModeRange,
+	createColorLightModeRange,
+} from '../src/presets/arborPreset';
+import { getContext, getPreset, ready } from '../src/runtime/index.js';
 
 const oklchMatcher = /oklch\(([0-9.%]+),?\s?([0-9.%]+),?\s?([0-9.%]+)\)/;
 
-const globalPropsFlat = Object.values(arbor.$.mode.global);
-
-class MainColorRangeDebug extends HTMLElement {
-	constructor() {
-		super();
+class MainColorRangeDebug extends LitElement {
+	static get styles() {
+		return css`
+			.range {
+				display: flex;
+				flex-direction: row;
+				color: var(--m-color-neutral-ink);
+			}
+		`;
 	}
 
-	async connectedCallback() {
-		const colorName = this.getAttribute('color') ?? 'primary';
-		const globals = globalPropsFlat.reduce(
-			(acc, prop) => {
-				acc[prop.name] = getComputedStyle(document.body).getPropertyValue(
-					prop.name,
-				);
-				return acc;
-			},
-			{} as Record<string, string>,
-		);
-		const range = createColorDarkModeRange(
-			{
-				hue: 90.8,
-			},
-			arbor.$.mode.global,
-		);
-		const simplifier = await loadSimplifier();
-		const content = `${(
-			['paper', 'wash', 'light', 'mid', 'heavy', 'ink'] as const
-		)
-			.map((name) => {
-				const compiled = range[name].equation.printComputed({
-					propertyValues: globals,
-					skipBaking: false,
-					simplifier,
-					purpose: 'color',
-				});
-				const match = compiled.match(oklchMatcher) ?? [];
-				return `<div class="color-swatch" style="background: ${arbor.$.mode.color.palette[colorName as 'primary'][name].var}; width: 100px; height: 100px;" title="${range[name].equation.printDynamic({ propertyValues: {} })}">
-					<div class="pip l" style="bottom: ${match[1] ?? 0}"></div>
-					<div class="pip c" style="bottom: calc(${match[2] ?? 0} / 0.4 * 100%)"></div>
-					<div class="pip h" style="bottom: calc(${match[3] ?? 0} / 360 * 100%)"></div>
-					<div>${compiled}</div>
-					<div class="elements"><span>${match[1] ?? 0}</span><span>${match[2] ?? 0}</span><span>${match[3] ?? 0}</span></div>
-				</div>`;
-			})
-			.join('')}`;
-		this.innerHTML = `
+	static get properties() {
+		return {
+			hue: { type: Number },
+			saturation: { type: Number },
+		};
+	}
+
+	hue = 0;
+	saturation = 1;
+	preset = getPreset();
+
+	render() {
+		return html`
 			<div class="range">
-				${content}
+				${['paper', 'wash', 'light', 'mid', 'heavy', 'ink'].map(
+					(name) =>
+						html`<main-color-range-debug-swatch
+							hue="${this.hue}"
+							saturation="${this.saturation}"
+							stepName="${name}"
+							mode="light"
+						></main-color-range-debug-swatch>`,
+				)}
 			</div>
 			<div class="range @mode-dark">
-				${content}
+				${['paper', 'wash', 'light', 'mid', 'heavy', 'ink'].map(
+					(name) =>
+						html`<main-color-range-debug-swatch
+							hue="${this.hue}"
+							saturation="${this.saturation}"
+							stepName="${name}"
+							mode="dark"
+						></main-color-range-debug-swatch>`,
+				)}
 			</div>
 		`;
 	}
 }
 
-customElements.define('main-color-range-debug', MainColorRangeDebug);
+class MainColorRangeDebugSwatch extends LitElement {
+	static get styles() {
+		return css`
+			:host {
+				position: relative;
+				font-size: 10px;
+				white-space: wrap;
+				width: 100px;
+				height: 100px;
+			}
+
+			.pip {
+				position: absolute;
+				transform: translateY(50%);
+				background: black;
+				border-radius: 50%;
+				width: 10px;
+				height: 10px;
+				border: 1px solid white;
+				opacity: 0.8;
+
+				&.l {
+					background: white;
+					border-color: black;
+				}
+				&.c {
+					background: cyan;
+				}
+				&.h {
+					background: magenta;
+				}
+			}
+
+			.elements {
+				display: flex;
+				flex-direction: column;
+			}
+		`;
+	}
+
+	static get properties() {
+		return {
+			hue: { type: Number },
+			saturation: { type: Number },
+			stepName: { type: String },
+			mode: { type: String },
+		};
+	}
+
+	hue = 0;
+	saturation = 1;
+	stepName = '';
+	mode = 'light';
+	preset = getPreset();
+	render() {
+		const range =
+			this.mode === 'light' ?
+				createColorLightModeRange(
+					{
+						hue: this.hue,
+						saturation: this.saturation,
+					},
+					this.preset.$.mode.global.color as any,
+				)
+			:	createColorDarkModeRange(
+					{
+						hue: this.hue,
+						saturation: this.saturation,
+					},
+					this.preset.$.mode.global.color as any,
+				);
+		const compiled = range[this.stepName as 'mid'].equation.printComputed({
+			propertyValues: {
+				[this.preset.$.mode.global.color.saturation.name as any]: '0.5',
+			} as any,
+			simplifier: getContext().simplifier,
+		});
+		const match = compiled.match(oklchMatcher) ?? [];
+		return html`<div
+			class="color-swatch"
+			style="background: ${compiled}; width: 100px; height: 100px;"
+			title="${range[this.stepName as 'mid'].equation.printDynamic({
+				propertyValues: {},
+			})}"
+		>
+			<div class="pip l" style="bottom: ${match[1] ?? 0}"></div>
+			<div
+				class="pip c"
+				style="bottom: calc(${match[2] ?? 0} / 0.4 * 100%)"
+			></div>
+			<div
+				class="pip h"
+				style="bottom: calc(${match[3] ?? 0} / 360 * 100%)"
+			></div>
+			<div>${compiled}</div>
+			<div class="elements">
+				<span>${match[1] ?? 0}</span><span>${match[2] ?? 0}</span
+				><span>${match[3] ?? 0}</span>
+			</div>
+		</div>`;
+	}
+}
+
+ready.then(() => {
+	customElements.define('main-color-range-debug', MainColorRangeDebug);
+	customElements.define(
+		'main-color-range-debug-swatch',
+		MainColorRangeDebugSwatch,
+	);
+});
