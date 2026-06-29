@@ -1,3 +1,4 @@
+import { CssInterpolation } from '@arbor-css/css-eval';
 import { Token } from '@arbor-css/tokens';
 import {
 	ColorRangeConfig,
@@ -12,7 +13,9 @@ export interface SchemeDefinition<
 	TRangeNames extends string = DefaultRangeName,
 > {
 	getColorRange: (
-		config: TRangeConfig,
+		config: TRangeConfig & {
+			hueShift?: CssInterpolation;
+		},
 		tokens: {
 			saturation: Token;
 		},

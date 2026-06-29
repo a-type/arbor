@@ -5,6 +5,7 @@ export const arbor = presetArbor({
 		ranges: {
 			primary: {
 				hue: 90.8,
+				hueShift: -10,
 			},
 			alt: {
 				hue: 210,
@@ -64,7 +65,7 @@ arbor.bundleMode('greenButtons', {
 
 arbor.bundleMode('dense', {
 	global: {
-		spacing: {
+		space: {
 			density: 2,
 		},
 	},

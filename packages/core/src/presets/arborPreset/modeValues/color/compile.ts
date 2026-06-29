@@ -39,6 +39,7 @@ export type CompiledColors<
 export type CompiledColorRangeConfig<TRangeStepNames extends string> =
 	ColorRangeConfig<TRangeStepNames> & {
 		neutralSaturation?: CssInterpolation;
+		hueShift?: CssInterpolation;
 	};
 
 export interface CompileColorsOptions<
@@ -89,7 +90,12 @@ export function compileColors<
 	};
 
 	const colors = Object.keys(ranges).reduce((colorsAcc, rangeName) => {
-		const rangeConfig = ranges[rangeName as TRangeNames];
+		const rangeConfig = {
+			// default values
+			hueShift: 2,
+			neutralSaturation: 0.15,
+			...ranges[rangeName as TRangeNames],
+		};
 		const uncompiledLight = schemes.light.getColorRange(rangeConfig, $.color);
 		const uncompiledDark = schemes.dark.getColorRange(rangeConfig, $.color);
 

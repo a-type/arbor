@@ -22,11 +22,13 @@ class MainColorRangeDebug extends LitElement {
 		return {
 			hue: { type: Number },
 			saturation: { type: Number },
+			hueShift: { type: Number },
 		};
 	}
 
 	hue = 0;
 	saturation = 1;
+	hueShift = 0;
 	preset = getPreset();
 
 	render() {
@@ -37,6 +39,7 @@ class MainColorRangeDebug extends LitElement {
 						html`<main-color-range-debug-swatch
 							hue="${this.hue}"
 							saturation="${this.saturation}"
+							hueShift="${this.hueShift}"
 							stepName="${name}"
 							mode="light"
 						></main-color-range-debug-swatch>`,
@@ -47,6 +50,7 @@ class MainColorRangeDebug extends LitElement {
 					(name) =>
 						html`<main-color-range-debug-swatch
 							hue="${this.hue}"
+							hueShift="${this.hueShift}"
 							saturation="${this.saturation}"
 							stepName="${name}"
 							mode="dark"
@@ -100,6 +104,7 @@ class MainColorRangeDebugSwatch extends LitElement {
 	static get properties() {
 		return {
 			hue: { type: Number },
+			hueShift: { type: Number },
 			saturation: { type: Number },
 			stepName: { type: String },
 			mode: { type: String },
@@ -107,6 +112,7 @@ class MainColorRangeDebugSwatch extends LitElement {
 	}
 
 	hue = 0;
+	hueShift = 0;
 	saturation = 1;
 	stepName = '';
 	mode = 'light';
@@ -117,6 +123,7 @@ class MainColorRangeDebugSwatch extends LitElement {
 				createColorLightModeRange(
 					{
 						hue: this.hue,
+						hueShift: this.hueShift,
 						saturation: this.saturation,
 					},
 					this.preset.$.mode.global.color as any,
@@ -124,6 +131,7 @@ class MainColorRangeDebugSwatch extends LitElement {
 			:	createColorDarkModeRange(
 					{
 						hue: this.hue,
+						hueShift: this.hueShift,
 						saturation: this.saturation,
 					},
 					this.preset.$.mode.global.color as any,

@@ -43,7 +43,12 @@ export interface ColorRangeCalculations {
 		rangeSize: number;
 		midpoint: number;
 	}) => Css;
-	hue?: (details: { step: number; rangeSize: number; midpoint: number }) => Css;
+	hue?: (details: {
+		sourceHue: CssInterpolation;
+		step: number;
+		rangeSize: number;
+		midpoint: number;
+	}) => Css;
 }
 
 export type InferRangeNames<Config> =
@@ -99,7 +104,7 @@ export function createColorRange<RangeNames extends string = DefaultRangeName>(
 			const equation = oklchBuilder(() => ({
 				l: css`clamp(0, calc(${lightness({ step: i, rangeSize: size, midpoint })}), 1)`,
 				c: css`clamp(0, calc(${config.saturation ?? 1} * 0.4 * ${chroma({ step: i, rangeSize: size, midpoint })} * ${tokens.saturation}), 0.4)`,
-				h: css`calc(${sourceHue} * ${calcs.hue?.({ step: i, rangeSize: size, midpoint }) ?? 1})`,
+				h: css`calc(${calcs.hue?.({ sourceHue, step: i, rangeSize: size, midpoint }) ?? sourceHue})`,
 			}));
 
 			acc[name as RangeNames] = { name, equation };
@@ -170,10 +175,35 @@ function chromaEq(config: {
 	};
 }
 
+function hueEq(config: { hueShift: CssInterpolation }) {
+	return ({
+		step,
+		rangeSize,
+		midpoint,
+		sourceHue,
+	}: {
+		step: number;
+		rangeSize: number;
+		midpoint: number;
+		sourceHue: CssInterpolation;
+	}) => {
+		const rangeDir = step < midpoint ? -1 : 1;
+		// Math.max - avoid divide by 0
+		const rangeMax = Math.max(
+			1,
+			step < midpoint ? midpoint : rangeSize - midpoint - 1,
+		);
+		const rangeProgress = (Math.abs(step - midpoint) / rangeMax) ** 1.2;
+
+		return css`calc(${sourceHue} + (${rangeDir} * ${rangeProgress} * ${config.hueShift}))`;
+	};
+}
+
 export function createColorLightModeRange(
 	config: ColorRangeConfig & {
 		base?: number;
 		scale?: number;
+		hueShift?: CssInterpolation;
 	},
 	$: {
 		saturation: Token;
@@ -189,11 +219,14 @@ export function createColorLightModeRange(
 		rangeUp: -0.7,
 		rangeDown: 0.2,
 	});
+	const hue =
+		config.hueShift ? hueEq({ hueShift: config.hueShift }) : undefined;
 	return createColorRange(
 		config,
 		{
 			lightness,
 			chroma,
+			hue,
 		},
 		$,
 	);
@@ -203,6 +236,7 @@ export function createColorDarkModeRange(
 	config: ColorRangeConfig & {
 		base?: number;
 		scale?: number;
+		hueShift?: CssInterpolation;
 	},
 	$: {
 		saturation: Token;
@@ -218,11 +252,16 @@ export function createColorDarkModeRange(
 		rangeUp: -0.6,
 		rangeDown: 0.48,
 	});
+	const hue =
+		config.hueShift ?
+			hueEq({ hueShift: css`calc(-1 * ${config.hueShift})` })
+		:	undefined;
 	return createColorRange(
 		config,
 		{
 			lightness,
 			chroma,
+			hue,
 		},
 		$,
 	);

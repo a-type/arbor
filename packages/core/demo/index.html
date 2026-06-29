@@ -12,24 +12,14 @@
 		<link rel="stylesheet" href="./styles.css" />
 	</head>
 	<body>
-		<main-color-range-debug hue="90.8"></main-color-range-debug>
-		<main-color-range-debug hue="210"></main-color-range-debug>
-		<main-color-range-debug hue="150"></main-color-range-debug>
-		<main-color-range-debug hue="90.8" saturation="0"></main-color-range-debug>
-		<hr />
-		<div class="@mode-base">
-			<div style="display: flex; flex-direction: row">
-				<div
-					class="swatch bg-main bg-lighter-1"
-					style="width: 100px; height: 100px"
-				></div>
-				<div class="swatch bg-main" style="width: 100px; height: 100px"></div>
-				<div
-					class="swatch bg-main bg-heavier-1"
-					style="width: 100px; height: 100px"
-				></div>
-			</div>
-		</div>
+		<main-color-range-debug hue="90.8" hueShift="4"></main-color-range-debug>
+		<main-color-range-debug hue="210" hueShift="4"></main-color-range-debug>
+		<main-color-range-debug hue="150" hueShift="4"></main-color-range-debug>
+		<main-color-range-debug
+			hue="90.8"
+			hueShift="-10"
+			saturation="0.1"
+		></main-color-range-debug>
 		<hr />
 		<arbor-system-demo></arbor-system-demo>
 		<script type="module" src="./index.ts"></script>
