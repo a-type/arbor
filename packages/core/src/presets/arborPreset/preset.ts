@@ -532,13 +532,15 @@ export const presetArbor = <
 		globalCss: ($) => `
 			${
 				config.keyframes ?
-					Object.entries(config.keyframes).map(
-						([name, def]) => `
+					Object.entries(config.keyframes)
+						.map(
+							([name, def]) => `
 				@keyframes ${name} {
 				  ${(def as any)(css, $).text}
 				}
 			`,
-					)
+						)
+						.join('\n')
 				:	''
 			}
 			`,
