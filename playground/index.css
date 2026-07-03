@@ -107,6 +107,7 @@ input {
 .title,
 h1 {
 	@apply --mx-prose-primary;
+	@apply --mx-animation(fadeIn);
 }
 
 .p,

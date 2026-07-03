@@ -23,6 +23,24 @@ const preset = definePreset({
 				},
 				mainColor: 'brand',
 			},
+			keyframes: {
+				fadeIn: (css) => css`
+					0% {
+						opacity: 0;
+					}
+					100% {
+						opacity: 1;
+					}
+				`,
+				fadeOut: (css) => css`
+					0% {
+						opacity: 1;
+					}
+					100% {
+						opacity: 0;
+					}
+				`,
+			},
 		}),
 	],
 

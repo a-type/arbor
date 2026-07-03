@@ -1,6 +1,12 @@
-import { isFunction, isMixin, isToken } from '@arbor-css/core';
+import {
+	isFunction,
+	isFunctionParamWithMeta,
+	isMixin,
+	isToken,
+} from '@arbor-css/core';
 import * as vscode from 'vscode';
 import { paramToCompletionInline } from './format.js';
+import { parseLiteralsFromSyntax } from './functionParamDiagnostics.js';
 import type { TokenProvider } from './tokenProvider.js';
 
 export class ArborCompletionProvider implements vscode.CompletionItemProvider {
@@ -16,6 +22,64 @@ export class ArborCompletionProvider implements vscode.CompletionItemProvider {
 		const linePrefix = document
 			.lineAt(position)
 			.text.slice(0, position.character);
+
+		// Check for literal parameter value completions inside a function/mixin call
+		const funcContext = extractFunctionCallContext(linePrefix);
+		if (funcContext) {
+			const { funcName, argsText } = funcContext;
+			const paramIndex = countTopLevelCommas(argsText);
+			const partialText = getLastTopLevelArg(argsText).trimStart();
+
+			// Don't intercept token references — let the existing path handle those
+			if (!partialText.startsWith('-')) {
+				const state = await this.tokenProvider.getStateForDocument(document);
+				if (state) {
+					const value = state.tokenMap.get(funcName);
+					if (value && (isFunction(value) || isMixin(value))) {
+						const params = value.parameters ?? [];
+						const param = params[paramIndex];
+						if (param !== undefined) {
+							let syntax: string | undefined;
+							if (isFunctionParamWithMeta(param)) {
+								syntax = param.syntax ?? param.type;
+							} else if (isToken(param)) {
+								syntax = param.syntax;
+							}
+							if (syntax) {
+								const literals = parseLiteralsFromSyntax(syntax);
+								if (literals.length > 0) {
+									const filtered =
+										partialText ?
+											literals.filter((lit) =>
+												lit.toLowerCase().startsWith(partialText.toLowerCase()),
+											)
+										:	literals;
+									if (filtered.length > 0) {
+										return filtered.map((literal) => {
+											const item = new vscode.CompletionItem(
+												literal,
+												vscode.CompletionItemKind.EnumMember,
+											);
+											item.range = new vscode.Range(
+												position.line,
+												position.character - partialText.length,
+												position.line,
+												position.character,
+											);
+											item.filterText = literal;
+											item.insertText = literal;
+											item.detail = `Parameter ${paramIndex + 1} of ${funcName}`;
+											return item;
+										});
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
 		// match anything starting with --
 		const match = /(--?[\w-]*)$/.exec(linePrefix);
 		if (!match) return undefined;
@@ -123,4 +187,54 @@ export class ArborCompletionProvider implements vscode.CompletionItemProvider {
 			return item;
 		});
 	}
+}
+
+/**
+ * Scan backwards through linePrefix to find the innermost unclosed `--name(`
+ * call, returning the function name and the text of arguments typed so far.
+ */
+function extractFunctionCallContext(
+	linePrefix: string,
+): { funcName: string; argsText: string } | null {
+	let depth = 0;
+	for (let i = linePrefix.length - 1; i >= 0; i--) {
+		const char = linePrefix[i];
+		if (char === ')') {
+			depth++;
+		} else if (char === '(') {
+			if (depth === 0) {
+				const before = linePrefix.slice(0, i);
+				const nameMatch = /(--[\w-]+)$/.exec(before);
+				if (nameMatch) {
+					return { funcName: nameMatch[1], argsText: linePrefix.slice(i + 1) };
+				}
+			} else {
+				depth--;
+			}
+		}
+	}
+	return null;
+}
+
+function countTopLevelCommas(text: string): number {
+	let count = 0;
+	let depth = 0;
+	for (const char of text) {
+		if (char === '(') depth++;
+		else if (char === ')') depth--;
+		else if (char === ',' && depth === 0) count++;
+	}
+	return count;
+}
+
+function getLastTopLevelArg(text: string): string {
+	let depth = 0;
+	let lastCommaIdx = -1;
+	for (let i = 0; i < text.length; i++) {
+		const char = text[i];
+		if (char === '(') depth++;
+		else if (char === ')') depth--;
+		else if (char === ',' && depth === 0) lastCommaIdx = i;
+	}
+	return text.slice(lastCommaIdx + 1);
 }

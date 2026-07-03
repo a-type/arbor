@@ -1,6 +1,7 @@
 import { getInternals, isFunction, isMixin } from '@arbor-css/core';
 import * as vscode from 'vscode';
 import { findArbitraryValueWarnings } from './arbitraryValueDiagnostics.js';
+import { findFunctionParamErrors } from './functionParamDiagnostics.js';
 import { createTokenRegexes } from './regex.js';
 import { TokenProvider } from './tokenProvider.js';
 
@@ -246,6 +247,21 @@ export class ArborDiagnosticProvider {
 							}
 						}
 					}
+				}
+			}
+
+			if (!isInComment(line, 0, inBlockComment)) {
+				for (const error of findFunctionParamErrors(line, state.tokenMap)) {
+					const diagnostic = new vscode.Diagnostic(
+						new vscode.Range(
+							new vscode.Position(lineIndex, error.start),
+							new vscode.Position(lineIndex, error.end),
+						),
+						error.message,
+						vscode.DiagnosticSeverity.Error,
+					);
+					diagnostic.source = 'arbor-css';
+					fileDiagnostics.push(diagnostic);
 				}
 			}
 
