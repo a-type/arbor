@@ -166,10 +166,11 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 						);
 
 						if (!fn) {
-							helper.result.warn(`[arbor-css] Unknown function: ${name}`, {
-								plugin: PLUGIN_NAME,
-								node: decl,
-							});
+							const file = decl.source?.input.file;
+							helper.result.warn(
+								`[arbor-css] Unknown function: ${name}${file ? ` (in ${file})` : ''}`,
+								{ plugin: PLUGIN_NAME, node: decl },
+							);
 							failed = true;
 							return `${name}(${args.join(', ')})`;
 						}
@@ -225,10 +226,11 @@ export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
 					);
 
 					if (!mixin) {
-						helper.result.warn(`[arbor-css] Unknown mixin: ${name}`, {
-							plugin: PLUGIN_NAME,
-							node: atRule,
-						});
+						const file = atRule.source?.input.file;
+						helper.result.warn(
+							`[arbor-css] Unknown mixin: ${name}${file ? ` (in ${file})` : ''}`,
+							{ plugin: PLUGIN_NAME, node: atRule },
+						);
 						return `${name}(${args.join(', ')})`;
 					}
 
