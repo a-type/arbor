@@ -80,6 +80,11 @@
 					"type": "number",
 					"default": 16,
 					"description": "The font size (pixels) of the simulated root element used for evaluating rem units. Adjust this if you want to simulate a different root font size for token evaluation."
+				},
+				"arborCss.configLocation": {
+					"type": "string",
+					"default": "",
+					"description": "The location of an Arbor CSS config file to use for all files in the workspace, relative to the workspace root. If not provided, the extension will search upward from each file to discover a config."
 				}
 			}
 		}

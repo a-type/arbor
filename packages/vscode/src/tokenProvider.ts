@@ -8,7 +8,7 @@ import {
 	flattenTokenSchema,
 	Token,
 } from '@arbor-css/core';
-import { dirname } from 'path';
+import { dirname, isAbsolute, join } from 'node:path';
 import * as vscode from 'vscode';
 import { findConfigFile, loadConfigFile } from './configLoader.js';
 import { getTokenCompletions } from './tokenCompletions.js';
@@ -135,6 +135,41 @@ export class TokenProvider {
 	private async getConfigPathForDocument(
 		document: vscode.TextDocument,
 	): Promise<string | null> {
+		// if the user configured a global config location, use that.
+		if (
+			vscode.workspace
+				.getConfiguration('arborCss')
+				.get<string>('configLocation')
+		) {
+			const configLocation = vscode.workspace
+				.getConfiguration('arborCss')
+				.get<string>('configLocation');
+			if (configLocation) {
+				if (isAbsolute(configLocation)) {
+					return configLocation;
+				}
+
+				// resolve relative to workspace root if it's not an absolute path
+				if (!vscode.workspace.workspaceFolders) {
+					this.outputChannel.appendLine(
+						`No workspace folder open, but arborCss.configLocation is set to ${configLocation}. Cannot resolve config path.`,
+					);
+					return null;
+				}
+
+				if (!vscode.workspace.workspaceFolders[0].uri.fsPath) {
+					this.outputChannel.appendLine(
+						`No workspace folder open, but arborCss.configLocation is set to ${configLocation}. Cannot resolve config path.`,
+					);
+					return null;
+				}
+
+				// resolve relative to workspace root if it's not an absolute path
+				const workspaceRoot = vscode.workspace.workspaceFolders[0].uri.fsPath;
+				return join(workspaceRoot, configLocation);
+			}
+		}
+
 		const fromDir = this.resolveDocumentDir(document);
 		if (!fromDir) return null;
 		if (this.configPathCache.has(fromDir)) {
