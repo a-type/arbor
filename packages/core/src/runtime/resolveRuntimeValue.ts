@@ -4,13 +4,13 @@ import { TokenPurpose } from '@arbor-css/tokens';
 
 export async function resolveRuntimeValue(
 	tokenName: string,
-	target = document.documentElement,
 	options: {
+		target?: HTMLElement;
 		simplifierPasses?: number;
 		tokenPurpose?: TokenPurpose;
 	} = { simplifierPasses: 1, tokenPurpose: 'other' },
 ): Promise<string | null> {
-	const style = getComputedStyle(target);
+	const style = getComputedStyle(options.target ?? document.documentElement);
 	const value = style.getPropertyValue(tokenName).trim();
 
 	if (!value) {
