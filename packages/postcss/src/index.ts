@@ -14,6 +14,11 @@ export interface ArborPluginOptions {
 	configFile?: string;
 
 	/**
+	 * Directly supply a preset. Skips loading config file.
+	 */
+	preset?: AnyArborPreset;
+
+	/**
 	 * Working directory used to resolve the Arbor config file.
 	 * Defaults to the current working directory.
 	 */
@@ -35,13 +40,21 @@ interface CachedConfig {
 }
 
 export function ArborPlugin(options: ArborPluginOptions = {}): Plugin {
-	const { configFile, cwd = process.cwd() } = options;
+	const { configFile, cwd = process.cwd(), preset: providedPreset } = options;
 	let cachedConfig: CachedConfig | null = null;
 	let warnedAboutMissingConfig = false;
 
 	async function getConfig(helper: {
 		result: postcss.Result;
 	}): Promise<CachedConfig | null> {
+		if (providedPreset) {
+			return {
+				preset: providedPreset,
+				configPath: '',
+				depStats: new Map(),
+			};
+		}
+
 		if (cachedConfig) {
 			try {
 				// Re-stat every dependency; evict the cache if any have changed.
