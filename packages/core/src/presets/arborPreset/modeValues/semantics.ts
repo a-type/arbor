@@ -92,6 +92,7 @@ export function createRadiusSemanticValues<TColorName extends string>(
 		sm: css`calc(${$.mode.global.shape.roundness} * ${$.mode.space.sm})`,
 		md: css`calc(${$.mode.global.shape.roundness} * ${$.mode.space.md})`,
 		lg: css`calc(${$.mode.global.shape.roundness} * ${$.mode.space.lg})`,
+		full: css`9999px`,
 	} satisfies ModeValues<ArborModeSchema['radius']>;
 }
 
