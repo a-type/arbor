@@ -27,8 +27,12 @@ export function lightDarkAlteration(
 // Perceptual adjustment curves for more uniform steps across lightness range.
 // Using power 0.5 instead of 2 distributes changes more evenly and prevents
 // undershooting at extremes while maintaining stronger adjustment near black/white.
-const distanceFromWhite = css`calc(pow(1 - l, 0.5))`;
-const distanceFromBlack = css`calc(pow(l, 0.5))`;
+// TODO: re-enable the power curve when Firefox passes the WPT color spec test:
+// https://wpt.live/css/css-color/parsing/color-computed-relative-color.html#:~:text=Property%20color%20value%20%27oklch%28from%20green%20pow%28l%2C%201%29%20c%20h%29%27
+// const distanceFromWhite = css`calc(pow(1 - l, 0.5))`;
+// const distanceFromBlack = css`calc(pow(l, 0.5))`;
+const distanceFromWhite = css`calc(1 - l)`;
+const distanceFromBlack = css`calc(l)`;
 const compensateForDarkModeBlack = 0.3; // pulling this out as a named var so I remember how to tune this later.
 
 export function lightenColorAlteration(
