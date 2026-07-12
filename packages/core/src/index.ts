@@ -23,3 +23,4 @@ export {
 export { flattenAndApplyTokenValues } from './util/flattenAndApplyTokenValues.js';
 export { resolveComputedTokenValue } from './util/resolveComputedTokenValue.js';
 export * from './util/tokenRegex.js';
+export * from './util/tokenValidation.js';

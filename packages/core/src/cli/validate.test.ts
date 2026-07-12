@@ -65,8 +65,8 @@ it('reports unknown declarations, functions, and mixins for configured prefixes'
 	expect(issues.map((issue) => issue.message)).toEqual(
 		expect.arrayContaining([
 			expect.stringContaining('Unknown Arbor token: --x-does-not-exist'),
-			'Unknown Arbor function: --x-fn-missing',
-			'Unknown Arbor mixin: --x-mx-missing',
+			expect.stringContaining('Unknown Arbor function: --x-fn-missing'),
+			expect.stringContaining('Unknown Arbor mixin: --x-mx-missing'),
 		]),
 	);
 });

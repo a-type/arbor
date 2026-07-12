@@ -1,26 +1,11 @@
 import {
-	isFunction,
-	isMixin,
-	type ArborFunction,
-	type ArborMixin,
-} from '@arbor-css/functions';
-import {
-	DEFAULT_MODE_TOKEN_PREFIX,
-	type ArborResolvedPrefixes,
-} from '@arbor-css/globals';
-import type { AnyArborPreset } from '@arbor-css/preset/config';
-import { flattenTokenSchema, isToken, type Token } from '@arbor-css/tokens';
-import { createTokenRegexes } from '../util/tokenRegex.js';
-
-type TokenMapValue = Token | ArborFunction | ArborMixin<any, any>;
-
-export type TokenMap = Map<string, TokenMapValue>;
-
-export interface PrefixValidationConfig {
-	tokenPrefixes: string[];
-	functionNamePrefix: string;
-	mixinNamePrefix: string;
-}
+	createPrefixValidationConfig,
+	createTokenMap,
+	findInvalidTokenMatches,
+	formatInvalidTokenMatchMessage,
+	type PrefixValidationConfig,
+	type TokenMap,
+} from '../util/tokenValidation.js';
 
 export interface ValidationIssue {
 	name: string;
@@ -29,99 +14,6 @@ export interface ValidationIssue {
 	index: number;
 	line: number;
 	column: number;
-}
-
-function findSuggestions(names: string[], query: string, limit = 5): string[] {
-	const normalized = query.trim().toLowerCase();
-	if (!normalized) {
-		return [];
-	}
-
-	return names
-		.map((name) => ({
-			name,
-			normalized: name.toLowerCase(),
-		}))
-		.map((candidate) => ({
-			name: candidate.name,
-			distance: levenshtein(candidate.normalized, normalized),
-			contains: candidate.normalized.includes(normalized),
-			startsWith: candidate.normalized.startsWith(normalized.slice(0, 4)),
-		}))
-		.filter(
-			(candidate) =>
-				candidate.contains ||
-				candidate.startsWith ||
-				candidate.distance <= Math.max(3, Math.floor(normalized.length * 0.2)),
-		)
-		.sort((a, b) => {
-			if (a.contains !== b.contains) {
-				return a.contains ? -1 : 1;
-			}
-			if (a.startsWith !== b.startsWith) {
-				return a.startsWith ? -1 : 1;
-			}
-			if (a.distance !== b.distance) {
-				return a.distance - b.distance;
-			}
-			return a.name.localeCompare(b.name);
-		})
-		.map((candidate) => candidate.name)
-		.slice(0, limit);
-}
-
-function levenshtein(a: string, b: string): number {
-	if (a === b) return 0;
-	if (a.length === 0) return b.length;
-	if (b.length === 0) return a.length;
-
-	const previous = new Array<number>(b.length + 1);
-	const current = new Array<number>(b.length + 1);
-
-	for (let j = 0; j <= b.length; j += 1) {
-		previous[j] = j;
-	}
-
-	for (let i = 1; i <= a.length; i += 1) {
-		current[0] = i;
-		for (let j = 1; j <= b.length; j += 1) {
-			const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-			current[j] = Math.min(
-				previous[j] + 1,
-				current[j - 1] + 1,
-				previous[j - 1] + cost,
-			);
-		}
-
-		for (let j = 0; j <= b.length; j += 1) {
-			previous[j] = current[j];
-		}
-	}
-
-	return previous[b.length];
-}
-
-function formatUnknownTokenMessage(name: string, tokenNames: string[]): string {
-	const suggestions = findSuggestions(tokenNames, name);
-	if (suggestions.length === 0) {
-		return `Unknown Arbor token: ${name}`;
-	}
-
-	return `Unknown Arbor token: ${name}. Did you mean: ${suggestions.join(', ')}`;
-}
-
-function escapeRegex(value: string): string {
-	return value.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
-}
-
-/**
- * Replaces the interior of every CSS block comment (`/* ... *\/`) with spaces,
- * preserving newlines so that line/column offsets remain accurate.
- */
-function stripBlockComments(content: string): string {
-	return content.replace(/\/\*[\s\S]*?\*\//g, (match) =>
-		match.replace(/[^\n]/g, ' '),
-	);
 }
 
 function getLineStarts(content: string): number[] {
@@ -199,46 +91,7 @@ function addIssue(
 	});
 }
 
-export function createTokenMap(preset: AnyArborPreset): TokenMap {
-	const tokenMap: TokenMap = new Map();
-
-	for (const token of flattenTokenSchema(preset.$)) {
-		tokenMap.set(token.name, token);
-	}
-
-	for (const fn of preset.functions ? Object.values(preset.functions) : []) {
-		tokenMap.set(fn.name, fn);
-	}
-
-	for (const mixin of preset.mixins ? Object.values(preset.mixins) : []) {
-		tokenMap.set(mixin.name, mixin);
-	}
-
-	return tokenMap;
-}
-
-export function createPrefixValidationConfig(
-	tokenPrefixes: ArborResolvedPrefixes,
-): PrefixValidationConfig {
-	const configuredPrefixes = [
-		tokenPrefixes.modeTokenPrefix,
-		tokenPrefixes.metaTokenPrefix,
-		tokenPrefixes.mixinTokenPrefix,
-		tokenPrefixes.functionNamePrefix,
-		tokenPrefixes.mixinNamePrefix,
-	].filter((value): value is string => typeof value === 'string');
-
-	const declarationPrefixes = [...new Set(configuredPrefixes)];
-	if (declarationPrefixes.length === 0) {
-		declarationPrefixes.push(DEFAULT_MODE_TOKEN_PREFIX);
-	}
-
-	return {
-		tokenPrefixes: declarationPrefixes,
-		functionNamePrefix: tokenPrefixes.functionNamePrefix,
-		mixinNamePrefix: tokenPrefixes.mixinNamePrefix,
-	};
-}
+export { createPrefixValidationConfig, createTokenMap };
 
 export function validateCssContent({
 	content,
@@ -251,109 +104,19 @@ export function validateCssContent({
 }): ValidationIssue[] {
 	const issues: ValidationIssue[] = [];
 	const seen = new Set<string>();
-	// Strip block comments before scanning so references inside /* … */ are ignored.
-	// Newlines are preserved so line/column offsets remain accurate.
-	content = stripBlockComments(content);
 	const lineStarts = getLineStarts(content);
-	const tokenNames = Array.from(tokenMap.entries())
-		.filter(([, value]) => isToken(value))
-		.map(([name]) => name);
 
-	const tokenMatches = createTokenRegexes(prefixConfig.tokenPrefixes);
-
-	for (const matches of tokenMatches) {
-		for (const match of content.matchAll(matches.anywhere())) {
-			if (match.index === undefined) {
-				continue;
-			}
-			const propertyName = match[1];
-			const index = match.index;
-			const matchedValue = tokenMap.get(propertyName);
-			if (!matchedValue) {
-				addIssue(issues, seen, lineStarts, {
-					name: propertyName,
-					kind: 'token',
-					message: formatUnknownTokenMessage(propertyName, tokenNames),
-					index,
-				});
-			}
-		}
-
-		for (const match of content.matchAll(matches.declaration())) {
-			if (match.index === undefined) {
-				continue;
-			}
-			const name = match[2];
-			const index = match.index + match[1].length;
-			const matchedValue = tokenMap.get(name);
-			if (!matchedValue) {
-				addIssue(issues, seen, lineStarts, {
-					name,
-					kind: 'token',
-					message: formatUnknownTokenMessage(name, tokenNames),
-					index,
-				});
-				continue;
-			}
-			if (isFunction(matchedValue)) {
-				addIssue(issues, seen, lineStarts, {
-					name,
-					kind: 'token',
-					message: `Arbor functions cannot be used as property declarations: ${name}`,
-					index,
-				});
-				continue;
-			}
-			if (isMixin(matchedValue)) {
-				addIssue(issues, seen, lineStarts, {
-					name,
-					kind: 'token',
-					message: `Arbor mixins cannot be used as property declarations: ${name}`,
-					index,
-				});
-			}
-		}
-	}
-
-	const functionCallRegex = new RegExp(
-		`(${escapeRegex(prefixConfig.functionNamePrefix)}[\\w-]+)\\s*\\(`,
-		'g',
-	);
-	for (const match of content.matchAll(functionCallRegex)) {
-		if (match.index === undefined) {
-			continue;
-		}
-		const name = match[1];
-		const matchedValue = tokenMap.get(name);
-		if (!matchedValue || !isFunction(matchedValue)) {
-			addIssue(issues, seen, lineStarts, {
-				name,
-				kind: 'function',
-				message: `Unknown Arbor function: ${name}`,
-				index: match.index,
-			});
-		}
-	}
-
-	const mixinApplyRegex = new RegExp(
-		`@apply\\s+(${escapeRegex(prefixConfig.mixinNamePrefix)}[\\w-]+)`,
-		'g',
-	);
-	for (const match of content.matchAll(mixinApplyRegex)) {
-		if (match.index === undefined) {
-			continue;
-		}
-		const name = match[1];
-		const nameIndex = match.index + match[0].indexOf(name);
-		const matchedValue = tokenMap.get(name);
-		if (!matchedValue || !isMixin(matchedValue)) {
-			addIssue(issues, seen, lineStarts, {
-				name,
-				kind: 'mixin',
-				message: `Unknown Arbor mixin: ${name}`,
-				index: nameIndex,
-			});
-		}
+	for (const match of findInvalidTokenMatches({
+		content,
+		tokenMap,
+		prefixConfig,
+	})) {
+		addIssue(issues, seen, lineStarts, {
+			name: match.name,
+			kind: match.kind,
+			message: formatInvalidTokenMatchMessage(match),
+			index: match.index,
+		});
 	}
 
 	return issues;
