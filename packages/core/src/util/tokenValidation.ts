@@ -20,6 +20,7 @@ export interface PrefixValidationConfig {
 	tokenPrefixes: string[];
 	functionNamePrefix: string;
 	mixinNamePrefix: string;
+	knownProps: Array<string | RegExp>;
 }
 
 export interface InvalidTokenMatch {
@@ -133,6 +134,27 @@ function extractExternalPropsAllowList(content: string): Set<string> {
 	return allowed;
 }
 
+function matchesKnownProperty(
+	propertyName: string,
+	knownProps: Array<string | RegExp>,
+): boolean {
+	for (const knownProp of knownProps) {
+		if (typeof knownProp === 'string') {
+			if (propertyName === knownProp) {
+				return true;
+			}
+			continue;
+		}
+
+		knownProp.lastIndex = 0;
+		if (knownProp.test(propertyName)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 function pushUniqueMatch(
 	matches: InvalidTokenMatch[],
 	seen: Set<string>,
@@ -221,6 +243,7 @@ export function createTokenMap(preset: AnyArborPreset): TokenMap {
 
 export function createPrefixValidationConfig(
 	tokenPrefixes: ArborResolvedPrefixes,
+	knownProps: Array<string | RegExp> = [],
 ): PrefixValidationConfig {
 	const configuredPrefixes = [
 		tokenPrefixes.modeTokenPrefix,
@@ -239,6 +262,7 @@ export function createPrefixValidationConfig(
 		tokenPrefixes: declarationPrefixes,
 		functionNamePrefix: tokenPrefixes.functionNamePrefix,
 		mixinNamePrefix: tokenPrefixes.mixinNamePrefix,
+		knownProps,
 	};
 }
 
@@ -292,6 +316,10 @@ export function findInvalidTokenMatches({
 			declarationKeys.add(key);
 
 			if (externalProps.has(name)) {
+				continue;
+			}
+
+			if (matchesKnownProperty(name, prefixConfig.knownProps)) {
 				continue;
 			}
 

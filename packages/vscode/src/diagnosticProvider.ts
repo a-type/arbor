@@ -169,6 +169,7 @@ export class ArborDiagnosticProvider {
 		const content = document.getText();
 		const prefixConfig = createPrefixValidationConfig(
 			state.preset.context.tokenPrefixes,
+			state.preset.context.knownProps,
 		);
 
 		for (const match of findInvalidTokenMatches({

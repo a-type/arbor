@@ -331,3 +331,46 @@ it('allows creating modes from the final mode schema', () => {
 	expect(freeMode.color).toBe('green');
 	expect(getInternals(preset).modes.green).not.toBeDefined();
 });
+
+it('stores knownProps on the global context', () => {
+	const preset = definePreset({
+		name: 'known-props-preset',
+		modeSchema: createModeSchema({
+			color: 'color',
+		}),
+		baseMode: () => ({
+			color: 'red',
+		}),
+		config: {
+			knownProps: ['--vendor-thing', /^--plugin-[\w-]+$/],
+		},
+	});
+
+	expect(preset.context.knownProps).toHaveLength(2);
+	expect(preset.context.knownProps[0]).toBe('--vendor-thing');
+	expect((preset.context.knownProps[1] as RegExp).source).toBe(
+		'^--plugin-[\\w-]+$',
+	);
+});
+
+it('applies knownProps provided by withConfig to the global context', () => {
+	const basePreset = definePreset({
+		name: 'base-known-props',
+		modeSchema: createModeSchema({
+			color: 'color',
+		}),
+		baseMode: () => ({
+			color: 'red',
+		}),
+	});
+
+	const preset = basePreset.withConfig({
+		knownProps: ['--vendor-thing', /^--local-[\w-]+$/],
+	});
+
+	expect(preset.context.knownProps).toHaveLength(2);
+	expect(preset.context.knownProps[0]).toBe('--vendor-thing');
+	expect((preset.context.knownProps[1] as RegExp).source).toBe(
+		'^--local-[\\w-]+$',
+	);
+});

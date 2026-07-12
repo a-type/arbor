@@ -8,7 +8,11 @@ import { CreateToken, createTokenFactory } from '@arbor-css/tokens';
 import { resolveArborPrefixes, type ArborPrefixConfig } from './prefixes.js';
 import { createSystemProps, SystemTokens } from './systemProps.js';
 
-export interface GlobalContextConfig extends ArborPrefixConfig {}
+export type KnownPropMatcher = string | RegExp;
+
+export interface GlobalContextConfig extends ArborPrefixConfig {
+	knownProps?: KnownPropMatcher[];
+}
 
 export interface GlobalContext {
 	createModeToken: CreateToken;
@@ -18,6 +22,7 @@ export interface GlobalContext {
 	createFunction: CreateFunction;
 	createMixin: CreateMixin;
 	tokenPrefixes: ReturnType<typeof resolveArborPrefixes>;
+	knownProps: KnownPropMatcher[];
 	$systemTokens: SystemTokens;
 }
 
@@ -35,6 +40,7 @@ export function createGlobalContext(config: GlobalContextConfig = {}) {
 	const $systemTokens = createSystemProps({
 		createMetaToken,
 	});
+	const knownProps = config.knownProps ?? [];
 
 	return {
 		createModeToken,
@@ -49,6 +55,7 @@ export function createGlobalContext(config: GlobalContextConfig = {}) {
 			createToken: createMixinToken,
 		}),
 		tokenPrefixes,
+		knownProps,
 		$systemTokens,
 	};
 }

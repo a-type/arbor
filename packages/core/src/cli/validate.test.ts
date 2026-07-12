@@ -6,7 +6,7 @@ import {
 	validateCssContent,
 } from './validate.js';
 
-function createTestPreset() {
+function createTestPreset(knownProps?: Array<string | RegExp>) {
 	const preset = definePreset({
 		modeSchema: {
 			space: {
@@ -25,6 +25,7 @@ function createTestPreset() {
 			functionNamePrefix: '--x-fn-',
 			mixinNamePrefix: '--x-mx-',
 			mixinTokenPrefix: '--x-mx-',
+			knownProps,
 		},
 
 		functions: (create) => ({
@@ -144,4 +145,25 @@ it('ignores unknown token, function, and mixin references inside CSS block comme
 	});
 
 	expect(issues).toEqual([]);
+});
+
+it('allows globally known property names configured in preset knownProps', () => {
+	const preset = createTestPreset(['--x-vendor-thing', /^--x-plugin-[\w-]+$/]);
+	const issues = validateCssContent({
+		content: [
+			'.card {',
+			'  --x-vendor-thing: 1rem;',
+			'  --x-plugin-token: 2rem;',
+			'  --x-missing-token: 3rem;',
+			'}',
+		].join('\n'),
+		tokenMap: createTokenMap(preset),
+		prefixConfig: createPrefixValidationConfig(
+			preset.context.tokenPrefixes,
+			preset.context.knownProps,
+		),
+	});
+
+	expect(issues).toHaveLength(1);
+	expect(issues[0].name).toBe('--x-missing-token');
 });

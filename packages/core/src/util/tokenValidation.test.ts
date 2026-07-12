@@ -7,7 +7,7 @@ import {
 	formatInvalidTokenMatchMessage,
 } from './tokenValidation.js';
 
-function createTestPreset() {
+function createTestPreset(knownProps?: Array<string | RegExp>) {
 	return definePreset({
 		modeSchema: {
 			space: {
@@ -26,6 +26,7 @@ function createTestPreset() {
 			functionNamePrefix: '--x-fn-',
 			mixinNamePrefix: '--x-mx-',
 			mixinTokenPrefix: '--x-mx-',
+			knownProps,
 		},
 		functions: (create) => ({
 			double: create('double', {
@@ -76,4 +77,25 @@ it('ignores known props declared in one or more @known-props comments', () => {
 	});
 
 	expect(matches).toEqual([]);
+});
+
+it('ignores known props from preset knownProps string and regex entries', () => {
+	const preset = createTestPreset(['--x-vendor-thing', /^--x-plugin-[\w-]+$/]);
+	const matches = findInvalidTokenMatches({
+		content: [
+			'.card {',
+			'  --x-vendor-thing: 1rem;',
+			'  --x-plugin-token: 2rem;',
+			'  --x-missing-token: 3rem;',
+			'}',
+		].join('\n'),
+		tokenMap: createTokenMap(preset),
+		prefixConfig: createPrefixValidationConfig(
+			preset.context.tokenPrefixes,
+			preset.context.knownProps,
+		),
+	});
+
+	expect(matches).toHaveLength(1);
+	expect(matches[0].name).toBe('--x-missing-token');
 });

@@ -317,6 +317,7 @@ yargs(hideBin(process.argv))
 				}
 				const prefixConfig = createPrefixValidationConfig(
 					arbor.context.tokenPrefixes,
+					arbor.context.knownProps,
 				);
 
 				let totalIssues = 0;
