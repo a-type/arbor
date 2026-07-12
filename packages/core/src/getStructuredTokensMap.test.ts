@@ -18,10 +18,10 @@ it('generates a map of mode and system tokens with correct paths', () => {
 
 	expect(map.has('color.main.mid')).toBe(true);
 	expect(map.get('color.main.mid')).toBe(preset.$.mode.color.main.mid);
-	expect(map.has('spacing.md')).toBe(true);
+	expect(map.has('space.md')).toBe(true);
 	expect(map.get('color.main')).toBe(preset.$.mode.color.main.$root);
-	expect(map.has('spacing.md')).toBe(true);
-	expect(map.get('spacing.md')).toBe(preset.$.mode.space.md);
+	expect(map.has('space.md')).toBe(true);
+	expect(map.get('space.md')).toBe(preset.$.mode.space.md);
 });
 
 it('applies descriptions to all built-in system and global tokens', () => {
