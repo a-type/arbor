@@ -59,12 +59,12 @@ it('returns structured near-miss suggestions for unknown tokens', () => {
 	expect(formatInvalidTokenMatchMessage(matches[0])).toContain('Did you mean:');
 });
 
-it('ignores external props declared in one or more @external-props comments', () => {
+it('ignores known props declared in one or more @known-props comments', () => {
 	const preset = createTestPreset();
 	const matches = findInvalidTokenMatches({
 		content: [
-			'/* @external-props: --x-vendor-thing */',
-			'/* @external-props: --x-plugin-token, --x-fn-third-party */',
+			'/* @known-props: --x-vendor-thing */',
+			'/* @known-props: --x-plugin-token, --x-fn-third-party */',
 			'.card {',
 			'  --x-vendor-thing: 1rem;',
 			'  --x-plugin-token: 2rem;',

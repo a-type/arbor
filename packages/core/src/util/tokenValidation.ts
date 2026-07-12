@@ -117,7 +117,7 @@ function extractExternalPropsAllowList(content: string): Set<string> {
 
 	for (const match of content.matchAll(commentRegex)) {
 		const body = match[1]?.replace(/^\s*\*\s?/gm, '').trim() ?? '';
-		const directiveMatch = body.match(/@external-props:\s*([\s\S]*)/);
+		const directiveMatch = body.match(/@known-props:\s*([\s\S]*)/);
 		if (!directiveMatch) {
 			continue;
 		}
