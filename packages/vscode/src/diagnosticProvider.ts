@@ -1,8 +1,12 @@
-import { getInternals, isFunction, isMixin } from '@arbor-css/core';
+import {
+	createTokenRegexes,
+	getInternals,
+	isFunction,
+	isMixin,
+} from '@arbor-css/core';
 import * as vscode from 'vscode';
 import { findArbitraryValueWarnings } from './arbitraryValueDiagnostics.js';
 import { findFunctionParamErrors } from './functionParamDiagnostics.js';
-import { createTokenRegexes } from './regex.js';
 import { TokenProvider } from './tokenProvider.js';
 
 /**

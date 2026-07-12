@@ -22,3 +22,4 @@ export {
 } from './util/buildModeTokenGraph.js';
 export { flattenAndApplyTokenValues } from './util/flattenAndApplyTokenValues.js';
 export { resolveComputedTokenValue } from './util/resolveComputedTokenValue.js';
+export * from './util/tokenRegex.js';

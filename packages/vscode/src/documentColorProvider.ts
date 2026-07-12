@@ -1,6 +1,6 @@
+import { createTokenRegexes } from '@arbor-css/core';
 import * as vscode from 'vscode';
 import { parseCssColor } from './colorValue.js';
-import { createTokenRegexes } from './regex.js';
 import { resolveColorTokenValueByName } from './resolvedTokenValue.js';
 import type { TokenProvider } from './tokenProvider.js';
 

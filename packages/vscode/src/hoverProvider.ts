@@ -1,6 +1,10 @@
-import { isFunction, isMixin, isToken } from '@arbor-css/core';
+import {
+	createTokenRegexes,
+	isFunction,
+	isMixin,
+	isToken,
+} from '@arbor-css/core';
 import * as vscode from 'vscode';
-import { createTokenRegexes } from './regex.js';
 import {
 	resolveColorTokenValue,
 	resolveTokenValue,

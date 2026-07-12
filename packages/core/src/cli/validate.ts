@@ -10,6 +10,7 @@ import {
 } from '@arbor-css/globals';
 import type { AnyArborPreset } from '@arbor-css/preset/config';
 import { flattenTokenSchema, isToken, type Token } from '@arbor-css/tokens';
+import { createTokenRegexes } from '../util/tokenRegex.js';
 
 type TokenMapValue = Token | ArborFunction | ArborMixin<any, any>;
 
@@ -258,12 +259,10 @@ export function validateCssContent({
 		.filter(([, value]) => isToken(value))
 		.map(([name]) => name);
 
-	for (const prefix of prefixConfig.tokenPrefixes) {
-		const generalPropertyUsageRegex = new RegExp(
-			`[\\s(](${escapeRegex(prefix)}[\\w-]+)[\\s)]`,
-			'gm',
-		);
-		for (const match of content.matchAll(generalPropertyUsageRegex)) {
+	const tokenMatches = createTokenRegexes(prefixConfig.tokenPrefixes);
+
+	for (const matches of tokenMatches) {
+		for (const match of content.matchAll(matches.anywhere())) {
 			if (match.index === undefined) {
 				continue;
 			}
@@ -280,11 +279,7 @@ export function validateCssContent({
 			}
 		}
 
-		const declarationRegex = new RegExp(
-			`(^|[;{\\s])(${escapeRegex(prefix)}[\\w-]+)\\s*:`,
-			'gm',
-		);
-		for (const match of content.matchAll(declarationRegex)) {
+		for (const match of content.matchAll(matches.declaration())) {
 			if (match.index === undefined) {
 				continue;
 			}
