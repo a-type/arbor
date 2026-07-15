@@ -1,5 +1,5 @@
 import { definePreset } from '@arbor-css/core';
-import { compileSingleColor, presetArbor } from '@arbor-css/core/preset-arbor';
+import { compileSingleColor, presetArbor } from '@arbor-css/core/preset-v2';
 import { makeMixins } from './mixins';
 
 const preset = definePreset({
@@ -56,30 +56,28 @@ const preset = definePreset({
 			saturation: 0.5,
 		},
 		color: {
-			palette: {
-				user: compileSingleColor(
-					{
-						hue: $.mode.user.hue,
-						saturation: $.mode.user.saturation,
-					},
-					$.mode.global,
-				),
-			},
+			user: compileSingleColor(
+				{
+					hue: $.mode.user.hue,
+					saturation: $.mode.user.saturation,
+				},
+				$.mode.global,
+			),
 		},
 	}),
 	mixins: makeMixins,
+
+	config: {
+		modeTokenPrefix: '--',
+	},
 });
 
 preset.bundleMode('success', {
-	color: {
-		main: preset.$.mode.color.palette.success,
-	},
+	tint: preset.$.mode.color.success,
 });
 
 preset.bundleMode('neutral', {
-	color: {
-		main: preset.$.mode.color.neutral,
-	},
+	tint: preset.$.mode.gray,
 });
 
 preset.bundleMode('user', {
@@ -87,9 +85,7 @@ preset.bundleMode('user', {
 		hue: 'var(--user-hue, 0)',
 		saturation: 'var(--user-saturation, 0.5)',
 	},
-	color: {
-		main: preset.$.mode.color.palette.user,
-	},
+	tint: preset.$.mode.color.user,
 });
 
 export default preset;

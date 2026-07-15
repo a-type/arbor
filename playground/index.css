@@ -1,28 +1,28 @@
 body {
-	background: var(--m-color-main-paper);
-	color: var(--m-color-main-ink);
+	background: var(--bg-paper);
+	color: var(--fg-ink);
 	font-family: system-ui;
 }
 
 .surface {
-	padding: var(--m-surface-padding);
-	border-radius: var(--m-surface-radius);
+	padding: var(--surface-p);
+	border-radius: var(--surface-rd);
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: var(--m-space-sm);
+	gap: var(--sp-sm);
 	/* Ambient = default */
-	@apply --mx-bg(var(--m-surface-ambient-bg));
-	@apply --mx-fg(var(--m-surface-ambient-fg));
+	@apply --mx-bg(var(--surface-ambient-bg));
+	@apply --mx-fg(var(--surface-ambient-fg));
 
 	&[data-emphasis='primary'] {
-		@apply --mx-bg(var(--m-surface-primary-bg));
-		@apply --mx-fg(var(--m-surface-primary-fg));
+		@apply --mx-bg(var(--surface-primary-bg));
+		@apply --mx-fg(var(--surface-primary-fg));
 	}
 	&[data-emphasis='secondary'] {
-		@apply --mx-bg(var(--m-surface-secondary-bg));
-		@apply --mx-fg(var(--m-surface-secondary-fg));
+		@apply --mx-bg(var(--surface-secondary-bg));
+		@apply --mx-fg(var(--surface-secondary-fg));
 	}
 }
 
@@ -32,14 +32,14 @@ button {
 	@apply --mx-action-secondary;
 
 	/* interaction */
-	transition: all var(--m-duration) var(--m-easing);
+	transition: all var(--dur) var(--ease);
 	cursor: pointer;
 
 	/* use applied fg color for the border, too */
 	@apply --mx-borderColor(var(--mx-fg-ref));
 
 	/* apply ring+shadow base props, then set shadow to a default value */
-	@apply --mx-shadow(var(--m-shadow-sm));
+	@apply --mx-shadow(var(--shadow-sm));
 
 	&[data-emphasis='primary'] {
 		@apply --mx-action-primary;
@@ -62,7 +62,7 @@ button {
 		&:focus {
 			--mx-bg-applied: inherit;
 			--mx-bg-ref: --fn-color-heavier(
-				color-mix(var(--mx-bg-applied), var(--m-color-main-light) 10%),
+				color-mix(var(--mx-bg-applied), var(--bg-light) 10%),
 				1
 			);
 		}
@@ -82,25 +82,25 @@ button {
 	}
 	&:focus-visible {
 		@apply --mx-bg-lighter(2);
-		--mx-ring-value: --fn-ring(var(--m-color-main-ink), 2px);
+		--mx-ring-value: --fn-ring(var(--fg-ink), 2px);
 	}
 }
 
 .input,
 input {
 	@apply --mx-control;
-	@apply --mx-shadow(var(--m-shadow-sm));
+	@apply --mx-shadow(var(--shadow-sm));
 
 	&:hover {
 		@apply --mx-bg-heavier(1);
 		@apply --mx-borderColor-heavier(2);
-		--mx-ring-value: --fn-ring(var(--m-color-main-heavy), 2px);
+		--mx-ring-value: --fn-ring(var(--fg-light), 2px);
 	}
 	&:focus {
 		outline: none;
 	}
 	&:focus-visible {
-		--mx-ring-value: --fn-ring(var(--m-color-main-heavy), 4px);
+		--mx-ring-value: --fn-ring(var(--fg-light), 4px);
 	}
 }
 
@@ -121,7 +121,7 @@ small {
 }
 
 .bg-main {
-	@apply --mx-bg(var(--m-color-main-ink));
+	@apply --mx-bg(var(--tint-ink));
 }
 .bg-lighter-1 {
 	@apply --mx-bg-lighter(1);

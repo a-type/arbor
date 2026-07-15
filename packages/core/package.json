@@ -35,6 +35,12 @@
 			"node": "./dist/presets/arborPreset/index.js",
 			"types": "./dist/presets/arborPreset/index.d.ts",
 			"default": "./dist/presets/arborPreset/index.js"
+		},
+		"./preset-v2": {
+			"import": "./dist/presets/v2/index.js",
+			"node": "./dist/presets/v2/index.js",
+			"types": "./dist/presets/v2/index.d.ts",
+			"default": "./dist/presets/v2/index.js"
 		}
 	},
 	"bin": {

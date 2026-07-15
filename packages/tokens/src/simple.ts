@@ -45,6 +45,7 @@ export type SimpleTokenSchema = {
 	 * Optional at any level.
 	 */
 	$root?: SimpleTokenDefinition;
+} & {
 	[key: string]: SimpleTokenDefinition | SimpleTokenSchema | undefined;
 };
 
