@@ -316,11 +316,11 @@ export const presetArbor = <
 						'--color': $.mode.action.primary.fg,
 					})}
 					${presetBasic.mixins.borderColor.apply({
-						'--color': $.mode.action.primary.b.c,
+						'--color': $.mode.action.primary.b.color,
 					})}
 					padding: ${$.mode.action.p.$root};
 					border-radius: ${$.mode.action.rd};
-					border-width: ${$.mode.action.primary.b.w};
+					border-width: ${$.mode.action.primary.b.width};
 					border-style: ${$.mode.action.primary.b.style};
 					font-family: ${$.mode.action.text.font};
 					font-size: ${$.mode.action.text.size};
@@ -340,11 +340,11 @@ export const presetArbor = <
 						'--color': $.mode.action.secondary.fg,
 					})}
 					${presetBasic.mixins.borderColor.apply({
-						'--color': $.mode.action.secondary.b.c,
+						'--color': $.mode.action.secondary.b.color,
 					})}
 					padding: ${$.mode.action.p.$root};
 					border-radius: ${$.mode.action.rd};
-					border-width: ${$.mode.action.secondary.b.w};
+					border-width: ${$.mode.action.secondary.b.width};
 					border-style: ${$.mode.action.secondary.b.style};
 					font-family: ${$.mode.action.text.font};
 					font-size: ${$.mode.action.text.size};
@@ -364,11 +364,11 @@ export const presetArbor = <
 						'--color': $.mode.action.ambient.fg,
 					})}
 					${presetBasic.mixins.borderColor.apply({
-						'--color': $.mode.action.ambient.b.c,
+						'--color': $.mode.action.ambient.b.color,
 					})}
 					padding: ${$.mode.action.p.$root};
 					border-radius: ${$.mode.action.rd};
-					border-width: ${$.mode.action.ambient.b.w};
+					border-width: ${$.mode.action.ambient.b.width};
 					border-style: ${$.mode.action.ambient.b.style};
 					font-family: ${$.mode.action.text.font};
 					font-size: ${$.mode.action.text.size};
@@ -388,7 +388,7 @@ export const presetArbor = <
 						'--color': $.mode.surface.primary.fg,
 					})}
 					${presetBasic.mixins.borderColor.apply({
-						'--color': $.mode.surface.primary.b.c,
+						'--color': $.mode.surface.primary.b.color,
 					})}
 					padding: ${$.mode.surface.p.$root};
 					border-radius: ${$.mode.surface.rd};
@@ -410,11 +410,11 @@ export const presetArbor = <
 						'--color': $.mode.surface.secondary.fg,
 					})}
 					${presetBasic.mixins.borderColor.apply({
-						'--color': $.mode.surface.secondary.b.c,
+						'--color': $.mode.surface.secondary.b.color,
 					})}
 					padding: ${$.mode.surface.p.$root};
 					border-radius: ${$.mode.surface.rd};
-					border-width: ${$.mode.surface.secondary.b.w};
+					border-width: ${$.mode.surface.secondary.b.width};
 					border-style: ${$.mode.surface.secondary.b.style};
 					font-family: ${$.mode.surface.text.font};
 					font-size: ${$.mode.surface.text.size};
@@ -434,11 +434,11 @@ export const presetArbor = <
 						'--color': $.mode.surface.ambient.fg,
 					})}
 					${presetBasic.mixins.borderColor.apply({
-						'--color': $.mode.surface.ambient.b.c,
+						'--color': $.mode.surface.ambient.b.color,
 					})}
 					padding: ${$.mode.surface.p.$root};
 					border-radius: ${$.mode.surface.rd};
-					border-width: ${$.mode.surface.ambient.b.w};
+					border-width: ${$.mode.surface.ambient.b.width};
 					border-style: ${$.mode.surface.ambient.b.style};
 					font-family: ${$.mode.surface.text.font};
 					font-size: ${$.mode.surface.text.size};
@@ -458,11 +458,11 @@ export const presetArbor = <
 						'--color': $.mode.control.fg,
 					})}
 					${presetBasic.mixins.borderColor.apply({
-						'--color': $.mode.control.b.c,
+						'--color': $.mode.control.b.color,
 					})}
 					padding: ${$.mode.control.p.$root};
 					border-radius: ${$.mode.control.rd};
-					border-width: ${$.mode.control.b.w};
+					border-width: ${$.mode.control.b.width};
 					border-style: ${$.mode.control.b.style};
 					font-family: ${$.mode.control.text.font};
 					font-size: ${$.mode.control.text.size};

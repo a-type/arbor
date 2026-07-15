@@ -42,13 +42,13 @@ export function createActionIntentValues<TColorNames extends string>(
 			`,
 			b: {
 				$root: css`
-					${$.mode.action.primary.b.w} ${$.mode.action.primary.b.style} ${$.mode
-						.action.primary.b.c}
+					${$.mode.action.primary.b.width} ${$.mode.action.primary.b.style} ${$
+						.mode.action.primary.b.color}
 				`,
-				c: css`
+				color: css`
 					${$.mode.fg.$root}
 				`,
-				w: css`
+				width: css`
 					${$.mode.lw.$root}
 				`,
 				style: 'solid',
@@ -63,13 +63,13 @@ export function createActionIntentValues<TColorNames extends string>(
 			`,
 			b: {
 				$root: css`
-					${$.mode.action.secondary.b.w} ${$.mode.action.secondary.b.style} ${$
-						.mode.action.secondary.b.c}
+					${$.mode.action.secondary.b.width} ${$.mode.action.secondary.b
+						.style} ${$.mode.action.secondary.b.color}
 				`,
-				c: css`
+				color: css`
 					${$.mode.fg.gray.light}
 				`,
-				w: css`
+				width: css`
 					${$.mode.lw.$root}
 				`,
 				style: 'solid',
@@ -82,11 +82,11 @@ export function createActionIntentValues<TColorNames extends string>(
 			`,
 			b: {
 				$root: css`
-					${$.mode.action.ambient.b.w} ${$.mode.action.ambient.b.style} ${$.mode
-						.action.ambient.b.c}
+					${$.mode.action.ambient.b.width} ${$.mode.action.ambient.b.style} ${$
+						.mode.action.ambient.b.color}
 				`,
-				c: 'transparent',
-				w: css`
+				color: 'transparent',
+				width: css`
 					${$.mode.lw.$root}
 				`,
 				style: 'solid',
@@ -132,13 +132,13 @@ export function createSurfaceIntentValues<TColorNames extends string>(
 			`,
 			b: {
 				$root: css`
-					${$.mode.surface.primary.b.w} ${$.mode.surface.primary.b.style} ${$
-						.mode.surface.primary.b.c}
+					${$.mode.surface.primary.b.width} ${$.mode.surface.primary.b
+						.style} ${$.mode.surface.primary.b.color}
 				`,
-				c: css`
+				color: css`
 					${$.mode.fg.light}
 				`,
-				w: css`
+				width: css`
 					${$.mode.lw.$root}
 				`,
 				style: 'solid',
@@ -153,13 +153,13 @@ export function createSurfaceIntentValues<TColorNames extends string>(
 			`,
 			b: {
 				$root: css`
-					${$.mode.surface.secondary.b.w} ${$.mode.surface.secondary.b
-						.style} ${$.mode.surface.secondary.b.c}
+					${$.mode.surface.secondary.b.width} ${$.mode.surface.secondary.b
+						.style} ${$.mode.surface.secondary.b.color}
 				`,
-				c: css`
+				color: css`
 					${$.mode.fg.light}
 				`,
-				w: css`
+				width: css`
 					${$.mode.lw.$root}
 				`,
 				style: 'solid',
@@ -174,13 +174,13 @@ export function createSurfaceIntentValues<TColorNames extends string>(
 			`,
 			b: {
 				$root: css`
-					${$.mode.surface.ambient.b.w} ${$.mode.surface.ambient.b.style} ${$
-						.mode.surface.ambient.b.c}
+					${$.mode.surface.ambient.b.width} ${$.mode.surface.ambient.b
+						.style} ${$.mode.surface.ambient.b.color}
 				`,
-				c: css`
+				color: css`
 					${$.mode.fg.gray.light}
 				`,
-				w: css`
+				width: css`
 					${$.mode.lw.$root}
 				`,
 				style: 'solid',
@@ -214,12 +214,13 @@ export function createControlIntentValues<TColorNames extends string>(
 		`,
 		b: {
 			$root: css`
-				${$.mode.control.b.w} ${$.mode.control.b.style} ${$.mode.control.b.c}
+				${$.mode.control.b.width} ${$.mode.control.b.style} ${$.mode.control.b
+					.color}
 			`,
-			c: css`
+			color: css`
 				${$.mode.fg.gray.light}
 			`,
-			w: css`
+			width: css`
 				${$.mode.lw.$root}
 			`,
 			style: 'solid',

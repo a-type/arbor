@@ -16,8 +16,8 @@ export const visualIntents = createModeSchema({
 			description:
 				'Compiles the border color, width, and style into a single token for direct assignment to border.',
 		},
-		c: 'color',
-		w: 'border-width',
+		color: 'color',
+		width: 'border-width',
 		style: 'border-style',
 	},
 });
