@@ -56,7 +56,7 @@ export function createActionIntentValues<TColorNames extends string>(
 		},
 		secondary: {
 			bg: css`
-				${$.mode.bg.paper}
+				${$.mode.bg.gray.paper}
 			`,
 			fg: css`
 				${$.mode.global.trueHeavyColor}
