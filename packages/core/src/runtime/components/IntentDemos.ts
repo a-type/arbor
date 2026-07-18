@@ -6,10 +6,10 @@ class IntentDemos extends LitElement {
 			:host {
 				display: flex;
 				flex-direction: column;
-				gap: var(--m-space-lg);
+				gap: var(--m-sp-lg);
 				box-sizing: border-box;
 				width: 100%;
-				padding: var(--m-space-lg);
+				padding: var(--m-sp-lg);
 			}
 
 			.surface {
@@ -82,10 +82,10 @@ class IntentDemos extends LitElement {
 			}
 
 			.content {
-				background: var(--m-color-neutral);
-				color: var(--m-color-neutral-ink);
-				border: 1px dashed var(--m-color-neutral-heavy);
-				padding: var(--m-space-sm);
+				background: var(--m-gray);
+				color: var(--m-gray-ink);
+				border: 1px dashed var(--m-gray-heavy);
+				padding: var(--m-sp-sm);
 				opacity: 0.5;
 			}
 		`;

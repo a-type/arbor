@@ -1,7 +1,7 @@
 import { definePreset } from '@arbor-css/core';
-import { presetArbor } from '@arbor-css/core/preset-arbor';
+import { presetV1 } from '@arbor-css/core/preset-v1';
 
-export const basePreset = presetArbor({
+export const basePreset = presetV1({
 	color: {
 		mainColor: 'summer',
 		ranges: {
@@ -50,7 +50,7 @@ export const basePreset = presetArbor({
 		fadeInUp: (css, $) => css`
 			from {
 				opacity: 0;
-				transform: translateY(${$.mode.space.sm});
+				transform: translateY(${$.mode.sp.sm});
 			}
 			to {
 				opacity: 1;
@@ -62,10 +62,8 @@ export const basePreset = presetArbor({
 
 function makeSeasonMode(season: 'winter' | 'spring' | 'summer' | 'autumn') {
 	basePreset.bundleMode(season, {
-		color: {
-			main: basePreset.$.mode.color.palette[season],
-			neutral: basePreset.$.mode.color.palette[season].$neutral,
-		},
+		tint: basePreset.$.mode.color[season],
+		gray: basePreset.$.mode.color[season].gray,
 	});
 }
 
@@ -75,15 +73,11 @@ makeSeasonMode('summer');
 makeSeasonMode('autumn');
 
 basePreset.bundleMode('neutral', {
-	color: {
-		main: basePreset.$.mode.color.neutral,
-	},
+	tint: basePreset.$.mode.color.summer.gray,
 });
 
 basePreset.bundleMode('attention', {
-	color: {
-		main: basePreset.$.mode.color.palette.attention,
-	},
+	tint: basePreset.$.mode.color.attention,
 });
 
 basePreset.bundleMode('hero', {
@@ -216,7 +210,7 @@ const preset = definePreset({
 					${basePreset.$.mixins.ring
 						.value}: ${basePreset.functions.ring.compute({
 						'--size': '2px',
-						'--color': basePreset.$.mode.color.main.heavy,
+						'--color': basePreset.$.mode.tint.heavy,
 					})};
 					cursor: pointer;
 				}
@@ -233,7 +227,7 @@ const preset = definePreset({
 					${basePreset.$.mixins.ring
 						.value}: ${basePreset.functions.ring.compute({
 						'--size': '3px',
-						'--color': basePreset.$.mode.color.main.heavy,
+						'--color': basePreset.$.mode.tint.heavy,
 						'--offset': '1px',
 					})};
 				}
@@ -246,7 +240,7 @@ const preset = definePreset({
 					${basePreset.$.mixins.ring
 						.value}: ${basePreset.functions.ring.compute({
 						'--size': '1px',
-						'--color': basePreset.$.mode.color.main.heavy,
+						'--color': basePreset.$.mode.tint.heavy,
 					})};
 				}
 			`,

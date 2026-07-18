@@ -4,19 +4,21 @@ import { definePreset, PresetTokens } from '@arbor-css/preset';
 import { createColorMixins } from '../basicPreset/mixins.js';
 import { presetBasic } from '../basicPreset/preset.js';
 import {
-	ArborModeSchema,
-	createArborModeSchema,
-} from './modeSchema/modeSchema.js';
+	ModeSchema as ArborModeSchema,
+	modeSchema as createArborModeSchema,
+} from './schema/schema.js';
 import {
 	CompileColorsOptions,
 	DefaultRangeName,
-} from './modeValues/color/index.js';
+} from './values/color/index.js';
 import {
 	createActionIntentValues,
+	createBgIntentValues,
 	createControlIntentValues,
+	createFgIntentValues,
 	createProseIntentValues,
 	createSurfaceIntentValues,
-} from './modeValues/intents.js';
+} from './values/intents.js';
 import {
 	createColorSemanticValues,
 	createDurationSemanticValues,
@@ -25,13 +27,16 @@ import {
 	createRadiusSemanticValues,
 	createShadowSemanticValues,
 	createSpacingSemanticValues,
-	createTypographySemanticValues,
-} from './modeValues/semantics.js';
-import { ShadowConfig } from './modeValues/shadow/index.js';
-import { SpacingConfig } from './modeValues/spacing/index.js';
-import { TypographyConfig } from './modeValues/typography/index.js';
+	createTypographyLetterSpacingSemanticValues,
+	createTypographyLineHeightSemanticValues,
+	createTypographySizeSemanticValues,
+	createTypographyWeightSemanticValues,
+} from './values/semantics.js';
+import { ShadowConfig } from './values/shadow/index.js';
+import { SpacingConfig } from './values/spacing/index.js';
+import { TypographyConfig } from './values/typography/index.js';
 
-export interface ArborPresetConfig<
+export interface PresetV1Config<
 	TRanges extends string,
 	TKeyframeName extends string = string,
 > {
@@ -178,12 +183,12 @@ export interface ArborPresetConfig<
  * Adds opinionated tokens and a full-featured mode
  * schema on top of the basic preset's utility mixins and functions.
  */
-export const presetArbor = <
+export const presetV1 = <
 	TRanges extends string,
 	TRangeStepNames extends string = DefaultRangeName,
 	TKeyframeNames extends string = string,
 >(
-	config: ArborPresetConfig<TRanges, TKeyframeNames>,
+	config: PresetV1Config<TRanges, TKeyframeNames>,
 ) => {
 	const preset = definePreset({
 		name: 'arbor',
@@ -191,6 +196,7 @@ export const presetArbor = <
 			colorNames: Object.keys(config.color.ranges) as TRanges[],
 		}),
 		baseMode: ($) => {
+			const color = createColorSemanticValues($, config.color);
 			return {
 				global: {
 					color: {
@@ -237,7 +243,7 @@ export const presetArbor = <
 						minWeight: config.typography?.minWeight ?? 100,
 						boldness: config.typography?.boldness ?? 0.5,
 					},
-					easing: {
+					ease: {
 						bounciness: config.easing?.bounciness ?? 0.5,
 					},
 					duration: {
@@ -249,18 +255,31 @@ export const presetArbor = <
 				},
 
 				/** SEMANTICS */
-				color: createColorSemanticValues($, config.color) as any,
-				space: createSpacingSemanticValues($, {
+				color: color as any,
+				tint: color[config.color.mainColor],
+				gray: color[config.color.mainColor].gray,
+				sp: createSpacingSemanticValues($, {
 					roundToPixel: config.space?.roundToPixel ?? false,
 				}),
-				text: createTypographySemanticValues($),
+				fs: createTypographySizeSemanticValues($, {
+					roundToPixel: config.typography?.roundToPixel ?? false,
+				}),
+				fw: createTypographyWeightSemanticValues($),
+				lh: createTypographyLineHeightSemanticValues($, {
+					roundToPixel: config.typography?.roundToPixel ?? false,
+				}),
+				ls: createTypographyLetterSpacingSemanticValues($, {
+					roundToPixel: config.typography?.roundToPixel ?? false,
+				}),
 				shadow: createShadowSemanticValues($),
-				radius: createRadiusSemanticValues($),
-				lineWidth: createLineWidthSemanticValues($),
-				easing: createEasingSemanticValues($),
-				duration: createDurationSemanticValues($),
+				rd: createRadiusSemanticValues($),
+				lw: createLineWidthSemanticValues($),
+				ease: createEasingSemanticValues($),
+				dur: createDurationSemanticValues($),
 
 				/** INTENTS */
+				fg: createFgIntentValues($),
+				bg: createBgIntentValues($),
 				action: createActionIntentValues($),
 				control: createControlIntentValues($),
 				surface: createSurfaceIntentValues($),
@@ -297,12 +316,12 @@ export const presetArbor = <
 						'--color': $.mode.action.primary.fg,
 					})}
 					${presetBasic.mixins.borderColor.apply({
-						'--color': $.mode.action.primary.borderColor,
+						'--color': $.mode.action.primary.b.color,
 					})}
-					padding: ${$.mode.action.padding.$root};
-					border-radius: ${$.mode.action.radius};
-					border-width: ${$.mode.action.primary.borderWidth};
-					border-style: ${$.mode.action.primary.borderStyle};
+					padding: ${$.mode.action.p.$root};
+					border-radius: ${$.mode.action.rd};
+					border-width: ${$.mode.action.primary.b.width};
+					border-style: ${$.mode.action.primary.b.style};
 					font-family: ${$.mode.action.text.font};
 					font-size: ${$.mode.action.text.size};
 					font-weight: ${$.mode.action.text.weight};
@@ -321,12 +340,12 @@ export const presetArbor = <
 						'--color': $.mode.action.secondary.fg,
 					})}
 					${presetBasic.mixins.borderColor.apply({
-						'--color': $.mode.action.secondary.borderColor,
+						'--color': $.mode.action.secondary.b.color,
 					})}
-					padding: ${$.mode.action.padding.$root};
-					border-radius: ${$.mode.action.radius};
-					border-width: ${$.mode.action.secondary.borderWidth};
-					border-style: ${$.mode.action.secondary.borderStyle};
+					padding: ${$.mode.action.p.$root};
+					border-radius: ${$.mode.action.rd};
+					border-width: ${$.mode.action.secondary.b.width};
+					border-style: ${$.mode.action.secondary.b.style};
 					font-family: ${$.mode.action.text.font};
 					font-size: ${$.mode.action.text.size};
 					font-weight: ${$.mode.action.text.weight};
@@ -345,12 +364,12 @@ export const presetArbor = <
 						'--color': $.mode.action.ambient.fg,
 					})}
 					${presetBasic.mixins.borderColor.apply({
-						'--color': $.mode.action.ambient.borderColor,
+						'--color': $.mode.action.ambient.b.color,
 					})}
-					padding: ${$.mode.action.padding.$root};
-					border-radius: ${$.mode.action.radius};
-					border-width: ${$.mode.action.ambient.borderWidth};
-					border-style: ${$.mode.action.ambient.borderStyle};
+					padding: ${$.mode.action.p.$root};
+					border-radius: ${$.mode.action.rd};
+					border-width: ${$.mode.action.ambient.b.width};
+					border-style: ${$.mode.action.ambient.b.style};
 					font-family: ${$.mode.action.text.font};
 					font-size: ${$.mode.action.text.size};
 					font-weight: ${$.mode.action.text.weight};
@@ -369,10 +388,10 @@ export const presetArbor = <
 						'--color': $.mode.surface.primary.fg,
 					})}
 					${presetBasic.mixins.borderColor.apply({
-						'--color': $.mode.surface.primary.borderColor,
+						'--color': $.mode.surface.primary.b.color,
 					})}
-					padding: ${$.mode.surface.padding.$root};
-					border-radius: ${$.mode.surface.radius};
+					padding: ${$.mode.surface.p.$root};
+					border-radius: ${$.mode.surface.rd};
 					font-family: ${$.mode.surface.text.font};
 					font-size: ${$.mode.surface.text.size};
 					font-weight: ${$.mode.surface.text.weight};
@@ -391,12 +410,12 @@ export const presetArbor = <
 						'--color': $.mode.surface.secondary.fg,
 					})}
 					${presetBasic.mixins.borderColor.apply({
-						'--color': $.mode.surface.secondary.borderColor,
+						'--color': $.mode.surface.secondary.b.color,
 					})}
-					padding: ${$.mode.surface.padding.$root};
-					border-radius: ${$.mode.surface.radius};
-					border-width: ${$.mode.surface.secondary.borderWidth};
-					border-style: ${$.mode.surface.secondary.borderStyle};
+					padding: ${$.mode.surface.p.$root};
+					border-radius: ${$.mode.surface.rd};
+					border-width: ${$.mode.surface.secondary.b.width};
+					border-style: ${$.mode.surface.secondary.b.style};
 					font-family: ${$.mode.surface.text.font};
 					font-size: ${$.mode.surface.text.size};
 					font-weight: ${$.mode.surface.text.weight};
@@ -415,12 +434,12 @@ export const presetArbor = <
 						'--color': $.mode.surface.ambient.fg,
 					})}
 					${presetBasic.mixins.borderColor.apply({
-						'--color': $.mode.surface.ambient.borderColor,
+						'--color': $.mode.surface.ambient.b.color,
 					})}
-					padding: ${$.mode.surface.padding.$root};
-					border-radius: ${$.mode.surface.radius};
-					border-width: ${$.mode.surface.ambient.borderWidth};
-					border-style: ${$.mode.surface.ambient.borderStyle};
+					padding: ${$.mode.surface.p.$root};
+					border-radius: ${$.mode.surface.rd};
+					border-width: ${$.mode.surface.ambient.b.width};
+					border-style: ${$.mode.surface.ambient.b.style};
 					font-family: ${$.mode.surface.text.font};
 					font-size: ${$.mode.surface.text.size};
 					font-weight: ${$.mode.surface.text.weight};
@@ -439,12 +458,12 @@ export const presetArbor = <
 						'--color': $.mode.control.fg,
 					})}
 					${presetBasic.mixins.borderColor.apply({
-						'--color': $.mode.control.borderColor,
+						'--color': $.mode.control.b.color,
 					})}
-					padding: ${$.mode.control.padding.$root};
-					border-radius: ${$.mode.control.radius};
-					border-width: ${$.mode.control.borderWidth};
-					border-style: ${$.mode.control.borderStyle};
+					padding: ${$.mode.control.p.$root};
+					border-radius: ${$.mode.control.rd};
+					border-width: ${$.mode.control.b.width};
+					border-style: ${$.mode.control.b.style};
 					font-family: ${$.mode.control.text.font};
 					font-size: ${$.mode.control.text.size};
 					font-weight: ${$.mode.control.text.weight};
@@ -498,8 +517,8 @@ export const presetArbor = <
 				],
 				definition: (css, { parameters }) => css`
 					animation-name: ${parameters[0]};
-					animation-duration: ${$.mode.duration.$root};
-					animation-timing-function: ${$.mode.easing.$root};
+					animation-duration: ${$.mode.dur.$root};
+					animation-timing-function: ${$.mode.ease.$root};
 
 					@media (prefers-reduced-motion: reduce) {
 						animation: none;
@@ -602,6 +621,6 @@ export const presetArbor = <
 	return preset;
 };
 
-export type PresetArborModeTokens<TRangeNames extends string> = ReturnType<
-	typeof presetArbor<TRangeNames>
+export type PresetV1ModeTokens<TRangeNames extends string> = ReturnType<
+	typeof presetV1<TRangeNames>
 >['$']['mode'];

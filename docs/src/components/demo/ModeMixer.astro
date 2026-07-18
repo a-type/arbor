@@ -39,10 +39,10 @@ import ModeSelector from './ModeSelector.astro';
 			align-items: stretch;
 			justify-content: stretch;
 
-			@apply --mx-borderColor(var(--m-surface-ambient-borderColor));
+			@apply --mx-borderColor(var(--m-surface-ambient-b-color));
 			@apply --mx-bg(var(--m-surface-ambient-bg));
-			border-radius: var(--m-surface-radius);
-			gap: var(--m-space);
+			border-radius: var(--m-surface-rd);
+			gap: var(--m-sp);
 
 			overflow: clip;
 
@@ -58,8 +58,8 @@ import ModeSelector from './ModeSelector.astro';
 		.input {
 			display: flex;
 			flex-direction: column;
-			gap: var(--m-space);
-			padding: var(--m-surface-padding);
+			gap: var(--m-sp);
+			padding: var(--m-surface-p);
 
 			font-family: monospace;
 
@@ -71,15 +71,15 @@ import ModeSelector from './ModeSelector.astro';
 			flex-direction: column;
 			align-items: center;
 			justify-content: center;
-			gap: var(--m-space);
-			padding: var(--m-space);
+			gap: var(--m-sp);
+			padding: var(--m-sp);
 		}
 
 		.emphasis-code {
-			@apply --mx-fg(var(--m-color-main-heavy));
+			@apply --mx-fg(var(--m-tint-heavy));
 		}
 		.ambient-code {
-			@apply --mx-fg(var(--m-color-neutral-heavy));
+			@apply --mx-fg(var(--m-gray-heavy));
 		}
 		.nest-1 {
 			margin-left: 3ch;

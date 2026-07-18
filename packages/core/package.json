@@ -30,17 +30,11 @@
 			"types": "./dist/presets/basicPreset/index.d.ts",
 			"default": "./dist/presets/basicPreset/index.js"
 		},
-		"./preset-arbor": {
-			"import": "./dist/presets/arborPreset/index.js",
-			"node": "./dist/presets/arborPreset/index.js",
-			"types": "./dist/presets/arborPreset/index.d.ts",
-			"default": "./dist/presets/arborPreset/index.js"
-		},
-		"./preset-v2": {
-			"import": "./dist/presets/v2/index.js",
-			"node": "./dist/presets/v2/index.js",
-			"types": "./dist/presets/v2/index.d.ts",
-			"default": "./dist/presets/v2/index.js"
+		"./preset-v1": {
+			"import": "./dist/presets/v1/index.js",
+			"node": "./dist/presets/v1/index.js",
+			"types": "./dist/presets/v1/index.d.ts",
+			"default": "./dist/presets/v1/index.js"
 		}
 	},
 	"bin": {

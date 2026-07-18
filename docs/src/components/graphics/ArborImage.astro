@@ -13,17 +13,17 @@ const { ...props } = Astro.props;
 		max-height: 100%;
 	}
 	path {
-		stroke-width: calc(var(--m-lineWidth) / 3);
-		@apply --mx-stroke(var(--m-color-main-ink));
+		stroke-width: calc(var(--m-lw) / 3);
+		@apply --mx-stroke(var(--m-tint-ink));
 	}
 
 	.leaf,
 	.vine {
-		@apply --mx-fill(var(--m-color-main));
+		@apply --mx-fill(var(--m-tint));
 	}
 
 	.leaf {
-		transition: all var(--m-duration) var(--m-easing);
+		transition: all var(--m-dur) var(--m-ease);
 		transform-origin: center;
 		position: relative;
 	}
@@ -40,7 +40,7 @@ const { ...props } = Astro.props;
 	}
 
 	:global(.\@mode-winter) .leaf {
-		animation: leaf-fall 5s var(--m-easing) forwards;
+		animation: leaf-fall 5s var(--m-ease) forwards;
 	}
 </style>
 

@@ -79,6 +79,23 @@ it('ignores known props declared in one or more @known-props comments', () => {
 	expect(matches).toEqual([]);
 });
 
+it('ignores known props inside var references as well as declarations', () => {
+	const preset = createTestPreset();
+	const matches = findInvalidTokenMatches({
+		content: [
+			'/* @known-props: --x-vendor-thing */',
+			'.card {',
+			'  --x-vendor-thing: 1rem;',
+			'  padding: var(--x-vendor-thing);',
+			'}',
+		].join('\n'),
+		tokenMap: createTokenMap(preset),
+		prefixConfig: createPrefixValidationConfig(preset.context.tokenPrefixes),
+	});
+
+	expect(matches).toEqual([]);
+});
+
 it('ignores known props from preset knownProps string and regex entries', () => {
 	const preset = createTestPreset(['--x-vendor-thing', /^--x-plugin-[\w-]+$/]);
 	const matches = findInvalidTokenMatches({

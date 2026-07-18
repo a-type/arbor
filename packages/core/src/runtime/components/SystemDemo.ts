@@ -6,7 +6,7 @@ class SystemDemo extends LitElement {
 			:host {
 				display: grid;
 				grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
-				gap: var(--m-space-lg);
+				gap: var(--m-sp-lg);
 				box-sizing: border-box;
 				width: 100%;
 			}

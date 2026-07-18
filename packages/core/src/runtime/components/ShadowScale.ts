@@ -8,7 +8,7 @@ class ShadowScale extends LitElement {
 			:host {
 				display: flex;
 				flex-direction: column;
-				gap: var(--m-space-lg);
+				gap: var(--m-sp-lg);
 				box-sizing: border-box;
 				width: 100%;
 			}
@@ -23,21 +23,21 @@ class ShadowScale extends LitElement {
 			.valueStack {
 				display: flex;
 				flex-direction: column;
-				gap: var(--m-space-xs);
+				gap: var(--m-sp-xs);
 			}
 
 			.value {
 				font-size: var(--m-prose-ambient-size);
-				color: var(--m-color-neutral-heavy);
+				color: var(--m-gray-heavy);
 			}
 
 			.size {
-				background: var(--m-color-neutral-wash);
-				color: var(--m-color-main-wash);
+				background: var(--m-gray-wash);
+				color: var(--m-tint-wash);
 				aspect-ratio: 1 / 1;
 				width: 100px;
 				height: 30px;
-				margin: var(--m-space-md);
+				margin: var(--m-sp-md);
 			}
 		`;
 	}

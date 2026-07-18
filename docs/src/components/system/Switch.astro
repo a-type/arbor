@@ -43,15 +43,15 @@ const { class: className, ...props } = Astro.props;
 		transform-origin: center left;
 		transform: translateX(0);
 		transition-property: transform, background-color, box-shadow;
-		transition-duration: var(--m-duration-short);
-		transition-timing-function: var(--m-easing);
+		transition-duration: var(--m-dur-short);
+		transition-timing-function: var(--m-ease);
 	}
 	input[type='checkbox']:checked + .switch-track .switch-thumb {
 		transform: translateX(16px);
-		@apply --mx-bg(var(--m-color-main-heavy));
-		@apply --mx-ring(var(--m-color-main-light));
+		@apply --mx-bg(var(--m-tint-heavy));
+		@apply --mx-ring(var(--m-tint-light));
 	}
 	input[type='checkbox']:checked + .switch-track {
-		@apply --mx-bg(var(--m-color-main-light));
+		@apply --mx-bg(var(--m-tint-light));
 	}
 </style>

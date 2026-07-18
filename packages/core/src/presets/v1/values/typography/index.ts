@@ -1,6 +1,6 @@
 import { css, Css, CssInterpolation } from '@arbor-css/css-eval';
 import { Token } from '@arbor-css/tokens';
-import { ArborModeGlobalTokens } from '../../modeSchema/global.js';
+import { GlobalTokens } from '../../schema/global.js';
 
 export interface TypographyLevel {
 	size: string | Css;
@@ -61,7 +61,7 @@ export function compileTypography<
 	TLevels extends string = DefaultTypographyLevel,
 >(
 	config: TypographyConfig<TLevels>,
-	tokens: ArborModeGlobalTokens,
+	tokens: GlobalTokens,
 	systemTokens: { whenDark: Token },
 ): CompiledTypography<TLevels> {
 	const levelNames =
@@ -81,7 +81,7 @@ export function compileTypography<
 			const nameCast = name as TLevels;
 			const levelConfig = config.levels?.[nameCast] ?? {};
 			acc[nameCast] = {
-				size: css`calc(${config.roundToPixel ? 'round(' : ''}clamp(${tokens.typography.minFontSize ?? '0.75rem'}, 1rem * pow(${tokens.typography.fontSizeScaleBase ?? 1.125}, (${i - baseIndex} * ${tokens.typography.fontSizeScaleExponentStep ?? 1})) / ${[tokens.space.density, 1]}, ${tokens.typography.maxFontSize ?? '3rem'})${config.roundToPixel ? ', 1px)' : ''})`,
+				size: css`calc(clamp(${tokens.typography.minFontSize ?? '0.75rem'}, 1rem * pow(${tokens.typography.fontSizeScaleBase ?? 1.125}, (${i - baseIndex} * ${tokens.typography.fontSizeScaleExponentStep ?? 1})) / ${[tokens.space.density, 1]}, ${tokens.typography.maxFontSize ?? '3rem'}))`,
 				lineHeight: css`calc(clamp(${tokens.typography.minLineHeight ?? 0.75}, (${tokens.typography.baseLineHeight ?? 1.5} - ${tokens.typography.lineHeightStep ?? 0.5} * ${i - baseIndex}), ${tokens.typography.maxLineHeight ?? 2}))`,
 				letterSpacing: css`calc(clamp(${tokens.typography.minLetterSpacing ?? 0}, (${tokens.typography.baseLetterSpacing ?? 0} + ${tokens.typography.letterSpacingStep ?? 0} * ${i - baseIndex}), ${tokens.typography.maxLetterSpacing ?? 0}))`,
 				...levelConfig,

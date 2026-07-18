@@ -66,7 +66,7 @@ const season = getSeason();
 	.root {
 		display: inline-flex;
 		flex-direction: row;
-		gap: var(--m-space);
+		gap: var(--m-sp);
 		align-items: center;
 	}
 	input {
@@ -74,7 +74,7 @@ const season = getSeason();
 	}
 	.season-button,
 	.scheme-button {
-		padding: var(--m-space-sm);
+		padding: var(--m-sp-sm);
 		aspect-ratio: 1;
 		line-height: 1;
 		display: flex;
@@ -82,7 +82,7 @@ const season = getSeason();
 		align-items: center;
 	}
 	.season-button:has(input:checked) {
-		@apply --mx-bg(var(--m-color-main-wash));
+		@apply --mx-bg(var(--m-tint-wash));
 	}
 
 	.when-light {

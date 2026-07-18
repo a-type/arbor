@@ -17,7 +17,7 @@ class ColorSwatch extends LitElement {
 				width: 16px;
 				height: 16px;
 				border-radius: 4px;
-				border: 1px solid var(--m-color-neutral-ink, black);
+				border: 1px solid var(--m-gray-ink, black);
 			}
 		`;
 	}

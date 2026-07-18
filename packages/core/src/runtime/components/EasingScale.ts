@@ -9,7 +9,7 @@ class EasingScale extends LitElement {
 			:host {
 				display: flex;
 				flex-direction: column;
-				gap: var(--m-space-lg);
+				gap: var(--m-sp-lg);
 				box-sizing: border-box;
 				width: 100%;
 			}
@@ -25,19 +25,19 @@ class EasingScale extends LitElement {
 				flex-direction: row;
 				justify-content: space-between;
 				align-items: center;
-				gap: var(--m-space-xs);
+				gap: var(--m-sp-xs);
 			}
 
 			.value {
 				font-size: var(--m-prose-ambient-size);
-				color: var(--m-color-neutral-heavy);
+				color: var(--m-gray-heavy);
 			}
 
 			.trigger {
 				background: var(--m-action-secondary-bg);
 				color: var(--m-action-secondary-fg);
 				aspect-ratio: 1 / 1;
-				padding: var(--m-space-xs);
+				padding: var(--m-sp-xs);
 				border-radius: var(--m-radius-sm);
 
 				cursor: pointer;
@@ -53,7 +53,7 @@ class EasingScale extends LitElement {
 			.demoTrack {
 				width: 200px;
 				height: 10px;
-				background: var(--m-color-neutral-wash);
+				background: var(--m-gray-wash);
 				border-radius: var(--m-radius-sm);
 				overflow: hidden;
 				position: relative;
@@ -62,7 +62,7 @@ class EasingScale extends LitElement {
 			.demoSled {
 				width: 10px;
 				height: 10px;
-				background: var(--m-color-neutral-ink);
+				background: var(--m-gray-ink);
 				border-radius: var(--m-radius-sm);
 				position: absolute;
 				right: calc(100% - 10px);

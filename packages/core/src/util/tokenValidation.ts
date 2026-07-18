@@ -315,11 +315,10 @@ export function findInvalidTokenMatches({
 			}
 			declarationKeys.add(key);
 
-			if (externalProps.has(name)) {
-				continue;
-			}
-
-			if (matchesKnownProperty(name, prefixConfig.knownProps)) {
+			if (
+				externalProps.has(name) ||
+				matchesKnownProperty(name, prefixConfig.knownProps)
+			) {
 				continue;
 			}
 
@@ -418,6 +417,13 @@ export function findInvalidTokenMatches({
 				declarationKeys.has(key) ||
 				functionCallKeys.has(key) ||
 				mixinApplyKeys.has(key)
+			) {
+				continue;
+			}
+
+			if (
+				externalProps.has(name) ||
+				matchesKnownProperty(name, prefixConfig.knownProps)
 			) {
 				continue;
 			}

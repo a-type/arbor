@@ -1,10 +1,10 @@
 import { definePreset, getInternals } from '@arbor-css/preset';
 import { expect, it } from 'vitest';
 import { modeToCss } from '../../rendering/modeToCss.js';
-import { presetArbor } from './preset.js';
+import { presetV1 } from './preset.js';
 
 it('is extensible', () => {
-	const base = presetArbor({
+	const base = presetV1({
 		color: {
 			ranges: {
 				red: { hue: 0 },
@@ -15,7 +15,7 @@ it('is extensible', () => {
 			fadeInUp: (css, $) => css`
 				from {
 					opacity: 0;
-					transform: translateY(${$.mode.space.sm});
+					transform: translateY(${$.mode.sp.sm});
 				}
 				to {
 					opacity: 1;
@@ -33,6 +33,12 @@ it('is extensible', () => {
 	// @ts-expect-error
 	base.mixins.askdjfs;
 
+	base.$.mode.color.red.heavy;
+	// @ts-expect-error
+	base.$.mode.color.foo;
+	// @ts-expect-error
+	base.$.mode.color.red.foo;
+
 	const preset = definePreset({
 		name: 'test',
 		extends: [base],
@@ -42,7 +48,9 @@ it('is extensible', () => {
 		baseMode: () => ({
 			test: 'red',
 			action: {
-				roundness: 0.5,
+				config: {
+					roundness: 0.5,
+				},
 			},
 		}),
 		mixins: (create, $) => ({
@@ -57,7 +65,7 @@ it('is extensible', () => {
 						${base.mixins.bgLighter.apply({ '--step': 1 })}
 						${base.$.mixins.ring.value}: ${base.functions.ring.compute({
 							'--size': '2px',
-							'--color': base.$.mode.color.main.heavy,
+							'--color': base.$.mode.tint.heavy,
 						})};
 						cursor: pointer;
 					}
@@ -72,11 +80,11 @@ it('is extensible', () => {
 		}),
 	});
 
-	expect(preset.$.mode.color.palette.red.mid.name).toEqual(
-		base.$.mode.color.palette.red.mid.name,
+	expect(preset.$.mode.color.red.mid.name).toEqual(
+		base.$.mode.color.red.mid.name,
 	);
 	expect(preset.baseMode.test).toBe('red');
-	expect(preset.baseMode.action?.roundness).toBe(0.5);
+	expect(preset.baseMode.action?.config?.roundness).toBe(0.5);
 
 	// preserves modes from base
 	expect(getInternals(preset).modes.dark).toBeDefined();
@@ -85,7 +93,7 @@ it('is extensible', () => {
 
 	const hoverBodyText = preset.mixins.hover.body.text;
 	expect(hoverBodyText).toMatchInlineSnapshot(
-		`"&:hover { --_-param-bg-lighter-step: 1;--_-param-bg-lighter-source: var(--mx-bg-applied); --mx-bg-ref: oklch(from var(--_-param-bg-lighter-source, var(--mx-bg-applied)) calc(l + var(--_-param-bg-lighter-step) * 0.5 * (var(--m-global-whenLight, 1) * calc(1 - l) * 0.3 + var(--m-global-whenDark, 1) * -0.08)) calc(c * calc(1 + var(--_-param-bg-lighter-step) * 0.5 * (var(--m-global-whenLight, 1) * -0.08) + (var(--m-global-whenDark, 1) * -0.02))) h); --mx-ring-value: 0 0 0 0px var(--m-global-trueLightColor), 0 0 0 calc(2px + 0px) var(--m-color-main-heavy); cursor: pointer; }"`,
+		`"&:hover { --_-param-bg-lighter-step: 1;--_-param-bg-lighter-source: var(--mx-bg-applied); --mx-bg-ref: oklch(from var(--_-param-bg-lighter-source, var(--mx-bg-applied)) calc(l + var(--_-param-bg-lighter-step) * 0.5 * (var(--m-global-whenLight, 1) * calc(1 - l) * 0.3 + var(--m-global-whenDark, 1) * -0.08)) calc(c * calc(1 + var(--_-param-bg-lighter-step) * 0.5 * (var(--m-global-whenLight, 1) * -0.08) + (var(--m-global-whenDark, 1) * -0.02))) h); --mx-ring-value: 0 0 0 0px var(--m-global-trueLightColor), 0 0 0 calc(2px + 0px) var(--m-tint-heavy); cursor: pointer; }"`,
 	);
 
 	expect(preset.globalCss).toContain('@keyframes fadeInUp');
@@ -99,7 +107,7 @@ it('is extensible', () => {
 });
 
 it('allows augmenting built-in modes', () => {
-	const preset = presetArbor({
+	const preset = presetV1({
 		color: {
 			ranges: {
 				red: { hue: 0 },
@@ -111,15 +119,15 @@ it('allows augmenting built-in modes', () => {
 	const darkMode = preset.bundleMode('dark', {
 		action: {
 			primary: {
-				bg: preset.$.mode.color.main.heavy,
-				fg: preset.$.mode.color.main.paper,
+				bg: preset.$.mode.tint.heavy,
+				fg: preset.$.mode.tint.paper,
 			},
 		},
 	});
 
 	const css = modeToCss(darkMode, preset, {});
 	expect(css).toContain('.\\@mode-dark');
-	expect(css).toContain('--m-action-primary-bg: var(--m-color-main-heavy);');
+	expect(css).toContain('--m-action-primary-bg: var(--m-tint-heavy);');
 	// still includes built-in stuff
 	expect(css).toContain('color-scheme: dark;');
 });

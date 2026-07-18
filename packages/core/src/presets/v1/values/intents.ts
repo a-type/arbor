@@ -35,7 +35,7 @@ export function createActionIntentValues<TColorNames extends string>(
 		},
 		primary: {
 			bg: css`
-				${$.mode.bg.bold}
+				${$.mode.bg.heavy}
 			`,
 			fg: css`
 				${$.mode.global.trueHeavyColor}
@@ -315,7 +315,7 @@ export function createBgIntentValues<TColorNames extends string>(
 		light: css`
 			${$.mode.tint.light}
 		`,
-		bold: css`
+		heavy: css`
 			${$.mode.tint.mid}
 		`,
 		gray: {
@@ -331,7 +331,7 @@ export function createBgIntentValues<TColorNames extends string>(
 			light: css`
 				${$.mode.gray.light}
 			`,
-			bold: css`
+			heavy: css`
 				${$.mode.gray.mid}
 			`,
 		},

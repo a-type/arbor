@@ -1,6 +1,6 @@
 import { css } from '@arbor-css/css-eval';
 import { ModeValues } from '@arbor-css/modes';
-import { ArborModeSchema } from '../modeSchema/modeSchema.js';
+import { ModeSchema } from '../schema/schema.js';
 import { compileColors, CompileColorsOptions } from './color/compile.js';
 import { Tokens } from './types.js';
 
@@ -12,7 +12,7 @@ export function createShadowLevelSemanticValues<TColorName extends string>(
 	const y = css`calc(1px * pow(3, ${level}))`;
 	const blur = css`calc(${$.mode.global.shadow.blur} * ${$.mode.global.space.baseSize} * 0.25 * pow(2, ${level} - 1))`;
 	const spread = css`calc(${$.mode.global.shadow.spread} * 1px * pow(2, ${level} - 1))`;
-	const color = css`oklch(from ${$.mode.shadow.color} l c h / 0.15)`;
+	const color = css`oklch(from ${$.mode.global.shadow.color} l c h / 0.15)`;
 	return {
 		$root: css`
 			${x} ${y} ${blur} ${spread} ${color}
@@ -22,7 +22,7 @@ export function createShadowLevelSemanticValues<TColorName extends string>(
 		blur,
 		spread,
 		color,
-	} satisfies ModeValues<ArborModeSchema['shadow']['lg']>;
+	} satisfies ModeValues<ModeSchema['shadow']['lg']>;
 }
 
 export function createSpacingSemanticValues<TColorName extends string>(
@@ -33,13 +33,13 @@ export function createSpacingSemanticValues<TColorName extends string>(
 		return css`calc(${config.roundToPixel ? 'round(' : ''}${$.mode.global.space.baseSize} * pow(${$.mode.global.space.scaleBase}, ${level} * ${$.mode.global.space.scaleExponentStep}) / ${$.mode.global.space.density}${config.roundToPixel ? ', 1px)' : ''})`;
 	}
 	return {
-		$root: $.mode.space.md,
+		$root: $.mode.sp.md,
 		xs: spacingForLevel(-2),
 		sm: spacingForLevel(-1),
 		md: spacingForLevel(0),
 		lg: spacingForLevel(1),
 		xl: spacingForLevel(2),
-	} satisfies ModeValues<ArborModeSchema['space']>;
+	} satisfies ModeValues<ModeSchema['sp']>;
 }
 
 export function createShadowSemanticValues<TColorName extends string>(
@@ -49,9 +49,6 @@ export function createShadowSemanticValues<TColorName extends string>(
 		// --m-shadow => --m-shadow-md
 		$root: css`
 			${$.mode.shadow.md.$root}
-		`,
-		color: css`
-			${$.mode.color.neutral.heavy}
 		`,
 		none: {
 			$root: '0 0 0 0 transparent',
@@ -65,7 +62,7 @@ export function createShadowSemanticValues<TColorName extends string>(
 		md: createShadowLevelSemanticValues($, 1),
 		lg: createShadowLevelSemanticValues($, 2),
 		xl: createShadowLevelSemanticValues($, 3),
-	} satisfies ModeValues<ArborModeSchema['shadow']>;
+	} satisfies ModeValues<ModeSchema['shadow']>;
 }
 
 export function createColorSemanticValues<TColorName extends string>(
@@ -74,37 +71,33 @@ export function createColorSemanticValues<TColorName extends string>(
 		mainColor: string;
 	},
 ) {
-	return {
-		main: $.mode.color.palette[
-			options.mainColor as keyof Tokens<TColorName>['mode']['color']['palette']
-		] as any,
-		neutral: $.mode.color.main.$neutral,
-		palette: compileColors(options, $.mode.global),
-	} satisfies ModeValues<ArborModeSchema['color']>;
+	const palette = compileColors(options, $.mode.global);
+	return palette as unknown as ModeValues<ModeSchema['color']>;
 }
 
 export function createRadiusSemanticValues<TColorName extends string>(
 	$: Tokens<TColorName>,
 ) {
 	return {
-		$root: $.mode.radius.md,
-		xs: css`calc(${$.mode.global.shape.roundness} * ${$.mode.space.xs})`,
-		sm: css`calc(${$.mode.global.shape.roundness} * ${$.mode.space.sm})`,
-		md: css`calc(${$.mode.global.shape.roundness} * ${$.mode.space.md})`,
-		lg: css`calc(${$.mode.global.shape.roundness} * ${$.mode.space.lg})`,
+		$root: $.mode.rd.md,
+		xs: css`calc(${$.mode.global.shape.roundness} * ${$.mode.sp.xs})`,
+		sm: css`calc(${$.mode.global.shape.roundness} * ${$.mode.sp.sm})`,
+		md: css`calc(${$.mode.global.shape.roundness} * ${$.mode.sp.md})`,
+		lg: css`calc(${$.mode.global.shape.roundness} * ${$.mode.sp.lg})`,
+		xl: css`calc(${$.mode.global.shape.roundness} * ${$.mode.sp.xl})`,
 		full: css`9999px`,
-	} satisfies ModeValues<ArborModeSchema['radius']>;
+	} satisfies ModeValues<ModeSchema['rd']>;
 }
 
 export function createLineWidthSemanticValues<TColorName extends string>(
 	$: Tokens<TColorName>,
 ) {
 	return {
-		$root: $.mode.lineWidth.md,
+		$root: $.mode.lw.md,
 		sm: css`calc(max(1px, ${$.mode.global.shape.lineWidth} * 1px / 2))`,
 		md: css`calc(${$.mode.global.shape.lineWidth} * 1px)`,
 		lg: css`calc(${$.mode.global.shape.lineWidth} * 2px)`,
-	} satisfies ModeValues<ArborModeSchema['lineWidth']>;
+	} satisfies ModeValues<ModeSchema['lw']>;
 }
 
 export function createEasingSemanticValues<TColorName extends string>(
@@ -117,7 +110,7 @@ export function createEasingSemanticValues<TColorName extends string>(
 		// Spring is zero at the default bounciness of 0.5, grows above it.
 		// Scale factors are 2x vs the target spring at b=1 so the threshold shift preserves that feel.
 		const springScale = (0.2 + level * 0.1) * 2; // 0.20 / 0.40 / 0.60
-		const b = $.mode.global.easing.bounciness;
+		const b = $.mode.global.ease.bounciness;
 		const spring = css`max(0, ${b} - 0.5) * ${springScale}`;
 		const y1 = css`calc(0 - ${spring})`;
 		const y2 = css`calc(1 + ${spring} * 2)`;
@@ -128,7 +121,7 @@ export function createEasingSemanticValues<TColorName extends string>(
 		const x1 = 0.4 + level * 0.2; // 0.20 / 0.40 / 0.60
 		// Spring creates a slight anticipation (backward pull) at the start
 		const springScale = (0.15 + level * 0.05) * 2; // 0.20 / 0.30 / 0.40
-		const b = $.mode.global.easing.bounciness;
+		const b = $.mode.global.ease.bounciness;
 		const anticipation = css`calc(0 - max(0, ${b} - 0.5) * ${springScale})`;
 		return css`cubic-bezier(${x1}, ${anticipation}, 1, 1)`;
 	}
@@ -137,28 +130,28 @@ export function createEasingSemanticValues<TColorName extends string>(
 		const x2 = 0.55 + level * 0.1; // 0.45 / 0.55 / 0.65
 		// Scale factors are 2x so that at b=1 the spring matches the original intent.
 		const springScale = 0.55 * Math.pow(2, level) * 2; // 0.55 / 1.10 / 2.20
-		const b = $.mode.global.easing.bounciness;
+		const b = $.mode.global.ease.bounciness;
 		const overshoot = css`calc(1 + max(0, ${b} - 0.5) * ${springScale})`;
 		return css`cubic-bezier(${x1}, ${overshoot}, ${x2}, 1)`;
 	}
 	return {
-		$root: $.mode.easing.medium,
+		$root: $.mode.ease.medium,
 		tight: easingForLevel(1),
 		medium: easingForLevel(0),
 		loose: easingForLevel(-1),
 		in: {
-			$root: $.mode.easing.in.medium,
+			$root: $.mode.ease.in.medium,
 			tight: easingInForLevel(1),
 			medium: easingInForLevel(0),
 			loose: easingInForLevel(-1),
 		},
 		out: {
-			$root: $.mode.easing.out.medium,
+			$root: $.mode.ease.out.medium,
 			tight: easingOutForLevel(1),
 			medium: easingOutForLevel(0),
 			loose: easingOutForLevel(-1),
 		},
-	} satisfies ModeValues<ArborModeSchema['easing']>;
+	} satisfies ModeValues<ModeSchema['ease']>;
 }
 
 export function createDurationSemanticValues<TColorName extends string>(
@@ -168,14 +161,14 @@ export function createDurationSemanticValues<TColorName extends string>(
 		return css`calc(${$.mode.global.duration.base} * pow(2, ${level}) * ${$.mode.global.duration.slowness})`;
 	}
 	return {
-		$root: $.mode.duration.medium,
+		$root: $.mode.dur.medium,
 		short: durationForLevel(-1),
 		medium: durationForLevel(0),
 		long: durationForLevel(1),
-	} satisfies ModeValues<ArborModeSchema['duration']>;
+	} satisfies ModeValues<ModeSchema['dur']>;
 }
 
-function createTypographyWeightSemanticValues<TColorName extends string>(
+export function createTypographyWeightSemanticValues<TColorName extends string>(
 	$: Tokens<TColorName>,
 ) {
 	const darkModeAdjustment = css`calc(-1 * ${$.mode.global.whenDark} * ${$.mode.global.typography.darkModeWeightAdjustment})`;
@@ -183,14 +176,13 @@ function createTypographyWeightSemanticValues<TColorName extends string>(
 	const generalAdjustment = css`calc(${$.mode.global.typography.boldness} * ${weightRange} - (${weightRange} / 2) + ${darkModeAdjustment})`;
 
 	return {
-		$root: $.mode.text.weight.normal,
-		thin: css`calc(clamp(${$.mode.global.typography.minWeight}, ${$.mode.global.typography.baseWeight} - (${$.mode.global.typography.weightStep}) + ${generalAdjustment}, ${$.mode.global.typography.maxWeight}))`,
+		$root: $.mode.fw.normal,
 		normal: css`calc(clamp(${$.mode.global.typography.minWeight}, ${$.mode.global.typography.baseWeight} + ${generalAdjustment}, ${$.mode.global.typography.maxWeight}))`,
 		bold: css`calc(clamp(${$.mode.global.typography.minWeight}, ${$.mode.global.typography.baseWeight} + (${$.mode.global.typography.weightStep}) + ${generalAdjustment}, ${$.mode.global.typography.maxWeight}))`,
-	};
+	} satisfies ModeValues<ModeSchema['fw']>;
 }
 
-function createTypographySizeSemanticValues<TColorName extends string>(
+export function createTypographySizeSemanticValues<TColorName extends string>(
 	$: Tokens<TColorName>,
 	config: { roundToPixel?: boolean },
 ) {
@@ -198,53 +190,37 @@ function createTypographySizeSemanticValues<TColorName extends string>(
 		return css`calc(${config.roundToPixel ? 'round(' : ''}clamp(${$.mode.global.typography.minFontSize}, 1rem * ${$.mode.global.typography.size} * pow(${$.mode.global.typography.fontSizeScaleBase}, ${level} * ${$.mode.global.typography.fontSizeScaleExponentStep}), ${$.mode.global.typography.maxFontSize})${config.roundToPixel ? ', 1px)' : ''})`;
 	}
 	return {
-		$root: $.mode.text.size.md,
+		$root: $.mode.fs.md,
 		sm: sizeForLevel(-1),
 		md: sizeForLevel(0),
 		lg: sizeForLevel(1),
-	} satisfies ModeValues<ArborModeSchema['text']['size']>;
+	} satisfies ModeValues<ModeSchema['fs']>;
 }
 
-function createTypographyLineHeightSemanticValues<TColorName extends string>(
-	$: Tokens<TColorName>,
-	config: { roundToPixel?: boolean },
-) {
+export function createTypographyLineHeightSemanticValues<
+	TColorName extends string,
+>($: Tokens<TColorName>, config: { roundToPixel?: boolean }) {
 	function lineHeightForLevel(level: number) {
-		return css`calc(${config.roundToPixel ? 'round(' : ''}clamp(${$.mode.global.typography.minLineHeight}, ${$.mode.global.typography.baseLineHeight} + ((${level} + (1 - ${$.mode.global.typography.size}) / 2) * ${$.mode.global.typography.lineHeightStep}), ${$.mode.global.typography.maxLineHeight})${config.roundToPixel ? ', 1px)' : ''})`;
+		return css`calc(clamp(${$.mode.global.typography.minLineHeight}, ${$.mode.global.typography.baseLineHeight} + ((${level} + (1 - ${$.mode.global.typography.size}) / 2) * ${$.mode.global.typography.lineHeightStep}), ${$.mode.global.typography.maxLineHeight}))`;
 	}
 	return {
-		$root: $.mode.text.lineHeight.normal,
+		$root: $.mode.lh.normal,
 		tight: lineHeightForLevel(-1),
 		normal: lineHeightForLevel(0),
 		loose: lineHeightForLevel(1),
-	} satisfies ModeValues<ArborModeSchema['text']['lineHeight']>;
+	} satisfies ModeValues<ModeSchema['lh']>;
 }
 
-function createTypographyLetterSpacingSemanticValues<TColorName extends string>(
-	$: Tokens<TColorName>,
-	config: { roundToPixel?: boolean },
-) {
+export function createTypographyLetterSpacingSemanticValues<
+	TColorName extends string,
+>($: Tokens<TColorName>, config: { roundToPixel?: boolean }) {
 	function letterSpacingForLevel(level: number) {
 		return css`calc(${config.roundToPixel ? 'round(' : ''}clamp(${$.mode.global.typography.minLetterSpacing}, ${$.mode.global.typography.baseLetterSpacing} + (${level} * ${$.mode.global.typography.letterSpacingStep}), ${$.mode.global.typography.maxLetterSpacing})${config.roundToPixel ? ', 1px)' : ''})`;
 	}
 	return {
-		$root: $.mode.text.letterSpacing.normal,
+		$root: $.mode.ls.normal,
 		tight: letterSpacingForLevel(-1),
 		normal: letterSpacingForLevel(0),
 		loose: letterSpacingForLevel(1),
-	} satisfies ModeValues<ArborModeSchema['text']['letterSpacing']>;
-}
-
-export function createTypographySemanticValues<TColorName extends string>(
-	$: Tokens<TColorName>,
-	{ roundToPixel = false } = {},
-) {
-	return {
-		weight: createTypographyWeightSemanticValues($),
-		size: createTypographySizeSemanticValues($, { roundToPixel }),
-		lineHeight: createTypographyLineHeightSemanticValues($, { roundToPixel }),
-		letterSpacing: createTypographyLetterSpacingSemanticValues($, {
-			roundToPixel,
-		}),
-	} satisfies ModeValues<ArborModeSchema['text']>;
+	} satisfies ModeValues<ModeSchema['ls']>;
 }

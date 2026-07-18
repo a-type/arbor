@@ -1,10 +1,10 @@
 import { tokenSchemaToList } from '@arbor-css/tokens';
 import { expect, it } from 'vitest';
 import { getStructuredTokensMap } from './getStructuredTokensMap.js';
-import { presetArbor } from './presets/arborPreset/preset.js';
+import { presetV1 } from './presets/v1/preset.js';
 
 it('generates a map of mode and system tokens with correct paths', () => {
-	const preset = presetArbor({
+	const preset = presetV1({
 		color: {
 			ranges: {
 				brand: {
@@ -16,16 +16,16 @@ it('generates a map of mode and system tokens with correct paths', () => {
 	});
 	const map = getStructuredTokensMap(preset);
 
-	expect(map.has('color.main.mid')).toBe(true);
-	expect(map.get('color.main.mid')).toBe(preset.$.mode.color.main.mid);
-	expect(map.has('space.md')).toBe(true);
-	expect(map.get('color.main')).toBe(preset.$.mode.color.main.$root);
-	expect(map.has('space.md')).toBe(true);
-	expect(map.get('space.md')).toBe(preset.$.mode.space.md);
+	expect(map.has('tint.mid')).toBe(true);
+	expect(map.get('tint.mid')).toBe(preset.$.mode.tint.mid);
+	expect(map.has('sp.md')).toBe(true);
+	expect(map.get('tint')).toBe(preset.$.mode.tint.$root);
+	expect(map.has('sp.md')).toBe(true);
+	expect(map.get('sp.md')).toBe(preset.$.mode.sp.md);
 });
 
 it('applies descriptions to all built-in system and global tokens', () => {
-	const preset = presetArbor({
+	const preset = presetV1({
 		color: {
 			ranges: {
 				brand: {

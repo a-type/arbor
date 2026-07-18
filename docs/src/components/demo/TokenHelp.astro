@@ -1,22 +1,22 @@
 ---
-
+/* @known-props: --m-s-md */
 ---
 
 <div class="root">
 	<div class="code">
-		<span>padding: <span class="token-invalid">var(--m-spacng-md);</span></span>
+		<span>padding: <span class="token-invalid">var(--m-s-md);</span></span>
 		<div>
 			<span
 				>color: <span class="token"
-					>var(<span class="color-note"></span>--m-color-main)</span
+					>var(<span class="color-note"></span>--m-tint)</span
 				>;</span
 			>
 		</div>
 		<div class="token-hover">
-			<div class="color-preview" style="background: var(--m-color-main)"></div>
+			<div class="color-preview" style="background: var(--m-tint)"></div>
 			<div>
 				<strong>Token:</strong>
-				<span class="token-name">--m-color-main</span>
+				<span class="token-name">--m-tint</span>
 			</div>
 			<div>
 				<strong>Purpose:</strong>
@@ -42,31 +42,27 @@
 		font-size: var(--m-prose-ambient-size);
 		line-height: 1.5;
 		position: relative;
-		padding: var(--m-space-lg);
+		padding: var(--m-sp-lg);
 		@apply --mx-bg(inherit);
 		@apply --mx-fg(var(--m-surface-ambient-fg));
-		border-radius: var(--m-surface-radius);
+		border-radius: var(--m-surface-rd);
 		width: 100%;
 		display: flex;
 		flex-direction: row;
 		justify-content: center;
-		gap: var(--m-space-lg);
+		gap: var(--m-sp-lg);
 	}
 	.code {
 		display: flex;
 		flex-direction: column;
-		gap: var(--m-space);
+		gap: var(--m-sp);
 	}
 	.color-preview {
 		width: 100%;
 		height: 80px;
-		@apply --mx-bg(var(--m-color-main));
-		border-top-left-radius: calc(
-			var(--m-surface-radius) - var(--m-space-lg) / 2
-		);
-		border-top-right-radius: calc(
-			var(--m-surface-radius) - var(--m-space-lg) / 2
-		);
+		@apply --mx-bg(var(--m-tint));
+		border-top-left-radius: calc(var(--m-surface-rd) - var(--m-sp-lg) / 2);
+		border-top-right-radius: calc(var(--m-surface-rd) - var(--m-sp-lg) / 2);
 	}
 	.color-note {
 		width: 12px;
@@ -74,30 +70,30 @@
 		display: inline-block;
 		position: relative;
 		top: 2px;
-		@apply --mx-bg(var(--m-color-main));
-		@apply --mx-borderColor(var(--m-color-neutral-ink));
-		margin-inline: var(--m-space-xs);
+		@apply --mx-bg(var(--m-tint));
+		@apply --mx-borderColor(var(--m-gray-ink));
+		margin-inline: var(--m-sp-xs);
 	}
 	.token {
-		@apply --mx-fg(var(--m-color-main-ink));
-		font-weight: var(--m-text-weight-bold);
+		@apply --mx-fg(var(--m-tint-ink));
+		font-weight: var(--m-fw-bold);
 	}
 	.token-invalid {
 		text-decoration: underline;
-		color: var(--m-color-palette-attention-heavy);
+		color: var(--m-color-attention-heavy);
 	}
 	.token-hover {
 		width: 300px;
 		@apply --mx-surface-ambient;
 		@apply --mx-shadow(var(--m-shadow-md));
-		border-radius: var(--m-surface-radius);
-		padding: var(--m-space-md);
+		border-radius: var(--m-surface-rd);
+		padding: var(--m-sp-md);
 		font-size: var(--m-prose-ambient-size);
 		font-family: monospace;
 		line-height: 1;
 		pointer-events: none;
 		z-index: 9999;
-		gap: var(--m-space-sm);
+		gap: var(--m-sp-sm);
 		display: flex;
 		flex-direction: column;
 	}
@@ -109,7 +105,7 @@
 	const tokenElement = document.querySelector('span.token')!;
 	setInterval(async () => {
 		const mainColor = getComputedStyle(tokenElement)
-			.getPropertyValue('--m-color-main')
+			.getPropertyValue('--m-tint')
 			.trim();
 		// extract light-dark depending on the current color scheme
 		const whenDark = getComputedStyle(tokenElement)

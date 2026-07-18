@@ -26,8 +26,8 @@ class LiveEditor extends LitElement {
 			.pane {
 				display: flex;
 				flex-direction: column;
-				gap: var(--m-space-sm);
-				padding: var(--m-space-sm);
+				gap: var(--m-sp-sm);
+				padding: var(--m-sp-sm);
 				background: var(--m-surface-ambient-bg);
 				border-radius: var(--m-surface-radius);
 				box-shadow: var(--m-shadow-lg);
@@ -49,28 +49,28 @@ class LiveEditor extends LitElement {
 				border: none;
 				cursor: pointer;
 				transition: all var(--m-duration) var(--m-easing);
-				padding: var(--m-space-xs);
+				padding: var(--m-sp-xs);
 				border-radius: var(--m-action-radius);
 				min-width: 32px;
 				min-height: 32px;
 
 				&:hover {
-					background: var(--m-color-main-light);
-					color: var(--m-color-main-ink);
+					background: var(--m-tint-light);
+					color: var(--m-tint-ink);
 				}
 				&:active {
-					background: var(--m-color-main);
+					background: var(--m-tint);
 				}
 				&:focus {
-					outline: 2px solid var(--m-color-main);
+					outline: 2px solid var(--m-tint);
 				}
 			}
 
 			.list {
 				display: flex;
 				flex-direction: column;
-				gap: var(--m-space-xs);
-				padding: var(--m-space-sm);
+				gap: var(--m-sp-xs);
+				padding: var(--m-sp-sm);
 				max-height: 300px;
 				min-height: 0;
 				overflow: auto;
@@ -81,7 +81,7 @@ class LiveEditor extends LitElement {
 				display: flex;
 				flex-direction: column;
 				align-items: start;
-				gap: var(--m-space-xs);
+				gap: var(--m-sp-xs);
 			}
 
 			.token-name {
@@ -239,7 +239,7 @@ class SizeTokenEditor extends BaseTokenEditor {
 			:host {
 				display: inline-flex;
 				align-items: center;
-				gap: var(--m-space-xs);
+				gap: var(--m-sp-xs);
 				width: 100%;
 			}
 		`;

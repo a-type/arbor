@@ -70,7 +70,7 @@ class ModeGraph extends LitElement {
 				flex-direction: row;
 				justify-content: space-between;
 				align-items: center;
-				gap: var(--modeGraph-header-gap, var(--m-space-md, 12px));
+				gap: var(--modeGraph-header-gap, var(--m-sp-md, 12px));
 				padding-block: var(
 					--modeGraph-header-padding,
 					var(--m-surface-padding, 8px)
@@ -79,7 +79,7 @@ class ModeGraph extends LitElement {
 			.mode-name {
 				font-weight: var(
 					--modeGraph-mode-name-font-weight,
-					var(--m-text-weight-bold, bold)
+					var(--m-fw-bold, bold)
 				);
 				font-family: monospace;
 			}
@@ -88,7 +88,7 @@ class ModeGraph extends LitElement {
 				display: flex;
 				flex-direction: column;
 				font-family: monospace;
-				gap: var(--modeGraph-tokens-gap, var(--m-space-sm, 4px));
+				gap: var(--modeGraph-tokens-gap, var(--m-sp-sm, 4px));
 			}
 		`;
 	}
@@ -143,7 +143,7 @@ class ModeGraphToken extends LitElement {
 				padding: var(--modeGraph-token-padding, var(--m-surface-padding, 8px));
 				border: var(
 					--modeGraph-token-borderColor,
-					var(--m-lineWidth, 1) solid var(--m-surface-ambient-borderColor, gray)
+					var(--m-lw, 1) solid var(--m-surface-ambient-borderColor, gray)
 				);
 				border-radius: var(
 					--modeGraph-token-border-radius,
@@ -171,14 +171,11 @@ class ModeGraphToken extends LitElement {
 				justify-content: space-between;
 				align-items: start;
 				white-space: nowrap;
-				gap: var(--modeGraph-token-summary-gap, var(--m-space-sm, 4px));
+				gap: var(--modeGraph-token-summary-gap, var(--m-sp-sm, 4px));
 				max-width: 100%;
 			}
 			.sub-line {
-				color: var(
-					--modeGraph-token-sub-line-color,
-					var(--m-color-neutral-heavy, gray)
-				);
+				color: var(--modeGraph-token-sub-line-color, var(--m-gray-heavy, gray));
 				font-size: var(
 					--modeGraph-token-sub-line-font-size,
 					var(--m-prose-ambient-size, 12px)
@@ -199,7 +196,7 @@ class ModeGraphToken extends LitElement {
 			.name {
 				font-weight: var(
 					--modeGraph-token-name-font-weight,
-					var(--m-text-weight-bold, bold)
+					var(--m-fw-bold, bold)
 				);
 			}
 
@@ -207,7 +204,7 @@ class ModeGraphToken extends LitElement {
 				display: inline-flex;
 				flex-direction: row;
 				align-items: center;
-				gap: var(--modeGraph-token-value-gap, var(--m-space-sm, 4px));
+				gap: var(--modeGraph-token-value-gap, var(--m-sp-sm, 4px));
 				white-space: nowrap;
 				overflow: hidden;
 				text-overflow: ellipsis;
@@ -237,7 +234,7 @@ class ModeGraphToken extends LitElement {
 			.computed {
 				font-weight: var(
 					--modeGraph-token-computed-font-weight,
-					var(--m-text-weight-bold, bold)
+					var(--m-fw-bold, bold)
 				);
 			}
 
@@ -262,11 +259,11 @@ class ModeGraphToken extends LitElement {
 			.dependents {
 				padding-left: var(
 					--modeGraph-token-dependents-indent,
-					var(--m-space-md, 12px)
+					var(--m-sp-md, 12px)
 				);
 				display: flex;
 				flex-direction: column;
-				gap: var(--modeGraph-token-dependents-gap, var(--m-space-sm, 4px));
+				gap: var(--modeGraph-token-dependents-gap, var(--m-sp-sm, 4px));
 				list-style: none;
 				margin: 0;
 			}
@@ -287,11 +284,11 @@ class ModeGraphToken extends LitElement {
 			.dependent-reference {
 				color: var(
 					--modeGraph-token-dependent-reference-color,
-					var(--m-color-main-heavy, black)
+					var(--m-tint-heavy, black)
 				);
 				font-weight: var(
 					--modeGraph-token-dependent-reference-font-weight,
-					var(--m-text-weight-bold, bold)
+					var(--m-fw-bold, bold)
 				);
 			}
 		`;

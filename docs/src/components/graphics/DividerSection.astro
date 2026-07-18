@@ -14,11 +14,11 @@ const { ...props } = Astro.props;
 	}
 	.leaf,
 	.vine {
-		@apply --mx-fill(var(--m-color-main));
+		@apply --mx-fill(var(--m-tint));
 	}
 	path {
-		stroke-width: calc(var(--m-lineWidth) / 3);
-		@apply --mx-stroke(var(--m-color-main-ink));
+		stroke-width: calc(var(--m-lw) / 3);
+		@apply --mx-stroke(var(--m-tint-ink));
 	}
 </style>
 

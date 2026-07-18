@@ -9,7 +9,7 @@ class SpacingScale extends LitElement {
 			:host {
 				display: flex;
 				flex-direction: column;
-				gap: var(--m-space-lg);
+				gap: var(--m-sp-lg);
 				box-sizing: border-box;
 				width: 100%;
 			}
@@ -22,8 +22,8 @@ class SpacingScale extends LitElement {
 			}
 
 			.size {
-				background: var(--m-color-main-ink);
-				color: var(--m-color-main-wash);
+				background: var(--m-tint-ink);
+				color: var(--m-tint-wash);
 				aspect-ratio: 1 / 1;
 			}
 		`;

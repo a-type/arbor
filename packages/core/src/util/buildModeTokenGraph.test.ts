@@ -2,7 +2,7 @@ import { css } from '@arbor-css/css-eval';
 import { simplifier } from '@arbor-css/css-eval/node';
 import { definePreset } from '@arbor-css/preset';
 import { expect, it } from 'vitest';
-import { presetArbor } from '../presets/arborPreset/preset.js';
+import { presetV1 } from '../presets/v1/preset.js';
 import { buildModeTokenGraph } from './buildModeTokenGraph.js';
 
 it('resolves token dependencies and sub-dependencies', () => {
@@ -59,7 +59,7 @@ it('resolves token dependencies and sub-dependencies', () => {
 
 // real-world regression test with arbor preset
 it('resolves and computes complicated dependency chains', () => {
-	const preset = presetArbor({
+	const preset = presetV1({
 		color: {
 			mainColor: 'brand',
 			ranges: {
@@ -77,7 +77,7 @@ it('resolves and computes complicated dependency chains', () => {
 		simplifier,
 	});
 
-	expect(graphWithDensity.nodes['--m-space-md'].computed).toMatchInlineSnapshot(
+	expect(graphWithDensity.nodes['--m-sp-md'].computed).toMatchInlineSnapshot(
 		`"4px"`,
 	);
 });

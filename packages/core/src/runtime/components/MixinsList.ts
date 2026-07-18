@@ -28,7 +28,7 @@ class MixinsList extends LitElement {
 				);
 				margin-bottom: var(
 					--functionsList-title-margin-bottom,
-					var(--m-space-md, 8px)
+					var(--m-sp-md, 8px)
 				);
 			}
 
@@ -36,7 +36,7 @@ class MixinsList extends LitElement {
 				display: flex;
 				flex-direction: column;
 				align-items: stretch;
-				gap: var(--functionsList-item-gap, var(--m-space-sm, 4px));
+				gap: var(--functionsList-item-gap, var(--m-sp-sm, 4px));
 				list-style: none;
 				margin: 0;
 				padding: 0;
@@ -58,17 +58,14 @@ class MixinsList extends LitElement {
 				);
 				border: var(
 					--functionsList-item-border,
-					var(--m-lineWidth, 1px) solid var(--m-border-color, #ccc)
+					var(--m-lw, 1px) solid var(--m-border-color, #ccc)
 				);
 				border-radius: var(
 					--functionsList-item-border-radius,
 					var(--m-surface-radius, 4px)
 				);
-				font-size: var(--functionsList-item-size, var(--m-text-size, 1rem));
-				font-weight: var(
-					--functionsList-item-weight,
-					var(--m-text-weight, normal)
-				);
+				font-size: var(--functionsList-item-size, var(--m-fs, 1rem));
+				font-weight: var(--functionsList-item-weight, var(--m-fw, normal));
 				background-color: var(
 					--functionsList-item-bg,
 					var(--m-surface-ambient-bg, white)
@@ -81,7 +78,7 @@ class MixinsList extends LitElement {
 				.name {
 					font-weight: var(
 						--functionsList-item-name-weight,
-						var(--m-text-weight-bold, bold)
+						var(--m-fw-bold, bold)
 					);
 					font-family: var(
 						--functionsList-item-name-font,
@@ -95,7 +92,7 @@ class MixinsList extends LitElement {
 					);
 					color: var(
 						--functionsList-item-description-color,
-						var(--m-color-neutral-heavy, darkgray)
+						var(--m-gray-heavy, darkgray)
 					);
 				}
 			}

@@ -6,7 +6,7 @@ body {
 	display: flex;
 	flex-direction: column;
 	min-height: 100dvh;
-	@apply --mx-bg(var(--m-color-main-paper));
+	@apply --mx-bg(var(--m-tint-paper));
 	font-family:
 		system-ui,
 		-apple-system,

@@ -1,6 +1,7 @@
 ---
 title: Arbor's built-in preset
 ---
+
 import BaseModeGraph from '../../components/BaseModeGraph.astro';
 
 Arbor comes with a powerful preset which combines generated OKCLH color palettes, configurable typography and spacing scales, and a full-featured mode full of ready-to-use tokens.
@@ -41,7 +42,7 @@ This may not look like color palettes you've used before. Particularly the "heav
 
 Your color ranges are automatically added to the `color-palette` token namespace along with their neutral counterparts. For example, `--m-color-palette-brand-light` or `--m-color-palette-brand-$neutral-ink`. These, of course, are very long token names. You're not meant to use primitives very often.
 
-Your base mode will use the color range you selected as `mainColor` for `--m-color-main` and associated range values. Its neutral counterpart will be assigned to `--m-color-neutral`. These are your "miscellaneous use" color tokens. But that's _still_ not the first colors you should reach for!
+Your base mode will use the color range you selected as `mainColor` for `--m-tint` and associated range values. Its neutral counterpart will be assigned to `--m-gray`. These are your "miscellaneous use" color tokens. But that's _still_ not the first colors you should reach for!
 
 Your color will also be assigned to semantic tokens for particular "intents": `--m-action-...`, `--m-surface-...`, and `--m-control-...`. So, apply `--m-action-primary-bg` to your primary button's background, and so on. If you don't like the preset's default assignments, you can customize them with `baseMode`.
 
@@ -73,13 +74,13 @@ Arbor defaults to an 8 pixel spacing scale where each step is 2x the previous:
 
 However, this is customizable via `scaleBase` and `scaleExponent`. Or, if you don't want to bother with that, just provide each level's value directly via `levels`.
 
-`defaultLevel` determines which level name aligns with your `baseSize`, and accordingly, which value is assigned to the `--m-space` root token.
+`defaultLevel` determines which level name aligns with your `baseSize`, and accordingly, which value is assigned to the `--m-sp` root token.
 
 ## Using spacing tokens
 
-A _subset_ of your spacing scale will be assigned to `--m-space-...` tokens.
+A _subset_ of your spacing scale will be assigned to `--m-sp-...` tokens.
 
-For most cases, you should use a new mode with a modified `global.density` value to influence spacing size beyond that range. Meaning, if you need a much larger spacing value than is available in `--m-space` on the base mode, perhaps you want to apply `@mode-loose` with a density of `0.5`?
+For most cases, you should use a new mode with a modified `global.density` value to influence spacing size beyond that range. Meaning, if you need a much larger spacing value than is available in `--m-sp` on the base mode, perhaps you want to apply `@mode-loose` with a density of `0.5`?
 
 However, if you really need to reach into the larger range for particular cases, `--m-primitives-spacing-...` has the whole thing.
 

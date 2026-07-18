@@ -126,14 +126,14 @@ export const modeSchema = <TColorName extends string>(
 			paper: 'color',
 			wash: 'color',
 			light: 'color',
-			bold: 'color',
+			heavy: 'color',
 
 			gray: {
 				$root: 'color',
 				paper: 'color',
 				wash: 'color',
 				light: 'color',
-				bold: 'color',
+				heavy: 'color',
 			},
 		},
 

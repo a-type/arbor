@@ -1,5 +1,5 @@
 import { flattenTokenSchema } from '@arbor-css/core';
-import { presetArbor } from '@arbor-css/core/preset-arbor';
+import { presetV1 } from '@arbor-css/core/preset-v1';
 import { expect, it } from 'vitest';
 import { parseCssColor } from './colorValue.js';
 import {
@@ -20,7 +20,7 @@ function expectColor(
 }
 
 function createTestState() {
-	const preset = presetArbor({
+	const preset = presetV1({
 		color: {
 			mainColor: 'red',
 			ranges: {
@@ -83,8 +83,8 @@ it('parses oklch colors into rgba channels', () => {
 
 it('resolves Arbor color tokens through the shared helper', async () => {
 	const state = createTestState();
-	const colorToken = (state.preset.$.mode.color as any).main.$root;
-	const spacingToken = state.preset.$.mode.space.$root;
+	const colorToken = state.preset.$.mode.tint.$root;
+	const spacingToken = state.preset.$.mode.sp.$root;
 
 	expect(await resolveTokenValue(state, colorToken)).toBe(
 		'light-dark(oklch(90% .15 0), oklch(55% .16 0))',

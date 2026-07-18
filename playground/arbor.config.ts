@@ -1,11 +1,11 @@
 import { definePreset } from '@arbor-css/core';
-import { compileSingleColor, presetArbor } from '@arbor-css/core/preset-v2';
+import { compileSingleColor, presetV1 } from '@arbor-css/core/preset-v1';
 import { makeMixins } from './mixins';
 
 const preset = definePreset({
 	name: 'test',
 	extends: [
-		presetArbor({
+		presetV1({
 			color: {
 				ranges: {
 					brand: {
