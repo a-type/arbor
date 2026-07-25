@@ -152,9 +152,9 @@ export function getTypeFromPurpose(purpose: TokenPurpose): string {
 	switch (purpose) {
 		case 'color':
 		case 'shadow-color':
-			return '<color>';
+			return '<color> | inherit';
 		case 'background':
-			return '<color> | <image>';
+			return '<color> | <image> | inherit';
 		case 'font-size':
 		case 'letter-spacing':
 		case 'border-width':
@@ -165,14 +165,14 @@ export function getTypeFromPurpose(purpose: TokenPurpose): string {
 		case 'shadow-x':
 		case 'shadow-y':
 		case 'spacing':
-			return '<length>';
+			return '<length> | inherit';
 		case 'font-weight':
 		case 'scalar':
-			return '<number>';
+			return '<number> | inherit';
 		case 'line-height':
 			return '<length-percentage>';
 		case 'font-family':
-			return '<string>';
+			return '<string> | inherit';
 		case 'shadow':
 			return '*';
 		case 'duration':
