@@ -342,5 +342,12 @@ function initialValueForType(
 	if (purpose === 'border') {
 		return 'none';
 	}
+	if (
+		purpose === 'color' ||
+		purpose === 'background' ||
+		purpose === 'shadow-color'
+	) {
+		return 'transparent';
+	}
 	return 'initial';
 }
