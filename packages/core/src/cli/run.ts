@@ -1,6 +1,7 @@
 /// <reference types="node" />
 
 import { simplifier } from '@arbor-css/css-eval/node';
+import { loadConfigWithDeps } from '@arbor-css/util/config-loader';
 import { createJiti } from 'jiti';
 import fs from 'node:fs';
 import { glob } from 'node:fs/promises';
@@ -10,6 +11,7 @@ import { hideBin } from 'yargs/helpers';
 import { generateDesignTokens } from '../rendering/generateDesignTokens.js';
 import { generateStylesheet } from '../rendering/generateStylesheet.js';
 import { resolveComputedTokenValue } from '../util/resolveComputedTokenValue.js';
+import { startBuildWatch } from './buildWatch.js';
 import {
 	findTokenRecord,
 	findTokenSuggestions,
@@ -30,15 +32,27 @@ import {
 
 const jiti = createJiti(import.meta.url);
 
+function resolveConfigPath(configPath?: string) {
+	return path.resolve(process.cwd(), configPath || 'arbor.config.ts');
+}
+
 async function loadArborConfig(configPath: string) {
-	const arborModule: any = await jiti.import(configPath);
-	const arbor = arborModule.default ?? arborModule.arbor ?? arborModule;
+	const loaded = await loadConfigWithDeps<any>(configPath, jiti);
+	if (!loaded) {
+		throw new Error(`Failed to load config at ${configPath}`);
+	}
+
+	const arbor = loaded.preset?.arbor ?? loaded.preset;
 	if (!arbor || typeof arbor !== 'object' || !('$' in arbor)) {
 		throw new Error(
 			'Configuration file must export an Arbor preset object as default export.',
 		);
 	}
-	return arbor;
+
+	return {
+		arbor,
+		dependencies: loaded.dependencies,
+	};
 }
 
 const SKIPPED_DIRECTORIES = new Set([
@@ -64,32 +78,70 @@ yargs(hideBin(process.argv))
 					alias: 'o',
 					type: 'string',
 					description: 'Path to the output file',
+				})
+				.option('watch', {
+					alias: 'w',
+					type: 'boolean',
+					description:
+						'Watch config and config dependencies, rebuilding output CSS on changes',
 				}),
 		async (argv) => {
-			const startTime = Date.now();
-			try {
-				console.log('Building with config:', argv.config);
-				console.log('Output file:', argv.output);
-				const resolvedConfigPath = path.join(
-					process.cwd(),
-					argv.config || 'arbor.config.ts',
-				);
-				const arbor = await loadArborConfig(resolvedConfigPath);
+			const resolvedConfigPath = resolveConfigPath(
+				argv.config as string | undefined,
+			);
+			const resolvedOutputPath =
+				typeof argv.output === 'string' ?
+					path.resolve(process.cwd(), argv.output)
+				:	undefined;
+
+			if (argv.watch && !resolvedOutputPath) {
+				console.error('The --watch flag requires an --output path.');
+				process.exit(1);
+			}
+
+			const writeStylesheet = async () => {
+				const { arbor } = await loadArborConfig(resolvedConfigPath);
 				const content = await generateStylesheet(arbor);
-				if (argv.output) {
-					await fs.promises.writeFile(argv.output, content, 'utf-8');
-					console.log(`Stylesheet written to ${argv.output}`);
+				if (resolvedOutputPath) {
+					await fs.promises.writeFile(resolvedOutputPath, content, 'utf-8');
+					console.log(`Stylesheet written to ${resolvedOutputPath}`);
 				} else {
 					console.log(content);
 				}
-			} catch (error) {
-				console.error(error instanceof Error ? error.message : String(error));
-				process.exit(1);
-			} finally {
-				const endTime = Date.now();
-				const duration = ((endTime - startTime) / 1000).toFixed(2);
-				console.log(`Build completed in ${duration} seconds.`);
+			};
+
+			const runBuild = async (label: string) => {
+				const startTime = Date.now();
+				try {
+					console.log(`Building (${label}) with config: ${resolvedConfigPath}`);
+					await writeStylesheet();
+				} catch (error) {
+					console.error(error instanceof Error ? error.message : String(error));
+					process.exit(1);
+				} finally {
+					const endTime = Date.now();
+					const duration = ((endTime - startTime) / 1000).toFixed(2);
+					console.log(`Build completed in ${duration} seconds.`);
+				}
+			};
+
+			if (!argv.watch) {
+				await runBuild('once');
+				return;
 			}
+
+			const watchOutputPath = resolvedOutputPath;
+			if (!watchOutputPath) {
+				console.error('The --watch flag requires an --output path.');
+				process.exit(1);
+			}
+
+			await startBuildWatch({
+				configPath: resolvedConfigPath,
+				outputPath: watchOutputPath,
+				loadArborConfig,
+				generateStylesheet,
+			});
 		},
 	)
 	.command(
@@ -109,11 +161,10 @@ yargs(hideBin(process.argv))
 				}),
 		async (argv) => {
 			try {
-				const resolvedConfigPath = path.join(
-					process.cwd(),
-					argv.config || 'arbor.config.ts',
+				const resolvedConfigPath = resolveConfigPath(
+					argv.config as string | undefined,
 				);
-				const arbor = await loadArborConfig(resolvedConfigPath);
+				const { arbor } = await loadArborConfig(resolvedConfigPath);
 				const levels = parseTokenLevelFilter(argv.filter as string | undefined);
 				const records = listTokenRecords(arbor, { levels });
 				console.log(formatTokenList(records));
@@ -134,11 +185,10 @@ yargs(hideBin(process.argv))
 			}),
 		async (argv) => {
 			try {
-				const resolvedConfigPath = path.join(
-					process.cwd(),
-					argv.config || 'arbor.config.ts',
+				const resolvedConfigPath = resolveConfigPath(
+					argv.config as string | undefined,
 				);
-				const arbor = await loadArborConfig(resolvedConfigPath);
+				const { arbor } = await loadArborConfig(resolvedConfigPath);
 				const records = listFunctionRecords(arbor);
 				console.log(formatFunctionList(records));
 			} catch (error) {
@@ -158,11 +208,10 @@ yargs(hideBin(process.argv))
 			}),
 		async (argv) => {
 			try {
-				const resolvedConfigPath = path.join(
-					process.cwd(),
-					argv.config || 'arbor.config.ts',
+				const resolvedConfigPath = resolveConfigPath(
+					argv.config as string | undefined,
 				);
-				const arbor = await loadArborConfig(resolvedConfigPath);
+				const { arbor } = await loadArborConfig(resolvedConfigPath);
 				const records = listMixinRecords(arbor);
 				console.log(formatMixinList(records));
 			} catch (error) {
@@ -182,11 +231,10 @@ yargs(hideBin(process.argv))
 			}),
 		async (argv) => {
 			try {
-				const resolvedConfigPath = path.join(
-					process.cwd(),
-					argv.config || 'arbor.config.ts',
+				const resolvedConfigPath = resolveConfigPath(
+					argv.config as string | undefined,
 				);
-				const arbor = await loadArborConfig(resolvedConfigPath);
+				const { arbor } = await loadArborConfig(resolvedConfigPath);
 				const records = listTokenRecords(arbor);
 				const tokenName = String(argv._.pop() || '').trim();
 				const record = findTokenRecord(records, tokenName);
@@ -221,11 +269,10 @@ yargs(hideBin(process.argv))
 			}),
 		async (argv) => {
 			try {
-				const resolvedConfigPath = path.join(
-					process.cwd(),
-					argv.config || 'arbor.config.ts',
+				const resolvedConfigPath = resolveConfigPath(
+					argv.config as string | undefined,
 				);
-				const arbor = await loadArborConfig(resolvedConfigPath);
+				const { arbor } = await loadArborConfig(resolvedConfigPath);
 				const records = listTokenRecords(arbor);
 				const tokenName = String(argv._.pop() || '').trim();
 				const record = findTokenRecord(records, tokenName);
@@ -305,11 +352,10 @@ yargs(hideBin(process.argv))
 					process.exit(1);
 				}
 
-				const resolvedConfigPath = path.join(
-					process.cwd(),
-					argv.config || 'arbor.config.ts',
+				const resolvedConfigPath = resolveConfigPath(
+					argv.config as string | undefined,
 				);
-				const arbor = await loadArborConfig(resolvedConfigPath);
+				const { arbor } = await loadArborConfig(resolvedConfigPath);
 				const tokenMap = createTokenMap(arbor);
 				if (argv.verbose) {
 					console.log('Loaded Arbor configuration from:', resolvedConfigPath);
@@ -393,11 +439,10 @@ yargs(hideBin(process.argv))
 				}),
 		async (argv) => {
 			try {
-				const resolvedConfigPath = path.join(
-					process.cwd(),
-					argv.config || 'arbor.config.ts',
+				const resolvedConfigPath = resolveConfigPath(
+					argv.config as string | undefined,
 				);
-				const arbor = await loadArborConfig(resolvedConfigPath);
+				const { arbor } = await loadArborConfig(resolvedConfigPath);
 				const tokens = generateDesignTokens(arbor, {
 					simplifier,
 				});
