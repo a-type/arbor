@@ -1,6 +1,6 @@
-import { presetArbor } from '../src/presets/arborPreset/index.js';
+import { presetV1 } from '../src/presets/v1/index.js';
 
-export const arbor = presetArbor({
+export const arbor = presetV1({
 	color: {
 		ranges: {
 			primary: {
@@ -38,27 +38,31 @@ export const arbor = presetArbor({
 });
 
 arbor.bundleMode('alt', {
-	color: {
-		main: arbor.$.mode.color.palette.alt,
-		neutral: arbor.$.mode.color.palette.alt.$neutral,
-	},
+	tint: arbor.$.mode.color.alt,
+	gray: arbor.$.mode.color.alt.gray,
 	control: {
-		border: arbor.$.mode.color.palette.alt.heavy.var,
-		bg: arbor.$.mode.color.palette.alt.wash.var,
+		b: {
+			color: arbor.$.mode.color.alt.heavy.var,
+		},
+		bg: arbor.$.mode.color.alt.wash.var,
 	},
 });
 
 arbor.bundleMode('greenButtons', {
 	action: {
 		primary: {
-			bg: arbor.$.mode.color.palette.green.mid.var,
-			fg: arbor.$.mode.color.palette.green.ink.var,
-			border: arbor.$.mode.color.palette.green.heavy.var,
+			bg: arbor.$.mode.color.green.mid.var,
+			fg: arbor.$.mode.color.green.ink.var,
+			b: {
+				color: arbor.$.mode.color.green.heavy.var,
+			},
 		},
 		secondary: {
-			bg: arbor.$.mode.color.palette.green.light.var,
-			fg: arbor.$.mode.color.palette.green.heavy.var,
-			border: arbor.$.mode.color.palette.green.heavy.var,
+			bg: arbor.$.mode.color.green.light.var,
+			fg: arbor.$.mode.color.green.heavy.var,
+			b: {
+				color: arbor.$.mode.color.green.heavy.var,
+			},
 		},
 	},
 });

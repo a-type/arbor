@@ -5,3 +5,6 @@ export const simplifier = createSimplifier({
 	transform: transformNative,
 	options: { passes: 2 },
 });
+
+export { createSimplifier };
+export const transform = transformNative;
