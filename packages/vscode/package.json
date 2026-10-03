@@ -3,7 +3,7 @@
 	"type": "module",
 	"displayName": "Arbor CSS",
 	"description": "Token autocomplete, hover previews, and validation for Arbor CSS presets",
-	"version": "0.0.147",
+	"version": "0.0.148",
 	"private": true,
 	"publisher": "a-type",
 	"engines": {
